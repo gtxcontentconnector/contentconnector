@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/json_simple.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-2.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/json.jar"/>
+	<classpathentry kind="lib" path="lib/json-lib-2.2.1-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/rome-1.0RC2.jar"/>
+	<classpathentry kind="lib" path="lib/ezmorph-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/gentics-portalnode-api.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/portlet_20_Java14compliant.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/jcs-1.2.7.9.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/log4j.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/velocity-dep-1.4.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/velocity-stringresource.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/commons-httpclient-3.0.1.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/gentics-portalnode.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
