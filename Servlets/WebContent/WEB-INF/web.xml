@@ -1,0 +1,150 @@
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+	<icon></icon>
+	<display-name>
+		Gentics Content Repository REST Connector
+	</display-name>
+
+	<context-param>
+		<param-name>contextPath</param-name>
+		<param-value>/ContentRepository</param-value>
+	</context-param>
+
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>sample</display-name>
+		<servlet-name>sample</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>sample</servlet-name>
+		<url-pattern>/sample/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>indexer</display-name>
+		
+		<servlet-name>indexer</servlet-name>
+		<servlet-class>com.gentics.cr.lucene.IndexerServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>indexer</servlet-name>
+		<url-pattern>/indexer/*</url-pattern>
+	</servlet-mapping-->
+
+
+	<!-- servlet>
+		<servlet-name>search</servlet-name>
+		<servlet-class>com.gentics.cr.brz.rest.SearchServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>search</servlet-name>
+		<url-pattern>/search/*</url-pattern>
+	</servlet-mapping-->
+	
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Navigation Repository
+		</description>
+		<display-name>nav</display-name>
+		<servlet-name>nav</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTNavigation</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>nav</servlet-name>
+		<url-pattern>/nav/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>bin</display-name>
+		<servlet-name>bin</servlet-name>
+		<servlet-class>com.gentics.cr.servlet.CRServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>bin</servlet-name>
+		<url-pattern>/bin/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>pcr</display-name>
+		<servlet-name>pcr</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>pcr</servlet-name>
+		<url-pattern>/pcr/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>pcr_bin</display-name>
+		<servlet-name>pcr_bin</servlet-name>
+		<servlet-class>com.gentics.cr.servlet.CRServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>pcr_bin</servlet-name>
+		<url-pattern>/pcr_bin/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>ccr_bin</display-name>
+		<servlet-name>ccr_bin</servlet-name>
+		<servlet-class>com.gentics.cr.servlet.CRServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ccr_bin</servlet-name>
+		<url-pattern>/ccr_bin/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>ccr</display-name>
+		<servlet-name>ccr</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ccr</servlet-name>
+		<url-pattern>/ccr/*</url-pattern>
+	</servlet-mapping>
+	
+
+</web-app>
