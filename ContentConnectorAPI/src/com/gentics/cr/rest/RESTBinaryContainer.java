@@ -20,6 +20,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRRequestProcessor;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
+import com.gentics.cr.util.response.IResponseTypeSetter;
 
 public class RESTBinaryContainer{
 
@@ -63,7 +64,7 @@ public class RESTBinaryContainer{
 	}
 	
 	
-	public void processService(CRBinaryRequestBuilder reqBuilder, Map<String,Resolvable> wrappedObjectsToDeploy, OutputStream stream)
+	public void processService(CRBinaryRequestBuilder reqBuilder, Map<String,Resolvable> wrappedObjectsToDeploy, OutputStream stream, IResponseTypeSetter responsetypesetter)
 	{
 		CRBinaryRequestBuilder myReqBuilder = reqBuilder;
 		CRResolvableBean crBean = null;
@@ -123,7 +124,7 @@ public class RESTBinaryContainer{
 					this.log.info("Responding with mimetype: "+crBean.getMimetype());
 				}
 				
-				
+				responsetypesetter.setContentType(this.getContentType());
 				// output data.
 				if (crBean.isBinary()) {
 					this.log.debug("Size of content: "+crBean.getBinaryContent().length);

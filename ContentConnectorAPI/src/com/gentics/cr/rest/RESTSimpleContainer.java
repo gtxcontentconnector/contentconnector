@@ -15,6 +15,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.util.CRRequestBuilder;
+import com.gentics.cr.util.response.IResponseTypeSetter;
 
 public class RESTSimpleContainer{
 
@@ -42,7 +43,7 @@ public class RESTSimpleContainer{
 		}
 	}
 	
-	public void processService(CRRequestBuilder reqBuilder, Map<String,Resolvable> wrappedObjectsToDeploy, OutputStream stream)
+	public void processService(CRRequestBuilder reqBuilder, Map<String,Resolvable> wrappedObjectsToDeploy, OutputStream stream, IResponseTypeSetter responsetypesetter)
 	{
 		Collection<CRResolvableBean> coll;
 		CRRequestBuilder myReqBuilder = reqBuilder;
@@ -50,6 +51,7 @@ public class RESTSimpleContainer{
 		try {
 			cr = myReqBuilder.getContentRepository(this.response_encoding);
 			this.contenttype = cr.getContentType();
+			responsetypesetter.setContentType(this.getContentType());
 			CRRequest req = myReqBuilder.getCRRequest();
 			//DEPLOY OBJECTS TO REQUEST
 			for (Iterator<Map.Entry<String, Resolvable>> i = wrappedObjectsToDeploy.entrySet().iterator() ; i.hasNext() ; ) {

@@ -15,6 +15,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRRequestProcessor;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
+import com.gentics.cr.util.response.IResponseTypeSetter;
 
 public class RESTNavigationContainer{
 
@@ -41,13 +42,14 @@ public class RESTNavigationContainer{
 		return(this.contenttype+"; charset="+this.response_encoding);
 	}
 
-	public void processService(CRNavigationRequestBuilder reqBuilder,Map<String, Resolvable> wrappedObjectsToDeploy, OutputStream stream) {
+	public void processService(CRNavigationRequestBuilder reqBuilder,Map<String, Resolvable> wrappedObjectsToDeploy, OutputStream stream, IResponseTypeSetter responsetypesetter) {
 		Collection<CRResolvableBean> coll;
 		CRNavigationRequestBuilder myReqBuilder = reqBuilder;
 		ContentRepository cr = null;
 		try {
 			cr = myReqBuilder.getContentRepository(this.response_encoding);
 			this.contenttype = cr.getContentType();
+			responsetypesetter.setContentType(this.getContentType());
 			CRRequest req = myReqBuilder.getNavigationRequest();
 			//DEPLOY OBJECTS TO REQUEST
 			for (Iterator<Map.Entry<String, Resolvable>> i = wrappedObjectsToDeploy.entrySet().iterator() ; i.hasNext() ; ) {
