@@ -17,6 +17,7 @@ import com.gentics.cr.CRServletConfig;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
+import com.gentics.cr.util.response.ServletResponseTypeSetter;
 
 
 /**
@@ -63,9 +64,7 @@ public class RESTServlet extends HttpServlet {
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
 		CRRequestBuilder rB = new CRRequestBuilder(request);
 		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
-		container.processService(rB, objects, response.getOutputStream());
-		//FIXME Move set contentype above processService
-		response.setContentType(container.getContentType());
+		container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
 		// endtime

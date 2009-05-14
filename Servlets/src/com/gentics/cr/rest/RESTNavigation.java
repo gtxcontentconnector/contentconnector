@@ -20,6 +20,7 @@ import com.gentics.cr.CRServletConfig;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
+import com.gentics.cr.util.response.ServletResponseTypeSetter;
 
 
 /**
@@ -55,9 +56,9 @@ public class RESTNavigation extends HttpServlet{
 		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		container.processService(new CRNavigationRequestBuilder(request), objects, response.getOutputStream());
-		//FIXME Move set contentype above processService
-		response.setContentType(container.getContentType());
+		container.processService(new CRNavigationRequestBuilder(request), objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
+		response.getOutputStream().flush();
+		response.getOutputStream().close();
 		// endtime
 		long e = new Date().getTime();
 		this.log.info("Executiontime for " + request.getQueryString() + ":"

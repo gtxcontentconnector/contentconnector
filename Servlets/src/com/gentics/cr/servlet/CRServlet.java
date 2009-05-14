@@ -18,6 +18,7 @@ import com.gentics.cr.rest.RESTBinaryContainer;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
+import com.gentics.cr.util.response.ServletResponseTypeSetter;
 
 
 /**
@@ -71,9 +72,7 @@ public class CRServlet extends HttpServlet {
 		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		container.processService(new CRBinaryRequestBuilder(request), objects, response.getOutputStream());
-		response.setContentType(container.getContentType());
-		
+		container.processService(new CRBinaryRequestBuilder(request), objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
 		
 		if(contentDisposition!=null && contentDisposition!="")
 		{
