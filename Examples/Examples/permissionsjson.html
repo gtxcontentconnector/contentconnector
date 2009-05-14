@@ -1,0 +1,77 @@
+<html>
+<head>
+<script src="jquery-1.2.1.js" type="text/javascript"></script>
+</head>
+<body>
+<script type="text/javascript">
+function process_children(children)
+{
+				var ret="<ul>";
+				$.each(children,function(i, item){
+					if(item.attributes.name && item.attributes.name!="")
+					{
+				    	ret+="<li>"+item.attributes.name+"</li>";
+				    	if(item.children)
+				    	{
+				    		ret+=process_children(item.children);
+				    	}
+				    }
+  	
+		        }); //close each
+		        ret+="</ul>";
+		        return(ret);
+}
+
+
+
+$(function() {
+	$('#update-target a').click(function() {
+		
+	  	$.getJSON("http://"+location.host+"/ContentRepository/pcr?filter=object.obj_type==90021&attributes=key&attributes=name&type=json", // load list of objects
+			function(data){
+				var options="";
+				$('<p></p>').html('status: '+data.status).appendTo('#update-target ol');
+				$.each(data.Objects,function(i, item){
+					options+="<option value=\""+item.attributes.key+"\">"+item.attributes.name+"</option>";
+		        }); //close each
+		        $("select#permission").html(options);
+		        
+		     
+        }); //close callback and  $.getJSON(
+        
+    }); //close click(
+    $("select#permission").change(function(){
+    	var selection=$(this).find('option').filter(':selected').val();
+    	$.getJSON("http://"+location.host+"/ContentRepository/pcr?filter=object.obj_type==90021%20AND%20object.key==\""+selection+"\"&attributes=description&type=json", // load list of objects
+			function(data){
+				var options="";
+				$.each(data.Objects,function(i, item){
+				    options+=""+item.attributes.description+"<br/>";
+		        }); //close each
+		        $("#nav p").html("");
+		        $("#desc p").html(options);
+		        
+		     
+        }); //close $.getJSON(
+        $.getJSON("http://"+location.host+"/ContentRepository/nav?contentid=10002.4&permissions="+selection+"&attributes=name&type=json", // load list of objects
+			function(data){
+			if(data.Objects)
+			{
+				var navi = "";
+				navi+=process_children(data.Objects);
+				$("#nav p").html(navi);
+		    }   
+		     
+        }); //close $.getJSON(
+    });
+}); //close $(
+</script>
+<div id='update-target'><a href="#">Click here to load data</a>
+</div>
+<table border="0">
+<tr><td width="300"><select name="permission" id="permission">
+</select></td><td width="500"><div id="desc"><p>&nbsp;</p></div></td></tr>
+<tr><div id="cont"><p></p></div><td><div id="nav"><p></p></div></td><td></td></tr>
+</table>
+</body>
+</html>
