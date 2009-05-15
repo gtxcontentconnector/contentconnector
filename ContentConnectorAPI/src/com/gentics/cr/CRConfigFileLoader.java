@@ -12,6 +12,10 @@ import org.apache.jcs.engine.control.CompositeCacheManager;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.util.CRUtil;
+/**
+ * @author Christopher
+ *
+ */
 public class CRConfigFileLoader extends CRConfigUtil {
 
 	private Logger log;

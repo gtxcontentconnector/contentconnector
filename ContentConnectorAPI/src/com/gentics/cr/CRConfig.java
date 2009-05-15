@@ -7,6 +7,10 @@ import com.gentics.api.lib.datasource.WriteableDatasource;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
 
+/**
+ * @author Christopher
+ *
+ */
 public interface CRConfig {
 
 	/**
