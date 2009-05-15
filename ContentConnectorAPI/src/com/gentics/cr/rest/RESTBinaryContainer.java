@@ -151,6 +151,7 @@ public class RESTBinaryContainer{
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			CRException crex = new CRException(e);
 			this.respondWithError(stream,crex,myReqBuilder.isDebug());
 		}

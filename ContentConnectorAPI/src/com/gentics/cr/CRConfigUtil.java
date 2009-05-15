@@ -137,6 +137,11 @@ public class CRConfigUtil implements CRConfig {
 				{
 					requestProcessorConfig.ds = PortalConnectorFactory.createWriteableDatasource(requestProcessorConfig.handle_props,requestProcessorConfig.dsprops);
 					this.log.debug("Created Datasource for RequestProcessor"+i);
+					if(requestProcessorConfig.ds!=null)
+					{
+						//Init PathResolver for RP-Config
+						requestProcessorConfig.pathResolver = new PathResolver(this.ds, this.applicationRule);
+					}
 				}
 				else {
 
