@@ -26,7 +26,7 @@
 				<exclude name="**/testing/**"/>
 			</fileset>
 		</copy>
-		<javac srcdir="${out}/tmpscr/" destdir="${out}/bin" debug="true" debuglevel="lines, vars, and source">
+		<javac srcdir="${out}/tmpscr/" destdir="${out}/bin" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<fileset dir="${sharedlibs}" />
 				<fileset dir="${webappdir}/lib" />
