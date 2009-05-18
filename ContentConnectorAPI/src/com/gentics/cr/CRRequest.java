@@ -54,6 +54,7 @@ public class CRRequest implements Cloneable{
 	 * @param countString - Count of elements from start element
 	 * @param sortArray - sorting array e.g. String[]{"contentid:asc","name:desc"}
 	 * @param attributeArray - Attributes to fetch
+	 * @param plinkAttributeArray 
 	 * @param childFilter - Rule to fetch the child elements (Navigation)
 	 */
 	public CRRequest(String requestFilter, String startString, String countString, String[] sortArray, String[] attributeArray, String[] plinkAttributeArray, String childFilter) {
@@ -217,6 +218,7 @@ public class CRRequest implements Cloneable{
 	/**
 	 * Gets an array of attribute names that are to be prefilled for the requested objects. Defaults to String[] { "contentid" }
 	 * @param attributeArray
+	 * @return 
 	 */
 	public String[] getAttributeArray() {
 		String[] attributeArray = (String[])this.get("attributeArray");
@@ -333,7 +335,10 @@ public class CRRequest implements Cloneable{
 	
 	/**
 	 * Get a prepared and checked instance of DatasourceFilter. The filter is checked for sanity before it is merged with the application rule defined in the given CRConfig.
+	 * @param config 
 	 * @return DatasourceFilter
+	 * @throws ParserException 
+	 * @throws ExpressionParserException 
 	 */
 	public DatasourceFilter getPreparedFilter(CRConfig config) throws ParserException, ExpressionParserException
 	{

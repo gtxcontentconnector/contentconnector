@@ -100,8 +100,8 @@ public class CRResolvableBean implements Serializable, Resolvable{
 
 	/**
 	 * make a CRResolvableBean out of a Resolvable
-	 * @param resolvable: The Resolvable to be converted to a CRResolveableBean
-	 * @param attributeNames: The attributenames as an array of strings that should be fetched from the Resolveable
+	 * @param resolvable The Resolvable to be converted to a CRResolveableBean
+	 * @param attributeNames The attributenames as an array of strings that should be fetched from the Resolveable
 	 */
 	public CRResolvableBean(Resolvable resolvable, String[] attributeNames) {
 		init(resolvable, attributeNames);
@@ -180,7 +180,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	
 	/**
 	 * Sets the contentid of the CRResolvableBean
-	 * @param contentid
+	 * @param id - contentid
 	 */
 	public void setContentid(String id)
 	{
@@ -341,7 +341,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 
 	/**
 	 * Gets the value of the requested attribute
-	 * @param requested attribute name
+	 * @param attribute requested attribute name
 	 * @return value of attribute
 	 */
 	public Object get(String attribute) {
@@ -404,7 +404,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	
 	/**
 	 * Gets the value of the requested attribute
-	 * @param requested attribute name
+	 * @param arg0 requested attribute name
 	 * @return value of attribute
 	 */
 	public Object getProperty(String arg0) {

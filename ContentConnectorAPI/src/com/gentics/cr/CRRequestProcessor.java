@@ -39,6 +39,7 @@ public class CRRequestProcessor extends RequestProcessor{
 	 * @param request CRRequest
 	 * @param doNavigation defines if to fetch child elements
 	 * @return resulting objects
+	 * @throws CRException 
 	 */
 	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException
 	{

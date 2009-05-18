@@ -63,7 +63,7 @@ public class CRException extends Exception implements Serializable{
 	
 	/**
 	 * Set the error message
-	 * @param message
+	 * @param newmessage 
 	 */
 	public void setMessage(String newmessage)
 	{
@@ -72,7 +72,7 @@ public class CRException extends Exception implements Serializable{
 	
 	/**
 	 * Set the error type as string
-	 * @param message
+	 * @param newType 
 	 */
 	public void setType(String newType)
 	{
@@ -155,7 +155,7 @@ public class CRException extends Exception implements Serializable{
     
     /**
      * sets the stacktrace as string that is returned by getStringStackTrace()
-     * @param stringstacktrace
+     * @param str
      */
     public void setStringStackTrace(String str)
     {
@@ -172,7 +172,22 @@ public class CRException extends Exception implements Serializable{
     }
     
     
+    /**
+     * Enum
+     *
+     */
     public enum ERRORTYPE{
-		NO_DATA_FOUND,GENERAL_ERROR, FATAL_ERROR
+		/**
+		 * Field when no data has been found.
+		 */
+		NO_DATA_FOUND,
+		/**
+		 * Field when a general Error occurred.
+		 */
+		GENERAL_ERROR, 
+		/**
+		 * Field when a fatal Error occurred.
+		 */
+		FATAL_ERROR
 	}
 }

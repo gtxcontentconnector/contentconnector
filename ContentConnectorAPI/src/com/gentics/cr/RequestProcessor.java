@@ -149,13 +149,8 @@ public abstract class RequestProcessor {
 
 	/**
 	 * Returns a object bean for binary output from a url
-	 * 
-	 * @param url
-	 * @param attribute
-	 * @param mimetypeAttribute
-	 * @param doReplacePlinks
-	 * @param doVelocity
-	 * @return
+	 * @param request 
+	 * @return 
 	 * @throws CRException 
 	 */
 	public CRResolvableBean getContentByUrl(CRRequest request) throws CRException {
@@ -178,13 +173,9 @@ public abstract class RequestProcessor {
 	
 	/**
 	 * Returns a object bean for binary output from a contentid
-	 * 
-	 * @param contentid
-	 * @param attribute
-	 * @param mimetypeAttribute
-	 * @param doReplacePlinks
-	 * @param doVelocity
+	 * @param request 
 	 * @return
+	 * @throws CRException 
 	 */
 	public CRResolvableBean getContent(CRRequest request) throws CRException {
 
@@ -195,14 +186,6 @@ public abstract class RequestProcessor {
 	}
 	
 	
-	
-	private CRResolvableBean getRendered(Resolvable reso, CRRequest request) throws CRException
-	{
-		//TODO Implement method
-		
-		return null;
-	}
-
 		
 	/**
 	 * Returns a object bean for binary output from a resolvable

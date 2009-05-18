@@ -29,7 +29,7 @@ public class XMLRequestProcessor extends RequestProcessor{
 	
 	/**
 	 * Create new instance of XMLRequestProcessor
-	 * @param config: CRConfig with the following attributes:
+	 * @param config CRConfig with the following attributes:
 	 * 		- xmlUrl: URL where i can load the XML file, u can use a place holder #query# for search queries. The place holder is replaced in getObjects method.
 	 *		- xsltUrl: URL where i can load the XSLT file from. The xslt file is used to parse the xmlsource in a compatible format for CreateResolveablesAction. See http://www.gentics.com/help/topic/com.gentics.portalnode.sdk.doc/misc/doc/reference/xhtml/ref-implementation-plugins.html#reference.implementation.plugins.viewplugin.pluggableactions.createresolvablesaction for details.
 	 * 		- contentidRegex: Regular expression to filter out contentids from resolvables contentid attribute which is an url in most cases. The attribute contentid ist replaced by the first selector in the regex. If you want the whole attribute just use '(.*)'.
@@ -48,10 +48,10 @@ public class XMLRequestProcessor extends RequestProcessor{
 
 	/**
 	 * get resolvables from given XmlUrl
-	 * @param request: CRRequest with the following attributes set
+	 * @param request CRRequest with the following attributes set
 	 * 		-  requestFilter: the variable #query# is replaced in the XmlUrl by requestFilter
-	 * @param doNavigation: only for compatibility has no functional impact. The XMLRequestProcessor is used to parse search results. They cannot be used as Navigation only as List
-	 * @throws CRException: in case no filter is given a CRException is thrown.
+	 * @param doNavigation only for compatibility has no functional impact. The XMLRequestProcessor is used to parse search results. They cannot be used as Navigation only as List
+	 * @throws CRException in case no filter is given a CRException is thrown.
 	 * @return Collection of CRResolvableBeans parsed from the xmlsource
 	 */
 	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException
@@ -84,7 +84,7 @@ public class XMLRequestProcessor extends RequestProcessor{
 	
 	/**
 	 * get resovleables from given xml code
-	 * @param xmlCode: must be compatible with: http://www.gentics.com/help/topic/com.gentics.portalnode.sdk.doc/misc/doc/reference/xhtml/ref-implementation-plugins.html#reference.implementation.plugins.viewplugin.pluggableactions.createresolvablesaction
+	 * @param xmlCode must be compatible with: http://www.gentics.com/help/topic/com.gentics.portalnode.sdk.doc/misc/doc/reference/xhtml/ref-implementation-plugins.html#reference.implementation.plugins.viewplugin.pluggableactions.createresolvablesaction
 	 * @return collection of resolvables
 	 */
 	private Collection<Resolvable> getResolveables(String xmlCode){
@@ -96,8 +96,8 @@ public class XMLRequestProcessor extends RequestProcessor{
 	
 	/**
 	 * transform xml code with given xslt code
-	 * @param xmlCode: xml code to transform
-	 * @param xsltCode: xslt code to use 
+	 * @param xmlCode xml code to transform
+	 * @param xsltCode xslt code to use 
 	 * @return transformed xml code
 	 */
 	private String parseXslt(String xmlCode, String xsltCode){
@@ -110,7 +110,7 @@ public class XMLRequestProcessor extends RequestProcessor{
 	
 	/**
 	 * Remove not unicode compatible characters from XML to prevent XML parsers from errors. This method is useful if you use webservices that give you xml and don't understand xml. This webservices often use templates to generate xml and not a xml generator.
-	 * @param xmlCode: XML code should be cleaned up
+	 * @param xmlCode XML code should be cleaned up
 	 * @return clean XML code  
 	 */
 	private String getCleanUnicodeXML(String xmlCode){
@@ -119,7 +119,7 @@ public class XMLRequestProcessor extends RequestProcessor{
 	}
 	/**
 	 * Fetch code from given URL. Use JCSCache to cache results of URL
-	 * @param url: URL to load code from.
+	 * @param url URL to load code from.
 	 * @return string with code of URL, null in case we got an error (timeout)
 	 */
 	private String getCode(String url){
