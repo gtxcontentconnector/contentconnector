@@ -42,7 +42,13 @@ import com.gentics.cr.util.CRUtil;
  *
  */
 public class CRIndexer {
+	/**
+	 * Key to be used for saving state to contentstatus
+	 */
 	public final static String PARAM_LASTINDEXRUN = "lastindexrun";
+	/**
+	 * Key to be used for saving state to contentstatus
+	 */
 	public final static String PARAM_LASTINDEXRULE = "lastindexrule";
 
 	protected HashMap<String,IndexerCRConfig> crConfigs = new HashMap<String,IndexerCRConfig>();
@@ -66,6 +72,10 @@ public class CRIndexer {
 	protected boolean periodicalRun=false;
 	
 	
+	/**
+	 * Create new instance of CRIndexer
+	 * @param name name of the CRIndexer
+	 */
 	public CRIndexer(String name)
 	{
 		this.name = name;
@@ -75,11 +85,18 @@ public class CRIndexer {
 		//initializes background job
 	}
 	
+	/**
+	 * @return true if the background index job has been started
+	 */
 	public boolean isStarted()
 	{
 		return(this.indexerJob.isStarted());
 	}
 	
+	
+	/**
+	 * starts the background index job
+	 */
 	public void startJob()
 	{
 		this.periodicalRun=true;
@@ -93,24 +110,39 @@ public class CRIndexer {
 		}
 	}
 	
+	
+	/**
+	 * @return IndexerStatus of current Indexer
+	 */
 	public IndexerStatus getStatus()
 	{
 		return(this.status);
 	}
 	
+	/**
+	 * 
+	 * @return indexing interval 
+	 */
 	public int getInterval()
 	{
 		return(this.interval);
 	}
 	
+	/**
+	 * stops the background indexing job
+	 */
 	public void stopJob()
 	{
 		this.periodicalRun=false;
 		this.indexerJob.stop=true;
 	}
 	
+	/**
+	 * starts a single indexing run
+	 */
 	public void startSingleRun()
 	{
+		//TODO check if periodical backgroundjob is started and only execute if not
 		this.indexerJob.runSingle();
 	}
 	
@@ -218,13 +250,24 @@ public class CRIndexer {
 	
 	protected class BackgroundJob implements Runnable{
 
+		/**
+		 * set to true if the backgroundjob has to stop
+		 */
 		public boolean stop = false;
 		
+		/**
+		 * Create new instace of Backgroundjob
+		 * @param startPeriodicalRun true if the Backgroundjob should be periodical
+		 */
 		public BackgroundJob(boolean startPeriodicalRun)
 		{
 			this.stop = !startPeriodicalRun;
 		}
 		
+		/**
+		 * 
+		 * @return true if the backgroundjob has been started
+		 */
 		public boolean isStarted()
 		{
 			return(!this.stop);
@@ -561,10 +604,18 @@ public class CRIndexer {
 		}
 	}
 
+	/**
+	 * 
+	 * @return true if running periodical indexing jobs
+	 */
 	public boolean isPeriodicalRun() {
 		return periodicalRun;
 	}
 
+	/**
+	 * 
+	 * @param periodicalRun true when to run periodical indexing jobs
+	 */
 	public void setPeriodicalRun(boolean periodicalRun) {
 		this.periodicalRun = periodicalRun;
 	}
