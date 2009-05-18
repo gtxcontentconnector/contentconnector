@@ -2,6 +2,13 @@ package com.gentics.cr;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRError implements Serializable {
 	
 	
