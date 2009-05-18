@@ -22,6 +22,13 @@ import com.gentics.cr.plink.PlinkProcessor;
 import com.gentics.cr.plink.PlinkReplacer;
 import com.gentics.cr.template.ITemplateManager;
 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public abstract class RequestProcessor {
 
 	protected HashMap<String, Resolvable> resolvables = null;

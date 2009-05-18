@@ -3,7 +3,10 @@ package com.gentics.cr.util.response;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author Christopher
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class ServletResponseTypeSetter implements IResponseTypeSetter{

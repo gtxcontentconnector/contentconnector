@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.gentics.cr.util;
 
 import java.util.Arrays;
@@ -8,7 +5,10 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @author Christopher
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class WrapperUtil {

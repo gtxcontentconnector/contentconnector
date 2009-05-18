@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.gentics.cr.template;
 
 import java.util.HashMap;
@@ -13,7 +10,10 @@ import com.gentics.api.portalnode.templateengine.TemplateProcessor;
 import com.gentics.cr.CRException;
 
 /**
- * @author Christopher
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class PortalNodeTemplateManager implements ITemplateManager {

@@ -12,6 +12,13 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.util.CRUtil;
 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRRequest implements Cloneable{
 
 		

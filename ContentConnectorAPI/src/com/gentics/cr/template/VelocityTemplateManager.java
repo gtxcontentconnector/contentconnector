@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.gentics.cr.template;
 
 import java.io.StringWriter;
@@ -20,7 +17,10 @@ import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRException;
 
 /**
- * @author Christopher
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class VelocityTemplateManager implements ITemplateManager {

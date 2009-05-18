@@ -19,11 +19,14 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.template.ITemplateManager;
 
 /**
- * @author haymo
- * 
  * CRPlinkProcessor should be initialized once and passed to CRPlinkReplacer on
  * initalization. The Processor expects a plinkTemplate in the CRConfig.
  * 
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public class PlinkProcessor {
 

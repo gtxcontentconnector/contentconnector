@@ -1,7 +1,13 @@
 package com.gentics.cr.lucene.indexer;
 
 import java.util.Date;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class IndexerStatus {
 	
 	private boolean running=false;

@@ -5,14 +5,11 @@ import java.lang.reflect.Method;
 
 import com.gentics.api.lib.resolving.Resolvable;
 
-/*
- * @author norbert
- * @date 14.08.2008
- * @version $Id: $
- */
-
 /**
- * @author norbert
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public abstract class ResolvableWrapper implements Resolvable {

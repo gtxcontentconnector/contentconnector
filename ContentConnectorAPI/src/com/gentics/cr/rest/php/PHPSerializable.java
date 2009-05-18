@@ -8,8 +8,11 @@ package com.gentics.cr.rest.php;
  */
 
 /**
- * Interface for "PHP serializable objects"
- * @author Ludovic
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public interface PHPSerializable{
     

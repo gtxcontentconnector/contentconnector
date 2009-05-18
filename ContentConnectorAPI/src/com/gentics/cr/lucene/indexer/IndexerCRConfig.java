@@ -9,7 +9,13 @@ import java.util.Map;
 
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.contentnode.datasource.CNWriteableDatasource;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class IndexerCRConfig {
 
 	public IndexerCRConfig(String name)

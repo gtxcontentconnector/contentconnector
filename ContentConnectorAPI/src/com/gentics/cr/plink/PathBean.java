@@ -3,11 +3,15 @@ package com.gentics.cr.plink;
 import com.gentics.api.lib.resolving.ResolvableBean;
 
 /**
- * @author haymo
  * 
  * PathBean is needed in PathResolvers Expression to resolve Path and Filename
  * of an url. The constructor splits the passed URL on the last /.
+ *
  * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public class PathBean extends ResolvableBean {
 

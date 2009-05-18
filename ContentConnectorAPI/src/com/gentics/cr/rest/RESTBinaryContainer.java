@@ -21,7 +21,13 @@ import com.gentics.cr.CRRequestProcessor;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class RESTBinaryContainer{
 
 	public CRRequestProcessor rp;

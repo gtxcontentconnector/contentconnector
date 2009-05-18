@@ -20,6 +20,12 @@ import java.util.Map;
  * PHP data serializer and unserializer
  * @author Ludovic Martin <ludovic.martin@laposte.net>
  * @author Haymo Meran <h.meran@gentics.com>
+ *
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public class PHPSerializer{
     

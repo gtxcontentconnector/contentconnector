@@ -19,7 +19,12 @@ import com.gentics.cr.util.filter.Filter;
 
 /**
  * A common interface for content repositories.
- * @author haymo
+ * 
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  *
  */
 public abstract class ContentRepository implements Serializable {

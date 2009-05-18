@@ -16,8 +16,10 @@ import com.gentics.api.lib.resolving.Resolvable;
  * a resolvable and a list of attributes and stores these for further usage as
  * serializable bean
  * 
- * @author haymo
- * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public class CRResolvableBean implements Serializable, Resolvable{
 

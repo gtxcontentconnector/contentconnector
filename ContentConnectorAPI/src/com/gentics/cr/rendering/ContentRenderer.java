@@ -15,7 +15,11 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.template.ITemplateManager;
 
 /**
- * Class for rendering content.
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public class ContentRenderer implements IContentRenderer{
 	/**

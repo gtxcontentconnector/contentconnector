@@ -26,12 +26,12 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * A Reader that wraps another reader and attempts to strip out HTML constructs.
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
- *
- * @version $Id: HTMLStripReader.java 646799 2008-04-10 13:36:23Z yonik $
  */
-
 public class HTMLStripReader extends Reader {
   private final Reader in;
   private int readAheadLimit = DEFAULT_READ_AHEAD;

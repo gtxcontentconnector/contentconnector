@@ -7,7 +7,13 @@ import java.util.regex.Pattern;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRUtil {
 	
 	/**

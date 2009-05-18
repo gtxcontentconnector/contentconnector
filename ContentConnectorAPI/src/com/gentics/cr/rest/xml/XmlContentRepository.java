@@ -27,10 +27,11 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.rest.ContentRepository;
 
 /**
- * @author haymo
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
- * Implementaion of XML representation for a REST contentrepositroy.
- *  
  */
 public class XmlContentRepository extends ContentRepository {
 

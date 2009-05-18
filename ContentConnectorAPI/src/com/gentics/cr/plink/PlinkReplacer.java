@@ -5,11 +5,14 @@ import com.gentics.api.portalnode.connector.PLinkReplacer;
 import com.gentics.cr.CRRequest;
 
 /**
- * @author haymo
- *
  *  Helper Class to be passed to PortalConnectorHelper.replacePLinks.
  *  PlinkProcessor passed to constructor does the real work.
+ *
  * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public class PlinkReplacer implements PLinkReplacer {
 

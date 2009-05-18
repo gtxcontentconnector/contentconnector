@@ -17,6 +17,13 @@ import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.template.VelocityTemplateManager;
 import com.gentics.cr.util.CRUtil;
 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRConfigUtil implements CRConfig {
 
 	private Logger log;
@@ -192,16 +199,22 @@ public class CRConfigUtil implements CRConfig {
 	}
 	
 	/**
+	 * @return 
 	 *	
 	 */
 	public String getBinaryType()
 	{
 		return(this.binaryType);
 	}
+	/**
+	 * @param type
+	 */
 	public void setBinaryType(String type)
 	{
 		this.binaryType=type;
 	}
+	
+	
 	public String getFolderType()
 	{
 		return(this.folderType);

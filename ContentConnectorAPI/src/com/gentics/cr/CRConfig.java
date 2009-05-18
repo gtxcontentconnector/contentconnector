@@ -8,7 +8,10 @@ import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
 
 /**
- * @author Christopher
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public interface CRConfig {

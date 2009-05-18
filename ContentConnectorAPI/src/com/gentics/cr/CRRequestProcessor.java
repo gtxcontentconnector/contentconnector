@@ -11,6 +11,13 @@ import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Resolvable;
 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRRequestProcessor extends RequestProcessor{
 
 	private HashMap<String, Resolvable> resolvables = null;

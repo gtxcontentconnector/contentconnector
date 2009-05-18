@@ -1,7 +1,10 @@
 package com.gentics.cr.util.response;
 
 /**
- * @author Christopher
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public interface IResponseTypeSetter {

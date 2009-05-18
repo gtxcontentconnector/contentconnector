@@ -1,5 +1,11 @@
 package com.gentics.cr.util;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public enum RepositoryType {
 
 	

@@ -3,7 +3,13 @@ package com.gentics.cr.util;
 import javax.servlet.http.HttpServletRequest;
 
 import com.gentics.cr.CRRequest;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRNavigationRequestBuilder extends CRRequestBuilder {
 
 	protected String childfilter;

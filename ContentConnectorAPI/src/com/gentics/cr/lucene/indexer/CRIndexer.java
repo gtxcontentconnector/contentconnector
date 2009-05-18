@@ -34,7 +34,13 @@ import com.gentics.contentnode.content.GenticsContentFactory;
 import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.util.CRUtil;
 
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRIndexer {
 	public final static String PARAM_LASTINDEXRUN = "lastindexrun";
 	public final static String PARAM_LASTINDEXRULE = "lastindexrule";

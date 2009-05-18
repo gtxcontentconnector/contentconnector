@@ -16,7 +16,13 @@ import com.gentics.cr.CRRequestProcessor;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class RESTNavigationContainer{
 
 	public CRRequestProcessor rp;

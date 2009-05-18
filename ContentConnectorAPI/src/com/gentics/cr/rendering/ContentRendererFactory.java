@@ -3,7 +3,13 @@ package com.gentics.cr.rendering;
 import com.gentics.cr.CRConfig;
 
 
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class ContentRendererFactory {
 	
 	

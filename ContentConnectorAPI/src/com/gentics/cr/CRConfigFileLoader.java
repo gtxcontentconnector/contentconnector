@@ -13,7 +13,10 @@ import org.apache.log4j.Logger;
 
 import com.gentics.cr.util.CRUtil;
 /**
- * @author Christopher
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class CRConfigFileLoader extends CRConfigUtil {

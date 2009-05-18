@@ -18,10 +18,13 @@ import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.CRRequest;
 
 /**
- * @author haymo
- * 
  * This class is used to resolve URLs to objects an vice versa.
+ *
  * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
 public class PathResolver {
 

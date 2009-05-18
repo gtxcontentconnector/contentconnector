@@ -4,7 +4,13 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import com.gentics.cr.CRRequest;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRBinaryRequestBuilder extends CRRequestBuilder {
 
 	protected boolean doreplacePlinks=true;

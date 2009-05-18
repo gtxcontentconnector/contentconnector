@@ -1,10 +1,3 @@
-/**
- * XMLRequestProcessor fetches objects from a XML file that is loaded from a configured ULR and transformed by a given XSLT sheet.
- * @author: GTX Andreas Perhab
- */
-
-
-
 package com.gentics.cr;
 
 import java.util.ArrayList;
@@ -21,6 +14,13 @@ import com.gentics.api.portalnode.action.PluggableActionResponse;
 import com.gentics.cr.util.PluggableActionCaller;
 import com.gentics.lib.base.MapResolver;
 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class XMLRequestProcessor extends RequestProcessor{
 
 	private Logger log;

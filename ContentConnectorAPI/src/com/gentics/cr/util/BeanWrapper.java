@@ -1,16 +1,9 @@
 package com.gentics.cr.util;
-
-
-
-
-/*
- * @author norbert
- * @date 14.08.2008
- * @version $Id: $
- */
-
 /**
- * @author norbert
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class BeanWrapper extends ResolvableWrapper {

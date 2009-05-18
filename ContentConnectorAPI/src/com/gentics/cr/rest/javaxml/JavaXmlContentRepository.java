@@ -15,9 +15,13 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.rest.ContentRepository;
 
 /**
- * @author Christopher
  *
  * Implementaion of XML representation for a REST contentrepositroy.
+ *
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *  
  */
 public class JavaXmlContentRepository extends ContentRepository {

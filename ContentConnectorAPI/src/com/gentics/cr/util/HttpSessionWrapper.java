@@ -1,7 +1,13 @@
 package com.gentics.cr.util;
 
 import javax.servlet.http.HttpSession;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class HttpSessionWrapper extends ResolvableWrapper {
 	private HttpSession session;
 	

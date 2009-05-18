@@ -9,7 +9,13 @@ import com.gentics.api.portalnode.action.PluggableActionInvoker;
 import com.gentics.api.portalnode.action.PluggableActionRequest;
 import com.gentics.api.portalnode.action.PluggableActionResponse;
 
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class PluggableActionCaller{
 
 	/**

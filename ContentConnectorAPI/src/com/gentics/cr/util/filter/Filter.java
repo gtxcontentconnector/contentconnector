@@ -4,7 +4,13 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import com.gentics.api.lib.resolving.Resolvable;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public interface Filter<T extends Resolvable> {
 
 	/**

@@ -11,12 +11,16 @@ import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.rest.ContentRepository;
 
-/**
- * @author haymo
- * 
+/** 
  * Implementaion of Json rappresentation for a REST contentrepositroy.
+ *
  * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
  */
+ 
 public class PHPContentRepository extends ContentRepository {
 
 	private static final long serialVersionUID = 0005L;

@@ -1,3 +1,12 @@
+<!-- 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
+-->
 <project name="RequestProcessorAPI" default="package" basedir=".">
 	
 	<property name="sharedlibs" value="${tomcat.sharedlibs}" />

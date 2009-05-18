@@ -4,6 +4,13 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRException extends Exception implements Serializable{
 
 	

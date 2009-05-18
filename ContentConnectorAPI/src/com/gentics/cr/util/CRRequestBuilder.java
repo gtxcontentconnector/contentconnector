@@ -14,7 +14,13 @@ import com.gentics.cr.rest.php.PHPContentRepository;
 import com.gentics.cr.rest.rss.RomeContentRepository;
 import com.gentics.cr.rest.xml.MnogosearchXmlContentRepository;
 import com.gentics.cr.rest.xml.XmlContentRepository;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRRequestBuilder {
 
 	protected RepositoryType repotype;

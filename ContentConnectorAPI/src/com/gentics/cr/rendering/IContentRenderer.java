@@ -8,7 +8,13 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PLinkReplacer;
 import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public interface IContentRenderer {
 	
 	/**

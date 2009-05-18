@@ -20,7 +20,13 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.util.CRUtil;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class LuceneRequestProcessor extends RequestProcessor {
 
 	private Logger log = Logger.getLogger(LuceneRequestProcessor.class);

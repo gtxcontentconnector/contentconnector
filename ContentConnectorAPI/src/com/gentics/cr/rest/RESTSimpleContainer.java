@@ -16,7 +16,13 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class RESTSimpleContainer{
 
 	public RequestProcessor rp;

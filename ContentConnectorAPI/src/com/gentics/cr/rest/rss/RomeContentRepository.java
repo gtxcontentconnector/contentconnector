@@ -16,7 +16,13 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class RomeContentRepository extends ContentRepository {
 	
 	private static final String[] POSSIBLE_FEED_TYPES = {"rss_0.9", "rss_0.91", "rss_0.92", "rss_0.93",

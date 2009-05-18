@@ -15,7 +15,13 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-
+/**
+ * 
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
+ *
+ */
 public class CRSearcher {
 	
 	protected Logger log = Logger.getLogger("com.gentics.cr.lucene.search");
