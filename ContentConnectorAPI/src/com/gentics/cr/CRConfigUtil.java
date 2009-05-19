@@ -140,8 +140,9 @@ public class CRConfigUtil implements CRConfig {
 		else{
 			for(int i = 1; i <= getRequestProcessorSize(); i++){
 				CRConfigUtil requestProcessorConfig = getRequestProcessorConfig(i);
-				if(requestProcessorConfig.handle_props!= null && requestProcessorConfig.dsprops!=null)
+				if(requestProcessorConfig.handle_props!= null && requestProcessorConfig.handle_props.size()!=0 && requestProcessorConfig.dsprops!=null)
 				{
+					log.debug("init Datasource for RequestProcessor"+i);
 					requestProcessorConfig.ds = PortalConnectorFactory.createWriteableDatasource(requestProcessorConfig.handle_props,requestProcessorConfig.dsprops);
 					this.log.debug("Created Datasource for RequestProcessor"+i);
 					if(requestProcessorConfig.ds!=null)
