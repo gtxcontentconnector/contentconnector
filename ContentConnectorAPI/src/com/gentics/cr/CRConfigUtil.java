@@ -152,7 +152,7 @@ public class CRConfigUtil implements CRConfig {
 				}
 				else {
 
-					this.log.debug("No Datasource loaded for RequestProcessor"+1+" in "+ this.getName());
+					this.log.debug("No Datasource loaded for RequestProcessor"+i+" in "+ this.getName());
 
 				}
 			}
