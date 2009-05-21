@@ -1,0 +1,7 @@
+<portlet-app>
+   <portlet>
+      <portlet-name>CCJBossContentPortlet</portlet-name>
+      <security>
+      </security>
+   </portlet>
+</portlet-app>
