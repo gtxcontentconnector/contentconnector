@@ -7,7 +7,7 @@ import com.gentics.cr.CRConfigFileLoader;
 public class CCPortletConfig extends CRConfigFileLoader {
 
 	public CCPortletConfig(PortletConfig config) {
-		super(config.getPortletName(), "");
+		super(config.getPortletName(), config.getPortletContext().getRealPath(""));
 		
 	}
 
