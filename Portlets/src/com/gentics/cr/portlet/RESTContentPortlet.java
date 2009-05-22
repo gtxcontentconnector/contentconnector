@@ -34,6 +34,9 @@ public class RESTContentPortlet extends GenericPortlet {
 	public final static String EVENT_NAME = "GENTICS_REST_CONTENT";
 	public final static String CONTENTID_NAME = "RESTWindowContentID";
 	
+	/**
+	 * 
+	 */
 	public void init()
 	{
 		this.log = Logger.getLogger("com.gentics.cr");
