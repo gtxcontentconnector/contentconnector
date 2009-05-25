@@ -57,7 +57,9 @@ public class RESTSimpleContainer{
 		try {
 			cr = myReqBuilder.getContentRepository(this.response_encoding);
 			this.contenttype = cr.getContentType();
-			responsetypesetter.setContentType(this.getContentType());
+			if (responsetypesetter != null) {
+				responsetypesetter.setContentType(this.getContentType());
+			}
 			CRRequest req = myReqBuilder.getCRRequest();
 			//DEPLOY OBJECTS TO REQUEST
 			for (Iterator<Map.Entry<String, Resolvable>> i = wrappedObjectsToDeploy.entrySet().iterator() ; i.hasNext() ; ) {

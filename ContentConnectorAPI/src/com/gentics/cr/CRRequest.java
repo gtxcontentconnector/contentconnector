@@ -1,5 +1,6 @@
 package com.gentics.cr;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -19,9 +20,10 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author$
  *
  */
-public class CRRequest implements Cloneable{
+public class CRRequest implements Cloneable, Serializable {
+	private static final long serialVersionUID = 1L;
 
-		
+
 	private HashMap<String,Resolvable> objectsToDeploy = new HashMap<String,Resolvable>();
 	
 	
@@ -523,6 +525,22 @@ public class CRRequest implements Cloneable{
 	public Object get(String key)
 	{
 		return(this.params.get(key));
+	}
+	
+	@Override
+	public int hashCode() {
+		// shamelessly copied from List#hashCode()
+		return 31*this.params.hashCode() + this.objectsToDeploy.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof CRRequest)) {
+			return false;
+		}
+		CRRequest req = (CRRequest) obj;
+		return this.params.equals(req.params)
+				&& this.objectsToDeploy.equals(req.objectsToDeploy);
 	}
 	
 }
