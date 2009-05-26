@@ -24,7 +24,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class CRSearcher {
 	
-	protected Logger log = Logger.getLogger("com.gentics.cr.lucene.search");
+	protected static Logger log = Logger.getLogger(CRSearcher.class);
 	protected String indexPath;
 	
 	/**

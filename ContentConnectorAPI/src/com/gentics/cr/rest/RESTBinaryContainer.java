@@ -33,7 +33,7 @@ public class RESTBinaryContainer{
 	public CRRequestProcessor rp;
 	public String response_encoding;
 	private String contenttype="";
-	private Logger log;
+	private static Logger log = Logger.getLogger(RESTBinaryContainer.class);
 	CRConfigUtil crConf;
 	
 	public String getContentType()
@@ -43,14 +43,13 @@ public class RESTBinaryContainer{
 	
 	public RESTBinaryContainer(CRConfigUtil crConf)
 	{
-		this.log = Logger.getLogger(this.getClass().getName());
 		this.response_encoding = crConf.getEncoding();
 		this.crConf = crConf;
 		try {
 			this.rp = new CRRequestProcessor(crConf.getRequestProcessorConfig("1"));
 		} catch (CRException e) {
 			CRException ex = new CRException(e);
-			this.log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "+ex.getStringStackTrace());
+			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "+ex.getStringStackTrace());
 		}
 	}
 	
@@ -115,11 +114,11 @@ public class RESTBinaryContainer{
 					if(crBean.getObj_type().equals(crConf.getPageType()))
 					{
 						this.contenttype="text/html; charset="+this.response_encoding;
-						this.log.info("Responding with mimetype: text/html");
+						log.info("Responding with mimetype: text/html");
 					}
 					else
 					{
-						this.log.info("Mimetype has not been set, using standard instead.");
+						log.info("Mimetype has not been set, using standard instead.");
 					}
 				}
 				else
@@ -127,13 +126,13 @@ public class RESTBinaryContainer{
 					
 					this.contenttype=crBean.getMimetype()+"; charset="+this.response_encoding;
 					
-					this.log.info("Responding with mimetype: "+crBean.getMimetype());
+					log.info("Responding with mimetype: "+crBean.getMimetype());
 				}
 				
 				responsetypesetter.setContentType(this.getContentType());
 				// output data.
 				if (crBean.isBinary()) {
-					this.log.debug("Size of content: "+crBean.getBinaryContent().length);
+					log.debug("Size of content: "+crBean.getBinaryContent().length);
 					stream.write(crBean.getBinaryContent());
 					
 				} else {
@@ -157,7 +156,7 @@ public class RESTBinaryContainer{
 		}
 		catch(Exception e)
 		{
-			this.log.error("Error while processing service (RESTBinaryContainer)",e);
+			log.error("Error while processing service (RESTBinaryContainer)",e);
 			CRException crex = new CRException(e);
 			this.respondWithError(stream,crex,myReqBuilder.isDebug());
 		}

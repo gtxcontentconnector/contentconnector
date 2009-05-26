@@ -21,7 +21,7 @@ import com.gentics.cr.util.CRUtil;
  */
 public class CRConfigFileLoader extends CRConfigUtil {
 
-	private Logger log;
+	private static Logger log = Logger.getLogger(CRConfigFileLoader.class);
 	private String instancename;
 	private String webapproot;
 	protected Properties dsprops = new Properties();
@@ -39,7 +39,6 @@ public class CRConfigFileLoader extends CRConfigUtil {
 		super();
 		this.instancename = name;
 		this.webapproot = webapproot;
-		this.log = Logger.getLogger(this.getClass().getName());
 		Properties props = new Properties();
 		
 		try {
@@ -49,11 +48,11 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
 			cManager.configure(cache_props);
 		} catch(NullPointerException e){
-			this.log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
+			log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
 		} catch (FileNotFoundException e) {
-			this.log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
+			log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
 		} catch (IOException e) {
-			this.log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
+			log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
 		}
 		
 		try {
@@ -73,11 +72,11 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			}
 			
 		} catch (FileNotFoundException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!");
 		} catch (IOException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!");
 		}catch(NullPointerException e){
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!\r\n");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!\r\n");
 			e.printStackTrace();
 		}
 		
@@ -98,7 +97,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			String newvalue = CRUtil.resolveSystemProperties((String)value);
 			String key = name.toString();
 						
-			this.log.debug("Checking property '" + key + "': "+newvalue);
+			log.debug("Checking property '" + key + "': "+newvalue);
 			
 			//FILTER INIT PROPERTIES
 			if(key.toUpperCase().startsWith("CACHE"))
@@ -112,12 +111,12 @@ public class CRConfigFileLoader extends CRConfigUtil {
 				String url = newvalue;
 				url = url.replaceAll("\\$\\{webapproot\\}", this.webapproot.replace('\\', '/'));
 				this.handle_props.put("url", url);
-				this.log.debug("Resolved property '" + key + "' to " + url);
+				log.debug("Resolved property '" + key + "' to " + url);
 
 			}else if(!setProperty(key,newvalue)){
 				// all oter properties may be Datasource Properties and therefore are passed through handle_props
 				this.handle_props.put(key, newvalue);
-				this.log.debug("Property '" + key + "' passed to Datasource as '"+newvalue+"'.");
+				log.debug("Property '" + key + "' passed to Datasource as '"+newvalue+"'.");
 			}
 		}	
 	}

@@ -26,7 +26,7 @@ import com.gentics.cr.util.CRUtil;
  */
 public class CRConfigUtil implements CRConfig {
 
-	private Logger log;
+	private static Logger log = Logger.getLogger(CRConfigUtil.class);
 
 	private Properties props = new Properties();
 
@@ -91,14 +91,12 @@ public class CRConfigUtil implements CRConfig {
 			logprops.load(new FileInputStream(confpath));
 			PropertyConfigurator.configure(logprops);
 		} catch (IOException e) {
-			Logger.getRootLogger().error("Could not find nodelog.properties.");
+			log.error("Could not find nodelog.properties.");
 			//e.printStackTrace();
 		}catch (NullPointerException e) {
-			Logger.getRootLogger().error("Could not find nodelog.properties.");
+			log.error("Could not find nodelog.properties.");
 			//e.printStackTrace();
 		}
-		this.log = Logger.getLogger(this.getClass().getName());
-		this.log.debug("Initialized logger...");
 	}
 	
 	/**
@@ -126,7 +124,7 @@ public class CRConfigUtil implements CRConfig {
 	public void initDS(Properties hp, Properties dp) {
 		
 		
-		this.log.debug("Creating Writable Datasource for " + this.getName());
+		log.debug("Creating Writable Datasource for " + this.getName());
 
 		// Connect Content Respository
 		if(dp!=null && dp.size()!=0)
@@ -144,7 +142,7 @@ public class CRConfigUtil implements CRConfig {
 				{
 					log.debug("init Datasource for RequestProcessor"+i);
 					requestProcessorConfig.ds = PortalConnectorFactory.createWriteableDatasource(requestProcessorConfig.handle_props,requestProcessorConfig.dsprops);
-					this.log.debug("Created Datasource for RequestProcessor"+i);
+					log.debug("Created Datasource for RequestProcessor"+i);
 					if(requestProcessorConfig.ds!=null)
 					{
 						//Init PathResolver for RP-Config
@@ -153,7 +151,7 @@ public class CRConfigUtil implements CRConfig {
 				}
 				else {
 
-					this.log.debug("No Datasource loaded for RequestProcessor"+i+" in "+ this.getName());
+					log.debug("No Datasource loaded for RequestProcessor"+i+" in "+ this.getName());
 
 				}
 			}
@@ -161,18 +159,18 @@ public class CRConfigUtil implements CRConfig {
 		
 		if (this.ds != null) {
 
-			this.log.debug("Loaded Gentics Datasource for Content Repository Servlet for "
+			log.debug("Loaded Gentics Datasource for Content Repository Servlet for "
 							+ this.getName());
 
 			this.pathResolver = new PathResolver(this.ds, this.applicationRule);
 
 			if (this.pathResolver != null) {
 
-				this.log.debug("Loaded Pathresolver for " + this.getName());
+				log.debug("Loaded Pathresolver for " + this.getName());
 
 			} else {
 
-				this.log.error("Could not initialize Pathresolver for "
+				log.error("Could not initialize Pathresolver for "
 						+ this.getName());
 
 			}
@@ -195,7 +193,7 @@ public class CRConfigUtil implements CRConfig {
 	 * @param name
 	 */
 	public void setName(String name) {
-		this.log.debug("Set name: "+ name);
+		log.debug("Set name: "+ name);
 		this.name = name;
 	}
 	
@@ -261,7 +259,7 @@ public class CRConfigUtil implements CRConfig {
 			return this.plinktemplate;
 		}
 
-		this.log.warn("No plinktemplate set. Using default template '$url'.");
+		log.warn("No plinktemplate set. Using default template '$url'.");
 
 		return "$url";
 	}
@@ -361,7 +359,7 @@ public class CRConfigUtil implements CRConfig {
 		CRConfigUtil requestProcessorConfig = this.getRequestProcessorConfig(requestProcessorId);
 		String requestProcessorClass = requestProcessorConfig.getRequestProcessorClass();
 		
-		this.log.debug("Instanciate RequestProcessor"+requestProcessorId+" from class "+requestProcessorClass);
+		log.debug("Instanciate RequestProcessor"+requestProcessorId+" from class "+requestProcessorClass);
 		RequestProcessor rp=null;
 		try {
 			rp = (RequestProcessor) Class.forName(requestProcessorClass).getConstructor(new Class[] {CRConfig.class}).newInstance(requestProcessorConfig);
@@ -401,7 +399,7 @@ public class CRConfigUtil implements CRConfig {
 			}catch(Exception e)
 			{
 				CRException ex = new CRException(e);
-				this.log.error(ex.getMessage()+ex.getStringStackTrace());
+				log.error(ex.getMessage()+ex.getStringStackTrace());
 			}
 		}
 		return this.tmplmanager;
@@ -428,73 +426,73 @@ public class CRConfigUtil implements CRConfig {
 			String newvalue = CRUtil.resolveSystemProperties((String)value);
 			String key = name.toString();
 						
-			this.log.debug("Checking property '" + key + "': "+newvalue);
+			log.debug("Checking property '" + key + "': "+newvalue);
 			
 			if(key.equalsIgnoreCase("usecontentidurl")){
 				if("TRUE".equalsIgnoreCase(newvalue))this.contentidurl=true;
-				this.log.debug("Setting usecontentidurl to "+newvalue);
+				log.debug("Setting usecontentidurl to "+newvalue);
 				valueSet=true;
 			}else if(key.equalsIgnoreCase("binarytype")){
 				this.setBinaryType(newvalue);
-				this.log.debug("The binary type in this servlet will be set to the object type "+this.getBinaryType());
+				log.debug("The binary type in this servlet will be set to the object type "+this.getBinaryType());
 				valueSet=true;
 			}else if(key.equalsIgnoreCase("usesharedcaches")){
 				this.useSharedCache(Boolean.parseBoolean(newvalue));
-				this.log.debug("The servlet will use shared caches "+this.useSharedCache());
+				log.debug("The servlet will use shared caches "+this.useSharedCache());
 				valueSet=true;
 			}else if(key.equalsIgnoreCase("foldertype")){
 				this.setFolderType(newvalue);
-				this.log.debug("The folder type in this servlet will be set to the object type "+this.getFolderType());
+				log.debug("The folder type in this servlet will be set to the object type "+this.getFolderType());
 				valueSet=true;
 			}else if(key.equalsIgnoreCase("portalnodecompatibility")){
 				this.setPortalNodeCompMode(newvalue);
-				this.log.debug("Portalnode compatibiliti mode is set to "+newvalue);
+				log.debug("Portalnode compatibiliti mode is set to "+newvalue);
 				valueSet=true;
 			}else if(key.equalsIgnoreCase("pagetype")){
 				this.setPageType(newvalue);
-				this.log.debug("The page type in this servlet will be set to the object type "+this.getPageType());
+				log.debug("The page type in this servlet will be set to the object type "+this.getPageType());
 				valueSet=true;
 			}else if(key.equalsIgnoreCase("applicationrule")){
 				this.setApplicationRule(newvalue);
-				this.log.debug("This servlet is working with the application rule: "+this.getApplicationRule());
+				log.debug("This servlet is working with the application rule: "+this.getApplicationRule());
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("plinktemplate")) {
 				this.setPlinkTemplate(newvalue);
-				this.log.debug("Plinktemplate is set to "+newvalue);
+				log.debug("Plinktemplate is set to "+newvalue);
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("response-charset")){
 				this.setEncoding(newvalue);
-				this.log.debug("The response charset is set to "+this.getEncoding());
+				log.debug("The response charset is set to "+this.getEncoding());
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("rpClass")){
 				this.setRequestProcessorClass(newvalue);
-				this.log.debug("The RequestProcessorClass is set to "+this.getRequestProcessorClass());
+				log.debug("The RequestProcessorClass is set to "+this.getRequestProcessorClass());
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("xmlUrl")){
 				this.setXmlUrl(newvalue);
-				this.log.debug("The xmlUrl is set to "+this.getXmlUrl());
+				log.debug("The xmlUrl is set to "+this.getXmlUrl());
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("xsltUrl")){
 				this.setXsltUrl(newvalue);
-				this.log.debug("The xsltUrl is set to "+this.getXsltUrl());
+				log.debug("The xsltUrl is set to "+this.getXsltUrl());
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("contentid_regex")){
 				this.setContentidRegex(newvalue);
-				this.log.debug("The contentid regex is set to "+this.getContentidRegex());
+				log.debug("The contentid regex is set to "+this.getContentidRegex());
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("objectpermissionattribute")){
 				this.setObjectPermissionAttribute(newvalue);
-				this.log.debug("The objectpermissionattribute is set to "+this.getObjectPermissionAttribute());
+				log.debug("The objectpermissionattribute is set to "+this.getObjectPermissionAttribute());
 				valueSet=true;
 			}else if (key.equalsIgnoreCase("userpermissionattribute")){
 				this.setUserPermissionAttribute(newvalue);
-				this.log.debug("The userpermissionattribute is set to "+this.getUserPermissionAttribute());
+				log.debug("The userpermissionattribute is set to "+this.getUserPermissionAttribute());
 				valueSet=true;
 			
 				
 			}else if (key.equalsIgnoreCase("contentid_regex")){
 				this.setContentidRegex(newvalue);
-				this.log.debug("The contentid regex is set to "+this.getContentidRegex());
+				log.debug("The contentid regex is set to "+this.getContentidRegex());
 				valueSet=true;
 			}else if (key.toUpperCase().startsWith("RP.")){
 				//getRequestProcessorClasses
@@ -502,20 +500,20 @@ public class CRConfigUtil implements CRConfig {
 				String requestProcessorAttribute = key.substring(5);
 				if(requestProcessors==null)requestProcessors = new HashMap<String, CRConfigUtil>(2);
 				if(!requestProcessors.containsKey(requestProcessorNumber))requestProcessors.put(requestProcessorNumber, new CRConfigUtil());
-				this.log.debug("Property '"+requestProcessorAttribute+"' will be added to RequestProcessor '"+requestProcessorNumber+"'");
+				log.debug("Property '"+requestProcessorAttribute+"' will be added to RequestProcessor '"+requestProcessorNumber+"'");
 				CRConfigUtil requestProcessorConfig = (CRConfigUtil) requestProcessors.get(requestProcessorNumber);
 				if(requestProcessorConfig.getName()==null)requestProcessorConfig.setName(this.getName());
 				if(requestProcessorAttribute.toUpperCase().startsWith("DS.")){
 					requestProcessorConfig.dsprops.put(requestProcessorAttribute.substring(3), newvalue);
-					this.log.debug("Property '" + requestProcessorAttribute + "' passed to Datasource as '"+newvalue+"'.");
+					log.debug("Property '" + requestProcessorAttribute + "' passed to Datasource as '"+newvalue+"'.");
 					valueSet=true;
 				}else if(requestProcessorAttribute.toUpperCase().startsWith("DS-HANDLE.")){
 					requestProcessorConfig.handle_props.put(requestProcessorAttribute.substring(10), newvalue);
-					this.log.debug("Property '" + requestProcessorAttribute + "' passed to DatasourceHandle as '"+newvalue+"'.");
+					log.debug("Property '" + requestProcessorAttribute + "' passed to DatasourceHandle as '"+newvalue+"'.");
 					valueSet=true;
 				}else{
 					valueSet=requestProcessorConfig.setProperty(requestProcessorAttribute, newvalue);
-					if(valueSet)this.log.debug("Property '" + requestProcessorAttribute + "' passed to RequestProcessor as '"+newvalue+"'.");
+					if(valueSet)log.debug("Property '" + requestProcessorAttribute + "' passed to RequestProcessor as '"+newvalue+"'.");
 				}
 			}else if (key.toUpperCase().startsWith("FILTERCHAIN.")){
 				//getRequestProcessorClasses
@@ -528,11 +526,11 @@ public class CRConfigUtil implements CRConfig {
 					}
 					else
 						filterChain.add(index, newvalue);
-					this.log.debug("filterChain was extended by '"+newvalue+"' at Position '"+filterNumber+"'");
+					log.debug("filterChain was extended by '"+newvalue+"' at Position '"+filterNumber+"'");
 					valueSet=true;
 				}
 				catch(NumberFormatException ex){
-					this.log.error("filterChain."+filterNumber+"="+value+" contains an illegal filterNumber ("+filterNumber+") please use Integers only");
+					log.error("filterChain."+filterNumber+"="+value+" contains an illegal filterNumber ("+filterNumber+") please use Integers only");
 					ex.printStackTrace();
 					valueSet=false;
 				}

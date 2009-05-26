@@ -28,7 +28,7 @@ public class RESTSimpleContainer{
 	public RequestProcessor rp;
 	public String response_encoding;
 	private String contenttype="";
-	private Logger log;
+	private static Logger log = Logger.getLogger(RESTSimpleContainer.class);
 	
 	public String getContentType()
 	{
@@ -37,7 +37,6 @@ public class RESTSimpleContainer{
 	
 	public RESTSimpleContainer(CRConfigUtil crConf)
 	{
-		this.log = Logger.getLogger(this.getClass().getName());
 		this.response_encoding = crConf.getEncoding();
 		
 		try {
@@ -45,7 +44,7 @@ public class RESTSimpleContainer{
 			this.rp = crConf.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
 			
-			this.log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "+e.getStringStackTrace());
+			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "+e.getStringStackTrace());
 		}
 	}
 	
@@ -83,14 +82,14 @@ public class RESTSimpleContainer{
 			//CRException is passed down from methods that want to post 
 			//the occured error to the client
 			cr.respondWithError((OutputStream) stream,e1,myReqBuilder.isDebug());
-			this.log.debug(e1.getMessage()+" : "+e1.getStringStackTrace());
+			log.debug(e1.getMessage()+" : "+e1.getStringStackTrace());
 			
 		}
 		catch(Exception ex)
 		{
 			CRException crex = new CRException(ex);
 			cr.respondWithError((OutputStream) stream,crex,myReqBuilder.isDebug());
-			this.log.debug(ex.getMessage()+" : "+crex.getStringStackTrace());
+			log.debug(ex.getMessage()+" : "+crex.getStringStackTrace());
 			
 		}
 	}

@@ -34,19 +34,18 @@ public class PlinkProcessor {
 	
 	Map<String,Resolvable> contextObjects;
 
-	private Logger log;
+	private static Logger log = Logger.getLogger(PlinkProcessor.class);
 
 	private static JCS plinkCache;
 	
 	public PlinkProcessor(CRConfig config) {
 
 		this.config = config;
-		this.log = Logger.getLogger(this.getClass().getName());
 		contextObjects = new HashMap<String,Resolvable>();
 		if(config.getPortalNodeCompMode())
 		{
 			//Servlet will run in portal.node compatibility mode => no velocity available
-			this.log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
+			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
 		}
 		
 
@@ -54,12 +53,12 @@ public class PlinkProcessor {
 			
 			plinkCache = JCS.getInstance("gentics-cr-" + this.config.getName()
 					+ "-plinks");
-			this.log.debug("Initialized cache zone for \""
+			log.debug("Initialized cache zone for \""
 					+ this.config.getName() + "-plinks\".");
 
 		} catch (CacheException e) {
 
-			this.log.warn("Could not initialize Cache for PlinkProcessor.");
+			log.warn("Could not initialize Cache for PlinkProcessor.");
 
 		}
 	}
@@ -121,14 +120,14 @@ public class PlinkProcessor {
 
 				} catch (DatasourceNotAvailableException e) {
 					CRException ex = new CRException(e);
-					this.log.error(ex.getMessage() + ex.getStringStackTrace());
+					log.error(ex.getMessage() + ex.getStringStackTrace());
 				} catch (CRException ex) {
-					this.log.error(ex.getMessage() + ex.getStringStackTrace());
+					log.error(ex.getMessage() + ex.getStringStackTrace());
 				}
 			// endtime
 			long end = new Date().getTime();
 
-			this.log.debug("plink generationtime for link " + contentid + ": "
+			log.debug("plink generationtime for link " + contentid + ": "
 					+ (end - start));
 
 		}
@@ -148,7 +147,7 @@ public class PlinkProcessor {
 
 		} catch (CacheException e) {
 
-			this.log.warn("Could not add link to object " + contentid
+			log.warn("Could not add link to object " + contentid
 					+ " to cache");
 		}
 

@@ -32,7 +32,7 @@ public class PathResolver {
 
 	private Expression expression = null;
 
-	private Logger log;
+	private static Logger log = Logger.getLogger(PathResolver.class);
 
 	/**
 	 * Initialize the expression needed to resolve Objects from passed URLs. As
@@ -44,8 +44,6 @@ public class PathResolver {
 	public PathResolver(Datasource ds, String appRule) {
 
 		this.ds = ds;
-
-		this.log = Logger.getLogger(this.getClass().getName());
 
 		// define the rule for finding pages or files with path/filename
 		String rule = "object.filename == data.filename && (object.folder_id.pub_dir == data.path || object.folder_id.pub_dir == concat(data.path, '/'))";
@@ -61,7 +59,7 @@ public class PathResolver {
 		try {
 			this.expression = ExpressionParser.getInstance().parse(rule);
 		} catch (Exception e) {
-			this.log.error("Could create expression path rule.");
+			log.error("Could create expression path rule.");
 		}
 	}
 
@@ -106,11 +104,11 @@ public class PathResolver {
 				}
 
 			} catch (FilterGeneratorException e) {
-				this.log.error("Could not create filter with path expression.");
+				log.error("Could not create filter with path expression.");
 			} catch (ExpressionParserException e) {
-				this.log.error("Error while parsing path expression.");
+				log.error("Error while parsing path expression.");
 			} catch (DatasourceException e) {
-				this.log.error("Datasource error while getting object for url "
+				log.error("Datasource error while getting object for url "
 						+ url);
 			}
 		}
@@ -135,7 +133,7 @@ public class PathResolver {
 			return getPath(linkedObject);
 
 		} catch (DatasourceNotAvailableException e) {
-			this.log.error("Datasource error generating url for " + contentid);
+			log.error("Datasource error generating url for " + contentid);
 		}
 
 		// if the linked Object cannot be initialized return a dynamic URL
@@ -176,7 +174,7 @@ public class PathResolver {
 		} else {
 
 			// return a dynamic URL instead
-			this.log.warn("Object " + linkedObject.get("contentid")
+			log.warn("Object " + linkedObject.get("contentid")
 					+ " has no filename.");
 			//this.log.info("Use dynamic url for "
 			//		+ linkedObject.get("contentid"));

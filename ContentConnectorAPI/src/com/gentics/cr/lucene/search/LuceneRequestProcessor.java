@@ -29,7 +29,7 @@ import com.gentics.cr.util.CRUtil;
  */
 public class LuceneRequestProcessor extends RequestProcessor {
 
-	private Logger log = Logger.getLogger(LuceneRequestProcessor.class);
+	private static Logger log = Logger.getLogger(LuceneRequestProcessor.class);
 	private CRSearcher searcher = null;
 	protected String name=null;
 	
@@ -48,7 +48,6 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		this.name=config.getName();
 		//LOAD ADDITIONAL CONFIG
 		loadConfig();
-		log=Logger.getLogger(this.getClass());
 		this.searcher = new CRSearcher(this.path);
 		
 	}
@@ -73,11 +72,11 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			}
 			
 		} catch (FileNotFoundException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
 		} catch (IOException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
 		}catch(NullPointerException e){
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
 			e.printStackTrace();
 		}
 	}
@@ -120,7 +119,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		if(count<=0)
 			count=this.count;
 		if(count<=0)
-			this.log.error("COUNT IS LOWER THAN 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG!");
+			log.error("COUNT IS LOWER THAN 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG!");
 		//GET RESULT
 		HashMap<String,Object> searchResult = this.searcher.search(request.getRequestFilter(),this.searchedAttributes,count);
 		ArrayList<Document> docs = objectToArrayListDocuments(searchResult.get("result"));
@@ -135,7 +134,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		if(doNavigation)
 		{
 			//NOT IMPLEMENTED YET, BUT WE DO NOT THROW AN EXCEPTION => ERROR OUTPUT
-			this.log.error("LUCENEREQUESTPROCESSER CAN NOT YET RETURN A TREE STRUCTURE");
+			log.error("LUCENEREQUESTPROCESSER CAN NOT YET RETURN A TREE STRUCTURE");
 		}
 		return result;
 	}

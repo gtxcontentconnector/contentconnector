@@ -26,7 +26,6 @@ import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
-import com.gentics.cr.lucene.search.LuceneRequestProcessor;
 import com.gentics.cr.util.CRUtil;
 /**
  * 
@@ -37,7 +36,7 @@ import com.gentics.cr.util.CRUtil;
  */
 public class HTTPClientRequestProcessor extends RequestProcessor {
 
-	private Logger log = Logger.getLogger(LuceneRequestProcessor.class);
+	private static Logger log = Logger.getLogger(HTTPClientRequestProcessor.class);
 	protected String name=null;
 	
 	protected String path=null;
@@ -57,7 +56,6 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 		this.name=config.getName();
 		//LOAD ADDITIONAL CONFIG
 		loadConfig();
-		log=Logger.getLogger(this.getClass());
 		client = new HttpClient();
 
 
@@ -83,11 +81,11 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 			}
 			
 		} catch (FileNotFoundException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
 		} catch (IOException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
 		}catch(NullPointerException e){
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
 			e.printStackTrace();
 		}
 	}

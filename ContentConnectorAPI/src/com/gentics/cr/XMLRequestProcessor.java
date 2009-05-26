@@ -23,7 +23,7 @@ import com.gentics.lib.base.MapResolver;
  */
 public class XMLRequestProcessor extends RequestProcessor{
 
-	private Logger log;
+	private static Logger log = Logger.getLogger(XMLRequestProcessor.class);
 	
 	private static JCS cache;
 	
@@ -37,7 +37,6 @@ public class XMLRequestProcessor extends RequestProcessor{
 	 */
 	public XMLRequestProcessor(CRConfig config) throws CRException {
 		super(config);
-		log=Logger.getLogger(this.getClass());
 		try {
 			cache = JCS.getInstance("gentics-cr-" + config.getName()+ "-content");
 		} catch (CacheException e) {

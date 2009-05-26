@@ -18,6 +18,8 @@ import com.gentics.api.portalnode.action.PluggableActionResponse;
  */
 public class PluggableActionCaller{
 
+	private static Logger log = Logger.getLogger(PluggableActionCaller.class);
+	
 	/**
 	 * Static Class helps you to call PluggableActions from Java
 	 * @param pluggableActionName: Name of the Pluggable Action see http://www.gentics.com/help/ for valid Pluggable Actions
@@ -26,7 +28,6 @@ public class PluggableActionCaller{
 	 */
 	
 	public static PluggableActionResponse call(String pluggableActionName, HashMap<String,Object> parameters){
-		Logger log=Logger.getLogger(PluggableActionCaller.class);
 		log.debug("PluggableAction "+pluggableActionName+" start");
 		PluggableActionRequest request = PluggableActionInvoker.createRequestObject();
 		PluggableActionResponse response = PluggableActionInvoker.createResponseObject();

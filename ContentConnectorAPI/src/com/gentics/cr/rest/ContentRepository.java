@@ -68,20 +68,18 @@ public abstract class ContentRepository implements Serializable {
 
 
 	private boolean isRoot=true;
-	public Logger log;
+	public static Logger log = Logger.getLogger(ContentRepository.class);
 	
 	public ContentRepository(String[] attr) {
 		this.resolvableColl = new Vector<CRResolvableBean>();
 		this.attrArray = attr;
 		this.response_encoding="utf-8";
-		this.log = Logger.getLogger("com.gentics.cr");
 	}
 	
 	public ContentRepository(String[] attr, String encoding) {
 		this.resolvableColl = new Vector<CRResolvableBean>();
 		this.attrArray = attr;
 		this.response_encoding=encoding;
-		this.log = Logger.getLogger("com.gentics.cr");
 	}
 	
 	public ContentRepository(String[] attr, String encoding, String[] options)
@@ -90,7 +88,6 @@ public abstract class ContentRepository implements Serializable {
 		this.attrArray = attr;
 		this.response_encoding=encoding;
 		this.setOptionsArray(options);
-		this.log = Logger.getLogger("com.gentics.cr");
 	}
 	
 	public ContentRepository(String[] attr, Object root)
@@ -98,7 +95,6 @@ public abstract class ContentRepository implements Serializable {
 		this.resolvableColl = new Vector<CRResolvableBean>();
 		this.attrArray = attr;
 		this.isRoot=false;
-		this.log = Logger.getLogger("com.gentics.cr");
 		//this.log.setLevel(Level.DEBUG);
 	}
 
@@ -141,7 +137,7 @@ public abstract class ContentRepository implements Serializable {
 				filter = (Filter<CRResolvableBean>) Class.forName(filterClassName).getConstructor().newInstance();
 				Collection<CRResolvableBean> returnedObjects = filter.apply(getObjects(), filterParameters);
 				if(returnedObjects == null){
-					this.log.error("Filter "+filterClassName+" doesn't return a valid result. The result was null.\nTo prevent from errors the result of the filter is not saved.");
+					log.error("Filter "+filterClassName+" doesn't return a valid result. The result was null.\nTo prevent from errors the result of the filter is not saved.");
 					return false;
 				}
 				setObjects(returnedObjects);
@@ -198,7 +194,7 @@ public abstract class ContentRepository implements Serializable {
 	 */
 	private void setObjects(Collection<CRResolvableBean> objects) {
 		if(objects==null){
-			this.log.error("Cannot set objects when i get a null value in setObjects(Collection objects)");
+			log.error("Cannot set objects when i get a null value in setObjects(Collection objects)");
 			throw new NullPointerException("Cannot set objects when i get a null value");
 		}
 		resolvableColl = (Vector<CRResolvableBean>) objects;

@@ -61,7 +61,7 @@ public class CRIndexer {
 	
 	protected int batchSize = 1000;
 	
-	protected Logger log = Logger.getLogger("com.gentics.cr.lucene.indexer");
+	protected static Logger log = Logger.getLogger(CRIndexer.class);
 	
 	protected IndexerStatus status = new IndexerStatus();
 	

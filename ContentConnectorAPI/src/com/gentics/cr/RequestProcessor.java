@@ -37,7 +37,7 @@ public abstract class RequestProcessor {
 
 	protected PlinkProcessor plinkProc = null;
 
-	private Logger log;
+	private static Logger log = Logger.getLogger(RequestProcessor.class);
 	
 	private static JCS cache;
 	
@@ -50,23 +50,22 @@ public abstract class RequestProcessor {
 
 		this.config = config;
 		this.plinkProc = new PlinkProcessor(config);
-		this.log = Logger.getLogger(this.getClass().getName());
 		
 		if(config.getPortalNodeCompMode())
 		{
 			//Servlet will run in portal.node compatibility mode => no velocity available
-			this.log.warn("CRRequestProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
+			log.warn("CRRequestProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
 		}
 
 		try {
 			
 			cache = JCS.getInstance("gentics-cr-" + config.getName()+ "-crcontent");
-			this.log.debug("Initialized cache zone for \"" + config.getName()+ "-crcontent\".");
+			log.debug("Initialized cache zone for \"" + config.getName()+ "-crcontent\".");
 			
 
 		} catch (CacheException e) {
 
-			this.log.warn("Could not initialize Cache for PlinkProcessor.");
+			log.warn("Could not initialize Cache for PlinkProcessor.");
 			throw new CRException(e);
 		}
 
@@ -162,7 +161,7 @@ public abstract class RequestProcessor {
 		if (pr != null) {
 			reso = pr.getObject(request);
 		} else {
-			this.log.warn("Could not get Pathresolver to resolve path '" + request.getUrl()
+			log.warn("Could not get Pathresolver to resolve path '" + request.getUrl()
 					+ "'.");
 		}
 		
@@ -222,11 +221,11 @@ public abstract class RequestProcessor {
 						if(obj instanceof CRResolvableBean)
 						{
 							crBean = (CRResolvableBean)obj;
-							this.log.debug("Loaded from cache: "+crBean.getContentid());
+							log.debug("Loaded from cache: "+crBean.getContentid());
 						}
 						else
 						{
-							this.log.debug("Loaded from cache: "+obj.toString());
+							log.debug("Loaded from cache: "+obj.toString());
 						}
 					}
 						
@@ -255,7 +254,7 @@ public abstract class RequestProcessor {
 					// When attribute is specified return as binary.
 					crBean = new CRResolvableBean(reso, new String[] { attribute,
 							mimetypeAttribute });
-					this.log.debug("Can't load from cache => direct access");
+					log.debug("Can't load from cache => direct access");
 				}
 	
 				Object o = reso.get(attribute);
@@ -278,7 +277,7 @@ public abstract class RequestProcessor {
 	
 							// endtime
 							long end = new Date().getTime();
-							this.log.debug("plink parsing time for attribute "
+							log.debug("plink parsing time for attribute "
 									+ attribute + " of " + contentid + ": "
 									+ (end - start));
 	
@@ -323,7 +322,7 @@ public abstract class RequestProcessor {
 						
 	
 					} catch (CacheException e) {
-						this.log.warn("Could not add crBean object "
+						log.warn("Could not add crBean object "
 								+ crBean.getContentid() + " to cache");
 						e.printStackTrace();
 						throw new CRException(e);
