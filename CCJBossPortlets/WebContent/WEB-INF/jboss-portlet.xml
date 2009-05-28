@@ -1,6 +1,6 @@
 <portlet-app>
    <portlet>
-      <portlet-name>CCJBossContentPortlet</portlet-name>
+      <portlet-name>GenticsContent</portlet-name>
       <security>
       </security>
    </portlet>

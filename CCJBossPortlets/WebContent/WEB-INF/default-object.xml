@@ -5,21 +5,20 @@
 		<parent-ref>default</parent-ref>
 		<properties />
 		<page>
-			<page-name>CCJBossContentPortletInstance Tutorial</page-name>
+			<page-name>Gentics Content</page-name>
 			<properties />
 			<window>
-				<window-name>CCJBossContentPortletWindow</window-name>
+				<window-name>Gentics Content</window-name>
 				<instance-ref>CCJBossContentPortletInstance</instance-ref>
 				<region>center</region>
 				<height>0</height>
 			</window>
+			<window>
+				<window-name>Gentics Navigation</window-name>
+				<instance-ref>CCJBossNavigationPortletInstance</instance-ref>
+				<region>left</region>
+				<height>0</height>
+			</window>
 		</page>
-	</deployment>
-	<deployment>
-		<if-exists>overwrite</if-exists>
-		<instance>
-			<instance-name>CCJBossContentPortletInstance</instance-name>
-			<component-ref>CCJBossContentPortlet.CCJBossContentPortlet</component-ref>
-		</instance>
 	</deployment>
 </deployments>

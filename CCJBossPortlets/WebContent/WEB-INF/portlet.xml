@@ -1,7 +1,18 @@
-<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd" version="2.0">
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+             version="2.0">
    <portlet>
        <portlet-name>CCJBossContentPortlet</portlet-name>
            <portlet-class>com.gentics.cr.portlet.CCJBossContentPortlet</portlet-class>
+           <init-param>
+			   <name>startpage</name>
+			   <value>10007.938</value>
+			</init-param>
+			<init-param>
+			   <name>template</name>
+			   <value>/WEB-INF/template/content/content.jsp</value>
+			</init-param>
            <supports>
            <mime-type>text/html</mime-type>
            <portlet-mode>view</portlet-mode>
@@ -10,6 +21,27 @@
            </supports>
            <portlet-info>
                <title>Content Portlet</title>               
+           </portlet-info>
+       </portlet>
+   <portlet>
+       <portlet-name>CCJBossNavigationPortlet</portlet-name>
+           <portlet-class>com.gentics.cr.portlet.CCJBossNavigationPortlet</portlet-class>
+           <init-param>
+			   <name>startfolder</name>
+			   <value>10002.126</value>
+			</init-param>
+			<init-param>
+			   <name>template</name>
+			   <value>/WEB-INF/template/nav/nav.jsp</value>
+			</init-param>
+			<supports>
+           <mime-type>text/html</mime-type>
+           <portlet-mode>view</portlet-mode>
+           <portlet-mode>edit</portlet-mode>
+           <portlet-mode>help</portlet-mode>
+           </supports>
+           <portlet-info>
+               <title>Navigation Portlet</title>               
            </portlet-info>
        </portlet>
 </portlet-app>
