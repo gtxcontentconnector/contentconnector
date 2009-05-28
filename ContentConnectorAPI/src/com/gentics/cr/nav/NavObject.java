@@ -29,7 +29,7 @@ public class NavObject{
 	private Vector<String> path;
 	private CRConfig conf;
 	private ITemplate template;
-	private Map<String,Resolvable> resolvables;
+	private Map<String,Object> objects;
 
 	/**
 	 * Create new instance of NavObject
@@ -40,14 +40,14 @@ public class NavObject{
 	 * @param template
 	 * @param resolvables
 	 */
-	public NavObject(CRConfig conf, CRResolvableBean bean, int level, Vector<String> path, ITemplate template, Map<String,Resolvable> resolvables)
+	public NavObject(CRConfig conf, CRResolvableBean bean, int level, Vector<String> path, ITemplate template, Map<String,Object> objects)
 	{
 		this.bean = bean;
 		this.path = path;
 		this.conf = conf;
 		this.level = level;
 		this.template = template;
-		this.resolvables = resolvables;
+		this.objects = objects;
 	}
 	
 	/**
@@ -102,10 +102,10 @@ public class NavObject{
 		ITemplateManager myTemplateManager = this.conf.getTemplateManager();
 
 		// enrich template context
-		if (resolvables != null) {
-			for (Iterator<Map.Entry<String, Resolvable>> it = resolvables
+		if (objects != null) {
+			for (Iterator<Map.Entry<String, Object>> it = objects
 					.entrySet().iterator(); it.hasNext();) {
-				Map.Entry<String, Resolvable> entry = it.next();
+				Map.Entry<String, Object> entry = it.next();
 				myTemplateManager.put(entry.getKey(), entry.getValue());
 			}
 		}
@@ -126,7 +126,7 @@ public class NavObject{
 		p.add(this.bean.getContentid());
 		for(CRResolvableBean child:this.bean.getChildRepository())
 		{
-			NavObject no = new NavObject(conf, child, level+1, p,this.template, resolvables);
+			NavObject no = new NavObject(conf, child, level+1, p,this.template, objects);
 			try {
 				ret+=no.render();
 			} catch (CRException e) {
