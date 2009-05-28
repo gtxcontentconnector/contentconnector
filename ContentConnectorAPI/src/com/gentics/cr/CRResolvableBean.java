@@ -443,4 +443,14 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	public Object getProperty(String arg0) {
 		return get(arg0);
 	}
+	
+	/**
+	 * A String representation of this CRResolvableBean instance
+	 * @return String contentid
+	 */
+	public String toString()
+	{
+		return this.getContentid();
+		
+	}
 }
