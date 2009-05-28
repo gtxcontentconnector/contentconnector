@@ -6,8 +6,8 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import com.gentics.cr.CRRequest;
-import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.rest.ContentRepository;
+import com.gentics.cr.rest.javabin.JavaBinContentRepository;
 import com.gentics.cr.rest.javaxml.JavaXmlContentRepository;
 import com.gentics.cr.rest.json.JSONContentRepository;
 import com.gentics.cr.rest.php.PHPContentRepository;
@@ -90,6 +90,7 @@ public class CRRequestBuilder {
 			else if(this.type.equalsIgnoreCase("PHP"))this.repotype=RepositoryType.PHP;
 			else if(this.type.equalsIgnoreCase("JAVAXML"))this.repotype=RepositoryType.JAVAXML;
 			else if(this.type.equalsIgnoreCase("MNOGOSEARCHXML"))this.repotype=RepositoryType.MNOGOSEARCHXML;
+			else if(this.type.equalsIgnoreCase("JAVABIN"))this.repotype=RepositoryType.JAVABIN;
 			else this.repotype=RepositoryType.XML;
 		}
 		else
@@ -135,6 +136,7 @@ public class CRRequestBuilder {
 			else if(this.type.equalsIgnoreCase("JAVAXML"))this.repotype=RepositoryType.JAVAXML;
 			else if(this.type.equalsIgnoreCase("RSS"))this.repotype = RepositoryType.RSS;
 			else if(this.type.equalsIgnoreCase("MNOGOSEARCHXML"))this.repotype=RepositoryType.MNOGOSEARCHXML;
+			else if(this.type.equalsIgnoreCase("JAVABIN"))this.repotype=RepositoryType.JAVABIN;
 			else this.repotype=RepositoryType.XML;
 		}
 		else
@@ -222,6 +224,9 @@ public class CRRequestBuilder {
 				break;
 			case MNOGOSEARCHXML:
 				cr = new MnogosearchXmlContentRepository(this.getAttributeArray(), encoding, this.getOptionArray());
+				break;
+			case JAVABIN:
+				cr = new JavaBinContentRepository(this.getAttributeArray(), encoding, this.getOptionArray());
 				break;
 			default:
 				cr = new XmlContentRepository(this.getAttributeArray(),encoding,this.getOptionArray());

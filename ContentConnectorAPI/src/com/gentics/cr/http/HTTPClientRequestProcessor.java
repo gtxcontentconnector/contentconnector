@@ -4,6 +4,7 @@ import java.beans.XMLDecoder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -141,7 +142,7 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 			String countstring="";
 			if(request.getCountString()!=null && !request.getCountString().equals(""))
 			{
-				countstring="count="+request.getCountString();
+				countstring="&count="+request.getCountString();
 			}
 			
 			String sortstring="";
@@ -154,7 +155,7 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 			
 			//TODO REQUEST ERWEITERN
 			
-			GetMethod method = new GetMethod(this.path+"?"+filter+attributesstring+countstring+sortstring+"&type=JavaXML");
+			GetMethod method = new GetMethod(this.path+"?"+filter+attributesstring+countstring+sortstring+"&type=JavaBIN");
 		    
 		    // Provide custom retry handler is necessary
 		 	
@@ -166,28 +167,37 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 			    int statusCode = client.executeMethod(method);
 	
 			    if (statusCode != HttpStatus.SC_OK) {
-			    	this.log.error("Request failed: " + method.getStatusLine());
+			    	HTTPClientRequestProcessor.log.error("Request failed: " + method.getStatusLine());
 			    }
 	
 			    Collection<CRResolvableBean> result = new Vector<CRResolvableBean>();
-			    XMLDecoder d = new XMLDecoder(method.getResponseBodyAsStream());
-			      
-			    Object responseObject = d.readObject();
-			    d.close();
-			     
-			    if(responseObject instanceof Collection)
-			    {
-			    	result = this.toCRResolvableBeanCollection(responseObject);
-			    }
-			    else if(responseObject instanceof CRError)
-			    {
-			    	CRError ex = (CRError)responseObject;
-			    	throw new CRException(ex);
-			    }
-			    else
-			    {
-			    	this.log.error("COULD NOT CAST RESULT. Perhaps remote agent does not work properly");
-			    }
+			    
+			    ObjectInputStream objstream = new ObjectInputStream(method.getResponseBodyAsStream());
+			    Object responseObject;
+				try {
+					responseObject = objstream.readObject();
+					
+				    objstream.close();
+	
+				     
+				    if(responseObject instanceof Collection)
+				    {
+				    	result = this.toCRResolvableBeanCollection(responseObject);
+				    }
+				    else if(responseObject instanceof CRError)
+				    {
+				    	CRError ex = (CRError)responseObject;
+				    	throw new CRException(ex);
+				    }
+				    else
+				    {
+				    	HTTPClientRequestProcessor.log.error("COULD NOT CAST RESULT. Perhaps remote agent does not work properly");
+				    }
+			    
+				} catch (ClassNotFoundException e) {
+					HTTPClientRequestProcessor.log.error("Coult not load object from http response: "+e.getMessage());
+					e.printStackTrace();
+				}
 		      
 				if(result!=null)
 				{
