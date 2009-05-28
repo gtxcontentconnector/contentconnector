@@ -12,9 +12,9 @@ import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 /**
  * 
- * Last changed: $Date: 2009-05-28 09:10:54 +0200 (Do, 28 Mai 2009) $
- * @version $Revision: 62 $
- * @author $Author: bigbear.ap $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class NavObject{
