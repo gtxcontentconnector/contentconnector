@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
-import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -18,8 +15,6 @@ import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRException;
-import com.gentics.cr.CRResolvableBean;
-import com.gentics.cr.RequestProcessor;
 
 /**
  * 
