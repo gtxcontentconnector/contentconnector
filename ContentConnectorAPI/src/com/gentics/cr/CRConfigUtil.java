@@ -338,13 +338,39 @@ public class CRConfigUtil implements CRConfig {
 	}
 	
 	public int getRequestProcessorSize(){
-		return requestProcessors.size();
+		if(requestProcessors!=null){
+			return requestProcessors.size();
+		}
+		return 0;
 	}
+	/**
+	 * get Configuration of the specified RequestProcessor
+	 * @param requestProcessorId: Number of the RequestProcessor
+	 * @return Configuration of the specified RequestProcessor. null in case something bad happens
+	 */
 	public CRConfigUtil getRequestProcessorConfig(int requestProcessorId){
-		return (CRConfigUtil) requestProcessors.get(requestProcessorId + "");
+		if(requestProcessors!=null){
+			return (CRConfigUtil) requestProcessors.get(requestProcessorId + "");
+		}
+		else{
+			log.fatal("RequestProcessor"+requestProcessorId+" cannot be found. Maybe your config cannot be initialized correctly.");
+			return null;			
+		}
 	}
+	
+	/**
+	 * get Configuration of the specified RequestProcessor
+	 * @param requestProcessorId: Number of the RequestProcessor
+	 * @return Configuration of the specified RequestProcessor. null in case something bad happens
+	 */
 	public CRConfigUtil getRequestProcessorConfig(String requestProcessorId){
-		return (CRConfigUtil) requestProcessors.get(requestProcessorId);
+		if(requestProcessors!=null){
+			return (CRConfigUtil) requestProcessors.get(requestProcessorId);
+		}
+		else{
+			log.fatal("RequestProcessor"+requestProcessorId+" cannot be found. Maybe your config cannot be initialized correctly.");
+			return null;			
+		}
 	}
 	
 	/**

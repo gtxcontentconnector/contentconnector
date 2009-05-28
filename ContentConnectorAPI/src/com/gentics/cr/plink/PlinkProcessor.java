@@ -42,7 +42,7 @@ public class PlinkProcessor {
 
 		this.config = config;
 		contextObjects = new HashMap<String,Resolvable>();
-		if(config.getPortalNodeCompMode())
+		if(config!=null && config.getPortalNodeCompMode())
 		{
 			//Servlet will run in portal.node compatibility mode => no velocity available
 			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
@@ -50,9 +50,14 @@ public class PlinkProcessor {
 		
 
 		try {
-			
-			plinkCache = JCS.getInstance("gentics-cr-" + this.config.getName()
-					+ "-plinks");
+			String configName = "shared";
+			if(config!=null){
+				configName=config.getName();
+			}
+			else{
+				log.error("Attention i'm using a shared plinkcache because i'm missing my config.");
+			}
+			plinkCache = JCS.getInstance("gentics-cr-" + configName	+ "-plinks");
 			log.debug("Initialized cache zone for \""
 					+ this.config.getName() + "-plinks\".");
 
