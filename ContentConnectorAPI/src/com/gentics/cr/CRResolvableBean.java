@@ -4,9 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.*;
-
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
 import com.gentics.api.lib.exception.UnknownPropertyException;
 import com.gentics.api.lib.resolving.PropertyResolver;
@@ -43,8 +47,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 
 	private Resolvable resolvable;
 	
-	private static Logger log = Logger.getLogger(CRResolvableBean.class);
-	
+		
 	/**
 	 * Populate the child elements with the given collection of CRResolvableBeans
 	 * @param childRep
