@@ -34,7 +34,7 @@ import com.gentics.cr.rendering.ContentRenderer;
 public class CCJBossContentPortlet extends GenericPortlet implements
 		ResourceServingPortlet {
 	
-	public final static String EVENT_NAME = "GENTICS_REST_CONTENT";
+	public final static String EVENT_NAME = "GENTICS_CONTENT";
 	public final static String CONTENTID_NAME = "RESTWindowContentID";
 	
 	
@@ -173,12 +173,17 @@ public class CCJBossContentPortlet extends GenericPortlet implements
 			CRRequest req = new CRRequest();
 			String contentid = request.getParameter("contentid");
 			req.setContentid(contentid);
-			req.setAttributeArray(new String[]{"content","mimetype"});
+			this.log.debug("Loading Resource: "+contentid);
+			req.setAttributeArray(new String[]{"content","mimetype","binarycontent"});
 			CRResolvableBean crBean = rp.getContent(req);
-			String contenttype = crBean.getMimetype();
-			if(contenttype==null)contenttype="text/html";
-			response.setContentType(contenttype);
-			response.getWriter().write(crBean.getContent());
+			if(crBean!=null)
+			{
+				String contenttype = crBean.getMimetype();
+				if(contenttype==null)contenttype="text/html";
+				this.log.debug("Responding with mimetype: "+contenttype+" and "+response.getCharacterEncoding());
+				response.setContentType(contenttype);
+				response.getPortletOutputStream().write(crBean.getBinaryContent());
+			}
 						
 		} catch (CRException e1) {
 			this.log.error(e1.getMessage()+" - "+e1.getStringStackTrace());

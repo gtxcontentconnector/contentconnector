@@ -101,7 +101,7 @@ public class GenericPLinkReplacer implements PLinkReplacer {
 				ResourceURL resourceURL = response.createResourceURL();
 				resourceURL.setParameter("contentid", object.getContentid());
 				
-				resourceURL.setCacheability(ResourceURL.FULL);
+				//resourceURL.setCacheability(ResourceURL.FULL);
 				return resourceURL.toString();
 			}
 			

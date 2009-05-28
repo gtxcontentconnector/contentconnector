@@ -22,6 +22,9 @@
            <portlet-info>
                <title>Content Portlet</title>               
            </portlet-info>
+           <supported-processing-event>
+           	<name>GENTICS_CONTENT</name>
+           </supported-processing-event>
        </portlet>
    <portlet>
        <portlet-name>CCJBossNavigationPortlet</portlet-name>
@@ -32,7 +35,7 @@
 			</init-param>
 			<init-param>
 			   <name>template</name>
-			   <value>/WEB-INF/template/nav/nav.jsp</value>
+			   <value>/WEB-INF/template/tree.vm</value>
 			</init-param>
 			<supports>
            <mime-type>text/html</mime-type>
@@ -43,5 +46,11 @@
            <portlet-info>
                <title>Navigation Portlet</title>               
            </portlet-info>
+           <supported-publishing-event>
+           		<name>GENTICS_CONTENT</name>
+           </supported-publishing-event>
        </portlet>
+       <event-definition>
+		<name>GENTICS_CONTENT</name>
+	</event-definition>
 </portlet-app>
