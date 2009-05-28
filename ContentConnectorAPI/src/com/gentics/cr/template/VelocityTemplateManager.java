@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.jcs.JCS;
+import org.apache.jcs.access.exception.CacheException;
+import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -15,6 +18,8 @@ import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRException;
+import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.RequestProcessor;
 
 /**
  * 
@@ -27,7 +32,9 @@ public class VelocityTemplateManager implements ITemplateManager {
 
 	private CRConfig config;
 	private HashMap<String, Object> objectstoput;
+	private HashMap<String, Template> templates;
 	
+		
 	public VelocityTemplateManager(CRConfig config) throws Exception
 	{
 		Properties props = new Properties();
@@ -40,7 +47,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 		
 		this.config=config;
 		this.objectstoput = new HashMap<String,Object>();
-		
+		this.templates = new HashMap<String,Template>();
 	}
 	
 	
@@ -59,9 +66,16 @@ public class VelocityTemplateManager implements ITemplateManager {
 		StringResourceRepository rep = StringResourceLoader.getRepository();
 		rep.setEncoding(this.config.getEncoding());
 		try {
-			rep.putStringResource(templateName, templateSource);
-			Template template = Velocity.getTemplate(templateName);
-			rep.removeStringResource(templateName);
+			
+			Template template=this.templates.get(templateName);
+			if(template==null)
+			{
+				rep.putStringResource(templateName, templateSource);
+				template = Velocity.getTemplate(templateName);
+				rep.removeStringResource(templateName);
+				this.templates.put(templateName, template);
+			}	
+			
 			VelocityContext context = new VelocityContext();
 			Iterator<String> it = this.objectstoput.keySet().iterator();
 			while(it.hasNext())
@@ -78,6 +92,8 @@ public class VelocityTemplateManager implements ITemplateManager {
 			throw new CRException(e);
 		} catch (Exception e) {
 			throw new CRException(e);
+		}finally{
+			this.objectstoput = new HashMap<String,Object>();
 		}
 		return renderedTemplate;
 	}

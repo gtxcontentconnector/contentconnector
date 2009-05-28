@@ -42,7 +42,7 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 	public String render(String templatename, String templatesource) throws CRException {
 		String renderedTemplate=null;
 		
-		//TODO get undepricated methon from DEV
+		//TODO get undepricated method from DEV
 		TemplateProcessor processor = this.portlet.getTemplateProcessor(null, null);
 		
 		try {
