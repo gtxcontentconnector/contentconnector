@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.api.lib.exception.UnknownPropertyException;
 import com.gentics.api.lib.resolving.PropertyResolver;
 import com.gentics.api.lib.resolving.Resolvable;
@@ -40,6 +42,8 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	private String mother_type;
 
 	private Resolvable resolvable;
+	
+	private static Logger log = Logger.getLogger(CRResolvableBean.class);
 	
 	/**
 	 * Populate the child elements with the given collection of CRResolvableBeans
@@ -141,16 +145,44 @@ public class CRResolvableBean implements Serializable, Resolvable{
 				}
 				
 				for (int i = 0; i < attributeNames.length; i++) {
-					;
+					//we have to inspect returned attribute for containing not serializable objects (Resolvables) and convert them into CRResolvableBeans
 					try {
-						this.attrMap.put(attributeNames[i], PropertyResolver.resolve(resolvable, attributeNames[i]));
+						this.attrMap.put(attributeNames[i], inspectResolvableAttribute(PropertyResolver.resolve(resolvable, attributeNames[i])));
 					} catch (UnknownPropertyException e) {
-						this.attrMap.put(attributeNames[i], resolvable
-						.get(attributeNames[i]));
+						this.attrMap.put(attributeNames[i], inspectResolvableAttribute(resolvable.get(attributeNames[i])));
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Helper Method to inspect Attributes given from PropertyResolver or Resolvables theirself for containing not serializable Resolvables
+	 * @param resolvableAttribute: The attribute should be inspected
+	 * @return the cleaned up attribute. All Resolvables are converted to CRResolvableBeans. The attribute should be serializable afterwards.
+	 */
+	@SuppressWarnings("unchecked")
+	private Object inspectResolvableAttribute(Object resolvableAttribute){
+		if(resolvableAttribute instanceof Collection){
+			//in Collections we must inspect all elements. We assume it is a parameterized Collection
+			//and therefore we quit if the first Object in the Collection is not a Resolvable
+			ArrayList<CRResolvableBean> newAttributeObject = new ArrayList<CRResolvableBean>();
+			for(Iterator<Object> it = ((Collection<Object>) resolvableAttribute).iterator(); it.hasNext(); ){
+				Object object = it.next();
+				if(object instanceof Resolvable){
+					newAttributeObject.add(new CRResolvableBean((Resolvable) object, new String[] {}));
+				}
+				else{
+					return resolvableAttribute;
+				}
+			}
+			return newAttributeObject;
+		}
+		else if(resolvableAttribute instanceof Resolvable){
+			return new CRResolvableBean((Resolvable) resolvableAttribute, new String[] {});
+		}
+		else
+			return resolvableAttribute;
 	}
 
 	/**
@@ -352,7 +384,8 @@ public class CRResolvableBean implements Serializable, Resolvable{
 			return this.attrMap.get(attribute);
 		}
 		else if(this.resolvable!=null){
-			return this.resolvable.get(attribute);
+			//if we are returning an attribute from an resolvable we must inspect it for containing not serializable Objects
+			return inspectResolvableAttribute(this.resolvable.get(attribute));
 		}
 		else
 			return(null);
