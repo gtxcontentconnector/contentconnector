@@ -10,13 +10,13 @@
 	<classpathentry kind="lib" path="lib/rome-1.0RC2.jar"/>
 	<classpathentry kind="lib" path="lib/ezmorph-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
-	<classpathentry kind="var" path="GPN_LIBS/gentics-portalnode-3-api.jar"/>
-	<classpathentry kind="var" path="GPN_LIBS/portlet.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/gentics-portalnode-api.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/portlet_20_Java14compliant.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/jcs-1.2.7.9.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/log4j.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/velocity-dep-1.4.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/velocity-stringresource.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/commons-httpclient-3.0.1.jar"/>
-	<classpathentry kind="var" path="GPN_LIBS/gentics-portalnode-3.jar"/>
+	<classpathentry kind="var" path="GPN_LIBS/gentics-portalnode.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
