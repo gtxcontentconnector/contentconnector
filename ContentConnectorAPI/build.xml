@@ -9,8 +9,7 @@
 -->
 <project name="RequestProcessorAPI" default="package" basedir=".">
 	
-	<property name="sharedlibs" value="${tomcat.sharedlibs}" />
-	<property name="commons" value="${tomcat.commons}"/>
+	<property name="sharedlibs" value="${com.gentics.portalnode.sdk.sharedlibs}" />
 	<property name="out" value="out" />
 	<property name="webappdir" value="." />
 	
@@ -39,7 +38,6 @@
 			<classpath>
 				<fileset dir="${sharedlibs}" />
 				<fileset dir="${webappdir}/lib" />
-				<fileset dir="${commons}"/>
 			</classpath>
 			
 		</javac>
