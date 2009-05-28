@@ -15,7 +15,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 
 	<servlet>
 		<description>
-			Gentics .Node REST API for a Contnet Content Repository
+			Gentics .Node REST API for a Content Content Repository
 		</description>
 		<display-name>sample</display-name>
 		<servlet-name>sample</servlet-name>
@@ -30,7 +30,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	
 	<!-- servlet>
 		<description>
-			Gentics .Node REST API for a Contnet Content Repository
+			Gentics .Node REST API for a Content Content Repository
 		</description>
 		<display-name>indexer</display-name>
 		
@@ -73,7 +73,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	
 	<servlet>
 		<description>
-			Gentics .Node REST API for a Contnet Content Repository
+			Gentics .Node REST API for a Content Content Repository
 		</description>
 		<display-name>bin</display-name>
 		<servlet-name>bin</servlet-name>
@@ -88,7 +88,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	
 	<servlet>
 		<description>
-			Gentics .Node REST API for a Contnet Content Repository
+			Gentics .Node REST API for a Content Content Repository
 		</description>
 		<display-name>pcr</display-name>
 		<servlet-name>pcr</servlet-name>
@@ -103,7 +103,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	
 	<servlet>
 		<description>
-			Gentics .Node REST API for a Contnet Content Repository
+			Gentics .Node REST API for a Content Content Repository
 		</description>
 		<display-name>pcr_bin</display-name>
 		<servlet-name>pcr_bin</servlet-name>
@@ -118,7 +118,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	
 	<servlet>
 		<description>
-			Gentics .Node REST API for a Contnet Content Repository
+			Gentics .Node REST API for a Content Content Repository
 		</description>
 		<display-name>ccr_bin</display-name>
 		<servlet-name>ccr_bin</servlet-name>
@@ -133,7 +133,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	
 	<servlet>
 		<description>
-			Gentics .Node REST API for a Contnet Content Repository
+			Gentics .Node REST API for a Content Content Repository
 		</description>
 		<display-name>ccr</display-name>
 		<servlet-name>ccr</servlet-name>
