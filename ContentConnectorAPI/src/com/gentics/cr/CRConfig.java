@@ -3,7 +3,7 @@ package com.gentics.cr;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import com.gentics.api.lib.datasource.WriteableDatasource;
+import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
 
@@ -17,10 +17,10 @@ import com.gentics.cr.template.ITemplateManager;
 public interface CRConfig {
 
 	/**
-	 * Creates WriteableDatasource from Config
-	 * @return WriteableDatasource
+	 * Creates Datasource from Config
+	 * @return Datasource
 	 */
-	public WriteableDatasource getDatasource();
+	public Datasource getDatasource();
 
 	/**
 	 * Returns a PathResolver to resolve Paths of a ContentObject
@@ -149,5 +149,6 @@ public interface CRConfig {
 	 * @throws CRException
 	 */
 	public RequestProcessor getNewRequestProcessorInstance(int requestProcessorId) throws CRException;
+	
 	
 }

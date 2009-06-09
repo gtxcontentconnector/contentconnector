@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.WriteableDatasource;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.plink.PathResolver;
@@ -46,7 +47,7 @@ public class CRConfigUtil implements CRConfig {
 	
 	private String applicationRule=null;
 
-	private WriteableDatasource ds = null;
+	private Datasource ds = null;
 
 	private PathResolver pathResolver = null;
 	
@@ -102,60 +103,57 @@ public class CRConfigUtil implements CRConfig {
 	/**
 	 * Init Datasource
 	 */
-	public void initDS()
+	/*public void initDS()
 	{
 		initDS(null,null);
-	}
+	}*/
 
 	/**
 	 * Init Datasource with Handle Properties
 	 * @param hp Handle Properties
 	 */
-	public void initDS(Properties hp)
+	/*public void initDS(Properties hp)
 	{
 		initDS(hp,null);
-	}
-
+	}*/
+	
 	/**
 	 * Init Datasource with Handle Properties and Datasource Properties
 	 * @param hp Handle Properties
 	 * @param dp Datasource Properties
 	 */
-	public void initDS(Properties hp, Properties dp) {
+	/*public void initDS(Properties hp, Properties dp) {
+		
+	}*/
+	
+	/**
+	 * Init Datasource with Handle Properties and Datasource Properties
+	 * @param hp Handle Properties
+	 * @param dp Datasource Properties
+	 */
+	public void initDS() {
 		
 		
 		log.debug("Creating Writable Datasource for " + this.getName());
 
 		// Connect Content Respository
-		if(dp!=null && dp.size()!=0)
-		{
-			this.ds = PortalConnectorFactory.createWriteableDatasource(hp,dp);
-		}
-		else if(hp!=null && hp.size()!=0)
-		{
-			this.ds = PortalConnectorFactory.createWriteableDatasource(hp);
-		}
-		else{
-			for(int i = 1; i <= getRequestProcessorSize(); i++){
-				CRConfigUtil requestProcessorConfig = getRequestProcessorConfig(i);
-				if(requestProcessorConfig.handle_props!= null && requestProcessorConfig.handle_props.size()!=0 && requestProcessorConfig.dsprops!=null)
-				{
-					log.debug("init Datasource for RequestProcessor"+i);
-					requestProcessorConfig.ds = PortalConnectorFactory.createWriteableDatasource(requestProcessorConfig.handle_props,requestProcessorConfig.dsprops);
-					log.debug("Created Datasource for RequestProcessor"+i);
-					if(requestProcessorConfig.ds!=null)
-					{
-						//Init PathResolver for RP-Config
-						requestProcessorConfig.pathResolver = new PathResolver(this.ds, this.applicationRule);
-					}
-				}
-				else {
+		this.ds = CRDatabaseFactory.getDatasource(this);
+		
+		for(int i = 1; i <= getRequestProcessorSize(); i++){
+			CRConfigUtil requestProcessorConfig = getRequestProcessorConfig(i);
+			if(requestProcessorConfig.handle_props!= null && requestProcessorConfig.handle_props.size()!=0 && requestProcessorConfig.dsprops!=null)
+			{
+				log.debug("init Datasource for RequestProcessor"+i);
+				requestProcessorConfig.initDS();
+				log.debug("Created Datasource for RequestProcessor"+i);
+			}
+			else {
 
-					log.debug("No Datasource loaded for RequestProcessor"+i+" in "+ this.getName());
+				log.debug("No Datasource loaded for RequestProcessor"+i+" in "+ this.getName());
 
-				}
 			}
 		}
+		
 		
 		if (this.ds != null) {
 
@@ -183,7 +181,7 @@ public class CRConfigUtil implements CRConfig {
 	 * Sets the Datasource to use
 	 * @param dataSource
 	 */
-	public void setDatasource(WriteableDatasource dataSource)
+	public void setDatasource(Datasource dataSource)
 	{
 		this.ds = dataSource;	
 	}
@@ -264,7 +262,7 @@ public class CRConfigUtil implements CRConfig {
 		return "$url";
 	}
 
-	public WriteableDatasource getDatasource() {
+	public Datasource getDatasource() {
 		return this.ds;
 	}
 

@@ -81,7 +81,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 		}
 		
 		// INITIALIZE DATASOURCE WITH HANDLE_PROPS AND DSPROPS
-		initDS(handle_props,dsprops);
+		initDS();
 
 	}
 	
