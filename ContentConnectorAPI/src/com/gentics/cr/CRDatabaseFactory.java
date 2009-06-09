@@ -7,9 +7,9 @@ import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.portalnode.portal.Portal;
 /**
  * 
- * Last changed: $Date: 2009-05-28 09:10:54 +0200 (Do, 28 Mai 2009) $
- * @version $Revision: 62 $
- * @author $Author: bigbear.ap $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class CRDatabaseFactory {
