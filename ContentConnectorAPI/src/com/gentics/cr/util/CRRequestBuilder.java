@@ -123,7 +123,7 @@ public class CRRequestBuilder {
 		
 		//if filter is not set and contentid is => use contentid instad
 		if (("".equals(filter) || filter == null)&& contentid!=null && !contentid.equals("")){
-			filter = "object.contentid ==" + contentid;
+			filter = "object.contentid == '" + contentid+"'";
 		}
 		//SET PERMISSIONS-RULE
 		filter = this.createPermissionsRule(filter, permissions);
