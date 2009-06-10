@@ -349,7 +349,7 @@ public class CRRequest implements Cloneable, Serializable {
 		
 		if((this.getRequestFilter()==null || this.getRequestFilter().equals("")) && this.getContentid()!=null && !this.getContentid().equals(""))
 		{
-			this.setRequestFilter("object.contentid=="+this.getContentid());
+			this.setRequestFilter("object.contentid=='"+this.getContentid()+"'");
 		}
 		
 		//TEST IF REQUEST FILTER IS SAVE
