@@ -61,8 +61,11 @@ public class CRSearcher {
 				
 				HashMap<String,Object> result = new HashMap<String,Object>(2);
 				result.put("query", parsedQuery);
-				result.put("result", runSearch(searcher,parsedQuery,count));
-				
+				ArrayList<Document> coll = runSearch(searcher,parsedQuery,count);
+				result.put("result", coll);
+				int size=0;
+				if(coll!=null)size=coll.size();
+				this.log.debug("Found "+size+" objects with query: "+query);
 				return(result);
 			}
 			
