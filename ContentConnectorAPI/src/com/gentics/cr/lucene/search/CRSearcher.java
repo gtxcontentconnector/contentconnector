@@ -1,7 +1,7 @@
 package com.gentics.cr.lucene.search;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -9,6 +9,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -25,6 +26,8 @@ import org.apache.lucene.store.FSDirectory;
 public class CRSearcher {
 	
 	protected static Logger log = Logger.getLogger(CRSearcher.class);
+	protected static Logger log_explain = Logger.getLogger(CRSearcher.class+".explain");
+	
 	protected String indexPath;
 	
 	/**
@@ -40,9 +43,10 @@ public class CRSearcher {
 	 * @param query query string
 	 * @param searchedAttributes
 	 * @param count - max number of results that are to be returned
+	 * @param explain - if set to true the searcher will add extra explain output to the logger com.gentics.cr.lucene.searchCRSearcher.explain
 	 * @return HashMap<String,Object with two entries. Entry "query" contains the paresed query and entry "result" contains a Collection of result documents.
 	 */
-	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count) {
+	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,boolean explain) {
 		try {
 			IndexReader reader;
 			IndexSearcher searcher;
@@ -61,7 +65,7 @@ public class CRSearcher {
 				
 				HashMap<String,Object> result = new HashMap<String,Object>(2);
 				result.put("query", parsedQuery);
-				ArrayList<Document> coll = runSearch(searcher,parsedQuery,count);
+				LinkedHashMap<Float,Document> coll = runSearch(searcher,parsedQuery,count,explain);
 				result.put("result", coll);
 				int size=0;
 				if(coll!=null)size=coll.size();
@@ -82,17 +86,22 @@ public class CRSearcher {
 	 * @param count
 	 * @return ArrayList of results
 	 */
-	private ArrayList<Document> runSearch(IndexSearcher searcher, Query parsedQuery, int count) {
+	private LinkedHashMap<Float,Document> runSearch(IndexSearcher searcher, Query parsedQuery, int count,boolean explain) {
 		try {
 		    TopDocCollector collector = new TopDocCollector(count);
 		    searcher.search(parsedQuery, collector);
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 	
-		    ArrayList<Document> result = new ArrayList<Document>(hits.length);
+		    LinkedHashMap<Float,Document> result = new LinkedHashMap<Float,Document>(hits.length);
 		    this.log.debug("Found "+hits.length+" Documents");
 		    for(int i = 0 ; i < hits.length ; i++) {
-				Document doc = searcher.doc(hits[i].doc);
-				result.add(doc);
+		    	Document doc = searcher.doc(hits[i].doc);
+		    	result.put(hits[i].score,doc);
+		    	if(explain)
+		    	{
+		    		Explanation ex = searcher.explain(parsedQuery, hits[i].doc);
+		    		this.log_explain.info("Explanation for "+doc.toString()+" - "+ex.toString());
+		    	}
 			}
 			
 			return(result);
