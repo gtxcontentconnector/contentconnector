@@ -3,6 +3,7 @@ package com.gentics.cr;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * 
@@ -30,6 +31,7 @@ public class RequestProcessorMerger {
 		ArrayList<CRResolvableBean> result = new ArrayList<CRResolvableBean>();
 		
 		HashMap<Object,CRResolvableBean> resultMap = new HashMap<Object,CRResolvableBean>();
+		HashMap<Object,CRResolvableBean> resultMap2 = new HashMap<Object,CRResolvableBean>();
 		
 		String mergefilter="";
 		
@@ -58,13 +60,30 @@ public class RequestProcessorMerger {
 		for(CRResolvableBean crBean:rp2res)
 		{
 			Object id = crBean.get(uniquemergeattribute);
-			CRResolvableBean resultBean = resultMap.remove(id);
+			if(first)
+			{
+				first=false;
+				mergefilter+="\""+id+"\"";
+			}
+			else
+			{
+				mergefilter+=","+"\""+id+"\"";
+			}
+			resultMap2.put(id, crBean);
+		}
+		
+		for(Entry<Object,CRResolvableBean> e:resultMap.entrySet())
+		{
+			
+			Object id = e.getKey();
+			CRResolvableBean resultBean2 = resultMap2.remove(id);
+			CRResolvableBean resultBean = e.getValue();
 			//MERGE ATTRIBUTES
 			if(resultBean!=null)
 			{
 				for(String attribute:attributes)
 				{
-					resultBean.set(attribute, crBean.get(attribute));
+					resultBean.set(attribute, resultBean2.get(attribute));
 				}
 				result.add(resultBean);
 			}
