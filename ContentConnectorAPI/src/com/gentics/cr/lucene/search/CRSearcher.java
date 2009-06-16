@@ -26,7 +26,7 @@ import org.apache.lucene.store.FSDirectory;
 public class CRSearcher {
 	
 	protected static Logger log = Logger.getLogger(CRSearcher.class);
-	protected static Logger log_explain = Logger.getLogger(CRSearcher.class+".explain");
+	protected static Logger log_explain = Logger.getLogger(CRSearcher.class);
 	
 	protected String indexPath;
 	
@@ -65,7 +65,7 @@ public class CRSearcher {
 				
 				HashMap<String,Object> result = new HashMap<String,Object>(2);
 				result.put("query", parsedQuery);
-				LinkedHashMap<Float,Document> coll = runSearch(searcher,parsedQuery,count,explain);
+				LinkedHashMap<Document,Float> coll = runSearch(searcher,parsedQuery,count,explain);
 				result.put("result", coll);
 				int size=0;
 				if(coll!=null)size=coll.size();
@@ -86,21 +86,21 @@ public class CRSearcher {
 	 * @param count
 	 * @return ArrayList of results
 	 */
-	private LinkedHashMap<Float,Document> runSearch(IndexSearcher searcher, Query parsedQuery, int count,boolean explain) {
+	private LinkedHashMap<Document,Float> runSearch(IndexSearcher searcher, Query parsedQuery, int count,boolean explain) {
 		try {
 		    TopDocCollector collector = new TopDocCollector(count);
 		    searcher.search(parsedQuery, collector);
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 	
-		    LinkedHashMap<Float,Document> result = new LinkedHashMap<Float,Document>(hits.length);
+		    LinkedHashMap<Document,Float> result = new LinkedHashMap<Document,Float>(hits.length);
 		    this.log.debug("Found "+hits.length+" Documents");
 		    for(int i = 0 ; i < hits.length ; i++) {
 		    	Document doc = searcher.doc(hits[i].doc);
-		    	result.put(hits[i].score,doc);
+		    	result.put(doc,hits[i].score);
 		    	if(explain)
 		    	{
 		    		Explanation ex = searcher.explain(parsedQuery, hits[i].doc);
-		    		this.log_explain.info("Explanation for "+doc.toString()+" - "+ex.toString());
+		    		this.log_explain.debug("Explanation for "+doc.toString()+" - "+ex.toString());
 		    	}
 			}
 			

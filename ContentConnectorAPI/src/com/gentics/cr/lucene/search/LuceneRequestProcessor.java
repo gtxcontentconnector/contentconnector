@@ -33,7 +33,7 @@ import com.gentics.cr.util.CRUtil;
 public class LuceneRequestProcessor extends RequestProcessor {
 
 	protected static Logger log = Logger.getLogger(LuceneRequestProcessor.class);
-	protected static Logger ext_log = Logger.getLogger(LuceneRequestProcessor.class+".extended");
+	protected static Logger ext_log = Logger.getLogger(LuceneRequestProcessor.class);
 	private CRSearcher searcher = null;
 	protected String name=null;
 	
@@ -131,13 +131,13 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			log.error("COUNT IS LOWER THAN 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG!");
 		//GET RESULT
 		HashMap<String,Object> searchResult = this.searcher.search(request.getRequestFilter(),this.searchedAttributes,count,doNavigation);
-		LinkedHashMap<Float,Document> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
+		LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
 		if(docs!=null)
 		{
-			for(Entry<Float,Document> e:docs.entrySet())
+			for(Entry<Document,Float> e:docs.entrySet())
 			{
-				Document doc = e.getValue();
-				Float score = e.getKey();
+				Document doc = e.getKey();
+				Float score = e.getValue();
 				score.floatValue();
 				CRResolvableBean crBean = new CRResolvableBean(doc.get(this.idAttribute));
 				if(request.getAttributeArray()!=null)
@@ -162,9 +162,9 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	
 	
 	@SuppressWarnings("unchecked")
-	private LinkedHashMap<Float,Document> objectToLinkedHashMapDocuments(Object obj)
+	private LinkedHashMap<Document,Float> objectToLinkedHashMapDocuments(Object obj)
 	{
-		return((LinkedHashMap<Float,Document>) obj);
+		return((LinkedHashMap<Document,Float>) obj);
 	}
 
 }
