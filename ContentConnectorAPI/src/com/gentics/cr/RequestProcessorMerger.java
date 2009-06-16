@@ -70,11 +70,15 @@ public class RequestProcessorMerger {
 			CRResolvableBean resultBean2 = resultMap2.remove(id);
 			CRResolvableBean resultBean = e.getValue();
 			//MERGE ATTRIBUTES
-			if(resultBean!=null)
+			if(resultBean!=null && resultBean2!=null)
 			{
 				for(String attribute:attributes)
 				{
-					resultBean.set(attribute, resultBean2.get(attribute));
+					Object value = resultBean2.get(attribute);
+					if(value!=null)
+					{
+						resultBean.set(attribute, value);
+					}
 				}
 				result.add(resultBean);
 			}
