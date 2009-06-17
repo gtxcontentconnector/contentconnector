@@ -419,7 +419,7 @@ public class CRConfigUtil implements CRConfig {
 		{
 			try
 			{
-				this.tmplmanager = new VelocityTemplateManager(this);
+				this.tmplmanager = new VelocityTemplateManager(this,CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/"));
 			}catch(Exception e)
 			{
 				CRException ex = new CRException(e);
