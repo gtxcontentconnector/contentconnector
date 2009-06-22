@@ -4,9 +4,9 @@ import com.gentics.cr.util.CRUtil;
 
 /**
  * 
- * Last changed: $Date: 2009-06-09 14:33:13 +0200 (Di, 09 Jun 2009) $
- * @version $Revision: 79 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class ConfigurationSettings {

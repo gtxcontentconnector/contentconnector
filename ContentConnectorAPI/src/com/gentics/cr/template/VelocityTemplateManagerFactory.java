@@ -15,9 +15,9 @@ import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 
 /**
  * 
- * Last changed: $Date: 2009-05-18 17:44:44 +0200 (Mo, 18 Mai 2009) $
- * @version $Revision: 28 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class VelocityTemplateManagerFactory {
