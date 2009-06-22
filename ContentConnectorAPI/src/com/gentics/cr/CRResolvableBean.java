@@ -161,7 +161,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	
 	/**
 	 * Helper Method to inspect Attributes given from PropertyResolver or Resolvables theirself for containing not serializable Resolvables
-	 * @param resolvableAttribute: The attribute should be inspected
+	 * @param resolvableAttribute The attribute should be inspected
 	 * @return the cleaned up attribute. All Resolvables are converted to CRResolvableBeans. The attribute should be serializable afterwards.
 	 */
 	@SuppressWarnings("unchecked")

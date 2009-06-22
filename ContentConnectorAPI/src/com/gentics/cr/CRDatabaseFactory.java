@@ -1,5 +1,8 @@
 package com.gentics.cr;
 
+import java.util.Date;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
@@ -13,7 +16,7 @@ import com.gentics.portalnode.portal.Portal;
  *
  */
 public class CRDatabaseFactory {
-	private static Logger log = Logger.getLogger(CRConfigUtil.class);
+	private static Logger log = Logger.getLogger(CRDatabaseFactory.class);
 	/**
 	 * Gets a Datasource instance that ins configured within the given requestProcessorConfig
 	 * @param requestProcessorConfig containing the datasource config
@@ -22,21 +25,22 @@ public class CRDatabaseFactory {
 	public static Datasource getDatasource(CRConfigUtil requestProcessorConfig)
 	{
 		Datasource ds = null;
-		
-		if(requestProcessorConfig.handle_props!=null && requestProcessorConfig.handle_props.size()!=0)
+		Properties ds_handle = requestProcessorConfig.getDatasourceHandleProperties();
+		Properties ds_props = requestProcessorConfig.getDatasourceProperties();
+		if(ds_handle!=null && ds_handle.size()!=0)
 		{
-			if(requestProcessorConfig.handle_props.containsKey("portalnodedb"))
+			if(ds_handle.containsKey("portalnodedb"))
 			{
-				String key = (String)requestProcessorConfig.handle_props.get("portalnodedb");
+				String key = (String)ds_handle.get("portalnodedb");
 				ds = Portal.getCurrentPortal().createDatasource(key);
 			}
-			else if(requestProcessorConfig.dsprops!=null && requestProcessorConfig.dsprops.size()!=0)
+			else if(ds_props!=null && ds_props.size()!=0)
 			{
-				ds = PortalConnectorFactory.createWriteableDatasource(requestProcessorConfig.handle_props,requestProcessorConfig.dsprops);
+				ds = PortalConnectorFactory.createWriteableDatasource(ds_handle,ds_props);
 			}
 			else
 			{
-				ds = PortalConnectorFactory.createWriteableDatasource(requestProcessorConfig.handle_props);
+				ds = PortalConnectorFactory.createWriteableDatasource(ds_handle);
 			}	
 			log.debug("Datasource created for "+requestProcessorConfig.getName());
 		}
@@ -44,6 +48,7 @@ public class CRDatabaseFactory {
 		{
 			log.debug("No Datasource created for"+requestProcessorConfig.getName());
 		}
+		
 		return(ds);
 	}
 }

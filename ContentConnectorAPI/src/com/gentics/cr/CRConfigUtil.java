@@ -1,21 +1,16 @@
 package com.gentics.cr;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import com.gentics.api.lib.datasource.Datasource;
-import com.gentics.api.lib.datasource.WriteableDatasource;
-import com.gentics.api.portalnode.connector.PortalConnectorFactory;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
-import com.gentics.cr.template.VelocityTemplateManager;
+import com.gentics.cr.template.VelocityTemplateManagerFactory;
 import com.gentics.cr.util.CRUtil;
 
 /**
@@ -25,106 +20,37 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author$
  *
  */
-public class CRConfigUtil implements CRConfig {
+public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 
+	/**
+	 * Key under which the RequestProcessorConfigs are stored
+	 */
+	private static final String REQUEST_PROCESSOR_KEY = "RP";
+	
 	private static Logger log = Logger.getLogger(CRConfigUtil.class);
-
-	private Properties props = new Properties();
 
 	private String name = null;
 	
-	protected ITemplateManager tmplmanager=null;
-	
-	private String response_encoding="utf-8";
 
-	private String plinktemplate = null;
-	
-	private String binaryType=null;
-	
-	private String folderType=null;
-	
-	private String pageType=null;
-	
-	private String applicationRule=null;
-
-	private Datasource ds = null;
-
-	private PathResolver pathResolver = null;
-	
-	private String portalNodeCompMode = null;
-	
-	private HashMap<String, CRConfigUtil> requestProcessors = null;
-	
-	private ArrayList<String> filterChain = null;
-	
-	private String requestProcessorClass = null;
-
-	private String xmlUrl = null;
-	
-	private String xsltUrl = null;
-	
-	private String contentid_regex = null;
-	
-	private String objectpermissionattribute = null;
-	
-	private String userpermissionattribute = null;
-	
-	protected Properties dsprops = new Properties();
-	
-	protected Properties handle_props = new Properties();
-	
-	protected boolean sharedCache = false;
-	
-	private boolean contentidurl = false;
-
-	
 	/**
 	 * Create new instance of CRConfigUtil
 	 */
 	public CRConfigUtil() {
-		Properties logprops = new Properties();
-		try {
-			if(CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}").equals("")){
-				System.setProperty("com.gentics.portalnode.confpath", System.getProperty("catalina.base")+File.separator+"conf"+File.separator+"gentics"+File.separator);
-			}
-			String confpath = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/nodelog.properties");
-			//System.out.println("TRYING TO LOAD NODELOGPROPS FROM: "+confpath);
-			logprops.load(new FileInputStream(confpath));
-			PropertyConfigurator.configure(logprops);
-		} catch (IOException e) {
-			log.error("Could not find nodelog.properties.");
-			//e.printStackTrace();
-		}catch (NullPointerException e) {
-			log.error("Could not find nodelog.properties.");
-			//e.printStackTrace();
-		}
+		
 	}
 	
 	/**
-	 * Init Datasource
+	 * Create new instace of CRConfig util from GenericConfiguration
+	 * @param conf
 	 */
-	/*public void initDS()
+	public CRConfigUtil(GenericConfiguration conf, String name)
 	{
-		initDS(null,null);
-	}*/
-
-	/**
-	 * Init Datasource with Handle Properties
-	 * @param hp Handle Properties
-	 */
-	/*public void initDS(Properties hp)
-	{
-		initDS(hp,null);
-	}*/
+		this.name=name;
+		this.properties = conf.getProperties();
+		this.subconfigs = conf.getSubConfigs();
+	}
 	
-	/**
-	 * Init Datasource with Handle Properties and Datasource Properties
-	 * @param hp Handle Properties
-	 * @param dp Datasource Properties
-	 */
-	/*public void initDS(Properties hp, Properties dp) {
-		
-	}*/
+	
 	
 	/**
 	 * Init Datasource with Handle Properties and Datasource Properties
@@ -134,58 +60,26 @@ public class CRConfigUtil implements CRConfig {
 	public void initDS() {
 		
 		
-		log.debug("Creating Writable Datasource for " + this.getName());
+		log.debug("Creating Datasource for " + this.getName());
 
-		// Connect Content Respository
-		this.ds = CRDatabaseFactory.getDatasource(this);
+		// Init datasources so that the connections can be initialized
+		// The initialized handles will be cached and then returned when 
+		// the datasource is fetched again
+		getDatasource();
 		
 		for(int i = 1; i <= getRequestProcessorSize(); i++){
 			CRConfigUtil requestProcessorConfig = getRequestProcessorConfig(i);
-			if(requestProcessorConfig.handle_props!= null && requestProcessorConfig.handle_props.size()!=0 && requestProcessorConfig.dsprops!=null)
-			{
-				log.debug("init Datasource for RequestProcessor"+i);
-				requestProcessorConfig.initDS();
-				log.debug("Created Datasource for RequestProcessor"+i);
-			}
-			else {
-
-				log.debug("No Datasource loaded for RequestProcessor"+i+" in "+ this.getName());
-
-			}
+			requestProcessorConfig.initDS();
+			
+			
 		}
 		
 		
-		if (this.ds != null) {
-
-			log.debug("Loaded Gentics Datasource for Content Repository Servlet for "
-							+ this.getName());
-
-			this.pathResolver = new PathResolver(this.ds, this.applicationRule);
-
-			if (this.pathResolver != null) {
-
-				log.debug("Loaded Pathresolver for " + this.getName());
-
-			} else {
-
-				log.error("Could not initialize Pathresolver for "
-						+ this.getName());
-
-			}
-
-		} 
+		
 
 	}
 	
-	/**
-	 * Sets the Datasource to use
-	 * @param dataSource
-	 */
-	public void setDatasource(Datasource dataSource)
-	{
-		this.ds = dataSource;	
-	}
-
+	
 	/**
 	 * Set Name of Config
 	 * @param name
@@ -196,174 +90,324 @@ public class CRConfigUtil implements CRConfig {
 	}
 	
 	/**
-	 * @return 
-	 *	
+	 * Gets the configs name
+	 * @return name as string
 	 */
-	public String getBinaryType()
-	{
-		return(this.binaryType);
-	}
-	/**
-	 * @param type
-	 */
-	public void setBinaryType(String type)
-	{
-		this.binaryType=type;
-	}
-	
-	
-	public String getFolderType()
-	{
-		return(this.folderType);
-	}
-	public void setFolderType(String type)
-	{
-		this.folderType=type;
-	}
-	public String getPageType()
-	{
-		return(this.pageType);
-	}
-	public void setPageType(String type)
-	{
-		this.pageType=type;
-	}
-	
-	public String getApplicationRule()
-	{
-		return(this.applicationRule);
-	}
-	public void setApplicationRule(String rule)
-	{
-		this.applicationRule=rule;
-	}
-
 	public String getName() {
 		return this.name;
 	}
 	
+	
+	private static final String BINARY_TYPE_KEY="BINARYTYPE";
+	/**
+	 * Gets the applications binary type
+	 * @return 
+	 */
+	public String getBinaryType()
+	{
+		return((String)this.get(BINARY_TYPE_KEY));
+	}
+	
+	/**
+	 * Sets the applications binary type
+	 * @param type
+	 */
+	public void setBinaryType(String type)
+	{
+		this.set(BINARY_TYPE_KEY, type);
+	}
+	
+	private static final String FOLDER_TYPE_KEY="FOLDERTYPE";
+	/**
+	 * Gets the applications folder type
+	 * @return type
+	 */
+	public String getFolderType()
+	{
+		return((String)this.get(FOLDER_TYPE_KEY));
+	}
+	
+	/**
+	 * Sets the applications folder type
+	 * @param type
+	 */
+	public void setFolderType(String type)
+	{
+		this.set(FOLDER_TYPE_KEY, type);
+	}
+	
+	private static final String PAGE_TYPE_KEY="PAGETYPE";
+	/**
+	 * Gets the applications page type
+	 * @return type
+	 */
+	public String getPageType()
+	{
+		return((String)this.get(PAGE_TYPE_KEY));
+	}
+	
+	/**
+	 * Sets the applications page type
+	 * @param type
+	 */
+	public void setPageType(String type)
+	{
+		this.set(PAGE_TYPE_KEY, type);
+	}
+	
+	private static final String APPRULE_KEY="APPLICATIONRULE";
+	/**
+	 * Gets the application rule
+	 * @return rule
+	 */
+	public String getApplicationRule()
+	{
+		return((String)this.get(APPRULE_KEY));
+	}
+	/**
+	 * Sets the application rule
+	 * @param rule
+	 */
+	public void setApplicationRule(String rule)
+	{
+		this.set(APPRULE_KEY, rule);
+	}
+
+	/**
+	 * Alias for getProperties Method
+	 * @return flat properties as Properties Class
+	 */
 	public Properties getProps()
 	{
-		return(this.props);
+		return(this.getProperties());
 	}
 
+	private static final String PLINK_TEMPLATE_KEY="PLINKTEMPLATE";
+	
+	/**
+	 * Sets the applications PLink Template
+	 * @param template
+	 */
 	public void setPlinkTemplate(String template) {
-		this.plinktemplate = template;
+		this.set(PLINK_TEMPLATE_KEY, template);
 	}
 
+	/**
+	 * Gets the applications PLink Template
+	 * @return PLink template as string. Defaults to "$url" 
+	 */
 	public String getPlinkTemplate() {
-
-		if (this.plinktemplate != null && !"".equals(this.plinktemplate)) {
-			return this.plinktemplate;
+		String tmp = null;
+		tmp = (String)this.get(PLINK_TEMPLATE_KEY);
+		if (tmp != null && !"".equals(tmp)) {
+			return tmp;
 		}
-
 		log.warn("No plinktemplate set. Using default template '$url'.");
-
 		return "$url";
 	}
 
+	/**
+	 * Gets the Datasource of this config
+	 * 		- only RequestProcessor configs have Datasources set
+	 * @return Datasource or null if config has no Datasource
+	 */
 	public Datasource getDatasource() {
-		return this.ds;
+		return CRDatabaseFactory.getDatasource(this);
 	}
 
+	/**
+	 * Gets the PathResolver of this config
+	 * 		- only RequestProcessor configs have PathResolvers set
+	 * @return PathResolver or null if config has no PathResolver
+	 */
 	public PathResolver getPathResolver() {
-		return this.pathResolver;
+		PathResolver pathResolver = new PathResolver(this, this.getApplicationRule());
+		if (pathResolver != null) 
+		{
+			log.debug("Loaded Pathresolver for " + this.getName());
+		} 
+		else 
+		{
+			log.error("Could not initialize Pathresolver for "+ this.getName());
+		}
+		return pathResolver;
 	}
 
+	/**
+	 * Default to String method
+	 * @return Class name and Config name
+	 */
 	public String toString() {
-		return this.getClass().getName() + ":" + this.props.getProperty("url");
+		return this.getClass().getName() + ":" + this.getName();
 	}
 
+	private static final String ENCODING_KEY = "RESPONSE-CHARSET";
+	
+	/**
+	 * Sets the response encoding of the application
+	 * @param response_encoding
+	 */
 	public void setEncoding(String response_encoding) {
-		this.response_encoding = response_encoding;
+		this.set(ENCODING_KEY, response_encoding);
 	}
 
+	/**
+	 * Gets the applications configured Encoding
+	 * @return Encoding as String, defaults to "utf-8"
+	 */
 	public String getEncoding() {
-		return response_encoding;
+		String enc = (String)this.get(ENCODING_KEY);
+		if(enc!=null && !"".equals(enc))
+		{
+			return(enc);
+		}
+		return("utf-8");
 	}
 	
+	private static final String RP_CLASS_KEY = "RPCLASS";
+	
+	/**
+	 * Sets the RequestProcessor class used by this RP instance
+	 * 		- only RP configs have RP classes
+	 * @param requestProcessorClass
+	 */
 	public void setRequestProcessorClass(String requestProcessorClass) {
-		this.requestProcessorClass = requestProcessorClass;
+		this.set(RP_CLASS_KEY, requestProcessorClass);
 	}
 
+	/**
+	 *  Gets the RequestProcessor class used by this RP instance
+	 * 		- only RP configs have RP classes
+	 * @return class name as string or null if not set
+	 */
 	public String getRequestProcessorClass() {
-		return requestProcessorClass;
+		return (String)this.get(RP_CLASS_KEY);
 	}
+	
+	private static final String OBJECT_PERMISSION_ATTR_KEY = "OBJECTPERMISSIONATTRIBUTE";
+	
+	/**
+	 * Sets the applications objectperissionattribute
+	 * @param objectpermissionattribute
+	 */
 	public void setObjectPermissionAttribute(String objectpermissionattribute) {
-		this.objectpermissionattribute = objectpermissionattribute;
+		this.set(OBJECT_PERMISSION_ATTR_KEY, objectpermissionattribute);
 	}
-
+	
+	/**
+	 * Gets the applications objectperissionattribute
+	 * @return objectpermissionattribute
+	 */
 	public String getObjectPermissionAttribute() {
-		return objectpermissionattribute;
+		return (String)this.get(OBJECT_PERMISSION_ATTR_KEY);
 	}
 	
+	private static final String USER_PERMISSION_ATTR_KEY ="USERPERMISSIONATTRIBUTE";
+	/**
+	 * Sets the applications userperissionattribute
+	 * @param userpermissionattribute
+	 */
 	public void setUserPermissionAttribute(String userpermissionattribute) {
-		this.userpermissionattribute = userpermissionattribute;
+		this.set(USER_PERMISSION_ATTR_KEY, userpermissionattribute);
 	}
-
+	
+	/**
+	 * Gets the applications userpermissionattribute
+	 * @return userpermissionattribute
+	 */
 	public String getUserPermissionAttribute() {
-		return userpermissionattribute;
+		return (String)this.get(USER_PERMISSION_ATTR_KEY);
 	}
 
+	private static final String XML_URL_KEY ="XMLURL";
+	/**
+	 * Sets the applications XML url
+	 * @param xmlUrl
+	 */
 	public void setXmlUrl(String xmlUrl) {
-		this.xmlUrl = xmlUrl;
+		this.set(XML_URL_KEY, xmlUrl);
 	}
-
+	/**
+	 * Gets the applications XML url
+	 * @return url
+	 */
 	public String getXmlUrl() {
-		return xmlUrl;
+		return (String)this.get(XML_URL_KEY);
 	}
 	
+	private static final String XSLT_URL_KEY ="XSLTURL";
+	/**
+	 * Sets the applications Xslt url
+	 * @param xsltUrl
+	 */
 	public void setXsltUrl(String xsltUrl) {
- 		this.xsltUrl = xsltUrl;
+ 		this.set(XSLT_URL_KEY, xsltUrl);
 	}
-
+	/**
+	 * Gets the applications Xslt url
+	 * @return url
+	 */
 	public String getXsltUrl() {
-		return xsltUrl;
+		return (String)this.get(XSLT_URL_KEY);
 	}
 	
+	private static final String CONTENTID_REGEX_KEY ="CONTENTID_REGEX";
+	/**
+	 * Sets the applications Contentid Regex
+	 * @param contentid_regex
+	 */
 	public void setContentidRegex(String contentid_regex) {
-		this.contentid_regex = contentid_regex;
+		this.set(CONTENTID_REGEX_KEY,contentid_regex);
 	}
-
+	/**
+	 * Gets the applications Contentid Regex
+	 * @return regex
+	 */
 	public String getContentidRegex() {
-		return contentid_regex;
+		return (String)this.get(CONTENTID_REGEX_KEY);
 	}
 	
-	
-	
+	private static final String FILTERCHAIN_KEY = "FILTERCHAIN";
+	/**
+	 * Gets the applications filterchain
+	 * @return filterchain or null if no filterchain is set
+	 */
 	public ArrayList<String> getFilterChain(){
-		return this.filterChain;
+		
+		return getPropertiesAsSortedCollection(FILTERCHAIN_KEY);
 	}
 	
+	/**
+	 * Gets count of requestprocessors configured in this config
+	 * @return count
+	 */
 	public int getRequestProcessorSize(){
-		if(requestProcessors!=null){
-			return requestProcessors.size();
+		Object obj = get(REQUEST_PROCESSOR_KEY);
+		if(obj!=null && obj instanceof GenericConfiguration)
+		{
+			return ((GenericConfiguration)obj).getSubConfigSize();
 		}
 		return 0;
 	}
 	/**
 	 * get Configuration of the specified RequestProcessor
-	 * @param requestProcessorId: Number of the RequestProcessor
+	 * @param requestProcessorId Number of the RequestProcessor
 	 * @return Configuration of the specified RequestProcessor. null in case something bad happens
 	 */
 	public CRConfigUtil getRequestProcessorConfig(int requestProcessorId){
-		if(requestProcessors!=null){
-			return (CRConfigUtil) requestProcessors.get(requestProcessorId + "");
-		}
-		else{
-			log.fatal("RequestProcessor"+requestProcessorId+" cannot be found. Maybe your config cannot be initialized correctly.");
-			return null;			
-		}
+		return(getRequestProcessorConfig(""+requestProcessorId));
 	}
 	
 	/**
 	 * get Configuration of the specified RequestProcessor
-	 * @param requestProcessorId: Number of the RequestProcessor
+	 * @param requestProcessorId Number of the RequestProcessor
 	 * @return Configuration of the specified RequestProcessor. null in case something bad happens
 	 */
 	public CRConfigUtil getRequestProcessorConfig(String requestProcessorId){
-		if(requestProcessors!=null){
-			return (CRConfigUtil) requestProcessors.get(requestProcessorId);
+		Object obj = get(REQUEST_PROCESSOR_KEY+"."+requestProcessorId);
+		
+		if(obj!=null && obj instanceof GenericConfiguration){
+			return new CRConfigUtil((GenericConfiguration)obj,this.getName()+"."+REQUEST_PROCESSOR_KEY+"."+requestProcessorId);
 		}
 		else{
 			log.fatal("RequestProcessor"+requestProcessorId+" cannot be found. Maybe your config cannot be initialized correctly.");
@@ -393,183 +437,123 @@ public class CRConfigUtil implements CRConfig {
 		return(rp);
 	}
 	
+	private static final String PORTALNODE_COMPATIBILITY_MODE_KEY = "PORTALNODECOMPATIBILITY";
+	/**
+	 * gets if application is running in portalnode compatibility mode
+	 * @return true if app is running in portalnode compatibility mode
+	 */
 	public boolean getPortalNodeCompMode() {
-		if(this.portalNodeCompMode==null)
-		{
-			return(false);
-		}
-		else
-		{
-			if(this.portalNodeCompMode.toUpperCase().equals("TRUE"))
-			{
-				return(true);
-			}
-			else
-			{
-				return(false);
-			}
-		}
+		String pnComp = (String)get(PORTALNODE_COMPATIBILITY_MODE_KEY);
+		return Boolean.parseBoolean(pnComp);
 	}
+	/**
+	 * Sets the applications portalnode compatibility mode
+	 * @param mode
+	 */
 	public void setPortalNodeCompMode(String mode) {
-		this.portalNodeCompMode=mode;
+		this.set(PORTALNODE_COMPATIBILITY_MODE_KEY, mode);
 	}
 	
+	/**
+	 * Gets the configured template manager
+	 * @return template manager or null if it is not set
+	 */
 	public ITemplateManager getTemplateManager() {
-		if(this.tmplmanager==null && !this.getPortalNodeCompMode())
+		if(!this.getPortalNodeCompMode())
 		{
+			ITemplateManager tmplManager=null;
 			try
 			{
-				this.tmplmanager = new VelocityTemplateManager(this,CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/"));
+				tmplManager = VelocityTemplateManagerFactory.getConfiguredVelocityTemplateManagerInstance(this.getEncoding(),CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/"));
 			}catch(Exception e)
 			{
 				CRException ex = new CRException(e);
 				log.error(ex.getMessage()+ex.getStringStackTrace());
 			}
+			return tmplManager;
 		}
-		return this.tmplmanager;
+		return null;
 	}
+	
+	private static final String SHARED_CACHE_KEY="USESHAREDCACHES";
+	/**
+	 * @return true if application is to use shared caches
+	 */
 	public boolean useSharedCache(){
-		return sharedCache;
+		String pnSC = (String)get(PORTALNODE_COMPATIBILITY_MODE_KEY);
+		return Boolean.parseBoolean(pnSC);
+		
 	}
+	/**
+	 * Sets if the application should use shared caches
+	 * @param sharedCache
+	 * @return value of sharedcache after it has been set
+	 */
 	public boolean useSharedCache(boolean sharedCache){
-		this.sharedCache = sharedCache;
+		this.set(SHARED_CACHE_KEY, Boolean.toString(sharedCache));
 		return useSharedCache();
 	}
 	
-	/**
-	 * Set property according to the name/value set
-	 * @param name
-	 * @param value
-	 * @return true if property has been set properly
-	 */
-	public boolean setProperty(String name, String value)
-	{
-		boolean valueSet = false;
-		if (value instanceof String) {
-			//RESOLVE SYSTEM PROPERTIES
-			String newvalue = CRUtil.resolveSystemProperties((String)value);
-			String key = name.toString();
-						
-			log.debug("Checking property '" + key + "': "+newvalue);
-			
-			if(key.equalsIgnoreCase("usecontentidurl")){
-				if("TRUE".equalsIgnoreCase(newvalue))this.contentidurl=true;
-				log.debug("Setting usecontentidurl to "+newvalue);
-				valueSet=true;
-			}else if(key.equalsIgnoreCase("binarytype")){
-				this.setBinaryType(newvalue);
-				log.debug("The binary type in this servlet will be set to the object type "+this.getBinaryType());
-				valueSet=true;
-			}else if(key.equalsIgnoreCase("usesharedcaches")){
-				this.useSharedCache(Boolean.parseBoolean(newvalue));
-				log.debug("The servlet will use shared caches "+this.useSharedCache());
-				valueSet=true;
-			}else if(key.equalsIgnoreCase("foldertype")){
-				this.setFolderType(newvalue);
-				log.debug("The folder type in this servlet will be set to the object type "+this.getFolderType());
-				valueSet=true;
-			}else if(key.equalsIgnoreCase("portalnodecompatibility")){
-				this.setPortalNodeCompMode(newvalue);
-				log.debug("Portalnode compatibiliti mode is set to "+newvalue);
-				valueSet=true;
-			}else if(key.equalsIgnoreCase("pagetype")){
-				this.setPageType(newvalue);
-				log.debug("The page type in this servlet will be set to the object type "+this.getPageType());
-				valueSet=true;
-			}else if(key.equalsIgnoreCase("applicationrule")){
-				this.setApplicationRule(newvalue);
-				log.debug("This servlet is working with the application rule: "+this.getApplicationRule());
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("plinktemplate")) {
-				this.setPlinkTemplate(newvalue);
-				log.debug("Plinktemplate is set to "+newvalue);
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("response-charset")){
-				this.setEncoding(newvalue);
-				log.debug("The response charset is set to "+this.getEncoding());
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("rpClass")){
-				this.setRequestProcessorClass(newvalue);
-				log.debug("The RequestProcessorClass is set to "+this.getRequestProcessorClass());
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("xmlUrl")){
-				this.setXmlUrl(newvalue);
-				log.debug("The xmlUrl is set to "+this.getXmlUrl());
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("xsltUrl")){
-				this.setXsltUrl(newvalue);
-				log.debug("The xsltUrl is set to "+this.getXsltUrl());
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("contentid_regex")){
-				this.setContentidRegex(newvalue);
-				log.debug("The contentid regex is set to "+this.getContentidRegex());
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("objectpermissionattribute")){
-				this.setObjectPermissionAttribute(newvalue);
-				log.debug("The objectpermissionattribute is set to "+this.getObjectPermissionAttribute());
-				valueSet=true;
-			}else if (key.equalsIgnoreCase("userpermissionattribute")){
-				this.setUserPermissionAttribute(newvalue);
-				log.debug("The userpermissionattribute is set to "+this.getUserPermissionAttribute());
-				valueSet=true;
-			
-				
-			}else if (key.equalsIgnoreCase("contentid_regex")){
-				this.setContentidRegex(newvalue);
-				log.debug("The contentid regex is set to "+this.getContentidRegex());
-				valueSet=true;
-			}else if (key.toUpperCase().startsWith("RP.")){
-				//getRequestProcessorClasses
-				String requestProcessorNumber = key.substring(3, 4);
-				String requestProcessorAttribute = key.substring(5);
-				if(requestProcessors==null)requestProcessors = new HashMap<String, CRConfigUtil>(2);
-				if(!requestProcessors.containsKey(requestProcessorNumber))requestProcessors.put(requestProcessorNumber, new CRConfigUtil());
-				log.debug("Property '"+requestProcessorAttribute+"' will be added to RequestProcessor '"+requestProcessorNumber+"'");
-				CRConfigUtil requestProcessorConfig = (CRConfigUtil) requestProcessors.get(requestProcessorNumber);
-				if(requestProcessorConfig.getName()==null)requestProcessorConfig.setName(this.getName());
-				if(requestProcessorAttribute.toUpperCase().startsWith("DS.")){
-					requestProcessorConfig.dsprops.put(requestProcessorAttribute.substring(3), newvalue);
-					log.debug("Property '" + requestProcessorAttribute + "' passed to Datasource as '"+newvalue+"'.");
-					valueSet=true;
-				}else if(requestProcessorAttribute.toUpperCase().startsWith("DS-HANDLE.")){
-					requestProcessorConfig.handle_props.put(requestProcessorAttribute.substring(10), newvalue);
-					log.debug("Property '" + requestProcessorAttribute + "' passed to DatasourceHandle as '"+newvalue+"'.");
-					valueSet=true;
-				}else{
-					valueSet=requestProcessorConfig.setProperty(requestProcessorAttribute, newvalue);
-					if(valueSet)log.debug("Property '" + requestProcessorAttribute + "' passed to RequestProcessor as '"+newvalue+"'.");
-				}
-			}else if (key.toUpperCase().startsWith("FILTERCHAIN.")){
-				//getRequestProcessorClasses
-				String filterNumber = key.substring(12);
-				if(filterChain==null)filterChain = new ArrayList<String>(1);
-				try{
-					int index = Integer.parseInt(filterNumber)-1;
-					if(filterChain.size()>index){
-						filterChain.set(index, newvalue);
-					}
-					else
-						filterChain.add(index, newvalue);
-					log.debug("filterChain was extended by '"+newvalue+"' at Position '"+filterNumber+"'");
-					valueSet=true;
-				}
-				catch(NumberFormatException ex){
-					log.error("filterChain."+filterNumber+"="+value+" contains an illegal filterNumber ("+filterNumber+") please use Integers only");
-					ex.printStackTrace();
-					valueSet=false;
-				}
-			}
-		}
-		return valueSet;
+	private static final String CONTENTID_URL_KEY = "USECONTENTIDURL";
 	
-	}
-
 	/**
 	 * defindes if to use contentidurl
 	 * @return true if using conteitdurl
 	 */
 	public boolean usesContentidUrl() {
-		
-		return this.contentidurl;
+		String pnCU = (String)get(CONTENTID_URL_KEY);
+		return Boolean.parseBoolean(pnCU);
 	}
+	
+	private static final String DATASOURCE_PROPS_KEY = "DS";
+	
+	/**
+	 * Get the Datasource Properties for the current config
+	 * @return Datasource Properties or null if not set
+	 */
+	public Properties getDatasourceProperties()
+	{
+		Object obj = get(DATASOURCE_PROPS_KEY);
+		if(obj!=null && obj instanceof GenericConfiguration)
+		{
+			Properties dsprops = ((GenericConfiguration)obj).getRebuiltPropertyTree();
+			Properties ret = new Properties();
+			//DATASOURCE PROPERTY KEYS NEED TO BE LOWERCASE IN ORDER TO BE UNDERSTOOD BY THE DRIVER
+			//DATASOURCE PROPERTIES NEED TO BE RESOLVED AND REBUILT
+			for(Entry<Object,Object> e:dsprops.entrySet())
+			{
+				String key = (String)e.getKey();
+				ret.put(key.toLowerCase(), e.getValue());
+			}
+			return ret;
+		}
+		return(null);
+	}
+	
+	private static final String DATASOURCE_HANDLE_KEY = "DS-HANDLE";
+	
+	/**
+	 * Get the Datasource Handle Properties for the current config
+	 * @return Datasource Handle Properties or null if not set
+	 */
+	public Properties getDatasourceHandleProperties()
+	{
+		Object obj = get(DATASOURCE_HANDLE_KEY);
+		if(obj!=null && obj instanceof GenericConfiguration)
+		{
+			Properties dsprops = ((GenericConfiguration)obj).getRebuiltPropertyTree();
+			Properties ret = new Properties();
+			//DATASOURCE PROPERTY KEYS NEED TO BE LOWERCASE IN ORDER TO BE UNDERSTOOD BY THE DRIVER
+			for(Entry<Object,Object> e:dsprops.entrySet())
+			{
+				String key = ((String)e.getKey()).toLowerCase();
+				//Driver class has to be spelled "driverClass"
+				if("driverclass".equals(key))key="driverClass";
+				ret.put(key, e.getValue());
+			}
+			return ret;
+		}
+		return(null);
+	}
+		
 }

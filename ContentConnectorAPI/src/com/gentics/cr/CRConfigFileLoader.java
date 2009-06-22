@@ -3,14 +3,13 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import org.apache.jcs.engine.control.CompositeCacheManager;
 import org.apache.log4j.Logger;
 
+import com.gentics.cr.configuration.ConfigurationSettings;
+import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.util.CRUtil;
 /**
  * 
@@ -39,36 +38,40 @@ public class CRConfigFileLoader extends CRConfigUtil {
 		super();
 		this.instancename = name;
 		this.webapproot = webapproot;
-		Properties props = new Properties();
 		
-		try {
-			//LOAD CACHE CONFIGURATION
-			String confpath = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/cache.ccf");
-			cache_props.load(new FileInputStream(confpath));
-			CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
-			cManager.configure(cache_props);
-		} catch(NullPointerException e){
-			log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
-		} catch (FileNotFoundException e) {
-			log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
-		} catch (IOException e) {
-			log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
+		//Load Environment Properties
+		EnvironmentConfiguration.loadEnvironmentProperties();
+		EnvironmentConfiguration.loadCacheProperties();
+		this.setName(this.instancename);
+		
+		//LOAD DEFAULT CONFIGURATION
+		loadConfigFile("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties");
+		
+		//LOAD ENVIRONMENT SPECIFIC CONFIGURATION
+		String modePath = ConfigurationSettings.getConfigurationPath();
+		if(modePath!=null && !"".equals(modePath))
+		{
+			loadConfigFile("${com.gentics.portalnode.confpath}/rest/"+modePath+this.getName()+".properties");
 		}
 		
+		// INITIALIZE DATASOURCE WITH HANDLE_PROPS AND DSPROPS
+		initDS();
+
+	}
+	
+	private void loadConfigFile(String path)
+	{
+		Properties props = new Properties();
 		try {
 			//LOAD SERVLET CONFIGURATION
-			
-			this.setName(this.instancename);
-			String confpath = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties");
+			String confpath = CRUtil.resolveSystemProperties(path);
 			
 			props.load(new FileInputStream(confpath));
 			
-			for (Iterator i = props.entrySet().iterator() ; i.hasNext() ; ) {
-				Map.Entry entry = (Entry) i.next();
+			for (Entry<Object,Object> entry:props.entrySet()) {
 				Object value = entry.getValue();
 				Object key = entry.getKey();
-				//this.filterInitProperties(key, value);
-				this.setProperty((String)key, (String)value);
+				setProperty((String)key, (String)value);
 			}
 			
 		} catch (FileNotFoundException e1) {
@@ -79,47 +82,33 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!\r\n");
 			e.printStackTrace();
 		}
-		
-		// INITIALIZE DATASOURCE WITH HANDLE_PROPS AND DSPROPS
-		initDS();
-
 	}
 	
 	/**
-	 * Define where to put init variables
-	 * @param name
+	 * Sets and prepares the properties
+	 * @param key
 	 * @param value
 	 */
-	protected void filterInitProperties(Object name, Object value)
+	protected void setProperty(String key, String value)
 	{
-		if (value instanceof String) {
-			//RESOLVE SYSTEM PROPERTIES
-			String newvalue = CRUtil.resolveSystemProperties((String)value);
-			String key = name.toString();
-						
-			log.debug("Checking property '" + key + "': "+newvalue);
-			
-			//FILTER INIT PROPERTIES
-			if(key.toUpperCase().startsWith("CACHE"))
-			{
-				dsprops.put(key, newvalue);
-			}else if (key.equalsIgnoreCase("URL")) {
-				// the parameter url contains the database url. In order to
-				// distribute a hqsql database a relative path is needed.
-				// Therefor $webapproot may be used in the url string which
-				// points to the root dir of the webapp.
-				String url = newvalue;
-				url = url.replaceAll("\\$\\{webapproot\\}", this.webapproot.replace('\\', '/'));
-				this.handle_props.put("url", url);
-				log.debug("Resolved property '" + key + "' to " + url);
-
-			}else if(!setProperty(key,newvalue)){
-				// all oter properties may be Datasource Properties and therefore are passed through handle_props
-				this.handle_props.put(key, newvalue);
-				log.debug("Property '" + key + "' passed to Datasource as '"+newvalue+"'.");
-			}
-		}	
+		//Resolve system properties, so that they can be used in config values
+		value = CRUtil.resolveSystemProperties((String)value);
+		
+		//Replace webapproot in the properties values, so that this variable can be used
+		value = resolveProperty("\\$\\{webapproot\\}", this.webapproot.replace('\\', '/'), value);
+		
+		//Set the property
+		set(key,value);
+		log.debug("CONFIG: "+key+" has been set to "+value);
 	}
-
 	
+	
+    
+    protected String resolveProperty(String pattern, String replacement, String value)
+    {
+    	value = value.replaceAll(pattern,replacement);
+    	return(value);
+    }
+    
+		
 }

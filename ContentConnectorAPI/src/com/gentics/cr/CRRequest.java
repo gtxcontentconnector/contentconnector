@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
@@ -344,8 +345,22 @@ public class CRRequest implements Cloneable, Serializable {
 	 */
 	public DatasourceFilter getPreparedFilter(CRConfig config) throws ParserException, ExpressionParserException
 	{
+		return getPreparedFilter(config,null);
+	}
+	
+	/**
+	 * Get a prepared and checked instance of DatasourceFilter. The filter is checked for sanity before it is merged with the application rule defined in the given CRConfig.
+	 * @param config 
+	 * @param ds Datasource => Datasource does not have to be fetched from config => Faster
+	 * @return DatasourceFilter
+	 * @throws ParserException 
+	 * @throws ExpressionParserException 
+	 */
+	public DatasourceFilter getPreparedFilter(CRConfig config, Datasource ds) throws ParserException, ExpressionParserException
+	{
 		DatasourceFilter dsFilter;
 		String filter ="";
+		if(ds==null)ds=config.getDatasource();
 		
 		if((this.getRequestFilter()==null || this.getRequestFilter().equals("")) && this.getContentid()!=null && !this.getContentid().equals(""))
 		{
@@ -371,7 +386,7 @@ public class CRRequest implements Cloneable, Serializable {
 		
 		expression = PortalConnectorFactory.createExpression(filter);
 		
-		dsFilter = config.getDatasource().createDatasourceFilter(expression);
+		dsFilter = ds.createDatasourceFilter(expression);
 		Iterator<String> it = this.getObjectsToDeploy().keySet().iterator();
 		while(it.hasNext())
 		{
@@ -527,12 +542,19 @@ public class CRRequest implements Cloneable, Serializable {
 		return(this.params.get(key));
 	}
 	
+	/**
+	 * @return
+	 */
 	@Override
 	public int hashCode() {
 		// shamelessly copied from List#hashCode()
 		return 31*this.params.hashCode() + this.objectsToDeploy.hashCode();
 	}
 	
+	/**
+	 * @param obj
+	 * @return 
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof CRRequest)) {

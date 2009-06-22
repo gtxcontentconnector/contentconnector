@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
@@ -43,19 +44,19 @@ public class CRRequestProcessor extends RequestProcessor{
 	 */
 	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException
 	{
-		
+		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
 		if (request != null) {
 			
 			// Parse the given expression and create a datsource filter
 			try {
-				
-				if (this.config.getDatasource() == null) {
+				ds = this.config.getDatasource();
+				if (ds == null) {
 					throw (new DatasourceException("No Datasource available."));
 				}
 
-				dsFilter = request.getPreparedFilter(config);
+				dsFilter = request.getPreparedFilter(config,ds);
 				
 				// add base resolvables
 				if (this.resolvables != null) {
@@ -68,7 +69,7 @@ public class CRRequestProcessor extends RequestProcessor{
 				}
 
 				// do the query
-				Collection<Resolvable> col = this.toResolvableCollection(this.config.getDatasource().getResult(
+				Collection<Resolvable> col = this.toResolvableCollection(ds.getResult(
 						dsFilter, request.getAttributeArray(), request.getStart().intValue(),
 						request.getCount().intValue(), request.getSorting()));
 

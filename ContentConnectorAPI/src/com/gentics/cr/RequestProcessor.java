@@ -51,6 +51,8 @@ public abstract class RequestProcessor {
 		this.config = config;
 		this.plinkProc = new PlinkProcessor(config);
 		
+		
+		if(config==null) throw new CRException("CONFIG","Config is NULL => overthink your config!",CRException.ERRORTYPE.FATAL_ERROR);
 		if(config.getPortalNodeCompMode())
 		{
 			//Servlet will run in portal.node compatibility mode => no velocity available
