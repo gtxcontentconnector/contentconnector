@@ -58,8 +58,7 @@ public class PlinkProcessor {
 				log.error("Attention i'm using a shared plinkcache because i'm missing my config.");
 			}
 			plinkCache = JCS.getInstance("gentics-cr-" + configName	+ "-plinks");
-			log.debug("Initialized cache zone for \""
-					+ this.config.getName() + "-plinks\".");
+			log.debug("Initialized cache zone for \""+ configName + "-plinks\".");
 
 		} catch (CacheException e) {
 

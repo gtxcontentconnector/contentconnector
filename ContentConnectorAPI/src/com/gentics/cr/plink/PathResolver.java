@@ -15,6 +15,7 @@ import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.expressionparser.filtergenerator.FilterGeneratorException;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
+import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 
 /**
@@ -28,7 +29,7 @@ import com.gentics.cr.CRRequest;
  */
 public class PathResolver {
 
-	private Datasource ds = null;
+	private CRConfig conf = null;
 
 	private Expression expression = null;
 
@@ -41,9 +42,9 @@ public class PathResolver {
 	 * 
 	 * @param ds
 	 */
-	public PathResolver(Datasource ds, String appRule) {
+	public PathResolver(CRConfig conf, String appRule) {
 
-		this.ds = ds;
+		this.conf = conf;
 
 		// define the rule for finding pages or files with path/filename
 		String rule = "object.filename == data.filename && (object.folder_id.pub_dir == data.path || object.folder_id.pub_dir == concat(data.path, '/'))";
@@ -80,6 +81,7 @@ public class PathResolver {
 			try {
 				
 				// prepare the filter
+				Datasource ds = this.conf.getDatasource();
 				DatasourceFilter filter = ds.createDatasourceFilter(expression);
 				
 				//Deploy base objects
@@ -128,8 +130,7 @@ public class PathResolver {
 		try {
 
 			// initialize linked Object
-			linkedObject = PortalConnectorFactory.getContentObject(contentid,
-					ds);
+			linkedObject = PortalConnectorFactory.getContentObject(contentid,this.conf.getDatasource());
 			return getPath(linkedObject);
 
 		} catch (DatasourceNotAvailableException e) {
