@@ -25,41 +25,18 @@ import com.gentics.cr.CRException;
  */
 public class VelocityTemplateManager implements ITemplateManager {
 
-	private CRConfig config;
+	private String encoding;
 	private HashMap<String, Object> objectstoput;
 	
 	//Templatecache
 	private HashMap<String, Template> templates;
 	
 		
-	public VelocityTemplateManager(CRConfig config, String templatepath) throws Exception
+	public VelocityTemplateManager(String encoding)
 	{
-		Properties props = new Properties();
-		props.setProperty("string.loader.description","String Resource Loader");
-		props.setProperty("string.resource.loader.class","org.apache.velocity.runtime.resource.loader.StringResourceLoader");
-		props.setProperty("resource.loader","string");
-		
-		if(templatepath!=null){
-			//Configure file resource loader when we have to load velocimacro library
-			//TODO: load file resource loader when no confpath is given to allow the users to include their templates in runtime
-			props.setProperty("file.loader.description", "File Resource Loader");
-			props.setProperty("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.FileResourceLoader");
-			props.setProperty("file.resource.loader.path",templatepath);
-			props.setProperty("resource.loader","string,file");
-			//TODO: autodetect velocimacro library using *.vm files in confpath
-			props.setProperty("velocimacro.library", "velocitymacros.vm");
-		}
-		//Configure Log4J logging for velocity
-		props.put("runtime.log.logsystem.class","org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
-		props.put("runtime.log.logsystem.log4j.category","org.apache.velocity");
-		
-		props.put("input.encoding", config.getEncoding());
-		props.put("output.encoding", config.getEncoding());
-		Velocity.init(props);
-		
-		this.config=config;
+		this.encoding = encoding;
 		this.objectstoput = new HashMap<String,Object>();
-		this.templates = new HashMap<String,Template>();
+		
 	}
 	
 	
@@ -76,7 +53,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 	public String render(String templateName, String templateSource) throws CRException {
 		String renderedTemplate=null;
 		StringResourceRepository rep = StringResourceLoader.getRepository();
-		rep.setEncoding(this.config.getEncoding());
+		rep.setEncoding(this.encoding);
 		try {
 			
 			Template template=this.templates.get(templateName);
