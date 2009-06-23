@@ -150,5 +150,10 @@ public interface CRConfig {
 	 */
 	public RequestProcessor getNewRequestProcessorInstance(int requestProcessorId) throws CRException;
 	
-	
+	/**
+	 * Get value for key
+	 * @param key
+	 * @return
+	 */
+	public Object get(String key);
 }

@@ -1,17 +1,15 @@
 package com.gentics.cr.lucene.indexer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
 import java.util.Map.Entry;
 
@@ -32,6 +30,9 @@ import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.contentnode.content.GenticsContentFactory;
 import com.gentics.contentnode.datasource.CNWriteableDatasource;
+import com.gentics.cr.CRConfigFileLoader;
+import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.CRUtil;
 
 /**
@@ -51,8 +52,6 @@ public class CRIndexer {
 	 */
 	public final static String PARAM_LASTINDEXRULE = "lastindexrule";
 
-	protected HashMap<String,IndexerCRConfig> crConfigs = new HashMap<String,IndexerCRConfig>();
-	
 	protected String indexLocation = null;
 	
 	protected int interval = -1;
@@ -71,6 +70,13 @@ public class CRIndexer {
 	
 	protected boolean periodicalRun=false;
 	
+	protected CRConfigUtil crconfig;
+	
+	
+	private static final String INTERVAL_KEY = "INTERVAL";
+	private static final String BATCHSIZE_KEY = "BATCHSIZE";
+	private static final String PERIODICAL_KEY = "PERIODICAL";
+	private static final String INDEX_LOCATION_KEY = "indexLocation";
 	
 	/**
 	 * Create new instance of CRIndexer
@@ -79,10 +85,22 @@ public class CRIndexer {
 	public CRIndexer(String name)
 	{
 		this.name = name;
-		loadConfig();
+		crconfig = new CRConfigFileLoader(name, null);
+		postConfig();
 		indexerJob = new BackgroundJob(this.periodicalRun);
 		backgroundThread = new Thread(indexerJob);
 		//initializes background job
+	}
+	
+	private void postConfig()
+	{
+		String i = (String)crconfig.get(INTERVAL_KEY);
+		if(i!=null)this.interval = new Integer(i);
+		String bs = (String)crconfig.get(BATCHSIZE_KEY);
+		if(bs!=null)this.batchSize = new Integer(bs);
+		String p = (String)crconfig.get(PERIODICAL_KEY);
+		if(p!=null)this.periodicalRun = Boolean.parseBoolean(p);
+		indexLocation = (String)crconfig.get(INDEX_LOCATION_KEY);
 	}
 	
 	/**
@@ -102,6 +120,7 @@ public class CRIndexer {
 		this.periodicalRun=true;
 		this.indexerJob.stop=false;
 		this.backgroundThread.start();
+		
 		try {
 			Thread.sleep(5);
 		} catch (InterruptedException e) {
@@ -146,107 +165,7 @@ public class CRIndexer {
 		this.indexerJob.runSingle();
 	}
 	
-	protected void loadConfig()
-	{
-		Properties props = new Properties();
-		try {
-			String confpath = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties");
-			
-			props.load(new FileInputStream(confpath));
-			
-			for (Iterator<Entry<Object,Object>> i = props.entrySet().iterator() ; i.hasNext() ; ) {
-				Map.Entry<Object,Object> entry = (Entry<Object,Object>) i.next();
-				Object value = entry.getValue();
-				Object key = entry.getKey();
-				this.setProperty((String)key, (String)value);
-			}
-			
-		} catch (FileNotFoundException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-		} catch (IOException e1) {
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-		}catch(NullPointerException e){
-			this.log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-			e.printStackTrace();
-		}
-	}
 	
-	protected void setProperty(String key, String value)
-	{
-		if(key instanceof String)
-		{
-			if(key.toUpperCase().equals("INDEXLOCATION"))
-			{
-				this.indexLocation = value;
-			}
-			else if(key.toUpperCase().equals("INTERVAL"))
-			{
-				this.interval = Integer.parseInt(value);
-			}
-			else if(key.toUpperCase().equals("BATCHSIZE"))
-			{
-				this.batchSize = Integer.parseInt(value);
-			}
-			else if("PERIODICAL".equalsIgnoreCase(key))
-			{
-				if("TRUE".equalsIgnoreCase(value))
-					this.periodicalRun = true;
-			}
-			else if(key.toUpperCase().startsWith("CR"))
-			{
-				// DO CR SPECIFIC CONFIG
-				String[] keyArr = key.split("\\.");
-				if(keyArr.length>=3)
-				{
-					String crID = keyArr[1];
-					String newKey = keyArr[2];
-					IndexerCRConfig crConfig;
-					if(this.crConfigs.containsKey(crID))
-					{
-						crConfig = this.crConfigs.get(crID);
-					}
-					else
-					{
-						this.crConfigs.put(crID, new IndexerCRConfig(crID));
-						crConfig = this.crConfigs.get(crID);
-					}
-					
-					if("DS-HANDLE".equals(newKey.toUpperCase()))
-					{
-						if(keyArr.length>=4)
-						{
-							crConfig.putDatasourceHandleProperty(keyArr[3], value);
-						}
-					}
-					else if ("RULE".equals(newKey.toUpperCase()))
-					{
-						crConfig.setRule(value);
-					}
-					else if	("INDEXEDATTRIBUTES".equals(newKey.toUpperCase()))
-					{
-						crConfig.setIndexedAttributes(value.split(","));
-					}
-					else if("CONTAINEDATTRIBUTES".equals(newKey.toUpperCase()))
-					{
-						crConfig.setContainedAttributes(value.split(","));
-					}
-					else if("IDATTRIBUTE".equals(newKey.toUpperCase()))
-					{
-						crConfig.setIdattribute(value);
-					}
-					else if("HTMLATTRIBUTE".equals(newKey.toUpperCase()))
-					{
-						crConfig.setHtmlattribute(value);
-					}
-					else if("STOPWORDFILE".equalsIgnoreCase(newKey))
-					{
-						crConfig.setStopwordfilepath(value);
-					}
-				}
-				
-			}
-		}
-	}
 	
 	protected class BackgroundJob implements Runnable{
 
@@ -313,6 +232,9 @@ public class CRIndexer {
 			this.stop=true;
 		}
 
+		private static final String CR_KEY = "CR";
+		
+		
 		private void recreateIndex() {
 			status.setRunning(true);
 			long startTime = System.currentTimeMillis();
@@ -320,20 +242,27 @@ public class CRIndexer {
 			
 			int timestamp = (int)(System.currentTimeMillis() / 1000);
 
+			
 			// create an index writer
 			File indexLoc = new File(indexLocation);
 					
-			
-
-			for (Iterator<IndexerCRConfig> iterator = crConfigs.values().iterator(); iterator
-					.hasNext();) {
-				IndexerCRConfig crConfig = iterator.next();
-				try {
-					indexCR(indexLoc, timestamp, crConfig);
-				} catch (Exception e){
-					log.error("Error while recreating index for "+crConfig.getCrName());
-					e.printStackTrace();
+			GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
+			if(CRc!=null)
+			{
+				Hashtable<String,GenericConfiguration> configs = CRc.getSubConfigs();
+	
+				for (Entry<String,GenericConfiguration> e:configs.entrySet()) {
+					try {
+						indexCR(indexLoc, timestamp, new CRConfigUtil(e.getValue(),crconfig.getName()+"."+e.getKey()));
+					} catch (Exception ex){
+						log.error("Error while recreating index for "+crconfig.getName()+"."+e.getKey());
+						ex.printStackTrace();
+					}
 				}
+			}
+			else
+			{
+				log.error("THERE ARE NO CRs CONFIGURED FOR INDEXING.");
 			}
 
 				
@@ -342,12 +271,18 @@ public class CRIndexer {
 			status.setLastRunDuration(endTime-startTime);
 			status.reset();
 		}
+		
+		private static final String RULE_KEY = "rule";
+		private static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
+		private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
+		private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
+		private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
 
 		@SuppressWarnings("unchecked")
-		private void indexCR(File indexLocation, int timestamp, IndexerCRConfig config)
+		private void indexCR(File indexLocation, int timestamp, CRConfigUtil config)
 				throws NodeException, CorruptIndexException, IOException {
 			// get the datasource
-			CNWriteableDatasource ds = config.getDatasource();
+			CNWriteableDatasource ds = (CNWriteableDatasource)config.getDatasource();
 
 			// get the last index timestamp
 			int lastIndexRun = ds.getIntContentStatus(name + "."
@@ -363,7 +298,7 @@ public class CRIndexer {
 				
 
 			// and get the current rule
-			String rule = config.getRule();
+			String rule = (String)config.get(RULE_KEY);
 
 			if (rule == null) {
 				rule = "";
@@ -409,7 +344,7 @@ public class CRIndexer {
 			//Update/add Documents
 			StandardAnalyzer analyzer;
 			//Load StopWordList
-			File stopWordFile = config.getStopWordFile();
+			File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
 			if(stopWordFile!=null)
 			{
 				//initialize Analyzer with stop words
@@ -427,8 +362,8 @@ public class CRIndexer {
 
 			// prepare the map of indexed/stored attributes
 			Map<String,Boolean> attributes = new HashMap<String,Boolean>();
-			List<String> containedAttributes = config.getContainedAttributes();
-			List<String> indexedAttributes = config.getIndexedAttributes();
+			List<String> containedAttributes = IndexerUtil.getListFromString((String)config.get(CONTAINED_ATTRIBUTES_KEY), ",");
+			List<String> indexedAttributes = IndexerUtil.getListFromString((String)config.get(INDEXED_ATTRIBUTES_KEY), ",");
 
 			// first put all indexed attributes into the map
 			for (Iterator<String> iterator = indexedAttributes.iterator(); iterator
@@ -444,8 +379,9 @@ public class CRIndexer {
 				attributes.put(name, Boolean.TRUE);
 			}
 
+			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 			// finally, put the "contentid" (always contained)
-			attributes.put(config.getIdattribute(), Boolean.TRUE);
+			attributes.put(idAttribute, Boolean.TRUE);
 
 			// get all objects to index
 			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>) ds.getResult(ds
@@ -483,19 +419,19 @@ public class CRIndexer {
 		}
 
 		private void indexSlice(IndexWriter indexWriter, Collection<Resolvable> slice,
-				Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, IndexerCRConfig config) throws NodeException,
+				Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config) throws NodeException,
 				CorruptIndexException, IOException {
 			// prefill all needed attributes
 			GenticsContentFactory.prefillContentObjects(ds, slice,
 					(String[]) attributes.keySet().toArray(
 							new String[attributes.keySet().size()]));
-
+			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 			for (Iterator<Resolvable> iterator = slice.iterator(); iterator.hasNext();) {
 				Resolvable objectToIndex =  iterator.next();
 				
 				if(!create)
 				{
-					indexWriter.updateDocument(new Term(config.getIdattribute(), (String)objectToIndex.get(config.getIdattribute())), getDocument(objectToIndex, attributes,config));
+					indexWriter.updateDocument(new Term(idAttribute, (String)objectToIndex.get(idAttribute)), getDocument(objectToIndex, attributes,config));
 				}
 				else
 				{
@@ -503,8 +439,10 @@ public class CRIndexer {
 				}
 			}
 		}
+		
+		private static final String HTML_ATTRIBUTE_KEY = "HTMLATTRIBUTE";
 
-		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, IndexerCRConfig config) {
+		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
 			Document doc = new Document();
 			for (Iterator<Entry<String,Boolean>> iterator = attributes.entrySet().iterator(); iterator
 					.hasNext();) {
@@ -514,15 +452,16 @@ public class CRIndexer {
 				Boolean storeField = (Boolean) entry.getValue();
 
 				Object value = resolvable.getProperty(attributeName);
-
+				String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 				//TODO make indexfield configurable
-				if(config.getIdattribute().equalsIgnoreCase(attributeName))
+				if(idAttribute.equalsIgnoreCase(attributeName))
 				{
-					doc.add(new Field(config.getIdattribute(), (String)value, Field.Store.YES, Field.Index.NOT_ANALYZED));
+					doc.add(new Field(idAttribute, (String)value, Field.Store.YES, Field.Index.NOT_ANALYZED));
 				}
 				else if (value instanceof String) {
 					String val = (String) value;
-					if(config.getHtmlattribute()!=null && attributeName.equalsIgnoreCase(config.getHtmlattribute()))
+					String htmlattr = (String)config.get(HTML_ATTRIBUTE_KEY);
+					if(htmlattr!=null && attributeName.equalsIgnoreCase(htmlattr))
 					{
 						
 						doc.add(new Field(attributeName, new HTMLStripReader(new StringReader((String)value))));
@@ -544,6 +483,8 @@ public class CRIndexer {
 			return doc;
 		}
 		
+		
+		
 		/**
 		 * Deletes all Objects from index, which are not returned from the datasource using the given rule
 		 * @param ds
@@ -552,19 +493,20 @@ public class CRIndexer {
 		 * @throws Exception
 		 */
 		@SuppressWarnings("unchecked")
-		private void cleanIndex(CNWriteableDatasource ds, String rule, File indexLocation, IndexerCRConfig config) throws Exception
+		private void cleanIndex(CNWriteableDatasource ds, String rule, File indexLocation, CRConfigUtil config) throws Exception
 		{
-				
+			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
+			
 			IndexReader reader = IndexReader.open(FSDirectory.getDirectory(indexLocation), false);// open existing index
 			
-			TermEnum uidIter = reader.terms(new Term(config.getIdattribute(), "")); // init uid iterator
+			TermEnum uidIter = reader.terms(new Term(idAttribute, "")); // init uid iterator
 			
 			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
 			
 			Iterator<Resolvable> resoIT = objectsToIndex.iterator();
 			
 			Resolvable CRlem = resoIT.next();
-			String crElemID =(String) CRlem.get(config.getIdattribute());
+			String crElemID =(String) CRlem.get(idAttribute);
 			
 			//solange index id kleiner cr id delete from index
 			boolean finish=false;
@@ -572,21 +514,21 @@ public class CRIndexer {
 			while(!finish)
 			{
 				
-				if(uidIter.term() != null && uidIter.term().field() == config.getIdattribute() && uidIter.term().text().compareTo(crElemID) == 0)
+				if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) == 0)
 				{
 					//step both
 					finish = !uidIter.next();
 					if(resoIT.hasNext())
 					{
 						CRlem = resoIT.next();
-						crElemID =(String) CRlem.get(config.getIdattribute());
+						crElemID =(String) CRlem.get(idAttribute);
 					}
 				}
-				else if(uidIter.term() != null && uidIter.term().field() == config.getIdattribute() && uidIter.term().text().compareTo(crElemID) > 0 && resoIT.hasNext())
+				else if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) > 0 && resoIT.hasNext())
 				{
 					//step cr
 					CRlem = resoIT.next();
-					crElemID =(String) CRlem.get(config.getIdattribute());
+					crElemID =(String) CRlem.get(idAttribute);
 					
 				}
 				else

@@ -16,6 +16,9 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+
+import com.gentics.cr.CRConfig;
+import com.gentics.cr.CRConfigUtil;
 /**
  * 
  * Last changed: $Date$
@@ -28,14 +31,26 @@ public class CRSearcher {
 	protected static Logger log = Logger.getLogger(CRSearcher.class);
 	protected static Logger log_explain = Logger.getLogger(CRSearcher.class);
 	
-	protected String indexPath;
+	protected static final String INDEX_LOCATION_KEY = "indexLocation";
 	
+	protected String indexPath;
+	protected CRConfig config;
 	/**
 	 * Create new instance of CRSearcher
 	 * @param indexPath
 	 */
 	public CRSearcher(String indexPath) {
 		this.indexPath = indexPath;
+		this.config=null;
+	}
+	
+	/**
+	 * Create new instance of CRSearcher
+	 * @param config
+	 */
+	public CRSearcher(CRConfig config) {
+		this.config = config;
+		this.indexPath = (String)config.get(INDEX_LOCATION_KEY);
 	}
 	
 	/**

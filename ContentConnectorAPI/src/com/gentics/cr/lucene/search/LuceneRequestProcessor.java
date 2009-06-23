@@ -1,17 +1,11 @@
 package com.gentics.cr.lucene.search;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -22,7 +16,6 @@ import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
-import com.gentics.cr.util.CRUtil;
 /**
  * 
  * Last changed: $Date$
@@ -37,10 +30,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	private CRSearcher searcher = null;
 	protected String name=null;
 	
-	protected String path=null;
-	protected String idAttribute = null;
-	protected String [] searchedAttributes = null;
-	protected int count = 30;
+	
 	
 	/**
 	 * Create new instance of LuceneRequestProcessor
@@ -50,70 +40,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	public LuceneRequestProcessor(CRConfig config) throws CRException {
 		super(config);
 		this.name=config.getName();
-		//LOAD ADDITIONAL CONFIG
-		loadConfig();
-		this.searcher = new CRSearcher(this.path);
+		
+		this.searcher = new CRSearcher(config);
 		
 	}
 	
-	/**
-	 * Load additional Config from file
-	 */
-	protected void loadConfig()
-	{
-		//TODO Manage this over config
-		Properties props = new Properties();
-		try {
-			String confpath = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties");
-			
-			props.load(new FileInputStream(confpath));
-			
-			for (Iterator<Entry<Object,Object>> i = props.entrySet().iterator() ; i.hasNext() ; ) {
-				Map.Entry<Object,Object> entry = (Entry<Object,Object>) i.next();
-				Object value = entry.getValue();
-				Object key = entry.getKey();
-				this.setProperty((String)key, (String)value);
-			}
-			
-		} catch (FileNotFoundException e1) {
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-		} catch (IOException e1) {
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-		}catch(NullPointerException e){
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-			e.printStackTrace();
-		}
-	}
+	private static final String SEARCH_COUNT_KEY = "SEARCHCOUNT";
 	
-	/**
-	 * Set Properties that are read in from config file
-	 * @param key
-	 * @param value
-	 */
-	protected void setProperty(String key, String value)
-	{
-		//TODO Manage this over config
-		if(key instanceof String)
-		{
-			if("INDEXLOCATION".equalsIgnoreCase(key))
-			{
-				this.path = value;
-			}
-			else if("IDATTRIBUTE".equalsIgnoreCase(key))
-			{
-				this.idAttribute = value;
-			}
-			else if("SEARCHEDATTRIBUTES".equalsIgnoreCase(key))
-			{
-				this.searchedAttributes = value.split(",");
-			}
-			else if("SEARCHCOUNT".equalsIgnoreCase(key))
-			{
-				this.count = Integer.parseInt(value);
-			}
-			
-		}
-	}
+	private static final String ID_ATTRIBUTE_KEY = "idAttribute";
 	
 	/**
 	 * @param request - CRRequest containing the query in RequestFilter
@@ -126,20 +60,21 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		int count = request.getCount();
 		//IF COUNT IS NOT SET IN THE REQUEST, USE DEFAULT VALUE LOADED FROM CONFIG
 		if(count<=0)
-			count=this.count;
+			count=new Integer((String)this.config.get(SEARCH_COUNT_KEY));
 		if(count<=0)
 			log.error("COUNT IS LOWER THAN 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG!");
 		//GET RESULT
-		HashMap<String,Object> searchResult = this.searcher.search(request.getRequestFilter(),this.searchedAttributes,count,doNavigation);
+		HashMap<String,Object> searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,doNavigation);
 		LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
 		if(docs!=null)
 		{
+			String idAttribute = (String)this.config.get(ID_ATTRIBUTE_KEY);
 			for(Entry<Document,Float> e:docs.entrySet())
 			{
 				Document doc = e.getKey();
 				Float score = e.getValue();
 				score.floatValue();
-				CRResolvableBean crBean = new CRResolvableBean(doc.get(this.idAttribute));
+				CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
 				if(request.getAttributeArray()!=null)
 				{
 					List<String> atts = Arrays.asList(request.getAttributeArray());
@@ -165,6 +100,19 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	private LinkedHashMap<Document,Float> objectToLinkedHashMapDocuments(Object obj)
 	{
 		return((LinkedHashMap<Document,Float>) obj);
+	}
+	
+	private static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
+	
+	private String[] getSearchedAttributes()
+	{
+		String sa = (String)this.config.get(SEARCHED_ATTRIBUTES_KEY);
+		String[] ret=null;
+		if(sa!=null)
+		{
+			ret = sa.split(",");
+		}
+		return ret;
 	}
 
 }

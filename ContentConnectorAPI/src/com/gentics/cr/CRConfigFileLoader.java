@@ -95,7 +95,10 @@ public class CRConfigFileLoader extends CRConfigUtil {
 		value = CRUtil.resolveSystemProperties((String)value);
 		
 		//Replace webapproot in the properties values, so that this variable can be used
-		value = resolveProperty("\\$\\{webapproot\\}", this.webapproot.replace('\\', '/'), value);
+		if(this.webapproot!=null)
+		{
+			value = resolveProperty("\\$\\{webapproot\\}", this.webapproot.replace('\\', '/'), value);
+		}
 		
 		//Set the property
 		set(key,value);
