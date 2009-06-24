@@ -141,7 +141,7 @@ public class RenderContentTag extends TagSupport {
 			return (ServletRequest) renderRequestObject;
 		} else {
 			throw new JspException(
-					"Error while rendering tag: could not find javax.portlet.request");
+					"Error while rendering tag: could not find javax.servlet.ServletRequest");
 		}
 	}
 
