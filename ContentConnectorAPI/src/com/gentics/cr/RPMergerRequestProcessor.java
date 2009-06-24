@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 /**
  * 
- * Last changed: $Date: 2009-06-22 17:48:35 +0200 (Mo, 22 Jun 2009) $
- * @version $Revision: 94 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class RPMergerRequestProcessor extends RequestProcessor {

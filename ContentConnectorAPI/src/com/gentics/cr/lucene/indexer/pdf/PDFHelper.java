@@ -14,9 +14,9 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
  * 
- * Last changed: $Date: 2009-06-23 17:40:36 +0200 (Di, 23 Jun 2009) $
- * @version $Revision: 96 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class PDFHelper {
