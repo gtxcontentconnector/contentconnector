@@ -33,6 +33,9 @@ import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.indexer.doc.WordHelper;
+import com.gentics.cr.lucene.indexer.pdf.PDFHelper;
+import com.gentics.cr.lucene.indexer.xls.ExcelHelper;
 import com.gentics.cr.util.CRUtil;
 
 /**
@@ -356,9 +359,7 @@ public class CRIndexer {
 				analyzer = new StandardAnalyzer();
 			}
 			
-			IndexWriter indexWriter = new IndexWriter(indexLocation,
-					analyzer, create,
-					IndexWriter.MaxFieldLength.LIMITED);
+			
 
 			// prepare the map of indexed/stored attributes
 			Map<String,Boolean> attributes = new HashMap<String,Boolean>();
@@ -366,16 +367,12 @@ public class CRIndexer {
 			List<String> indexedAttributes = IndexerUtil.getListFromString((String)config.get(INDEXED_ATTRIBUTES_KEY), ",");
 
 			// first put all indexed attributes into the map
-			for (Iterator<String> iterator = indexedAttributes.iterator(); iterator
-					.hasNext();) {
-				String name =  iterator.next();
+			for (String name:indexedAttributes) {
 				attributes.put(name, Boolean.FALSE);
 			}
 
 			// now put all contained attributes
-			for (Iterator<String> iterator = containedAttributes.iterator(); iterator
-					.hasNext();) {
-				String name =  iterator.next();
+			for (String name:containedAttributes) {
 				attributes.put(name, Boolean.TRUE);
 			}
 
@@ -393,29 +390,41 @@ public class CRIndexer {
 			// (remove them from the original collection) and index them
 			Collection<Resolvable> slice = new Vector(batchSize);
 			int sliceCounter = 0;
+			
+			IndexWriter indexWriter = new IndexWriter(indexLocation,analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
 
-			for (Iterator<Resolvable> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
-				Resolvable obj = iterator.next();
-				slice.add(obj);
-				iterator.remove();
-				sliceCounter++;
-
-				if (sliceCounter == batchSize) {
-					// index the current slice
-					indexSlice(indexWriter, slice, attributes, ds, create,config);
-					status.setObjectsDone(status.getObjectsDone()+slice.size());
-					// clear the slice and reset the counter
-					slice.clear();
-					sliceCounter = 0;
+			try
+			{
+				for (Iterator<Resolvable> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
+					Resolvable obj = iterator.next();
+					slice.add(obj);
+					iterator.remove();
+					sliceCounter++;
+	
+					if (sliceCounter == batchSize) {
+						// index the current slice
+						indexSlice(indexWriter, slice, attributes, ds, create,config);
+						status.setObjectsDone(status.getObjectsDone()+slice.size());
+						// clear the slice and reset the counter
+						slice.clear();
+						sliceCounter = 0;
+					}
 				}
+	
+				if (!slice.isEmpty()) {
+					// index the last slice
+					indexSlice(indexWriter, slice, attributes, ds, create,config);
+				}
+				indexWriter.optimize();
+			}catch(Exception ex)
+			{
+				log.error("Could not complete index run... trying to close index and remove lock.");
+				ex.printStackTrace();
+			}finally{
+				indexWriter.close();
 			}
-
-			if (!slice.isEmpty()) {
-				// index the last slice
-				indexSlice(indexWriter, slice, attributes, ds, create,config);
-			}
-			indexWriter.optimize();
-			indexWriter.close();
+			
+			
 		}
 
 		private void indexSlice(IndexWriter indexWriter, Collection<Resolvable> slice,
@@ -426,9 +435,7 @@ public class CRIndexer {
 					(String[]) attributes.keySet().toArray(
 							new String[attributes.keySet().size()]));
 			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
-			for (Iterator<Resolvable> iterator = slice.iterator(); iterator.hasNext();) {
-				Resolvable objectToIndex =  iterator.next();
-				
+			for (Resolvable objectToIndex:slice) {
 				if(!create)
 				{
 					indexWriter.updateDocument(new Term(idAttribute, (String)objectToIndex.get(idAttribute)), getDocument(objectToIndex, attributes,config));
@@ -441,39 +448,83 @@ public class CRIndexer {
 		}
 		
 		private static final String HTML_ATTRIBUTE_KEY = "HTMLATTRIBUTE";
+		private static final String HTML_RULE_KEY = "HTMLRULE";
+		private static final String PDF_ATTRIBUTE_KEY = "PDFATTRIBUTE";
+		private static final String PDF_RULE_KEY = "PDFRULE";
+		private static final String DOC_ATTRIBUTE_KEY = "DOCATTRIBUTE";
+		private static final String DOC_RULE_KEY = "DOCRULE";
+		private static final String XLS_ATTRIBUTE_KEY = "XLSATTRIBUTE";
+		private static final String XLS_RULE_KEY = "XLSRULE";
+		
 
 		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
 			Document doc = new Document();
-			for (Iterator<Entry<String,Boolean>> iterator = attributes.entrySet().iterator(); iterator
-					.hasNext();) {
-				Map.Entry<String,Boolean> entry = (Map.Entry<String,Boolean>) iterator.next();
-
+			
+			boolean doPDF = false;
+			boolean doHTML=false;
+			boolean doDOC=false;
+			boolean doXLS=false;
+			//Preparation
+			String htmlattr = (String)config.get(HTML_ATTRIBUTE_KEY);
+			String htmlrule = (String)config.get(HTML_RULE_KEY);
+			String pdfattr = (String)config.get(PDF_ATTRIBUTE_KEY);
+			String pdfrule = (String)config.get(PDF_RULE_KEY);
+			String docattr = (String)config.get(DOC_ATTRIBUTE_KEY);
+			String docrule = (String)config.get(DOC_RULE_KEY);
+			String xlsattr = (String)config.get(XLS_ATTRIBUTE_KEY);
+			String xlsrule = (String)config.get(XLS_RULE_KEY);
+			
+			doHTML = IndexerUtil.match(resolvable, htmlrule);
+			doPDF = IndexerUtil.match(resolvable, pdfrule);
+			doDOC = IndexerUtil.match(resolvable, docrule);
+			doXLS = IndexerUtil.match(resolvable, xlsrule);
+			
+			for (Entry<String,Boolean> entry:attributes.entrySet()) {
+				
 				String attributeName = (String) entry.getKey();
 				Boolean storeField = (Boolean) entry.getValue();
 
 				Object value = resolvable.getProperty(attributeName);
 				String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
-				//TODO make indexfield configurable
+				
 				if(idAttribute.equalsIgnoreCase(attributeName))
 				{
 					doc.add(new Field(idAttribute, (String)value, Field.Store.YES, Field.Index.NOT_ANALYZED));
 				}
 				else if (value instanceof String) {
 					String val = (String) value;
-					String htmlattr = (String)config.get(HTML_ATTRIBUTE_KEY);
-					if(htmlattr!=null && attributeName.equalsIgnoreCase(htmlattr))
+					
+					if(doHTML && htmlattr!=null && attributeName.equalsIgnoreCase(htmlattr))
 					{
 						
 						doc.add(new Field(attributeName, new HTMLStripReader(new StringReader((String)value))));
 					}
 					else
 					{
-						doc.add(new Field(attributeName, val, storeField
-							.booleanValue() ? Store.YES : Store.NO,
-							Field.Index.ANALYZED));
+						doc.add(new Field(attributeName, val, storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
 					}
 				} else if (value instanceof byte[]) {
-					// currently just ignore binary data
+					byte[] val = (byte[])value;
+					StringReader sr=null;
+					if(doPDF && pdfattr!=null && attributeName.equalsIgnoreCase(pdfattr))
+					{
+						//Get contents of pdf file
+						sr = PDFHelper.getContents(val);
+					}else if(doDOC && docattr!=null && attributeName.equalsIgnoreCase(docattr))
+					{
+						//Get contents of word file
+						sr = WordHelper.getContents(val);
+					}else if(doXLS && xlsattr!=null && attributeName.equalsIgnoreCase(xlsattr))
+					{
+						//Get contents of excel file
+						sr = ExcelHelper.getContents(val);
+					}
+					
+					//Only index if contents is not null
+					if(sr!=null)
+					{
+						doc.add(new Field(attributeName,sr));
+					}
 				} else if (value instanceof Number) {
 					doc.add(new Field(attributeName, value.toString(),
 							storeField.booleanValue() ? Store.YES : Store.NO,
