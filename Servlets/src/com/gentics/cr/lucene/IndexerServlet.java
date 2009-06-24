@@ -37,7 +37,10 @@ public class IndexerServlet extends HttpServlet {
 		super.init(config);
 		this.log = Logger.getLogger("com.gentics.cr.lucene");
 		this.indexer = new CRIndexer(config.getServletName());
-		this.indexer.startJob();
+		if(this.indexer.isPeriodicalRun())
+		{
+			this.indexer.startJob();
+		}
 	}
 
 	/**
@@ -56,18 +59,56 @@ public class IndexerServlet extends HttpServlet {
 		// starttime
 		long s = new Date().getTime();
 		// get the objects
+		
+		String action = request.getParameter("action");
+		if(action!=null)
+		{
+			if("start".equalsIgnoreCase(action))
+			{
+				this.indexer.startJob();
+			}
+			else if("stop".equalsIgnoreCase(action))
+			{
+				this.indexer.stopJob();
+			}
+			else if("single".equalsIgnoreCase(action))
+			{
+				this.indexer.startSingleRun();
+			}
+				
+		}
+		
+		response.setContentType("text/html");
 		IndexerStatus status  = this.indexer.getStatus(); 
-		response.getWriter().write("Last run in ms: "+status.getLastRunDuration()+"\n");
-		response.getWriter().write("Running: "+status.isRunning()+"\n");
+		response.getWriter().write("Last run in ms: "+status.getLastRunDuration()+"<br/>\n");
+		response.getWriter().write("Periodical run: "+this.indexer.isPeriodicalRun()+"<br/>\n");
+		response.getWriter().write("Running: "+status.isRunning()+"<br/>\n");
 		if(status.isRunning())
 		{
 			Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
-		    response.getWriter().write("Start Date: "+formatter.format(status.getStartTime())+"\n");
+		    response.getWriter().write("Start Date: "+formatter.format(status.getStartTime())+"<br/>\n");
 		
 		
-		    response.getWriter().write("Objects to index in current run: "+status.getObjectCount()+"\n");
-		    response.getWriter().write("Objects indexed in current run: "+status.getObjectsDone()+"\n");
+		    response.getWriter().write("Objects to index in current run: "+status.getObjectCount()+"<br/>\n");
+		    response.getWriter().write("Objects indexed in current run: "+status.getObjectsDone()+"<br/>\n");
+		    
+		    
 		}
+		else
+		{
+			if(this.indexer.isStarted())
+			{
+				response.getWriter().write("Configured interval: "+this.indexer.getInterval()+" sec<br/>\n");
+				response.getWriter().write("<a href=\"?action=stop\">Stop periodical background job</a><br/>\n");	
+			}
+			else
+			{
+				response.getWriter().write("<a href=\"?action=start\">Start periodical background job</a><br/>\n");
+				response.getWriter().write("<a href=\"?action=single\">Start single index job</a><br/>\n");
+			}
+			
+		}
+		response.getWriter().write("<a href=\"?action=show\">Refresh status</a><br/>\n");
 		response.getWriter().flush();
 		response.getWriter().close();
 		// endtime
