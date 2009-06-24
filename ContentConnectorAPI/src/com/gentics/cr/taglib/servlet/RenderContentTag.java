@@ -70,7 +70,8 @@ public class RenderContentTag extends TagSupport {
 	
 	/**
 	 * Set the content attribute to be rendered
-	 * @param contentAttribute name of the rendered content attribute
+	 * @param urlencode 
+	 * 
 	 */
 	public void setUrlencode(String urlencode) {
 		this.urlencode = "true".equals(urlencode);
@@ -86,10 +87,10 @@ public class RenderContentTag extends TagSupport {
 	
 	
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * @return 
+	 * @throws JspException 
 	 * 
-	 * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
 	 */
 	public int doEndTag() throws JspException {
 		// get the ContentRenderer
@@ -135,14 +136,7 @@ public class RenderContentTag extends TagSupport {
 	 *             when the servlet request could not be found
 	 */
 	protected ServletRequest getServletRequest() throws JspException {
-		Object renderRequestObject = pageContext.findAttribute("javax.servlet.ServletRequest");
-
-		if (renderRequestObject instanceof ServletRequest) {
-			return (ServletRequest) renderRequestObject;
-		} else {
-			throw new JspException(
-					"Error while rendering tag: could not find javax.servlet.ServletRequest");
-		}
+		return(pageContext.getRequest());
 	}
 
 }
