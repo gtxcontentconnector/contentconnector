@@ -73,15 +73,20 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			{
 				Document doc = e.getKey();
 				Float score = e.getValue();
-				score.floatValue();
 				CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
 				if(request.getAttributeArray()!=null)
 				{
 					List<String> atts = Arrays.asList(request.getAttributeArray());
+					for(String s:atts)
+					{
+						String val = doc.get(s);
+						crBean.set(s, val);
+					}
 					if(atts.contains("score"))
 					{
 						crBean.set("score", score);
 					}
+					
 				}
 				this.ext_log.debug("Found "+crBean.getContentid()+" with score "+score.toString());
 				result.add(crBean);

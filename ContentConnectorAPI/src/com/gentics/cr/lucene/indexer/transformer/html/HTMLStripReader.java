@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.gentics.cr.lucene.indexer;
+package com.gentics.cr.lucene.indexer.transformer.html;
 
 
 import java.io.Reader;
@@ -50,9 +50,16 @@ private static final int EOF=-1;
   private static final int MATCH=-3;
   // temporary buffer
   private final StringBuilder sb = new StringBuilder();
+  /**
+   * 
+   */
   public static final int DEFAULT_READ_AHEAD = 8192;
 
-
+  /**
+   * 
+   * @param args
+   * @throws IOException
+   */
   public static void main(String[] args) throws IOException {
     Reader in = new HTMLStripReader(
             new InputStreamReader(System.in));
@@ -60,16 +67,31 @@ private static final int EOF=-1;
     while ( (ch=in.read()) != -1 ) System.out.print((char)ch);
   }
 
+  /**
+   * 
+   * @param source
+   */
   public HTMLStripReader(Reader source) {
     super();
     this.in=source.markSupported() ? source : new BufferedReader(source);
   }
 
+  /**
+   * 
+   * @param source
+   * @param escapedTags
+   */
   public HTMLStripReader(Reader source, Set<String> escapedTags){
     this(source);
     this.escapedTags = escapedTags;
   }
 
+  /**
+   * 
+   * @param source
+   * @param escapedTags
+   * @param readAheadLimit
+   */
   public HTMLStripReader(Reader source, Set<String> escapedTags, int readAheadLimit){
     this(source);
     this.escapedTags = escapedTags;
@@ -77,6 +99,10 @@ private static final int EOF=-1;
     readAheadLimitMinus1 = readAheadLimit - 1;
   }
 
+  /**
+   * 
+   * @return
+   */
   public int getReadAheadLimit() {
     return readAheadLimit;
   }
@@ -672,7 +698,11 @@ private static final int EOF=-1;
   }
 
 
-
+/**
+ * @return 
+ * @throws IOException 
+ * 
+ */
   public int read() throws IOException {
     // TODO: Do we ever want to preserve CDATA sections?
     // where do we have to worry about them?
@@ -739,6 +769,14 @@ private static final int EOF=-1;
 
   }
 
+  /**
+ * @param cbuf 
+ * @param off 
+ * @param len 
+ * @return 
+ * @throws IOException 
+   * 
+   */
   public int read(char cbuf[], int off, int len) throws IOException {
     int i=0;
     for (i=0; i<len; i++) {
@@ -753,6 +791,10 @@ private static final int EOF=-1;
     return i;
   }
 
+  /**
+ * @throws IOException 
+   * 
+   */
   public void close() throws IOException {
     in.close();
   }

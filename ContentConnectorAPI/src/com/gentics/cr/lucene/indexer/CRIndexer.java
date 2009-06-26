@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.indexer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,9 +32,7 @@ import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.lucene.indexer.doc.WordHelper;
-import com.gentics.cr.lucene.indexer.pdf.PDFHelper;
-import com.gentics.cr.lucene.indexer.xls.ExcelHelper;
+import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
 
 /**
@@ -307,6 +304,8 @@ public class CRIndexer {
 				rule = "";
 			}
 			
+			Hashtable<String,ContentTransformer> transformertable = ContentTransformer.getTransformerTable(config);
+			
 			boolean create = true;
 			
 			if(indexLocation.exists() && indexLocation.isDirectory())
@@ -403,7 +402,7 @@ public class CRIndexer {
 	
 					if (sliceCounter == batchSize) {
 						// index the current slice
-						indexSlice(indexWriter, slice, attributes, ds, create,config);
+						indexSlice(indexWriter, slice, attributes, ds, create,config,transformertable);
 						status.setObjectsDone(status.getObjectsDone()+slice.size());
 						// clear the slice and reset the counter
 						slice.clear();
@@ -413,7 +412,7 @@ public class CRIndexer {
 	
 				if (!slice.isEmpty()) {
 					// index the last slice
-					indexSlice(indexWriter, slice, attributes, ds, create,config);
+					indexSlice(indexWriter, slice, attributes, ds, create,config, transformertable);
 				}
 				indexWriter.optimize();
 			}catch(Exception ex)
@@ -428,7 +427,7 @@ public class CRIndexer {
 		}
 
 		private void indexSlice(IndexWriter indexWriter, Collection<Resolvable> slice,
-				Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config) throws NodeException,
+				Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config, Hashtable<String,ContentTransformer> transformertable) throws NodeException,
 				CorruptIndexException, IOException {
 			// prefill all needed attributes
 			GenticsContentFactory.prefillContentObjects(ds, slice,
@@ -438,46 +437,34 @@ public class CRIndexer {
 			for (Resolvable objectToIndex:slice) {
 				if(!create)
 				{
-					indexWriter.updateDocument(new Term(idAttribute, (String)objectToIndex.get(idAttribute)), getDocument(objectToIndex, attributes,config));
+					indexWriter.updateDocument(new Term(idAttribute, (String)objectToIndex.get(idAttribute)), getDocument(objectToIndex, attributes,config,transformertable));
 				}
 				else
 				{
-					indexWriter.addDocument(getDocument(objectToIndex, attributes, config));
+					indexWriter.addDocument(getDocument(objectToIndex, attributes, config,transformertable));
 				}
 			}
 		}
 		
-		private static final String HTML_ATTRIBUTE_KEY = "HTMLATTRIBUTE";
-		private static final String HTML_RULE_KEY = "HTMLRULE";
-		private static final String PDF_ATTRIBUTE_KEY = "PDFATTRIBUTE";
-		private static final String PDF_RULE_KEY = "PDFRULE";
-		private static final String DOC_ATTRIBUTE_KEY = "DOCATTRIBUTE";
-		private static final String DOC_RULE_KEY = "DOCRULE";
-		private static final String XLS_ATTRIBUTE_KEY = "XLSATTRIBUTE";
-		private static final String XLS_RULE_KEY = "XLSRULE";
 		
+		private Hashtable<String,ContentTransformer> getResolvableSpecifigTransformerMap(Resolvable resolvable, Hashtable<String,ContentTransformer> transformermap)
+		{
+			Hashtable<String,ContentTransformer> ret = new Hashtable<String,ContentTransformer>();
+			if(transformermap!=null)
+			{
+				for(Entry<String,ContentTransformer> e:transformermap.entrySet())
+				{
+					String att = e.getKey();
+					ContentTransformer t = e.getValue();
+					if(t.match(resolvable))ret.put(att, t);
+				}
+			}
+			return(ret);
+		}
 
-		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
+		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config,Hashtable<String,ContentTransformer> transformertable) {
 			Document doc = new Document();
-			
-			boolean doPDF = false;
-			boolean doHTML=false;
-			boolean doDOC=false;
-			boolean doXLS=false;
-			//Preparation
-			String htmlattr = (String)config.get(HTML_ATTRIBUTE_KEY);
-			String htmlrule = (String)config.get(HTML_RULE_KEY);
-			String pdfattr = (String)config.get(PDF_ATTRIBUTE_KEY);
-			String pdfrule = (String)config.get(PDF_RULE_KEY);
-			String docattr = (String)config.get(DOC_ATTRIBUTE_KEY);
-			String docrule = (String)config.get(DOC_RULE_KEY);
-			String xlsattr = (String)config.get(XLS_ATTRIBUTE_KEY);
-			String xlsrule = (String)config.get(XLS_RULE_KEY);
-			
-			doHTML = IndexerUtil.match(resolvable, htmlrule);
-			doPDF = IndexerUtil.match(resolvable, pdfrule);
-			doDOC = IndexerUtil.match(resolvable, docrule);
-			doXLS = IndexerUtil.match(resolvable, xlsrule);
+			Hashtable<String,ContentTransformer> tmap = getResolvableSpecifigTransformerMap(resolvable,transformertable);
 			
 			for (Entry<String,Boolean> entry:attributes.entrySet()) {
 				
@@ -491,44 +478,26 @@ public class CRIndexer {
 				{
 					doc.add(new Field(idAttribute, (String)value, Field.Store.YES, Field.Index.NOT_ANALYZED));
 				}
-				else if (value instanceof String) {
-					String val = (String) value;
-					
-					if(doHTML && htmlattr!=null && attributeName.equalsIgnoreCase(htmlattr))
+				else if(value!=null){
+					ContentTransformer t = tmap.get(attributeName);
+					if(t!=null)
 					{
-						
-						doc.add(new Field(attributeName, new HTMLStripReader(new StringReader((String)value))));
+						if(storeField.booleanValue())
+						{
+							doc.add(new Field(attributeName, t.getStringContents(value), storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+						}
+						else
+						{
+							doc.add(new Field(attributeName, t.getContents(value)));
+						}
 					}
 					else
 					{
-						doc.add(new Field(attributeName, val, storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+						if(value instanceof String || value instanceof Number)
+						{
+							doc.add(new Field(attributeName, value.toString(),storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+						}
 					}
-				} else if (value instanceof byte[]) {
-					byte[] val = (byte[])value;
-					StringReader sr=null;
-					if(doPDF && pdfattr!=null && attributeName.equalsIgnoreCase(pdfattr))
-					{
-						//Get contents of pdf file
-						sr = PDFHelper.getContents(val);
-					}else if(doDOC && docattr!=null && attributeName.equalsIgnoreCase(docattr))
-					{
-						//Get contents of word file
-						sr = WordHelper.getContents(val);
-					}else if(doXLS && xlsattr!=null && attributeName.equalsIgnoreCase(xlsattr))
-					{
-						//Get contents of excel file
-						sr = ExcelHelper.getContents(val);
-					}
-					
-					//Only index if contents is not null
-					if(sr!=null)
-					{
-						doc.add(new Field(attributeName,sr));
-					}
-				} else if (value instanceof Number) {
-					doc.add(new Field(attributeName, value.toString(),
-							storeField.booleanValue() ? Store.YES : Store.NO,
-							Field.Index.ANALYZED));
 				}
 			}
 			return doc;

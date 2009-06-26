@@ -42,6 +42,7 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 	/**
 	 * Create new instace of CRConfig util from GenericConfiguration
 	 * @param conf
+	 * @param name
 	 */
 	public CRConfigUtil(GenericConfiguration conf, String name)
 	{

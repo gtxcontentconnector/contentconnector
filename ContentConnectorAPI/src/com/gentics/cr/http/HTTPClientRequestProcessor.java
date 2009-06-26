@@ -1,6 +1,5 @@
 package com.gentics.cr.http;
 
-import java.beans.XMLDecoder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;

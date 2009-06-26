@@ -1,5 +1,8 @@
 package com.gentics.cr.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -170,5 +173,35 @@ public class CRUtil {
 
         return output.toString();
     }
+    
+    /**
+     * Slurps a InputStream into a String
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    public static String inputStreamToString (InputStream in) throws IOException {
+		StringBuffer out = new StringBuffer();
+	    byte[] b = new byte[4096];
+	    for (int n; (n = in.read(b)) != -1;) {
+	        out.append(new String(b, 0, n));
+	    }
+	    return out.toString();
+	}
+    
+    /**
+     * Slurps a Reader into a String
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    public static String readerToString (Reader in) throws IOException {
+		StringBuffer out = new StringBuffer();
+	    char[] b = new char[4096];
+	    for (int n; (n = in.read(b)) != -1;) {
+	        out.append(new String(b, 0, n));
+	    }
+	    return out.toString();
+	}
 
 }
