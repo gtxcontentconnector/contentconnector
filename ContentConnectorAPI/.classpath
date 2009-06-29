@@ -18,5 +18,12 @@
 	<classpathentry kind="var" path="GPN_LIBS/velocity-stringresource.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/gentics-portalnode.jar"/>
+	<classpathentry kind="lib" path="lib/pdfbox-0.8.0-incubating.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.2-FINAL-20081019.jar"/>
+	<classpathentry kind="lib" path="lib/poi-scratchpad-3.2-FINAL-20081019.jar"/>
+	<classpathentry kind="lib" path="lib/standard.jar"/>
+	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="lib/fontbox-0.8.0-incubating.jar"/>
+	<classpathentry kind="lib" path="lib/Tidy.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
