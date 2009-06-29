@@ -1,10 +1,8 @@
 package com.gentics.cr.lucene.indexer.transformer.html;
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 
-import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
-import com.gentics.cr.plink.PLinkStripper;
 import com.gentics.cr.util.CRUtil;
 
 
@@ -15,17 +13,15 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class HTMLContentTransformer extends ContentTransformer{
+public class HTMLJTidyContentTransformer extends ContentTransformer{
 
-	private static PLinkStripper stripper;
 	/**
 	 * Get new instance of HTMLContentTransformer
 	 * @param config
 	 */
-	public HTMLContentTransformer(GenericConfiguration config)
+	public HTMLJTidyContentTransformer(GenericConfiguration config)
 	{
 		super(config);
-		stripper = new PLinkStripper();
 	}
 	
 	/**
@@ -61,12 +57,12 @@ public class HTMLContentTransformer extends ContentTransformer{
 		String contents = null;
 		if(obj instanceof String)
 		{
-			contents = PortalConnectorHelper.replacePLinks((String)obj,stripper);
+			contents = (String)obj;
 		}
 		else
 		{
 			throw new IllegalArgumentException();
 		}
-		return new HTMLStripReader(new StringReader(contents));
+		return new HTMLStripReader(TidyHelper.tidy(new ByteArrayInputStream(contents.getBytes())));
     }
 }
