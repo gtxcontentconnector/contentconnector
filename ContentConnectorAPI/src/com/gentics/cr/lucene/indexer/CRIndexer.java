@@ -417,9 +417,11 @@ public class CRIndexer {
 				indexWriter.optimize();
 			}catch(Exception ex)
 			{
-				log.error("Could not complete index run... trying to close index and remove lock.");
+				
+				log.error("Could not complete index run... indexed Objects: "+status.getObjectsDone()+", trying to close index and remove lock.");
 				ex.printStackTrace();
 			}finally{
+				log.debug("Indexed "+status.getObjectsDone()+" objects...");
 				indexWriter.close();
 			}
 			
