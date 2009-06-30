@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,6 +78,7 @@ public class CRIndexer {
 	private static final String BATCHSIZE_KEY = "BATCHSIZE";
 	private static final String PERIODICAL_KEY = "PERIODICAL";
 	private static final String INDEX_LOCATION_KEY = "indexLocation";
+	
 	
 	/**
 	 * Create new instance of CRIndexer
@@ -467,6 +469,8 @@ public class CRIndexer {
 		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config,Hashtable<String,ContentTransformer> transformertable) {
 			Document doc = new Document();
 			Hashtable<String,ContentTransformer> tmap = getResolvableSpecifigTransformerMap(resolvable,transformertable);
+			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
+			
 			
 			for (Entry<String,Boolean> entry:attributes.entrySet()) {
 				
@@ -474,7 +478,7 @@ public class CRIndexer {
 				Boolean storeField = (Boolean) entry.getValue();
 
 				Object value = resolvable.getProperty(attributeName);
-				String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
+				
 				
 				if(idAttribute.equalsIgnoreCase(attributeName))
 				{
@@ -486,11 +490,13 @@ public class CRIndexer {
 					{
 						if(storeField.booleanValue())
 						{
-							doc.add(new Field(attributeName, t.getStringContents(value), storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+							String v =  t.getStringContents(value);
+							doc.add(new Field(attributeName,v, storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
 						}
 						else
 						{
-							doc.add(new Field(attributeName, t.getContents(value)));
+							Reader r = t.getContents(value);
+							doc.add(new Field(attributeName, r));
 						}
 					}
 					else
