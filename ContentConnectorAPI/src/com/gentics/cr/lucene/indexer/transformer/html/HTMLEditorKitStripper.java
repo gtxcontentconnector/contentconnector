@@ -1,10 +1,8 @@
 package com.gentics.cr.lucene.indexer.transformer.html;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -14,8 +12,6 @@ import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
-
-import org.w3c.tidy.Tidy;
 
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
@@ -57,19 +53,7 @@ public class HTMLEditorKitStripper extends ContentTransformer{
 	    return list;
 	  }
 		  
-	private Reader convertToReader(Object obj)
-	{
-		Reader r;
-		if(obj instanceof String)
-		{
-			r = new StringReader((String)obj);
-		}
-		else
-		{
-			throw new IllegalArgumentException("Parameter must be instance of String");
-		}
-		return r;
-	}
+	
 	
 	private InputStream convertToInputStream(Object obj)
 	{
