@@ -1,21 +1,25 @@
 package com.gentics.cr.lucene.search;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.search.Query;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
+import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
 /**
  * 
  * Last changed: $Date$
@@ -30,6 +34,12 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	private CRSearcher searcher = null;
 	protected String name=null;
 	
+	private boolean getStoredAttributes = false;
+	
+	private static final String SCORE_ATTRIBUTE_KEY = "SCOREATTRIBUTE";
+	private static final String GET_STORED_ATTRIBUTE_KEY = "GETSTOREDATTRIBUTES";
+	
+	private Hashtable<String,ContentHighlighter> highlighters;
 	
 	
 	/**
@@ -40,19 +50,28 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	public LuceneRequestProcessor(CRConfig config) throws CRException {
 		super(config);
 		this.name=config.getName();
-		
 		this.searcher = new CRSearcher(config);
-		
+		getStoredAttributes = Boolean.parseBoolean((String)config.get(GET_STORED_ATTRIBUTE_KEY));
+		highlighters = ContentHighlighter.getTransformerTable((GenericConfiguration)config);
 	}
 	
 	private static final String SEARCH_COUNT_KEY = "SEARCHCOUNT";
 	
 	private static final String ID_ATTRIBUTE_KEY = "idAttribute";
 	
+	@SuppressWarnings("unchecked")
+	private static List<Field> toFieldList(List l)
+	{
+		return((List<Field>) l);
+	}
+	
 	/**
+	 * This returns a collection of CRResolvableBeans containing the IDATTRIBUTE and all STORED ATTRIBUTES of the Lucene Documents
+	 * 
 	 * @param request - CRRequest containing the query in RequestFilter
 	 * @param doNavigation - if set to true there will be generated explanation output to the explanation logger of CRSearcher
 	 * @return search result as Collection of CRResolvableBean
+	 * @throws CRException 
 	 */
 	public Collection<CRResolvableBean> getObjects(CRRequest request,
 			boolean doNavigation) throws CRException {
@@ -63,9 +82,13 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			count=new Integer((String)this.config.get(SEARCH_COUNT_KEY));
 		if(count<=0)
 			log.error("COUNT IS LOWER THAN 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG!");
+		
+		
+		String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
 		//GET RESULT
 		HashMap<String,Object> searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,doNavigation);
 		LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
+		Query parsedQuery = (Query)searchResult.get("query");
 		if(docs!=null)
 		{
 			String idAttribute = (String)this.config.get(ID_ATTRIBUTE_KEY);
@@ -74,21 +97,45 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				Document doc = e.getKey();
 				Float score = e.getValue();
 				CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
-				if(request.getAttributeArray()!=null)
+				if(getStoredAttributes)
 				{
-					List<String> atts = Arrays.asList(request.getAttributeArray());
-					for(String s:atts)
+					for(Field f:toFieldList(doc.getFields()))
 					{
-						String val = doc.get(s);
-						crBean.set(s, val);
+						if(f.isStored())
+						{
+							if(f.isBinary())
+							{
+								crBean.set(f.name(), f.getBinaryValue());
+							}
+							else
+							{
+								crBean.set(f.name(), f.stringValue());
+							}
+						}
 					}
-					if(atts.contains("score"))
-					{
-						crBean.set("score", score);
-					}
-					
 				}
-				this.ext_log.debug("Found "+crBean.getContentid()+" with score "+score.toString());
+				
+				if(scoreAttribute!=null && !"".equals(scoreAttribute))
+				{
+					crBean.set(scoreAttribute, score);
+				}
+				//IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
+				if(highlighters!=null)
+				{
+					for(Entry<String,ContentHighlighter> ch:highlighters.entrySet())
+					{
+						ContentHighlighter h = ch.getValue();
+						String att = ch.getKey();
+						//IF crBean matches the highlighters rule => highlight
+						if(h.match(crBean))
+						{ 
+							String ret = h.highlight((String)crBean.get(att), parsedQuery);
+							crBean.set(att,ret);
+						}
+					}
+				}
+				
+				ext_log.debug("Found "+crBean.getContentid()+" with score "+score.toString());
 				result.add(crBean);
 			}
 		}

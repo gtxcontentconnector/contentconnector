@@ -18,7 +18,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import com.gentics.cr.CRConfig;
-import com.gentics.cr.CRConfigUtil;
 /**
  * 
  * Last changed: $Date$
@@ -84,7 +83,7 @@ public class CRSearcher {
 				result.put("result", coll);
 				int size=0;
 				if(coll!=null)size=coll.size();
-				this.log.debug("Found "+size+" objects with query: "+query);
+				log.debug("Found "+size+" objects with query: "+query);
 				return(result);
 			}
 			
@@ -108,14 +107,14 @@ public class CRSearcher {
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 	
 		    LinkedHashMap<Document,Float> result = new LinkedHashMap<Document,Float>(hits.length);
-		    this.log.debug("Found "+hits.length+" Documents");
+		    log.debug("Found "+hits.length+" Documents");
 		    for(int i = 0 ; i < hits.length ; i++) {
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	result.put(doc,hits[i].score);
 		    	if(explain)
 		    	{
 		    		Explanation ex = searcher.explain(parsedQuery, hits[i].doc);
-		    		this.log_explain.debug("Explanation for "+doc.toString()+" - "+ex.toString());
+		    		log_explain.debug("Explanation for "+doc.toString()+" - "+ex.toString());
 		    	}
 			}
 			
