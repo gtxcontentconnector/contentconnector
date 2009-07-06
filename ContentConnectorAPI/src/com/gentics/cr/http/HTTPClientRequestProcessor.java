@@ -39,10 +39,9 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 	private static Logger log = Logger.getLogger(HTTPClientRequestProcessor.class);
 	protected String name=null;
 	
-	protected String path=null;
-	protected String idAttribute = null;
-	protected String [] searchedAttributes = null;
-	protected int count = 30;
+	private static final String URL_KEY = "URL";
+	
+	private String path="";
 	
 	protected HttpClient client;
 	
@@ -55,70 +54,11 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 		super(config);
 		this.name=config.getName();
 		//LOAD ADDITIONAL CONFIG
-		loadConfig();
 		client = new HttpClient();
-
-
-	}
-
-	/**
-	 * Load additional config from file
-	 */
-	protected void loadConfig()
-	{
-		//TODO manage this using the config (additional parameters)
-		Properties props = new Properties();
-		try {
-			String confpath = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties");
-			
-			props.load(new FileInputStream(confpath));
-			
-			for (Iterator<Entry<Object,Object>> i = props.entrySet().iterator() ; i.hasNext() ; ) {
-				Map.Entry<Object,Object> entry = (Entry<Object,Object>) i.next();
-				Object value = entry.getValue();
-				Object key = entry.getKey();
-				this.setProperty((String)key, (String)value);
-			}
-			
-		} catch (FileNotFoundException e1) {
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-		} catch (IOException e1) {
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-		}catch(NullPointerException e){
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.name+".properties")+"!");
-			e.printStackTrace();
-		}
+		this.path = (String)config.get(URL_KEY);
+		if(this.path==null)log.error("COULD NOT GET URL FROM CONFIG (add RP.<rpnumber>.url=<url> to config). OVERTHINK YOUR CONFIG!");
 	}
 	
-	/**
-	 * Set property that is loaded from file
-	 * @param key
-	 * @param value
-	 */
-	protected void setProperty(String key, String value)
-	{
-		//TODO Manage over config
-		if(key instanceof String)
-		{
-			if("INDEXLOCATION".equalsIgnoreCase(key))
-			{
-				this.path = value;
-			}
-			else if("IDATTRIBUTE".equalsIgnoreCase(key))
-			{
-				this.idAttribute = value;
-			}
-			else if("SEARCHEDATTRIBUTES".equalsIgnoreCase(key))
-			{
-				this.searchedAttributes = value.split(",");
-			}
-			else if("SEARCHCOUNT".equalsIgnoreCase(key))
-			{
-				this.count = Integer.parseInt(value);
-			}
-			
-		}
-	}
 		
 	/**
 	 * Requests Objects from a remote ContentConnector Servlet using type JavaXML
