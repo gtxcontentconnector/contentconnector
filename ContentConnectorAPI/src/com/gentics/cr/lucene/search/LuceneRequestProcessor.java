@@ -79,9 +79,12 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		int count = request.getCount();
 		//IF COUNT IS NOT SET IN THE REQUEST, USE DEFAULT VALUE LOADED FROM CONFIG
 		if(count<=0)
-			count=new Integer((String)this.config.get(SEARCH_COUNT_KEY));
+		{	
+			String cstring = (String)this.config.get(SEARCH_COUNT_KEY);
+			if(cstring!=null)count=new Integer(cstring);
+		}
 		if(count<=0)
-			log.error("COUNT IS LOWER THAN 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG!");
+			log.error("DEFAULT COUNT IS LOWER OR EQUAL TO 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG (insert rp.<rpnumber>.searchcount=<value> int your properties file)!");
 		
 		
 		String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
