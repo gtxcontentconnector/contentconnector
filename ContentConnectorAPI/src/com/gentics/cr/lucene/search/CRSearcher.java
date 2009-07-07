@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -31,6 +32,8 @@ public class CRSearcher {
 	protected static Logger log_explain = Logger.getLogger(CRSearcher.class);
 	
 	protected static final String INDEX_LOCATION_KEY = "indexLocation";
+	protected static final String STEMMING_KEY = "STEMMING";
+	protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
 	
 	protected String indexPath;
 	protected CRConfig config;
@@ -69,7 +72,15 @@ public class CRSearcher {
 			Directory directory = FSDirectory.getDirectory(indexPath);
 			reader = IndexReader.open(directory, true);
 			searcher = new IndexSearcher(reader);
-			analyzer = new StandardAnalyzer();
+			boolean doStemming = Boolean.parseBoolean((String)this.config.get(STEMMING_KEY));
+			if(doStemming)
+			{
+				analyzer = new SnowballAnalyzer((String)this.config.get(STEMMER_NAME_KEY));
+			}
+			else
+			{
+				analyzer = new StandardAnalyzer();
+			}
 			
 			if(searchedAttributes!=null && searchedAttributes.length>0)
 			{

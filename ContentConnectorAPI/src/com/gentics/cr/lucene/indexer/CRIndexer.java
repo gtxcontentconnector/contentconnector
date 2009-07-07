@@ -14,6 +14,8 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -279,6 +281,8 @@ public class CRIndexer {
 		private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
 		private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
 		private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
+		private static final String STEMMING_KEY = "STEMMING";
+		private static final String STEMMER_NAME_KEY = "STEMMERNAME";
 
 		@SuppressWarnings("unchecked")
 		private void indexCR(File indexLocation, int timestamp, CRConfigUtil config)
@@ -346,18 +350,28 @@ public class CRIndexer {
 			
 			
 			//Update/add Documents
-			StandardAnalyzer analyzer;
-			//Load StopWordList
-			File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
-			if(stopWordFile!=null)
+			Analyzer analyzer;
+			boolean doStemming = Boolean.parseBoolean((String)config.get(STEMMING_KEY));
+			if(doStemming)
 			{
-				//initialize Analyzer with stop words
-				analyzer = new StandardAnalyzer(stopWordFile);
+				analyzer = new SnowballAnalyzer((String)config.get(STEMMER_NAME_KEY));
 			}
 			else
 			{
-				//if no stop word list exists load fall back
-				analyzer = new StandardAnalyzer();
+				
+				//Load StopWordList
+				File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
+				
+				if(stopWordFile!=null)
+				{
+					//initialize Analyzer with stop words
+					analyzer = new StandardAnalyzer(stopWordFile);
+				}
+				else
+				{
+					//if no stop word list exists load fall back
+					analyzer = new StandardAnalyzer();
+				}
 			}
 			
 			
