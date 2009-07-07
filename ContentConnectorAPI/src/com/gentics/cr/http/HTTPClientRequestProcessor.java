@@ -1,16 +1,10 @@
 package com.gentics.cr.http;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
@@ -26,7 +20,6 @@ import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
-import com.gentics.cr.util.CRUtil;
 /**
  * 
  * Last changed: $Date$
