@@ -2,6 +2,7 @@ package com.gentics.cr.taglib.portlet;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Hashtable;
 
 import javax.portlet.RenderRequest;
 import javax.servlet.jsp.JspException;
@@ -9,9 +10,11 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.gentics.api.portalnode.connector.PLinkReplacer;
+import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.rendering.ContentRenderer;
+import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
 
 /**
  * @author norbert
@@ -22,7 +25,14 @@ public class RenderContentTag extends TagSupport {
 	 * Name of the render request attribute for the instance of {@link ContentRenderer}
 	 */
 	public final static String RENDERER_PARAM = "rendercontenttag.renderer";
+	
+	
+	public final static String CRCONF_PARAM = "rendercontenttag.crconf";
 
+	
+	public final static String REQUEST_PARAM = "rendercontenttag.request";
+	
+	
 	/**
 	 * Name of the render request attribute for the instance of {@link PLinkReplacer}
 	 */
@@ -39,7 +49,7 @@ public class RenderContentTag extends TagSupport {
 	protected String contentAttribute = "content";
 	
 	protected String var = null;
-
+	
 	/**
 	 * flag if the output should be urlencoded
 	 */
@@ -75,8 +85,6 @@ public class RenderContentTag extends TagSupport {
 		this.var = var;
 	}
 	
-	
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -88,14 +96,24 @@ public class RenderContentTag extends TagSupport {
 
 		ContentRenderer renderer = (ContentRenderer)renderRequest.getAttribute(RENDERER_PARAM);
 		PLinkReplacer pLinkReplacer = (PLinkReplacer)renderRequest.getAttribute(PLINK_PARAM);
-
+		CRConfigUtil crConf = (CRConfigUtil)renderRequest.getAttribute(CRCONF_PARAM);
+		
+		
 		try {
 			if (object != null) {
 				try {
 					String content = renderer.renderContent(object, contentAttribute, true, pLinkReplacer, false, null);
+					Hashtable<String,ContentPostProcesser> confs = ContentPostProcesser.getProcessorTable(crConf);
+					if (confs != null) {
+						for(ContentPostProcesser p:confs.values()) {
+							content = p.processString(content, renderRequest);
+						}
+					}
+					
 					if (urlencode) {
 						content = URLEncoder.encode(content, "UTF-8");
 					}
+					
 					if (var != null) {
 						if (content!=null && "".equals(content)) {
 							content = null;
