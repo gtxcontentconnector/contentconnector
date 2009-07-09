@@ -259,6 +259,8 @@ public class CRIndexer {
 					try {
 						indexCR(indexLoc, timestamp, new CRConfigUtil(e.getValue(),crconfig.getName()+"."+e.getKey()));
 					} catch (Exception ex){
+						String name="<no config name>";
+						if(crconfig!=null && crconfig.getName()!=null)name=crconfig.getName();
 						log.error("Error while recreating index for "+crconfig.getName()+"."+e.getKey());
 						ex.printStackTrace();
 					}
