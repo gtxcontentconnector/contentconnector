@@ -34,6 +34,7 @@ import com.gentics.contentnode.content.GenticsContentFactory;
 import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.CRException;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
@@ -260,9 +261,12 @@ public class CRIndexer {
 						indexCR(indexLoc, timestamp, new CRConfigUtil(e.getValue(),crconfig.getName()+"."+e.getKey()));
 					} catch (Exception ex){
 						String name="<no config name>";
+						String key ="<no key>";
+						CRException cex = new CRException(ex);
+						if(e!=null && e.getKey()!=null)key=e.getKey();
 						if(crconfig!=null && crconfig.getName()!=null)name=crconfig.getName();
-						log.error("Error while recreating index for "+crconfig.getName()+"."+e.getKey());
-						ex.printStackTrace();
+						log.error("Error while recreating index for "+name+"."+key+"  - "+cex.getMessage()+" - "+cex.getStringStackTrace());
+						cex.printStackTrace();
 					}
 				}
 			}
