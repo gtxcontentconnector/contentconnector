@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
-import com.gentics.portalnode.portal.Portal;
+import com.gentics.cr.portalnode.PortalNodeInteractor;
 /**
  * 
  * Last changed: $Date$
@@ -31,7 +31,7 @@ public class CRDatabaseFactory {
 			if(ds_handle.containsKey("portalnodedb"))
 			{
 				String key = (String)ds_handle.get("portalnodedb");
-				ds = Portal.getCurrentPortal().createDatasource(key);
+				ds = PortalNodeInteractor.getPortalnodeDatasource(key);
 			}
 			else if(ds_props!=null && ds_props.size()!=0)
 			{

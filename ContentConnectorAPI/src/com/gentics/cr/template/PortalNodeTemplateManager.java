@@ -7,6 +7,7 @@ import com.gentics.api.portalnode.portlet.GenticsPortlet;
 import com.gentics.api.portalnode.templateengine.PrivateKeyException;
 import com.gentics.api.portalnode.templateengine.TemplateNotFoundException;
 import com.gentics.api.portalnode.templateengine.TemplateProcessor;
+import com.gentics.cr.portalnode.PortalNodeInteractor;
 import com.gentics.cr.CRException;
 
 /**
@@ -21,13 +22,17 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 	private GenticsPortlet portlet;
 	private HashMap<String, Object> contextObjects;
 	
+	/**
+	 * Create Instance
+	 * @param portlet
+	 */
 	public PortalNodeTemplateManager(GenticsPortlet portlet)
 	{
 		this.portlet = portlet;
 		this.contextObjects = new HashMap<String,Object>();
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see com.gentics.cr.template.ITemplateManager#put(java.lang.String, java.lang.Object)
 	 */
 	public void put(String key, Object value) {
@@ -35,15 +40,13 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see com.gentics.cr.template.ITemplateManager#render(java.lang.String, java.lang.String, java.lang.Object, java.lang.Object)
 	 */
-	@SuppressWarnings("deprecation")
 	public String render(String templatename, String templatesource) throws CRException {
 		String renderedTemplate=null;
 		
-		//TODO get undepricated method from DEV
-		TemplateProcessor processor = this.portlet.getTemplateProcessor(null, null);
+		TemplateProcessor processor = PortalNodeInteractor.getPortletTemplateProcessor(this.portlet);
 		
 		try {
 			Iterator<String> it = this.contextObjects.keySet().iterator();

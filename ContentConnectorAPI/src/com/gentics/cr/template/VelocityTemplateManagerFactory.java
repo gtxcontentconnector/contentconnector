@@ -1,6 +1,5 @@
 package com.gentics.cr.template;
 
-import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.jcs.JCS;

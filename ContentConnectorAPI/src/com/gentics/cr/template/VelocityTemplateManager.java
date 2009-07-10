@@ -3,7 +3,6 @@ package com.gentics.cr.template;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -13,7 +12,6 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 
-import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRException;
 
 /**
@@ -31,7 +29,10 @@ public class VelocityTemplateManager implements ITemplateManager {
 	//Templatecache
 	private HashMap<String, Template> templates;
 	
-		
+	/**
+	 * Create Instance
+	 * @param encoding
+	 */
 	public VelocityTemplateManager(String encoding)
 	{
 		this.encoding = encoding;
@@ -40,14 +41,14 @@ public class VelocityTemplateManager implements ITemplateManager {
 	}
 	
 	
-	/* (non-Javadoc)
+	/**
 	 * @see com.gentics.cr.template.ITemplateManager#put(java.lang.Object)
 	 */
 	public void put(String key, Object value) {
 		this.objectstoput.put(key, value);
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see com.gentics.cr.template.ITemplateManager#render(java.lang.String, java.lang.Object, java.lang.Object)
 	 */
 	public String render(String templateName, String templateSource) throws CRException {
