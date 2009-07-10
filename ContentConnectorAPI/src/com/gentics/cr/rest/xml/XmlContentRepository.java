@@ -35,7 +35,11 @@ import com.gentics.cr.rest.ContentRepository;
  */
 public class XmlContentRepository extends ContentRepository {
 
-	private static final long serialVersionUID = 0004L;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6929053170765114770L;
 
 	private Element rootElement;
 
@@ -43,6 +47,10 @@ public class XmlContentRepository extends ContentRepository {
 
 	private DOMSource src;
 
+	/**
+	 * Create new instance
+	 * @param attr
+	 */
 	public XmlContentRepository(String[] attr) {
 		
 		super(attr);
@@ -67,6 +75,11 @@ public class XmlContentRepository extends ContentRepository {
 		doc.appendChild(rootElement);
 
 	}
+	/**
+	 * 
+	 * @param attr
+	 * @param encoding
+	 */
 	public XmlContentRepository(String[] attr, String encoding) {
 		
 		super(attr);
@@ -91,7 +104,12 @@ public class XmlContentRepository extends ContentRepository {
 		doc.appendChild(rootElement);
 
 	}
-	
+	/**
+	 * 
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public XmlContentRepository(String[] attr, String encoding, String[] options) {
 		
 		super(attr,encoding,options);
@@ -118,6 +136,10 @@ public class XmlContentRepository extends ContentRepository {
 	}
 	
 
+	/**
+	 * returns text/xml
+	 * @return 
+	 */
 	public String getContentType() {
 		return "text/xml";
 	}
@@ -142,6 +164,13 @@ public class XmlContentRepository extends ContentRepository {
 		}
 	}
 	
+	/**
+	 * Respond with Error
+	 * @param stream 
+	 * @param ex 
+	 * @param isDebug 
+	 * 
+	 */
 	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
 		clearElement(this.rootElement);
 		Element errElement = doc.createElement("Error");
@@ -176,6 +205,13 @@ public class XmlContentRepository extends ContentRepository {
 		
 	}
 
+	/**
+	 * 
+	 * Write XML Elements to the specified stream
+	 * @param stream 
+	 * @throws CRException 
+	 * 
+	 */
 	public void toStream(OutputStream stream) throws CRException {
 		
 		if(this.resolvableColl.isEmpty())

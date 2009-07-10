@@ -18,6 +18,10 @@ public class BadFormatException extends Exception{
 	 */
 	private static final long serialVersionUID = 00006L;
 
+	/**
+	 * Create new instance
+	 * @param message
+	 */
 	public BadFormatException(String message){
         super(message);
     }

@@ -28,6 +28,11 @@ public class JSONContentRepository extends ContentRepository {
 
 	private JSONObject rootObject;
 
+	/**
+	 * Create instance
+	 * 	Set response encoding to UTF-8
+	 * @param attr
+	 */
 	public JSONContentRepository(String[] attr) {
 
 		super(attr);
@@ -35,6 +40,11 @@ public class JSONContentRepository extends ContentRepository {
 		rootObject = new JSONObject();
 	}
 	
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 */
 	public JSONContentRepository(String[] attr, String encoding) {
 
 		super(attr);
@@ -42,6 +52,12 @@ public class JSONContentRepository extends ContentRepository {
 		rootObject = new JSONObject();
 	}
 	
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public JSONContentRepository(String[] attr, String encoding, String[] options) {
 
 		super(attr,encoding,options);
@@ -49,12 +65,24 @@ public class JSONContentRepository extends ContentRepository {
 		rootObject = new JSONObject();
 	}
 
+	/**
+	 * 
+	 * Returns "application/jsonrequest"
+	 * @return 
+	 * 
+	 */
 	public String getContentType() {
 		//return "text/javascript";
 		return("application/jsonrequest");
 	}
 	
-	
+	/**
+	 * Responds with a JSON ERROR OBject
+	 * @param stream 
+	 * @param ex 
+	 * @param isDebug 
+	 * 
+	 */
 	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug)
 	{
 		//Clear the root element and set the status
@@ -80,7 +108,12 @@ public class JSONContentRepository extends ContentRepository {
 		
 	}
 	
-
+	/**
+	 * Writes the objects as JSON Stream
+	 * @param stream 
+	 * @throws CRException 
+	 * 
+	 */
 	public void toStream(OutputStream stream) throws CRException{
 		if(this.resolvableColl.isEmpty())
 		{

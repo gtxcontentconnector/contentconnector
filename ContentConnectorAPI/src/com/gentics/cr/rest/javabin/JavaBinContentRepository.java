@@ -27,6 +27,10 @@ public class JavaBinContentRepository extends ContentRepository {
 	 */
 	private static final long serialVersionUID = 713445758416480660L;
 
+	/**
+	 * Create instance
+	 * @param attr
+	 */
 	public JavaBinContentRepository(String[] attr) {
 		
 		super(attr);
@@ -34,6 +38,11 @@ public class JavaBinContentRepository extends ContentRepository {
 		this.setResponseEncoding("UTF-8");
 		
 	}
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 */
 	public JavaBinContentRepository(String[] attr, String encoding) {
 		
 		super(attr);
@@ -41,7 +50,12 @@ public class JavaBinContentRepository extends ContentRepository {
 		this.setResponseEncoding(encoding);
 		
 	}
-	
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public JavaBinContentRepository(String[] attr, String encoding, String[] options) {
 		
 		super(attr,encoding,options);
@@ -50,7 +64,10 @@ public class JavaBinContentRepository extends ContentRepository {
 		
 	}
 	
-
+	/**
+	 * Returns contenttype "application/x-java-serialized-object"
+	 * @return 
+	 */
 	public String getContentType() {
 		return "application/x-java-serialized-object";
 	}
@@ -68,7 +85,14 @@ public class JavaBinContentRepository extends ContentRepository {
 		}
 	}
 	
-	
+	/**
+	 * Respond with Error
+	 * 		Serialized CRError class
+	 * @param stream 
+	 * @param ex 
+	 * @param isDebug 
+	 * 
+	 */
 	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
 
 		CRError e = new CRError(ex);
@@ -80,7 +104,11 @@ public class JavaBinContentRepository extends ContentRepository {
 		serialize(e,stream);
 		
 	}
-	
+	/**
+	 * Wrtites objects to stream
+	 * @param stream 
+	 * @throws CRException 
+	 */
 	public void toStream(OutputStream stream) throws CRException {
 		
 		if(this.resolvableColl.isEmpty())

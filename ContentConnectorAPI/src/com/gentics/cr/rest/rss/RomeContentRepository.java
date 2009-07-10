@@ -30,6 +30,13 @@ public class RomeContentRepository extends ContentRepository {
 	
 	private SyndFeedOutput output;
 	private ArrayList<SyndEntryImpl> entryList;
+	
+	/**
+	 * 
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public RomeContentRepository(String[] attr, String encoding,
 			String[] options) {
 		super(attr, encoding, options);
@@ -41,11 +48,20 @@ public class RomeContentRepository extends ContentRepository {
 	 */
 	private static final long serialVersionUID = 5652365520470929051L;
 
+	/**
+	 * Returns "text/xml"
+	 * @return 
+	 */
 	public String getContentType() {
 		return("text/xml");
 	}
 	
-	
+	/**
+	 * @param stream 
+	 * @param ex 
+	 * @param isDebug 
+	 * 
+	 */
 	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug)
 	{
 		
@@ -67,7 +83,7 @@ public class RomeContentRepository extends ContentRepository {
 		if(this.getOptionsArray()==null || this.getOptionsArray().length==0)
 		{
 			feedtype="rss_0.9";
-			this.log.warn("No feedtype in parameter options received, using default type rss_0.9");
+			log.warn("No feedtype in parameter options received, using default type rss_0.9");
 		}
 		else
 		{
@@ -89,6 +105,11 @@ public class RomeContentRepository extends ContentRepository {
 		return feedtype;
 	}
 
+	/**
+	 * @param stream 
+	 * @throws CRException 
+	 * 
+	 */
 	public void toStream(OutputStream stream) throws CRException{
 		output = new SyndFeedOutput();
 		

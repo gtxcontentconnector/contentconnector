@@ -35,7 +35,11 @@ import com.gentics.cr.rest.ContentRepository;
  */
 public class MnogosearchXmlContentRepository extends ContentRepository {
 
-	private static final long serialVersionUID = 0004L;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4197488418716139110L;
 
 	private Element rootElement;
 
@@ -43,6 +47,11 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 
 	private DOMSource src;
 
+	/**
+	 * Create Instance
+	 * 	Set response encoding to utf-8
+	 * @param attr
+	 */
 	public MnogosearchXmlContentRepository(String[] attr) {
 		
 		super(attr);
@@ -67,6 +76,11 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 		doc.appendChild(rootElement);
 
 	}
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 */
 	public MnogosearchXmlContentRepository(String[] attr, String encoding) {
 		
 		super(attr);
@@ -91,7 +105,12 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 		doc.appendChild(rootElement);
 
 	}
-	
+	/**
+	 * Create Instance
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public MnogosearchXmlContentRepository(String[] attr, String encoding, String[] options) {
 		
 		super(attr,encoding,options);
@@ -116,7 +135,12 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 		doc.appendChild(rootElement);
 	}
 	
-
+	/**
+	 * 
+	 * returns test/xml
+	 * @return 
+	 * 
+	 */
 	public String getContentType() {
 		return "text/xml";
 	}
@@ -141,6 +165,12 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 		}
 	}
 	
+	/**
+	 * @param stream 
+	 * @param ex 
+	 * @param isDebug 
+	 * 
+	 */
 	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
 		clearElement(this.rootElement);
 		Element errElement = doc.createElement("Error");
@@ -175,6 +205,11 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 		
 	}
 
+	/**
+	 * @param stream 
+	 * @throws CRException 
+	 * 
+	 */
 	public void toStream(OutputStream stream) throws CRException {
 		
 		

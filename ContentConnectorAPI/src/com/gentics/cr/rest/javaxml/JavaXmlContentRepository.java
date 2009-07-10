@@ -28,7 +28,11 @@ public class JavaXmlContentRepository extends ContentRepository {
 
 	private static final long serialVersionUID = 003433324L;
 
-
+	/**
+	 * Create instance
+	 * sets response encoding to UTF-8
+	 * @param attr
+	 */
 	public JavaXmlContentRepository(String[] attr) {
 		
 		super(attr);
@@ -36,6 +40,12 @@ public class JavaXmlContentRepository extends ContentRepository {
 		this.setResponseEncoding("UTF-8");
 		
 	}
+	
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 */
 	public JavaXmlContentRepository(String[] attr, String encoding) {
 		
 		super(attr);
@@ -44,6 +54,12 @@ public class JavaXmlContentRepository extends ContentRepository {
 		
 	}
 	
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public JavaXmlContentRepository(String[] attr, String encoding, String[] options) {
 		
 		super(attr,encoding,options);
@@ -52,12 +68,22 @@ public class JavaXmlContentRepository extends ContentRepository {
 		
 	}
 	
-
+	/**
+	 * Returns "text/xml"
+	 * @return 
+	 */
 	public String getContentType() {
 		return "text/xml";
 	}
 	
-	
+	/**
+	 * Responds with Error
+	 * 		Serialized CRError Class
+	 * @param stream 
+	 * @param ex 
+	 * @param isDebug 
+	 * 
+	 */
 	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
 
 		CRError e = new CRError(ex);
@@ -95,6 +121,12 @@ public class JavaXmlContentRepository extends ContentRepository {
 		}
 	}
 
+	/**
+	 * Writes Data to the specified stream
+	 * @param stream 
+	 * @throws CRException 
+	 * 
+	 */
 	public void toStream(OutputStream stream) throws CRException {
 		
 		if(this.resolvableColl.isEmpty())

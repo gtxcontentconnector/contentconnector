@@ -50,6 +50,7 @@ public class PHPSerializer{
     /** Serialize to PHP format into a string
      * @param object java object to serialize
      * @return serialized object
+     * @throws UnsupportedEncodingException 
      */
     public String serialize(Object object)throws UnsupportedEncodingException{
         StringBuffer output=new StringBuffer();
@@ -59,7 +60,8 @@ public class PHPSerializer{
     
     /** Serialize to PHP format into a string
      * @param object java object to serialize
-     * @return serialized object
+     * @param output
+     * @throws UnsupportedEncodingException 
      */
     public void serialize(Object object,StringBuffer output)throws UnsupportedEncodingException{
         doSerialize(object,new StringBufferSDW(output));
@@ -68,6 +70,7 @@ public class PHPSerializer{
     /** Serialize to PHP format into a stream
      * @param object java object to serialize
      * @param output stream for output
+     * @throws UnsupportedEncodingException 
      */
     public void serialize(Object object,PrintStream output)throws UnsupportedEncodingException{
         doSerialize(object,new PrintStreamSDW(output));
@@ -241,6 +244,8 @@ public class PHPSerializer{
     /** Unserialize from PHP data string
      * @param str PHP serialized data string
      * @return unserialized object
+     * @throws BadFormatException 
+     * @throws UnsupportedEncodingException 
      */
     public Object unserialize(String str)throws BadFormatException,UnsupportedEncodingException{
         if(str==null)
@@ -301,18 +306,35 @@ public class PHPSerializer{
     
     /** Abstraction interface for serialized output data */
     private interface SerializedDataWrite{
+        /**
+         * @param data
+         */
         public void put(Object data);
+        /**
+         * @param data
+         */
         public void put(int data);
     }
     /** Implementation of SerializedDataWrite using a StringBuffer */
     private class StringBufferSDW implements SerializedDataWrite{
         private StringBuffer outputObject;
+        /**
+         * @see com.gentics.cr.rest.php.PHPSerializer.SerializedDataWrite#put(java.lang.Object)
+         */
         public void put(Object data){
             outputObject.append(data);
         }
+        /**
+         * @param data 
+         * @see com.gentics.cr.rest.php.PHPSerializer.SerializedDataWrite#put(java.lang.Object)
+         */
         public void put(int data){
             outputObject.append(new Integer(data).toString());
         }
+        /**
+         * 
+         * @param outputObject
+         */
         public StringBufferSDW(StringBuffer outputObject){
             this.outputObject=outputObject;
         }
@@ -320,17 +342,35 @@ public class PHPSerializer{
     /** Implementation of SerializedDataWrite using a PrintStream */
     private class PrintStreamSDW implements SerializedDataWrite{
         private PrintStream outputObject;
+        /**
+         * @param data 
+         * 
+         */
         public void put(Object data){
             outputObject.print(data);
         }
+        /**
+         * @param data 
+         * 
+         */
         public void put(int data){
             outputObject.append(new Integer(data).toString());
         }
+        /**
+         * 
+         * @param outputObject
+         */
         public PrintStreamSDW(PrintStream outputObject){
             this.outputObject=outputObject;
         }
     }
     
+    /**
+     * Get bytes
+     * @param obj
+     * @return
+     * @throws java.io.IOException
+     */
     public byte[] getBytes(Object obj) throws java.io.IOException{
 	      ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	      ObjectOutputStream oos = new ObjectOutputStream(bos);

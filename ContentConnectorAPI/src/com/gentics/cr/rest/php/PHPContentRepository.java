@@ -23,11 +23,19 @@ import com.gentics.cr.rest.ContentRepository;
  
 public class PHPContentRepository extends ContentRepository {
 
-	private static final long serialVersionUID = 0005L;
-
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4131893655763487202L;
 	private PHPSerializer PHPSerializer;
 	private HashMap<String,Object> cr;
 
+	/**
+	 * Create new Instance
+	 * 	Set response encoding to UTF-8
+	 * @param attr
+	 */
 	public PHPContentRepository(String[] attr) {
 
 		super(attr);
@@ -37,6 +45,11 @@ public class PHPContentRepository extends ContentRepository {
 		
 	}
 	
+	/**
+	 * Create new Instance
+	 * @param attr
+	 * @param encoding
+	 */
 	public PHPContentRepository(String[] attr, String encoding) {
 
 		super(attr);
@@ -46,6 +59,12 @@ public class PHPContentRepository extends ContentRepository {
 		
 	}
 	
+	/**
+	 * Create new instace
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public PHPContentRepository(String[] attr, String encoding, String[] options) {
 
 		super(attr,encoding,options);
@@ -55,11 +74,22 @@ public class PHPContentRepository extends ContentRepository {
 		
 	}
 
+	/**
+	 * returns "application/serialized_PHP_variable"
+	 * @return 
+	 */
 	public String getContentType() {
 		return "application/serialized_PHP_variable";
 		//return("text/plain");
 	}
 	
+	/**
+	 * Responts with an PHP Serialized ERROR Object
+	 * @param stream 
+	 * @param ex 
+	 * @param isDebug 
+	 * 
+	 */
 	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug)
 	{
 		this.cr.clear();
@@ -83,6 +113,13 @@ public class PHPContentRepository extends ContentRepository {
 		}
 	}
 
+	/**
+	 * 
+	 * Writes the CRResolvableBeans to a Stream
+	 * @param stream 
+	 * @throws CRException 
+	 * 
+	 */
 	public void toStream(OutputStream stream) throws CRException{
 		if(this.resolvableColl.isEmpty())
 		{
@@ -105,15 +142,12 @@ public class PHPContentRepository extends ContentRepository {
 
 		try {
 			OutputStreamWriter wr = new OutputStreamWriter(stream, this.getResponseEncoding());
-			//TODO auch bei den anderen repositories den output charset übergeben
-			//TODO output charset über web.xml konfigurierbar machen
 			wr.write(this.PHPSerializer.serialize(this.cr));
-			
 			wr.flush();
 			wr.close();
-			//stream.write((this.PHPSerializer.serialize(this.cr)).getBytes());
+			
 		} catch (IOException e) {
-			;
+			throw new CRException(e);
 		}
 
 	}
