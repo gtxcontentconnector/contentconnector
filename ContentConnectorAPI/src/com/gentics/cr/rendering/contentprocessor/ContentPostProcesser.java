@@ -20,10 +20,13 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
  *
  */
 public abstract class ContentPostProcesser {
-	public GenericConfiguration conf = null;
+	protected GenericConfiguration conf = null;
 	protected static Logger log = Logger.getLogger(ContentTransformer.class);
 	
-	
+	/**
+	 * 
+	 * @param config
+	 */
 	public ContentPostProcesser (GenericConfiguration config) {
 		this.conf = config;
 	}
@@ -36,7 +39,23 @@ public abstract class ContentPostProcesser {
 	 * @return
 	 */
 	public abstract String processString(String obj);
+	/**
+	 * Returns the processed String (implement the way, you want the string to
+	 * be processed and changed, replaced, modified, etc)
+	 * 
+	 * @param obj
+	 * @param request 
+	 * @return
+	 */
 	public abstract String processString(String obj, PortletRequest request);
+	/**
+	 * Returns the processed String (implement the way, you want the string to
+	 * be processed and changed, replaced, modified, etc)
+	 * 
+	 * @param obj
+	 * @param request 
+	 * @return
+	 */
 	public abstract String processString(String obj, ServletRequest request);
 	
 	
