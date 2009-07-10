@@ -17,8 +17,8 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
-import com.gentics.cr.CRRequestProcessor;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 /**
@@ -30,23 +30,30 @@ import com.gentics.cr.util.response.IResponseTypeSetter;
  */
 public class RESTBinaryContainer{
 
-	public CRRequestProcessor rp;
-	public String response_encoding;
+	private RequestProcessor rp;
+	private String response_encoding;
 	private String contenttype="";
 	private static Logger log = Logger.getLogger(RESTBinaryContainer.class);
 	CRConfigUtil crConf;
-	
+	/**
+	 * get conten type as string
+	 * @return
+	 */
 	public String getContentType()
 	{
 		return(this.contenttype);
 	}
 	
+	/**
+	 * Create new instance
+	 * @param crConf
+	 */
 	public RESTBinaryContainer(CRConfigUtil crConf)
 	{
 		this.response_encoding = crConf.getEncoding();
 		this.crConf = crConf;
 		try {
-			this.rp = new CRRequestProcessor(crConf.getRequestProcessorConfig("1"));
+			this.rp = crConf.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
 			CRException ex = new CRException(e);
 			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "+ex.getStringStackTrace());
@@ -68,7 +75,13 @@ public class RESTBinaryContainer{
 		}
 	}
 	
-	
+	/**
+	 * Process the whole Service
+	 * @param reqBuilder
+	 * @param wrappedObjectsToDeploy
+	 * @param stream
+	 * @param responsetypesetter
+	 */
 	public void processService(CRBinaryRequestBuilder reqBuilder, Map<String,Resolvable> wrappedObjectsToDeploy, OutputStream stream, IResponseTypeSetter responsetypesetter)
 	{
 		CRBinaryRequestBuilder myReqBuilder = reqBuilder;

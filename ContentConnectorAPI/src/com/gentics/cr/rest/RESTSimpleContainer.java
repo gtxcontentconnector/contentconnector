@@ -25,16 +25,24 @@ import com.gentics.cr.util.response.IResponseTypeSetter;
  */
 public class RESTSimpleContainer{
 
-	public RequestProcessor rp;
-	public String response_encoding;
+	private RequestProcessor rp;
+	private String response_encoding;
 	private String contenttype="";
 	private static Logger log = Logger.getLogger(RESTSimpleContainer.class);
 	
+	/**
+	 * Get the content type as String
+	 * @return
+	 */
 	public String getContentType()
 	{
 		return(this.contenttype+"; charset="+this.response_encoding);
 	}
 	
+	/**
+	 * Create new instance
+	 * @param crConf
+	 */
 	public RESTSimpleContainer(CRConfigUtil crConf)
 	{
 		this.response_encoding = crConf.getEncoding();
@@ -48,6 +56,13 @@ public class RESTSimpleContainer{
 		}
 	}
 	
+	/**
+	 * Process the whole service
+	 * @param reqBuilder
+	 * @param wrappedObjectsToDeploy
+	 * @param stream
+	 * @param responsetypesetter
+	 */
 	public void processService(CRRequestBuilder reqBuilder, Map<String,Resolvable> wrappedObjectsToDeploy, OutputStream stream, IResponseTypeSetter responsetypesetter)
 	{
 		Collection<CRResolvableBean> coll;

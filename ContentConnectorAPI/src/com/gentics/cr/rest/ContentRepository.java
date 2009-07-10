@@ -29,17 +29,18 @@ import com.gentics.cr.util.filter.Filter;
  */
 public abstract class ContentRepository implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
 	private String[] attrArray;
 	
 	private String[] optionsArray;
 	
-	//TODO CHECK WHY VECTOR IS USED HERE
-	public Vector<CRResolvableBean> resolvableColl;
+	protected Vector<CRResolvableBean> resolvableColl;
 	
 	private String response_encoding;
 	
+	/**
+	 * Get responce encoding. Defaults to utf-8
+	 * @return
+	 */
 	public String getResponseEncoding()
 	{
 		if(this.response_encoding==null)
@@ -47,20 +48,37 @@ public abstract class ContentRepository implements Serializable {
 		else
 			return(this.response_encoding);
 	}
+	
+	/**
+	 * Sets the response encoding
+	 * @param encoding
+	 */
 	public void setResponseEncoding(String encoding)
 	{
 		this.response_encoding=encoding;
 	}
 	
 	
-	
+	/**
+	 * Set options array
+	 * @param optionsArray
+	 */
 	public void setOptionsArray(String[] optionsArray) {
 		this.optionsArray = optionsArray;
 	}
+	
+	/**
+	 * Get Options Array
+	 * @return
+	 */
 	public String[] getOptionsArray() {
 		return optionsArray;
 	}
 	
+	/**
+	 * returns true if this is the root repository and has no fathers
+	 * @return
+	 */
 	public boolean isRoot()
 	{
 		return(this.isRoot);
@@ -68,20 +86,35 @@ public abstract class ContentRepository implements Serializable {
 
 
 	private boolean isRoot=true;
-	public static Logger log = Logger.getLogger(ContentRepository.class);
+	protected static Logger log = Logger.getLogger(ContentRepository.class);
 	
+	/**
+	 * Create instance
+	 * @param attr
+	 */
 	public ContentRepository(String[] attr) {
 		this.resolvableColl = new Vector<CRResolvableBean>();
 		this.attrArray = attr;
 		this.response_encoding="utf-8";
 	}
 	
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param encoding
+	 */
 	public ContentRepository(String[] attr, String encoding) {
 		this.resolvableColl = new Vector<CRResolvableBean>();
 		this.attrArray = attr;
 		this.response_encoding=encoding;
 	}
 	
+	/**
+	 * create instance
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 */
 	public ContentRepository(String[] attr, String encoding, String[] options)
 	{
 		this.resolvableColl = new Vector<CRResolvableBean>();
@@ -90,6 +123,11 @@ public abstract class ContentRepository implements Serializable {
 		this.setOptionsArray(options);
 	}
 	
+	/**
+	 * Create instance
+	 * @param attr
+	 * @param root
+	 */
 	public ContentRepository(String[] attr, Object root)
 	{
 		this.resolvableColl = new Vector<CRResolvableBean>();
@@ -98,32 +136,60 @@ public abstract class ContentRepository implements Serializable {
 		//this.log.setLevel(Level.DEBUG);
 	}
 
+	/**
+	 * Gets the contenttype as string
+	 * "text/plain"
+	 * @return
+	 */
 	public String getContentType() {
 		return "text/plain";
 	}
 
+	/**
+	 * Add a resolvable bean
+	 * @param resolvableBean
+	 */
 	public void addObject(CRResolvableBean resolvableBean) {
 		this.resolvableColl.add(resolvableBean);
 	}
 	/**
 	 * add all given objects to the ContentRepository
-	 * @param objects: Collection of CRResolvableBeans to be added
+	 * @param objects Collection of CRResolvableBeans to be added
 	 */
 	public void addObjects(Collection<CRResolvableBean> objects){
 		this.resolvableColl.addAll(objects);
 	}
 
-	public void toStream(OutputStream stream) throws CRException{
-	}
+	/**
+	 * Writes repository to a stream
+	 * @param stream
+	 * @throws CRException
+	 */
+	public abstract void toStream(OutputStream stream) throws CRException;
 	
-	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
-		
-	}
+	/**
+	 * Responds with an Error to the stream
+	 * @param stream
+	 * @param ex
+	 * @param isDebug
+	 */
+	public abstract void respondWithError(OutputStream stream,CRException ex, boolean isDebug);
 	
+	/**
+	 * Apply Filters on the ContentRepository
+	 * @param crConf
+	 * @return
+	 */
 	public boolean applyFilters(CRConfig crConf){
 		return applyFilters(crConf, null);
 	}
 	
+	/**
+	 * Apply Filters
+	 * @param crConf
+	 * @param request
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean applyFilters(CRConfig crConf, Object request){
 		Iterator<String> filterIterator = crConf.getFilterChain().iterator();
@@ -168,10 +234,21 @@ public abstract class ContentRepository implements Serializable {
 		return false;
 	}
 
+	/**
+	 * Get attribute array
+	 * @return
+	 */
 	public String[] getAttrArray() {
 		return attrArray;
 	}
 	
+	
+	/**
+	 * Serialize Object
+	 * @param obj
+	 * @return
+	 * @throws java.io.IOException
+	 */
 	public byte[] getBytes(Object obj) throws java.io.IOException{
 	      ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	      ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -183,12 +260,16 @@ public abstract class ContentRepository implements Serializable {
 	      return data;
 	  }
 
+	/**
+	 * Get contained Objects
+	 * @return
+	 */
 	public Collection<CRResolvableBean> getObjects() {
 		return (Collection<CRResolvableBean>) resolvableColl;
 	}
 	/**
 	 * Replaces objects in the ContentRepository with the objects in the given collection
-	 * @param objects: Collection of CRResolveableBeans which overrides the objects in the ContentRepository
+	 * @param objects Collection of CRResolveableBeans which overrides the objects in the ContentRepository
 	 * 
 	 * throws NullPointerException when objects is null
 	 */
