@@ -17,19 +17,32 @@ import com.gentics.cr.rendering.ContentRenderer;
 import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
 
 /**
- * @author norbert
  * Implementation of a tag that renders content with plink replacing and velocity
+ * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
+ * @version $Revision: 95 $
+ * @author $Author: supnig@constantinopel.at $
+ *
  */
 public class RenderContentTag extends TagSupport {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5724484220477278975L;
+
+
 	/**
 	 * Name of the render request attribute for the instance of {@link ContentRenderer}
 	 */
 	public final static String RENDERER_PARAM = "rendercontenttag.renderer";
 	
-	
+	/**
+	 * Name of the config attribute for the instance of {@link GenericConfiguration}
+	 */
 	public final static String CRCONF_PARAM = "rendercontenttag.crconf";
 
-	
+	/**
+	 * Name of the request attribute for the instance of {@link RenderRequest}
+	 */
 	public final static String REQUEST_PARAM = "rendercontenttag.request";
 	
 	
@@ -74,20 +87,24 @@ public class RenderContentTag extends TagSupport {
 	}
 	
 	/**
-	 * Set the content attribute to be rendered
-	 * @param contentAttribute name of the rendered content attribute
+	 * 
+	 * @param urlencode 
 	 */
 	public void setUrlencode(String urlencode) {
 		this.urlencode = "true".equals(urlencode);
 	}
 	
+	/**
+	 * 
+	 * @param var
+	 */
 	public void setVar(String var) {
 		this.var = var;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
+	 * @return 
+	 * @throws JspException 
 	 * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
 	 */
 	public int doEndTag() throws JspException {

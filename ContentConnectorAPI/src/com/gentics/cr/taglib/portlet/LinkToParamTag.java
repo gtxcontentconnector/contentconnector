@@ -12,7 +12,10 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 
 /**
- * @author norbert
+ * 
+ * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
+ * @version $Revision: 95 $
+ * @author $Author: supnig@constantinopel.at $
  *
  */
 public class LinkToParamTag extends SimpleTagSupport {
@@ -25,15 +28,23 @@ public class LinkToParamTag extends SimpleTagSupport {
      */
     protected String property;
 
+    /**
+     * 
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * 
+     * @param property
+     */
     public void setProperty(String property) {
         this.property = property;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
      */
     public void doTag() throws JspException, IOException {

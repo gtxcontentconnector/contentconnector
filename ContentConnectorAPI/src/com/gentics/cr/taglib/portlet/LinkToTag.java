@@ -16,11 +16,29 @@ import javax.servlet.jsp.tagext.VariableInfo;
 import com.gentics.cr.CRResolvableBean;
 
 /**
- * @author norbert
  * 
+ * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
+ * @version $Revision: 95 $
+ * @author $Author: supnig@constantinopel.at $
+ *
  */
 public class LinkToTag extends TagSupport {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7815690024785086349L;
+
+	/**
+	 * 
+	 * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
+	 * @version $Revision: 95 $
+	 * @author $Author: supnig@constantinopel.at $
+	 *
+	 */
 	public static class TEI extends TagExtraInfo {
+		/**
+		 * @see javax.servlet.jsp.tagext.TagExtraInfo#getVariableInfo(javax.servlet.jsp.tagext.TagData)
+		 */
 		public VariableInfo[] getVariableInfo(TagData tagData) {
 			VariableInfo vi[] = null;
 			String var = tagData.getAttributeString("var");
@@ -71,8 +89,8 @@ public class LinkToTag extends TagSupport {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 *
 	 * 
 	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
 	 */
@@ -89,9 +107,7 @@ public class LinkToTag extends TagSupport {
 		return Tag.EVAL_BODY_INCLUDE;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/** 
 	 * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
 	 */
 	public int doEndTag() throws JspException {
