@@ -20,46 +20,89 @@ public class IndexerStatus {
 	
 	private long lastRunDuration = 0;
 
+	/**
+	 * Duration of last run in ms
+	 * @return
+	 */
 	public long getLastRunDuration() {
 		return lastRunDuration;
 	}
 
+	/**
+	 * Sets the duration of the last run in ms
+	 * @param lastRunDuration
+	 */
 	public void setLastRunDuration(long lastRunDuration) {
 		this.lastRunDuration = lastRunDuration;
 	}
 
+	/**
+	 * returns true if thread is running
+	 * @return
+	 */
 	public boolean isRunning() {
 		return running;
 	}
 
+	/**
+	 * set to true if thread is running
+	 * @param running
+	 */
 	public void setRunning(boolean running) {
 		this.running = running;
 	}
 
+	/**
+	 * Count of objects
+	 * @return
+	 */
 	public int getObjectCount() {
 		return objectCount;
 	}
 
+	/**
+	 * sets the count of objects
+	 * @param objectCount
+	 */
 	public void setObjectCount(int objectCount) {
 		this.objectCount = objectCount;
 	}
 
+	/**
+	 * already indexed objects in this run
+	 * @return
+	 */
 	public int getObjectsDone() {
 		return objectsDone;
 	}
 
+	/**
+	 * sets already indexed objects in this run
+	 * @param objectsDone
+	 */
 	public void setObjectsDone(int objectsDone) {
 		this.objectsDone = objectsDone;
 	}
 
+	/**
+	 * gets the time of start of the last run
+	 * @return
+	 */
 	public Date getStartTime() {
 		return startTime;
 	}
 
+	/**
+	 * sets the time of the start of the last run
+	 * @param startTime
+	 */
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
 	
+	/**
+	 * resets the status object
+	 */
 	public void reset()
 	{
 		this.objectCount=0;
