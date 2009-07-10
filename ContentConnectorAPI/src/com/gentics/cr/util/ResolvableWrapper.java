@@ -14,19 +14,19 @@ import com.gentics.api.lib.resolving.Resolvable;
  */
 public abstract class ResolvableWrapper implements Resolvable {
     
-    /* (non-Javadoc)
+    /**
      * @see com.gentics.api.lib.resolving.Resolvable#canResolve()
      */
     public boolean canResolve() {
         return true;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see com.gentics.api.lib.resolving.Resolvable#get(java.lang.String)
      */
     public abstract Object get(String key); 
 
-    /* (non-Javadoc)
+    /**
      * @see com.gentics.api.lib.resolving.Resolvable#getProperty(java.lang.String)
      */
     public Object getProperty(String key) {

@@ -14,6 +14,10 @@ public class CRNavigationRequestBuilder extends CRRequestBuilder {
 
 	protected String childfilter;
 	
+	/**
+	 * Create new Instance
+	 * @param request
+	 */
 	public CRNavigationRequestBuilder(HttpServletRequest request) {
 		super(request);
 		this.childfilter = this.createPermissionsRule((String) request.getParameter("childfilter"),this.permissions);
@@ -24,7 +28,10 @@ public class CRNavigationRequestBuilder extends CRRequestBuilder {
 		}
 	}
 	
-		
+	/**
+	 * Create new instance
+	 * @return
+	 */
 	public CRRequest getNavigationRequest()
 	{
 		CRRequest req = this.getCRRequest();

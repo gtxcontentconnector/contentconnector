@@ -11,13 +11,21 @@ import java.util.Map;
 public class MapWrapper extends ResolvableWrapper {
 	private Map<Object,Object> map;
 	
+	/**
+	 * Create new instance and wrap a map
+	 * @param map
+	 */
 	public MapWrapper(Map<Object,Object> map)
 	{
 		this.map=map;
 	}
 	
 	
-	@Override
+	/**
+	 * get property to given key
+	 * @param key 
+	 * @return 
+	 */
 	public Object get(String key) {
 		return map.get(key);
 		

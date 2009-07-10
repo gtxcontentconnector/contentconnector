@@ -11,13 +11,23 @@ import javax.servlet.http.HttpSession;
 public class HttpSessionWrapper extends ResolvableWrapper {
 	private HttpSession session;
 	
+	/**
+	 * Create new instance
+	 * @param session
+	 */
 	public HttpSessionWrapper(HttpSession session)
 	{
 		this.session=session;
 	}
 	
 	
-	@Override
+	/**
+	 * 
+	 * Get Property
+	 * @param key 
+	 * @return 
+	 * 
+	 */
 	public Object get(String key) {
 		try {
 			Object value;

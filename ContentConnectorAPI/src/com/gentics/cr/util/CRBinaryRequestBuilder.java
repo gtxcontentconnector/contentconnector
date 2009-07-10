@@ -17,6 +17,10 @@ public class CRBinaryRequestBuilder extends CRRequestBuilder {
 	protected String url;
 	protected boolean isurlrequest;
 	
+	/**
+	 * Create Instance
+	 * @param request
+	 */
 	public CRBinaryRequestBuilder(HttpServletRequest request) {
 		super(request);
 		doreplacePlinks = (request.getParameter("donotreplaceplinks") == null || "".equals(request.getParameter("donotreplaceplinks")));
@@ -30,6 +34,10 @@ public class CRBinaryRequestBuilder extends CRRequestBuilder {
 		} 
 	}
 	
+	/**
+	 * Create Instance
+	 * @param request
+	 */
 	public CRBinaryRequestBuilder(PortletRequest request) {
 		super(request);
 		doreplacePlinks = (request.getParameter("donotreplaceplinks") == null || "".equals(request.getParameter("donotreplaceplinks")));
@@ -44,7 +52,12 @@ public class CRBinaryRequestBuilder extends CRRequestBuilder {
 		} 
 		
 	}
-		
+	
+	/**
+	 * Create Instance
+	 * @param request
+	 * @param contentid
+	 */
 	public CRBinaryRequestBuilder(PortletRequest request, String contentid) {
 		super(request);
 		doreplacePlinks = (request.getParameter("donotreplaceplinks") == null || "".equals(request.getParameter("donotreplaceplinks")));
@@ -65,7 +78,10 @@ public class CRBinaryRequestBuilder extends CRRequestBuilder {
 	}
 	
 	
-	
+	/**
+	 * Create BinaryRequest
+	 * @return
+	 */
 	public CRRequest getBinaryRequest()
 	{
 		CRRequest req = this.getCRRequest();

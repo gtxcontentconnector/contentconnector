@@ -39,26 +39,46 @@ public class CRRequestBuilder {
 	protected Object request;
 	protected Object response;
 	
+	/**
+	 * Returns String Array of Attributes to request
+	 * @return
+	 */
 	public String[] getAttributeArray()
 	{
 		return(this.attributes);
 	}
 	
+	/**
+	 * Returns Array of Options
+	 * @return
+	 */
 	public String[] getOptionArray()
 	{
 		return(this.options);
 	}
 	
+	/**
+	 * Get Type of ContentRepository
+	 * @return
+	 */
 	public RepositoryType getRepositoryType()
 	{
 		return this.repotype;
 	}
 	
+	/**
+	 * Returns true if this is a debug request
+	 * @return
+	 */
 	public boolean isDebug()
 	{
 		return this.isDebug;
 	}
 	
+	/**
+	 * Create new Instance
+	 * @param request
+	 */
 	public CRRequestBuilder(PortletRequest request)
 	{
 		this.request = request;
@@ -104,7 +124,11 @@ public class CRRequestBuilder {
 
 	}
 	
-	
+	/**
+	 * 
+	 *	Create New Instance
+	 * @param request
+	 */
 	public CRRequestBuilder(HttpServletRequest request)
 	{
 		this.request = request;
@@ -150,6 +174,10 @@ public class CRRequestBuilder {
 
 	}
 	
+	/**
+	 * Creates a CRRequest
+	 * @return
+	 */
 	public CRRequest getCRRequest()
 	{
 		CRRequest req = new CRRequest(filter,start,count,sorting,attributes,plinkattributes);
@@ -159,6 +187,10 @@ public class CRRequestBuilder {
 		return req;
 	}
 	
+	/**
+	 * returns the Request Object
+	 * @return
+	 */
 	public Object getRequest(){
 		return this.request;
 	}
@@ -205,6 +237,11 @@ public class CRRequestBuilder {
 		return ret.toArray(new String[ret.size()]);
 	}
 	
+	/**
+	 * Create the ContentRepository for this request
+	 * @param encoding
+	 * @return
+	 */
 	public ContentRepository getContentRepository(String encoding)
 	{
 		ContentRepository cr = null;

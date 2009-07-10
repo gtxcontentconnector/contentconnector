@@ -9,14 +9,15 @@ package com.gentics.cr.util;
 public class BeanWrapper extends ResolvableWrapper {
     private Object bean;
 
+    /**
+     * Create new Instance and wrap Bean
+     * @param bean
+     */
     public BeanWrapper(Object bean) {
     	this.bean=bean;
     }
 
-    
-    
-    
-    /* (non-Javadoc)
+    /**
      * @see com.gentics.api.lib.resolving.Resolvable#get(java.lang.String)
      */
     public Object get(String key) {

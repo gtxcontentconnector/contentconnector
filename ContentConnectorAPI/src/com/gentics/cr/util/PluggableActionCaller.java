@@ -22,8 +22,8 @@ public class PluggableActionCaller{
 	
 	/**
 	 * Static Class helps you to call PluggableActions from Java
-	 * @param pluggableActionName: Name of the Pluggable Action see http://www.gentics.com/help/ for valid Pluggable Actions
-	 * @param parameters: Hashmap with parameters for the Pluggable Action
+	 * @param pluggableActionName Name of the Pluggable Action see http://www.gentics.com/help/ for valid Pluggable Actions
+	 * @param parameters Hashmap with parameters for the Pluggable Action
 	 * @return returns response, see response.getFeedbackParameters() and response.getFeedbackMessage() for details on errors.
 	 */
 	
