@@ -38,6 +38,10 @@ public class PlinkProcessor {
 
 	private static JCS plinkCache;
 	
+	/**
+	 * Create new instance of plink processor
+	 * @param config
+	 */
 	public PlinkProcessor(CRConfig config) {
 
 		this.config = config;
@@ -67,6 +71,10 @@ public class PlinkProcessor {
 		}
 	}
 	
+	/**
+	 * Deploy objects to the velocity context
+	 * @param map
+	 */
 	public void deployObjects(Map<String,Resolvable> map)
 	{
 		Iterator<String> it = map.keySet().iterator();
@@ -77,6 +85,12 @@ public class PlinkProcessor {
 		}
 	}
 
+	/**
+	 * get a generated link according to the information in plinkinformation
+	 * @param plink
+	 * @param request
+	 * @return
+	 */
 	public String getLink(PLinkInformation plink, CRRequest request) {
 
 		// starttime

@@ -39,6 +39,8 @@ public class PathResolver {
 	 * Initialize the expression needed to resolve Objects from passed URLs. As
 	 * this uses a lot of time initalization in the constructor improves
 	 * performance. Initialize PathResolver once on Server startup.
+	 * @param conf 
+	 * @param appRule 
 	 * 
 	 * @param ds
 	 */
@@ -69,6 +71,7 @@ public class PathResolver {
 	 * constructor and tries to find a corrisponding object. This only works
 	 * correctly when only one node is in the repository, otherwise there may
 	 * bee more object with the same URL in the repository.
+	 * @param request 
 	 * 
 	 * @param url
 	 * @return a Resolvalbe Object based on the passed URL.
@@ -122,7 +125,7 @@ public class PathResolver {
 	 * 
 	 * @param contentid
 	 * @return
-	 * @see getPath(Resolvable linkedObject)
+	 * @see public String getPath(Resolvable linkedObject)
 	 */
 	public String getPath(String contentid) {
 
