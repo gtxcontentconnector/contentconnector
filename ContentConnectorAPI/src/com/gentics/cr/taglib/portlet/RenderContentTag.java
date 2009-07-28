@@ -4,15 +4,19 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
 
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.api.portalnode.connector.PLinkReplacer;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.rendering.ContentRenderer;
 import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
 
@@ -28,7 +32,7 @@ public class RenderContentTag extends TagSupport {
 	 * 
 	 */
 	private static final long serialVersionUID = -5724484220477278975L;
-
+	private Logger logger = Logger.getLogger("com.gentics.cr.rendering");
 
 	/**
 	 * Name of the render request attribute for the instance of {@link ContentRenderer}
@@ -55,6 +59,7 @@ public class RenderContentTag extends TagSupport {
 	 * Rendered object
 	 */
 	protected CRResolvableBean object;
+	public static final String SESSION_KEY_CONTENTPOSTPROCESSOR_CONF = RenderContentTag.class.getName() + "|ContentPostProcessor|confs";
 
 	/**
 	 * name of the rendered attribute
@@ -62,7 +67,7 @@ public class RenderContentTag extends TagSupport {
 	protected String contentAttribute = "content";
 	
 	protected String var = null;
-	
+
 	/**
 	 * flag if the output should be urlencoded
 	 */
@@ -87,8 +92,9 @@ public class RenderContentTag extends TagSupport {
 	}
 	
 	/**
-	 * 
+	 * Set the flag if the returned content should be url-encoded
 	 * @param urlencode 
+	 * 
 	 */
 	public void setUrlencode(String urlencode) {
 		this.urlencode = "true".equals(urlencode);
@@ -107,9 +113,11 @@ public class RenderContentTag extends TagSupport {
 	 * @throws JspException 
 	 * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
 	 */
+	
 	public int doEndTag() throws JspException {
 		// get the ContentRenderer
 		RenderRequest renderRequest = getRenderRequest();
+		PortletSession session = renderRequest.getPortletSession();
 
 		ContentRenderer renderer = (ContentRenderer)renderRequest.getAttribute(RENDERER_PARAM);
 		PLinkReplacer pLinkReplacer = (PLinkReplacer)renderRequest.getAttribute(PLINK_PARAM);
@@ -120,7 +128,15 @@ public class RenderContentTag extends TagSupport {
 			if (object != null) {
 				try {
 					String content = renderer.renderContent(object, contentAttribute, true, pLinkReplacer, false, null);
-					Hashtable<String,ContentPostProcesser> confs = ContentPostProcesser.getProcessorTable(crConf);
+					
+					/* Get the ContentPostProcessor-Config from the PortletSession or instance it from the Config*/
+					@SuppressWarnings("unchecked")
+					Hashtable<String,ContentPostProcesser> confs = (Hashtable<String, ContentPostProcesser>) session.getAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, PortletSession.APPLICATION_SCOPE);
+					if (confs == null){
+						confs = ContentPostProcesser.getProcessorTable(crConf);
+						session.setAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, confs, PortletSession.APPLICATION_SCOPE);
+						logger.debug("Put ContentPostProcessor config into session of " + session.getPortletContext().getPortletContextName() + "!");
+					}
 					if (confs != null) {
 						for(ContentPostProcesser p:confs.values()) {
 							content = p.processString(content, renderRequest);
