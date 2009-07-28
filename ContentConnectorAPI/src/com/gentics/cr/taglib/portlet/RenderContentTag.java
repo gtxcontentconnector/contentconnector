@@ -134,8 +134,10 @@ public class RenderContentTag extends TagSupport {
 					Hashtable<String,ContentPostProcesser> confs = (Hashtable<String, ContentPostProcesser>) session.getAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, PortletSession.APPLICATION_SCOPE);
 					if (confs == null){
 						confs = ContentPostProcesser.getProcessorTable(crConf);
-						session.setAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, confs, PortletSession.APPLICATION_SCOPE);
-						logger.debug("Put ContentPostProcessor config into session of " + crConf.getName() + "!");
+						if (confs != null){
+							session.setAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, confs, PortletSession.APPLICATION_SCOPE);
+							logger.debug("Put ContentPostProcessor config into session of " + crConf.getName() + "!");
+						}
 					}
 					if (confs != null) {
 						for(ContentPostProcesser p:confs.values()) {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
 
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
@@ -133,8 +134,10 @@ public class RenderContentTag extends TagSupport {
 					Hashtable<String,ContentPostProcesser> confs = (Hashtable<String, ContentPostProcesser>) session.getAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF);
 					if (confs == null){
 						confs = ContentPostProcesser.getProcessorTable(crConf);
-						session.setAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, confs);
-						logger.debug("Put ContentPostProcessor config into session of servlet " + session.getServletContext().getServletContextName() + "!");
+						if (confs != null){
+							session.setAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, confs);
+							logger.debug("Put ContentPostProcessor config into session of " + crConf.getName() + "!");
+						}
 					}
 					if (confs != null) {
 						for(ContentPostProcesser p:confs.values()) {
