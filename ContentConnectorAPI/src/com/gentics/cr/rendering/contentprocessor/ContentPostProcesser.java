@@ -9,7 +9,6 @@ import javax.servlet.ServletRequest;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
 
 /**
