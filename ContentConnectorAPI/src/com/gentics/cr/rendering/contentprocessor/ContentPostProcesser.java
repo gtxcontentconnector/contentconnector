@@ -21,7 +21,7 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
  */
 public abstract class ContentPostProcesser {
 	protected GenericConfiguration conf = null;
-	protected static Logger log = Logger.getLogger(ContentTransformer.class);
+	protected static Logger logger = Logger.getLogger("com.gentics.cr.rendering");
 	
 	/**
 	 * 
@@ -103,7 +103,7 @@ public abstract class ContentPostProcesser {
 					}
 					catch(Exception ex)
 					{
-						log.error("Invalid configuration found. Could not initiate the defined ContentPostProcessor Object ["+filterchainClass+"]");
+						logger.error("Invalid configuration found. Could not initiate the defined ContentPostProcessor Object ["+filterchainClass+"]");
 						ex.printStackTrace();
 					}
 					
