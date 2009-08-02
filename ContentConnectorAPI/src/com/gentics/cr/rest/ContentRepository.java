@@ -29,6 +29,11 @@ import com.gentics.cr.util.filter.Filter;
  */
 public abstract class ContentRepository implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3367665528658725618L;
+
 	private String[] attrArray;
 	
 	private String[] optionsArray;

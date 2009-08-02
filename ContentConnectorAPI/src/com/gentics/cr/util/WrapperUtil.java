@@ -20,7 +20,6 @@ public class WrapperUtil {
      * @return Object or ResolvableWrapper
      */
 	
-	@SuppressWarnings("unchecked")
 	public static Object resolveType(Object value)
     {
     	if(value!=null)

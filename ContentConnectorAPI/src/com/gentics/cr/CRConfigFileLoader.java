@@ -32,7 +32,6 @@ public class CRConfigFileLoader extends CRConfigUtil {
 	 * @param name of config
 	 * @param webapproot root directory of application (config read fallback)
 	 */
-	@SuppressWarnings("unchecked")
 	public CRConfigFileLoader(String name, String webapproot) {
 
 		super();
