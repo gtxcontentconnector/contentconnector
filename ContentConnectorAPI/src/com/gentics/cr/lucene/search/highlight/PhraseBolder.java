@@ -79,8 +79,10 @@ public class PhraseBolder extends ContentHighlighter implements Formatter{
 
 	/**
 	 * Highlights Terms by enclosing them with &lt;b&gt;term&lt;/b&gt;
+	 * @param originalTermText 
+	 * @param tokenGroup 
+	 * @return 
 	 */
-	@Override
 	public String highlightTerm(String originalTermText, TokenGroup tokenGroup) {
 		
 	  
@@ -93,9 +95,11 @@ public class PhraseBolder extends ContentHighlighter implements Formatter{
 
 	
 	/**
+	 * @param attribute 
+	 * @param parsedQuery 
+	 * @return 
 	 * 
 	 */
-	@Override
 	public String highlight(String attribute, Query parsedQuery) {
 		String result="";
 		if(attribute!=null && parsedQuery!=null)
