@@ -22,9 +22,9 @@ import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
 
 /**
  * Implementation of a tag that renders content with plink replacing and velocity
- * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
- * @version $Revision: 95 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class RenderContentTag extends TagSupport {
@@ -59,6 +59,10 @@ public class RenderContentTag extends TagSupport {
 	 * Rendered object
 	 */
 	protected CRResolvableBean object;
+	
+	/**
+	 * 
+	 */
 	public static final String SESSION_KEY_CONTENTPOSTPROCESSOR_CONF = RenderContentTag.class.getName() + "|ContentPostProcessor|confs";
 
 	/**

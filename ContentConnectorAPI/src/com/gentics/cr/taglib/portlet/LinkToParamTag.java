@@ -13,9 +13,9 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 /**
  * 
- * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
- * @version $Revision: 95 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class LinkToParamTag extends SimpleTagSupport {

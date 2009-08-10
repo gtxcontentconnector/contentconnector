@@ -17,9 +17,9 @@ import com.gentics.cr.CRResolvableBean;
 
 /**
  * 
- * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
- * @version $Revision: 95 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public class LinkToTag extends TagSupport {
@@ -30,9 +30,9 @@ public class LinkToTag extends TagSupport {
 
 	/**
 	 * 
-	 * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $
-	 * @version $Revision: 95 $
-	 * @author $Author: supnig@constantinopel.at $
+	 * Last changed: $Date$
+	 * @version $Revision$
+	 * @author $Author$
 	 *
 	 */
 	public static class TEI extends TagExtraInfo {
