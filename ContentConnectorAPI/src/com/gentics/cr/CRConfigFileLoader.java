@@ -40,7 +40,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 		
 		//Load Environment Properties
 		EnvironmentConfiguration.loadEnvironmentProperties();
-		EnvironmentConfiguration.loadCacheProperties();
+		
 		this.setName(this.instancename);
 		
 		//LOAD DEFAULT CONFIGURATION

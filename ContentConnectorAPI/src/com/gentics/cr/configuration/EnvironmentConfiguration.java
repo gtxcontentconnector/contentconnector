@@ -26,6 +26,8 @@ public class EnvironmentConfiguration {
 	private static final String LOGGER_FILE_PATH = "${com.gentics.portalnode.confpath}/nodelog.properties";
 	private static final String CACHE_FILE_PATH = "${com.gentics.portalnode.confpath}/cache.ccf";
 	
+	private static final String USE_PORTAL_CACHE_KEY = "com.gentics.cr.useportalcaches";
+	
 	private static Logger log = Logger.getLogger(EnvironmentConfiguration.class);
 	
 	/**
@@ -72,8 +74,15 @@ public class EnvironmentConfiguration {
 			String confpath = CRUtil.resolveSystemProperties(CACHE_FILE_PATH);
 			Properties cache_props = new Properties();
 			cache_props.load(new FileInputStream(confpath));
-			CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
-			cManager.configure(cache_props);
+			if(cache_props.containsKey(USE_PORTAL_CACHE_KEY) && Boolean.parseBoolean(cache_props.getProperty(USE_PORTAL_CACHE_KEY)))
+			{
+				log.debug("Will not initialize ContentConnector Cache - Using the cache configured by portalnode instead.");
+			}
+			else
+			{
+				CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
+				cManager.configure(cache_props);
+			}
 		} catch(NullPointerException e){
 			log.error("Could not load cache configuration. Perhaps you are missing the file cache.ccf in "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/")+"!");
 		} catch (FileNotFoundException e) {
