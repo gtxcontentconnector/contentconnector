@@ -1,13 +1,16 @@
 package com.gentics.cr;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -18,9 +21,11 @@ import com.gentics.api.lib.resolving.Resolvable;
 
 
 /**
- * Rosolveable Procx Class. As Resolvsables are not serializable this class gets
+ * Rosolveable Proxy Class. As Resolvsables are not serializable this class gets
  * a resolvable and a list of attributes and stores these for further usage as
- * serializable bean
+ * serializable bean.
+ * 
+ * This class also provides various methods to access attributes
  * 
  * Last changed: $Date$
  * @version $Revision$
@@ -29,11 +34,12 @@ import com.gentics.api.lib.resolving.Resolvable;
  */
 public class CRResolvableBean implements Serializable, Resolvable{
 
-	private static final long serialVersionUID = 1L;
-	
+		
+	private static final long serialVersionUID = -8743515908056719834L;
+
 	private Collection<CRResolvableBean> childRepository;
 
-	private HashMap<String,Object> attrMap;
+	private Hashtable<String,Object> attrMap;
 
 	private String contentid;
 	
@@ -84,7 +90,8 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	}
 	
 	/**
-	 * Create new instance of CRResolvableBean
+	 * Create new instance of CRResolvableBean.
+	 * This will generate an empty CRResolvableBean with only the contentid set.
 	 * @param contentid
 	 */
 	public CRResolvableBean(String contentid)
@@ -95,13 +102,16 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	/**
 	 * Create new instance of CRResolvableBean
 	 * @param resolvable
+	 * 			Sets the given resolvable as basis for the CRResolvableBean
+	 * 			If obj_type of resolvable is 10008 it sets the attribute array to { "binarycontent", "mimetype" }, otherwise to { "binarycontent", "mimetype" }
+	 * 			If you want to be more specific about the attribute array, use public CRResolvableBean(Resolvable resolvable, String[] attributeNames) instead
 	 */
 	public CRResolvableBean(Resolvable resolvable) {
 		//TODO This is ugly => make more beautiful
 		if ("10008".equals(resolvable.get("obj_type").toString())) {
 			init(resolvable, new String[] { "binarycontent", "mimetype" });
 		} else {
-			init(resolvable, new String[] { "content", "mimetype" });
+			init(resolvable, new String[] { "binarycontent", "mimetype" });
 		}
 	}
 
@@ -136,7 +146,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 			if(resolvable.get("mother_obj_type")!=null)
 				this.mother_type = ((Integer) resolvable.get("mother_obj_type")).toString();
 
-			this.attrMap = new HashMap<String,Object>();
+			this.attrMap = new Hashtable<String,Object>();
 			if (attributeNames != null) {
 				
 				ArrayList<String> attributeList = new ArrayList<String>(Arrays.asList(attributeNames));
@@ -199,10 +209,18 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	/**
 	 * Sets the attributes of the CRResolvableBean to the given map of attributes.
 	 * @param attr
+	 * 		Checks if attr is instance of Hashtable. If true, it sets attr as the new attribute map. If false, a new Hashtable with the given map as basis is being generated.
 	 */
 	public void setAttrMap(Map<String,Object> attr)
 	{
-		this.attrMap=(HashMap<String,Object>)attr;
+		if(attr instanceof Hashtable)
+		{
+			this.attrMap = (Hashtable<String,Object>)attr;
+		}
+		else
+		{
+			this.attrMap=new Hashtable<String,Object>(attr);
+		}
 	}
 
 	/**
@@ -296,7 +314,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	 */
 	public boolean isBinary() {
 		//TODO this is ugly => make more beautiful
-		if(this.attrMap.containsKey("binarycontent"))
+		if(this.attrMap.containsKey("binarycontent") && this.attrMap.get("binarycontent")!=null)
 		{
 			return(true);
 		}
@@ -320,21 +338,29 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	 * @return content
 	 */
 	public String getContent() {
+		Object o = this.get("content");
 		try
 		{
-			return (String) this.get("content");
+			return (String) o;
 		}
 		catch(ClassCastException ex)
 		{
 			//If type is not String then assume that byte[] would do the trick
 			//Not very clean
-			return new String((byte[]) this.get("content"));
+			return new String((byte[]) o);
 		}
 	}
 	
 	/**
 	 * Gets the Content as String using the given encoding
 	 * @param encoding
+	 * 			Has to be a supported charset
+	 * 			US-ASCII  	Seven-bit ASCII, a.k.a. ISO646-US, a.k.a. the Basic Latin block of the Unicode character set
+	 *			ISO-8859-1   	ISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1
+	 *			UTF-8 	Eight-bit UCS Transformation Format
+	 *			UTF-16BE 	Sixteen-bit UCS Transformation Format, big-endian byte order
+	 *			UTF-16LE 	Sixteen-bit UCS Transformation Format, little-endian byte order
+	 *			UTF-16 	Sixteen-bit UCS Transformation Format, byte order identified by an optional byte-order mark
 	 * @return content
 	 */
 	public String getContent(String encoding) {
@@ -342,15 +368,17 @@ public class CRResolvableBean implements Serializable, Resolvable{
 		String value="";
 		if(bValue!=null && bValue.getClass()==String.class)
 		{
-			
 			value=(String)bValue;
 		}
 		else
 		{
 			try {
-				value = new String(getBytes(bValue));
+				value = new String(getBytes(bValue),encoding);
 				
-			} catch (IOException e) {
+			}
+			catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -370,14 +398,31 @@ public class CRResolvableBean implements Serializable, Resolvable{
 		}
 		else
 		{
-			return (byte[]) this.get("binarycontent");
+			return (byte[]) o;
 		}
+	}
+	
+	/**
+	 * Gets the binary content as InputStream if it is set otherwise returns null
+	 * @return
+	 */
+	public InputStream getBinaryContentAsStream()
+	{
+		byte[] buf = getBinaryContent();
+		InputStream os=null;
+		if(buf!=null)
+		{
+			os = new ByteArrayInputStream(getBinaryContent());
+		}
+		return(os);
 	}
 
 	/**
 	 * Gets the value of the requested attribute
+	 * 		Will first try to fetch the attribute from the Beans attribute array.
+	 * 		If attribute can not be fetched and a base resolvable is set, then it tries to fetch the attribute over the resolvable
 	 * @param attribute requested attribute name
-	 * @return value of attribute
+	 * @return value of attribute or null if value is not set
 	 */
 	public Object get(String attribute) {
 		if("contentid".equalsIgnoreCase(attribute)){
@@ -405,7 +450,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
 		}
 		else
 		{
-			if(this.attrMap==null)this.attrMap=new HashMap<String,Object>();
+			if(this.attrMap==null)this.attrMap=new Hashtable<String,Object>();
 			this.attrMap.put(attribute, obj);
 		}
 	}
@@ -439,12 +484,13 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	}
 	
 	/**
-	 * Gets the value of the requested attribute
-	 * @param arg0 requested attribute name
+	 * Gets the value of the requested attribute.
+	 * 		Alias for get(String key)
+	 * @param key requested attribute name
 	 * @return value of attribute
 	 */
-	public Object getProperty(String arg0) {
-		return get(arg0);
+	public Object getProperty(String key) {
+		return get(key);
 	}
 	
 	/**
