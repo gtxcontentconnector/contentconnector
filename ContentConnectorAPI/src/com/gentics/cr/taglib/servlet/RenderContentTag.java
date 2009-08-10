@@ -57,6 +57,9 @@ public class RenderContentTag extends TagSupport {
 	 * Rendered object
 	 */
 	protected CRResolvableBean object;
+	/**
+	 * 
+	 */
 	public static final String SESSION_KEY_CONTENTPOSTPROCESSOR_CONF = RenderContentTag.class.getName() + "|ContentPostProcessor|confs";
 
 	/**
