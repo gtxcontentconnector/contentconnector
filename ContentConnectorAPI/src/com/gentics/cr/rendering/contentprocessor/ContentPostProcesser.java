@@ -13,9 +13,9 @@ import com.gentics.cr.configuration.GenericConfiguration;
 
 /**
  * 
- * Last changed: $Date: 2009-06-24 17:10:19 +0200 (Mi, 24 Jun 2009) $
- * @version $Revision: 99 $
- * @author $Author: supnig@constantinopel.at $
+ * Last changed: $Date$
+ * @version $Revision$
+ * @author $Author$
  *
  */
 public abstract class ContentPostProcesser {
