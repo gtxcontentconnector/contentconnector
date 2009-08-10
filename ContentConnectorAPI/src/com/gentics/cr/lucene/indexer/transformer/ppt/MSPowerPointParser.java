@@ -67,9 +67,9 @@ public class MSPowerPointParser implements POIFSReaderListener {
 	
 	
 	/**
+	 * @param event 
 	 * 
 	 */
-	@Override
 	public void processPOIFSReaderEvent(POIFSReaderEvent event){
 			if(!event.getName().equalsIgnoreCase("PowerPoint Document"))
             	return;
