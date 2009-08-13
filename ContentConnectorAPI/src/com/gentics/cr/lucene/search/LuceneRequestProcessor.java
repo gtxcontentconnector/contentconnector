@@ -90,63 +90,66 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
 		//GET RESULT
 		HashMap<String,Object> searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,doNavigation);
-		LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
-		Query parsedQuery = (Query)searchResult.get("query");
-		if(docs!=null)
+		if(searchResult!=null)
 		{
-			String idAttribute = (String)this.config.get(ID_ATTRIBUTE_KEY);
-			for(Entry<Document,Float> e:docs.entrySet())
+			LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
+			Query parsedQuery = (Query)searchResult.get("query");
+			if(docs!=null)
 			{
-				Document doc = e.getKey();
-				Float score = e.getValue();
-				CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
-				if(getStoredAttributes)
+				String idAttribute = (String)this.config.get(ID_ATTRIBUTE_KEY);
+				for(Entry<Document,Float> e:docs.entrySet())
 				{
-					for(Field f:toFieldList(doc.getFields()))
+					Document doc = e.getKey();
+					Float score = e.getValue();
+					CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
+					if(getStoredAttributes)
 					{
-						if(f.isStored())
+						for(Field f:toFieldList(doc.getFields()))
 						{
-							if(f.isBinary())
+							if(f.isStored())
 							{
-								crBean.set(f.name(), f.getBinaryValue());
-							}
-							else
-							{
-								crBean.set(f.name(), f.stringValue());
+								if(f.isBinary())
+								{
+									crBean.set(f.name(), f.getBinaryValue());
+								}
+								else
+								{
+									crBean.set(f.name(), f.stringValue());
+								}
 							}
 						}
 					}
-				}
-				
-				if(scoreAttribute!=null && !"".equals(scoreAttribute))
-				{
-					crBean.set(scoreAttribute, score);
-				}
-				//IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
-				if(highlighters!=null)
-				{
-					for(Entry<String,ContentHighlighter> ch:highlighters.entrySet())
+					
+					if(scoreAttribute!=null && !"".equals(scoreAttribute))
 					{
-						ContentHighlighter h = ch.getValue();
-						String att = ch.getKey();
-						//IF crBean matches the highlighters rule => highlight
-						if(h.match(crBean))
-						{ 
-							String ret = h.highlight((String)crBean.get(att), parsedQuery);
-							crBean.set(att,ret);
+						crBean.set(scoreAttribute, score);
+					}
+					//IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
+					if(highlighters!=null)
+					{
+						for(Entry<String,ContentHighlighter> ch:highlighters.entrySet())
+						{
+							ContentHighlighter h = ch.getValue();
+							String att = ch.getKey();
+							//IF crBean matches the highlighters rule => highlight
+							if(h.match(crBean))
+							{ 
+								String ret = h.highlight((String)crBean.get(att), parsedQuery);
+								crBean.set(att,ret);
+							}
 						}
 					}
+					
+					ext_log.debug("Found "+crBean.getContentid()+" with score "+score.toString());
+					result.add(crBean);
 				}
-				
-				ext_log.debug("Found "+crBean.getContentid()+" with score "+score.toString());
-				result.add(crBean);
 			}
+			/*if(doNavigation)
+			{
+				//NOT IMPLEMENTED YET, BUT WE DO GENERATE MORE EXPLANATION OUTPUT YET
+				//log.error("LUCENEREQUESTPROCESSER CAN NOT YET RETURN A TREE STRUCTURE");
+			}*/
 		}
-		/*if(doNavigation)
-		{
-			//NOT IMPLEMENTED YET, BUT WE DO GENERATE MORE EXPLANATION OUTPUT YET
-			//log.error("LUCENEREQUESTPROCESSER CAN NOT YET RETURN A TREE STRUCTURE");
-		}*/
 		return result;
 	}
 	
