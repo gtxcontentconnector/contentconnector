@@ -15,10 +15,9 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocCollector;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.lucene.indexer.index.IndexLocation;
 /**
  * 
  * Last changed: $Date$
@@ -69,8 +68,9 @@ public class CRSearcher {
 			IndexSearcher searcher;
 			Analyzer analyzer;
 		
-			Directory directory = FSDirectory.getDirectory(indexPath);
-			reader = IndexReader.open(directory, true);
+			//Directory directory = FSDirectory.getDirectory(indexPath);
+			IndexLocation idsLocation = IndexLocation.getIndexLocation(this.config);
+			reader = IndexReader.open(idsLocation.getDirectory(), true);
 			searcher = new IndexSearcher(reader);
 			boolean doStemming = Boolean.parseBoolean((String)this.config.get(STEMMING_KEY));
 			if(doStemming)

@@ -25,7 +25,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
-import org.apache.lucene.store.FSDirectory;
 
 import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.lib.expressionparser.ExpressionParser;
@@ -36,6 +35,7 @@ import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.indexer.index.IndexLocation;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
 
@@ -56,8 +56,6 @@ public class CRIndexer {
 	 */
 	public final static String PARAM_LASTINDEXRULE = "lastindexrule";
 
-	protected String indexLocation = null;
-	
 	protected int interval = -1;
 	
 	protected String name = null;
@@ -80,7 +78,7 @@ public class CRIndexer {
 	private static final String INTERVAL_KEY = "INTERVAL";
 	private static final String BATCHSIZE_KEY = "BATCHSIZE";
 	private static final String PERIODICAL_KEY = "PERIODICAL";
-	private static final String INDEX_LOCATION_KEY = "indexLocation";
+	
 	
 	
 	/**
@@ -105,7 +103,7 @@ public class CRIndexer {
 		if(bs!=null)this.batchSize = new Integer(bs);
 		String p = (String)crconfig.get(PERIODICAL_KEY);
 		if(p!=null)this.periodicalRun = Boolean.parseBoolean(p);
-		indexLocation = (String)crconfig.get(INDEX_LOCATION_KEY);
+		
 	}
 	
 	/**
@@ -248,9 +246,7 @@ public class CRIndexer {
 			int timestamp = (int)(System.currentTimeMillis() / 1000);
 
 			
-			// create an index writer
-			File indexLoc = new File(indexLocation);
-					
+			IndexLocation indexLoc = IndexLocation.getIndexLocation(crconfig);					
 			GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
 			if(CRc!=null)
 			{
@@ -289,9 +285,10 @@ public class CRIndexer {
 		private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
 		private static final String STEMMING_KEY = "STEMMING";
 		private static final String STEMMER_NAME_KEY = "STEMMERNAME";
+		private static final String BATCH_SIZE_KEY = "BATCHSIZE";
 
 		@SuppressWarnings("unchecked")
-		private void indexCR(File indexLocation, int timestamp, CRConfigUtil config)
+		private void indexCR(IndexLocation indexLocation, int timestamp, CRConfigUtil config)
 				throws NodeException, CorruptIndexException, IOException {
 			// get the datasource
 			CNWriteableDatasource ds = (CNWriteableDatasource)config.getDatasource();
@@ -307,8 +304,24 @@ public class CRIndexer {
 			if (lastIndexRule == null) {
 				lastIndexRule = "";
 			}
+			
+			String bsString = (String)config.get(BATCH_SIZE_KEY);
+			
+			int CRBatchSize = batchSize;
+			
+			if(bsString!=null)
+			{
+				try
+				{
+					CRBatchSize = Integer.parseInt(bsString);
+				}
+				catch(NumberFormatException nfx)
+				{
+					log.error("The configured "+BATCH_SIZE_KEY+" for the Current CR did not contain a parsable integer. "+nfx.getMessage());
+				}
 				
-
+			}
+			
 			// and get the current rule
 			String rule = (String)config.get(RULE_KEY);
 
@@ -320,7 +333,7 @@ public class CRIndexer {
 			
 			boolean create = true;
 			
-			if(indexLocation.exists() && indexLocation.isDirectory())
+			if(indexLocation.isContainingIndex())
 				create=false;
 
 			// check whether the rule has changed, if yes, do a full index run
@@ -405,14 +418,19 @@ public class CRIndexer {
 			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>) ds.getResult(ds
 					.createDatasourceFilter(ExpressionParser.getInstance()
 							.parse(rule)), null);
-
+			if(objectsToIndex==null)
+			{
+				log.debug("Rule returned no objects to index. Skipping run");
+				return;
+			}
 			status.setObjectCount(objectsToIndex.size());
+			log.debug("Starting index job with "+objectsToIndex.size()+" objects to index.");
 			// TODO now get the first batch of objects from the collection
 			// (remove them from the original collection) and index them
-			Collection<Resolvable> slice = new Vector(batchSize);
+			Collection<Resolvable> slice = new Vector(CRBatchSize);
 			int sliceCounter = 0;
 			
-			IndexWriter indexWriter = new IndexWriter(indexLocation,analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
+			IndexWriter indexWriter = new IndexWriter(indexLocation.getDirectory(),analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
 
 			try
 			{
@@ -422,8 +440,9 @@ public class CRIndexer {
 					iterator.remove();
 					sliceCounter++;
 	
-					if (sliceCounter == batchSize) {
+					if (sliceCounter == CRBatchSize) {
 						// index the current slice
+						log.debug("Indexing slice with "+slice.size()+" objects.");
 						indexSlice(indexWriter, slice, attributes, ds, create,config,transformertable);
 						status.setObjectsDone(status.getObjectsDone()+slice.size());
 						// clear the slice and reset the counter
@@ -511,12 +530,26 @@ public class CRIndexer {
 						if(storeField.booleanValue())
 						{
 							String v =  t.getStringContents(value);
-							doc.add(new Field(attributeName,v, storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+							if(v!=null)
+							{
+								doc.add(new Field(attributeName,v, storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+							}
+							else
+							{
+								log.equals("Could not add Field to Document"+resolvable.getProperty(idAttribute));
+							}
 						}
 						else
 						{
 							Reader r = t.getContents(value);
-							doc.add(new Field(attributeName, r));
+							if(r!=null)
+							{
+								doc.add(new Field(attributeName, r));
+							}
+							else
+							{
+								log.equals("Could not add Field to Document"+resolvable.getProperty(idAttribute));
+							}
 						}
 					}
 					else
@@ -541,11 +574,11 @@ public class CRIndexer {
 		 * @throws Exception
 		 */
 		@SuppressWarnings("unchecked")
-		private void cleanIndex(CNWriteableDatasource ds, String rule, File indexLocation, CRConfigUtil config) throws Exception
+		private void cleanIndex(CNWriteableDatasource ds, String rule, IndexLocation indexLocation, CRConfigUtil config) throws Exception
 		{
 			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 			
-			IndexReader reader = IndexReader.open(FSDirectory.getDirectory(indexLocation), false);// open existing index
+			IndexReader reader = IndexReader.open(indexLocation.getDirectory(), false);// open existing index
 			
 			TermEnum uidIter = reader.terms(new Term(idAttribute, "")); // init uid iterator
 			

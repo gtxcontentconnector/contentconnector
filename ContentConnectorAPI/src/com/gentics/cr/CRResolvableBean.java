@@ -472,15 +472,12 @@ public class CRResolvableBean implements Serializable, Resolvable{
 	  }
 	
 	/**
-	 * Returns if this instance is able to resolve properties
-	 * @return boolean - true if the instance is able to resolve properties
+	 * CRResolvableBean is always able to resolve properties
+	 * @return true
 	 */
 	public boolean canResolve() {
-		if(this.resolvable!=null && this.resolvable.canResolve())
-		{
-			return true;
-		}
-		return false;
+		
+		return true;
 	}
 	
 	/**
