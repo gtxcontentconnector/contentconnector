@@ -9,5 +9,5 @@
 	<classpathentry kind="var" path="GPN_LIBS/log4j.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/portlet_20_Java14compliant.jar"/>
 	<classpathentry kind="var" path="GPN_LIBS/jcs-1.2.7.9.jar"/>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
