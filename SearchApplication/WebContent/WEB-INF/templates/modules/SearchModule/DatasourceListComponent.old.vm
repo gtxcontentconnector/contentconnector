@@ -1,0 +1,62 @@
+##=================================================================================================
+## Gentics DataSourceListComponent
+##=================================================================================================
+## supported properties:
+## type: date|number|filesize|timestamp
+## will format the value of the column optimized for the given type.
+
+## class definition
+#if ($component.properties.cssclass && $component.properties.cssclass != "")
+  #set ($cssclass = $component.properties.cssclass)
+#else
+  #set ($cssclass = "list")
+#end
+
+<ul class="$cssclass">
+#foreach ($item in $component.items)
+ <li class="row$portal.imps.velocityTools.math.mod($velocityCount,2)">$item.object.obj_type
+  #foreach ($prop in $item.props)
+   #if($prop.value)#set($value=$prop.value)#end
+   #if(!$prop.value || ($prop.value.class.name == "java.lang.String" && $prop.value == "") || ($prop.value.class.name != "java.lang.String" && $prop.value.toString() == ""))
+    #if($prop.properties.content)
+     #set($value=$portal.i18n($prop.properties.content))
+    #else
+     #set($value="---")
+    #end
+   #end
+   #if ( $prop.link && $component.enabled)
+    	#set ($label = "Link to $!prop.value")
+    #set($value="<a href='$prop.link' title='$label'>$value</a>")
+   ## format of "date"
+   #elseif ($prop.properties.type && $prop.properties.type == "date")
+    #set($value=$!portal.imps.date.format($prop.value))
+   ## format of "timestamp"  			
+   #elseif ($prop.properties.type && $prop.properties.type == "timestamp")
+    #set($value=$!portal.imps.date.format($portal.imps.date.fromTimestamp($prop.value)))
+   ## format of "number"
+   #elseif ($prop.properties.type && $prop.properties.type == "number")
+    #set($value=$!portal.imps.number.format($prop.value))
+   ## format of "filesize"  					
+   #elseif ($prop.properties.type && $prop.properties.type == "filesize")
+    #set($value=$!portal.imps.number.filesize($prop.value))
+   ## all other columns
+   #end
+   ###macro(resolve_path_for_object $path $object)
+   ## #set($items = $path.split("a"))
+   ## #foreach( $item in $items )
+   ##  -|$item|-
+   ## #end
+   ###end
+   ###resolve_path_for_object("user_edited.firstname" $item.object)
+   ##$item.object.get("user_edited").get("firstname")
+   #if( !$prop.properties.hideempty || $prop.properties.hideempty=="false" || ($prop.properties.hideempty && $prop.properties.hideempty=="true" && $value.toString() != "---") || ($prop.properties.hideempty && $item.object.get($prop.properties.hideempty) && $item.object.get($prop.properties.hideempty).toString()!=""))
+   <span class="$prop.name#if($prop.properties.cssclass && $prop.properties.cssclass!="") $prop.properties.cssclass#end">
+    #if($prop.properties.prefix)$portal.i18n($prop.properties.prefix)#end
+    $!value
+    #if($prop.properties.sufix)$portal.i18n($prop.properties.sufix)#end
+   </span>
+   #end
+  #end
+ </li>
+#end
+</ul>
