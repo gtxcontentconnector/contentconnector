@@ -160,9 +160,13 @@ public class CRResolvableBean implements Serializable, Resolvable{
 				for (int i = 0; i < attributeNames.length; i++) {
 					//we have to inspect returned attribute for containing not serializable objects (Resolvables) and convert them into CRResolvableBeans
 					try {
-						this.attrMap.put(attributeNames[i], inspectResolvableAttribute(PropertyResolver.resolve(resolvable, attributeNames[i])));
+						Object o = inspectResolvableAttribute(PropertyResolver.resolve(resolvable, attributeNames[i]));
+						if(o!=null)
+							this.attrMap.put(attributeNames[i], o);
 					} catch (UnknownPropertyException e) {
-						this.attrMap.put(attributeNames[i], inspectResolvableAttribute(resolvable.get(attributeNames[i])));
+						Object o = inspectResolvableAttribute(resolvable.get(attributeNames[i]));
+						if(o!=null)
+							this.attrMap.put(attributeNames[i], o);
 					}
 				}
 			}
