@@ -132,7 +132,7 @@ public class CRException extends Exception implements Serializable{
 	 */
 	public CRException(Exception ex)
 	{
-		super(ex.getMessage());
+		super(ex.getMessage(), ex);
 		this.message=ex.getMessage();
 		if(this.message==null)this.message=ex.getClass().getName();
 		this.type=ex.getClass().getSimpleName();
