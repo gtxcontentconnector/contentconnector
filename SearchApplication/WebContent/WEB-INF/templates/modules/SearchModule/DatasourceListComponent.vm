@@ -1,12 +1,22 @@
 #if ($component.properties.searchquery && $component.properties.searchquery != "") #set($searchquery = $component.properties.searchquery)
 #else #set($searchquery = "---") #end
+#if($component.properties.totalhits)
+		#set($totalhits=$component.properties.totalhits)
+#else
+		#set($totalhits=0)
+#end
+
 <div class="searchmaximized">
 <h3>$portal.i18n("search.searchedterm")</h3>
 <ul>
 <li class="searchheader item">
-	<span class="keyword"><strong>$searchquery</strong></span> | $count $portal.i18n("search.hits") $portal.i18n("search.foundin") <span class="searchcategory">$portal.i18n("search.articles")</span>
+	<span class="keyword"><strong>$searchquery</strong></span> |Fetched $count of total $totalhits $portal.i18n("search.hits") $portal.i18n("search.foundin") <span class="searchcategory">$portal.i18n("search.articles")</span>
 	##<span class="positionright"><a href="#" class="searchcategory">$count $portal.i18n("search.applications")</a> | <a href="#" class="searchcategory">$portal.i18n("search.documents")</a></span>
 </li>
+#set( $burl = $javax.portlet.response.createActionURL() )
+$burl.setParameter( "action", "doSearch" )
+$burl.setParameter( "query", "gentics" )
+<a href="$burl">Search Gentics</a><br/>
 
 #set($Integer = 1)
 #if($component.pagesizeselect)$component.pagesizeselect#end<br />

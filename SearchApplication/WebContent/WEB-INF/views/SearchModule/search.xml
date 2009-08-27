@@ -1,6 +1,57 @@
 <view id="search"
  xmlns="http://www.gentics.com/xml/ns/portal/view">
-	
+	<callableactions>
+		<callableaction id="search">
+			<actions>
+			
+			<action class="GeneralViewAction">
+				<parameters>
+					<parameter id="set">module.plugins.viewplugin.views.search.components.result.properties.searchquery=module.parameters.query</parameter>
+					
+				</parameters>
+			</action>
+			<action class="RenderTemplateAction" id="querygenerator">
+			<parameters>
+				<parameter id="query" mapped="module.parameters.query"/>
+				<parameter id="userrole" mapped="portal.user.systemrole"/>
+				<parameter id="template"><![CDATA[
+					#if($userrole)
+						#set($perms="(")
+						#set($first="true")
+						#foreach ($perm in $userrole)
+							#if($first=="true")
+								#set($first="false")
+								#set($perms="$perms$perm")
+							#else
+								#set($perms="$perms OR $perm")
+							#end
+						#end
+						#set($perms="$perms)")
+					#else
+						#set($perms="NULL")
+					#end
+					#set($searchquery="((content:$query) OR (binarycontent:$query)) AND (permissions:NULL OR permissions:$perms)")
+				]]></parameter>
+			</parameters>
+			</action>
+			<action class="com.gentics.cr.lucene.GetResultAction" id="fetcher">
+				<parameters>
+					<parameter id="query" mapped="actions.querygenerator.searchquery"/>
+				</parameters>
+				<onsuccess>
+					<actions>
+						<action class="GeneralViewAction">
+							<parameters>
+								<parameter id="set">module.plugins.viewplugin.views.search.components.result.properties.totalhits = actions.fetcher.hits</parameter>
+								<parameter id="set">module.plugins.viewplugin.views.search.components.result.items = actions.fetcher.result</parameter>
+							</parameters>
+						</action>
+					</actions>
+				</onsuccess>
+			</action>
+			</actions>
+		</callableaction>
+	</callableactions>
 	<listcomponent class="form">
 		<properties>
 			<property id="cssclass">nobackground</property>
@@ -13,10 +64,23 @@
 					<textcomponent id="query">
 						<label>Suchbegriff</label>
 					</textcomponent>
-					
+					<datecomponent id="from">
+						<label>Von</label>
+						<dateformat>dd.MM.yyyy</dateformat>
+					</datecomponent>
+					<datecomponent id="to">
+						<label>Bis</label>
+						<dateformat>dd.MM.yyyy</dateformat>
+					</datecomponent>
 					<buttoncomponent>
 						<label>Suchen</label>
 						<actions>
+							<action class="EchoAction">
+								<parameters>
+									<parameter id="from" mapped="view.components.from.unixtimestamp"/>
+									<parameter id="to" mapped="view.components.to.unixtimestamp"/>
+								</parameters>
+							</action>
 							<action class="GeneralViewAction">
 								<parameters>
 									<parameter id="set">view.components.result.properties.searchquery=view.components.query.value</parameter>
@@ -27,8 +91,30 @@
 							<parameters>
 								<parameter id="query" mapped="view.components.query.value"/>
 								<parameter id="userrole" mapped="portal.user.systemrole"/>
+								<parameter id="from" mapped="view.components.from.unixtimestamp"/>
+								<parameter id="to" mapped="view.components.to.unixtimestamp"/>
 								<parameter id="template"><![CDATA[
-									#set($searchquery="((content:$query) OR (binarycontent:$query)) AND (permissions:NULL OR permissions:$userrole)")
+									#if($userrole)
+										#set($perms="(")
+										#set($first="true")
+										#foreach ($perm in $userrole)
+											#if($first=="true")
+												#set($first="false")
+												#set($perms="$perms$perm")
+											#else
+												#set($perms="$perms OR $perm")
+											#end
+										#end
+										#set($perms="$perms)")
+									#else
+										#set($perms="NULL")
+									#end
+									
+									#if("$!from"!="" && "$!to"!="")
+										#set($timespan = "(publishtimestamp:[$from $to]) AND ")
+									#end
+									
+									#set($searchquery="$!timespan((content:$query) OR (binarycontent:$query)) AND (permissions:NULL OR permissions:$perms)")
 								]]></parameter>
 							</parameters>
 							</action>
@@ -41,6 +127,7 @@
 										<action class="GeneralViewAction">
 											<parameters>
 												<parameter id="set">view.components.result.items = actions.fetcher.result</parameter>
+												<parameter id="set">view.components.result.properties.totalhits = actions.fetcher.hits</parameter>
 											</parameters>
 										</action>
 									</actions>
