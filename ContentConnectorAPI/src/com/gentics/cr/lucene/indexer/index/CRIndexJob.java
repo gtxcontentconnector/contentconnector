@@ -35,6 +35,7 @@ import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerStatus;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
@@ -332,8 +333,9 @@ public class CRIndexJob {
 		Collection<Resolvable> slice = new Vector(CRBatchSize);
 		int sliceCounter = 0;
 		
-		IndexWriter indexWriter = new IndexWriter(indexLocation.getDirectory(),analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
-
+		//IndexWriter indexWriter = new IndexWriter(indexLocation.getDirectory(),analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
+		IndexAccessor indexAccessor = indexLocation.getAccessor();
+		IndexWriter indexWriter = indexAccessor.getWriter();
 		try
 		{
 			for (Iterator<Resolvable> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
@@ -366,7 +368,7 @@ public class CRIndexJob {
 			ex.printStackTrace();
 		}finally{
 			log.debug("Indexed "+status.getObjectsDone()+" objects...");
-			indexWriter.close();
+			indexAccessor.release(indexWriter);
 		}
 		
 		
@@ -486,56 +488,63 @@ public class CRIndexJob {
 	{
 		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 		
-		IndexReader reader = IndexReader.open(indexLocation.getDirectory(), false);// open existing index
-		
-		TermEnum uidIter = reader.terms(new Term(idAttribute, "")); // init uid iterator
-		
-		Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
-		
-		Iterator<Resolvable> resoIT = objectsToIndex.iterator();
-		
-		Resolvable CRlem = resoIT.next();
-		String crElemID =(String) CRlem.get(idAttribute);
-		
-		//solange index id kleiner cr id delete from index
-		boolean finish=false;
-		
-		while(!finish)
+		//IndexReader reader = IndexReader.open(indexLocation.getDirectory(), false);// open existing index
+		IndexAccessor indexAccessor = indexLocation.getAccessor();
+		IndexReader reader = indexAccessor.getReader(true);
+		try
 		{
+			TermEnum uidIter = reader.terms(new Term(idAttribute, "")); // init uid iterator
 			
-			if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) == 0)
+			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
+			
+			Iterator<Resolvable> resoIT = objectsToIndex.iterator();
+			
+			Resolvable CRlem = resoIT.next();
+			String crElemID =(String) CRlem.get(idAttribute);
+			
+			//solange index id kleiner cr id delete from index
+			boolean finish=false;
+			
+			while(!finish)
 			{
-				//step both
-				finish = !uidIter.next();
-				if(resoIT.hasNext())
+				
+				if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) == 0)
 				{
+					//step both
+					finish = !uidIter.next();
+					if(resoIT.hasNext())
+					{
+						CRlem = resoIT.next();
+						crElemID =(String) CRlem.get(idAttribute);
+					}
+				}
+				else if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) > 0 && resoIT.hasNext())
+				{
+					//step cr
 					CRlem = resoIT.next();
 					crElemID =(String) CRlem.get(idAttribute);
-				}
-			}
-			else if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) > 0 && resoIT.hasNext())
-			{
-				//step cr
-				CRlem = resoIT.next();
-				crElemID =(String) CRlem.get(idAttribute);
-				
-			}
-			else
-			{
-				//delete UIDITER
-				Term t = uidIter.term();
-				if(t!=null)
-				{
-					reader.deleteDocuments(t);
 					
 				}
-				finish = !uidIter.next();
+				else
+				{
+					//delete UIDITER
+					Term t = uidIter.term();
+					if(t!=null)
+					{
+						reader.deleteDocuments(t);
+						
+					}
+					finish = !uidIter.next();
+				}
+				
 			}
-			
+			uidIter.close();  // close uid iterator
+		   
 		}
-		uidIter.close();  // close uid iterator
-	    reader.close();	//close reader
-	    
+		finally
+		{
+			indexAccessor.release(reader,true);
+		}
 			
 	}
 	
@@ -553,53 +562,60 @@ public class CRIndexJob {
 		
 		String CRID = (String)config.getName();
 		
-		IndexReader reader = IndexReader.open(indexLocation.getDirectory(), false);// open existing index
-		
-		TermDocs termDocs = reader.termDocs(new Term(CR_FIELD_KEY,CRID));
-		
-		Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
-		
-		Iterator<Resolvable> resoIT = objectsToIndex.iterator();
-		
-		Resolvable CRlem = resoIT.next();
-		String crElemID =(String) CRlem.get(idAttribute);
-		
-		//solange index id kleiner cr id delete from index
-		boolean finish=!termDocs.next();
-		
-		while(!finish)
+		//IndexReader reader = IndexReader.open(indexLocation.getDirectory(), false);// open existing index
+		IndexAccessor indexAccessor = indexLocation.getAccessor();
+		IndexReader reader = indexAccessor.getReader(true);
+		try
 		{
-			Document doc = reader.document(termDocs.doc());
-			String docID = doc.get(idAttribute);
-			if(docID!=null && docID.compareTo(crElemID) == 0)
+			TermDocs termDocs = reader.termDocs(new Term(CR_FIELD_KEY,CRID));
+			
+			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
+			
+			Iterator<Resolvable> resoIT = objectsToIndex.iterator();
+			
+			Resolvable CRlem = resoIT.next();
+			String crElemID =(String) CRlem.get(idAttribute);
+			
+			//solange index id kleiner cr id delete from index
+			boolean finish=!termDocs.next();
+			
+			while(!finish)
 			{
-				//step both
-				finish = !termDocs.next();
-				if(resoIT.hasNext())
+				Document doc = reader.document(termDocs.doc());
+				String docID = doc.get(idAttribute);
+				if(docID!=null && docID.compareTo(crElemID) == 0)
 				{
+					//step both
+					finish = !termDocs.next();
+					if(resoIT.hasNext())
+					{
+						CRlem = resoIT.next();
+						crElemID =(String) CRlem.get(idAttribute);
+					}
+				}
+				else if(docID!=null && docID.compareTo(crElemID) > 0 && resoIT.hasNext())
+				{
+					//step cr
 					CRlem = resoIT.next();
 					crElemID =(String) CRlem.get(idAttribute);
+					
 				}
-			}
-			else if(docID!=null && docID.compareTo(crElemID) > 0 && resoIT.hasNext())
-			{
-				//step cr
-				CRlem = resoIT.next();
-				crElemID =(String) CRlem.get(idAttribute);
+				else
+				{
+					//delete Document
+					reader.deleteDocument(termDocs.doc());
+					
+					finish = !termDocs.next();
+				}
 				
 			}
-			else
-			{
-				//delete Document
-				reader.deleteDocument(termDocs.doc());
-				
-				finish = !termDocs.next();
-			}
-			
+			termDocs.close();  // close docs iterator
+		    
 		}
-		termDocs.close();  // close docs iterator
-	    reader.close();	//close reader
-	    
+		finally
+		{
+			indexAccessor.release(reader, true);
+		}
 			
 	}
 }

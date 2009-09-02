@@ -6,6 +6,10 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
@@ -14,6 +18,9 @@ import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
+import com.gentics.cr.lucene.indexer.IndexerUtil;
 
 
 /**
@@ -37,7 +44,49 @@ public class IndexLocation {
 	private CRConfig config;
 	private boolean periodical = false;
 	private int periodical_interval = 60; //60 seconds
-		
+	
+	private static final String STEMMING_KEY = "STEMMING";
+	private static final String STEMMER_NAME_KEY = "STEMMERNAME";
+	private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
+	
+	private Analyzer getConfiguredAnalyzer() 
+	{
+		//Update/add Documents
+		Analyzer analyzer;
+		boolean doStemming = Boolean.parseBoolean((String)config.get(STEMMING_KEY));
+		if(doStemming)
+		{
+			analyzer = new SnowballAnalyzer((String)config.get(STEMMER_NAME_KEY));
+		}
+		else
+		{
+			
+			//Load StopWordList
+			File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
+			
+			if(stopWordFile!=null)
+			{
+				//initialize Analyzer with stop words
+				try
+				{
+					analyzer = new StandardAnalyzer(stopWordFile);
+				}
+				catch(IOException ex)
+				{
+					log.error("Could not open stop words file. Will create standard analyzer. "+ex.getMessage());
+					analyzer = new StandardAnalyzer();
+				}
+			}
+			else
+			{
+				//if no stop word list exists load fall back
+				analyzer = new StandardAnalyzer();
+			}
+		}
+		return analyzer;
+	}
+	
+	
 	private IndexLocation(CRConfig config)
 	{
 		this.config = config;
@@ -64,6 +113,17 @@ public class IndexLocation {
 				dir = createRAMDirectory();
 			}
 		}
+		//Create index accessor
+		IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
+		try
+		{
+			IAFactory.createAccessor(dir, getConfiguredAnalyzer());
+		}
+		catch(IOException ex)
+		{
+			log.fatal("COULD NOT CREATE INDEX ACCESSOR"+ex.getMessage());
+		}
+		
 		if(periodical)
 		{
 			Thread d = new Thread(new Runnable(){
@@ -142,21 +202,35 @@ public class IndexLocation {
 		
 		return dir;
 	}
+	
+	/**
+	 * Returns an index Accessor, which can be used to share access to an index over multiple threads
+	 * @return
+	 */
+	public IndexAccessor getAccessor()
+	{
+		return IndexAccessorFactory.getInstance().getAccessor(this.getDirectory());
+	}
 
 	/**
 	 * Tests if the IndexLocation contains an existing Index and returns true if it does.
 	 * @return true if index exists, otherwise false
 	 */
 	public boolean isContainingIndex() {
+		
+		IndexAccessor indexAccessor = this.getAccessor();
+		IndexReader reader  = null;
 		boolean index = false;
 		try
 		{
-			if(this.dir!=null && this.dir.list()!=null && this.dir.list().length>0)
-				index=true;
-		}
-		catch(IOException iox)
+			reader = indexAccessor.getReader(false);
+			if(reader.numDocs()>0) index = true;
+		}catch(IOException ex)
 		{
-			log.debug("IOX happened during test for existing index. Returning false.");
+			log.error("IOX happened during test of index. "+ex.getMessage());
+		}
+		finally{
+			indexAccessor.release(reader, false);
 		}
 		
 		return index;

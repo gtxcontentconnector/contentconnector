@@ -1,5 +1,6 @@
 package com.gentics.cr.lucene.search;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -11,12 +12,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocCollector;
 
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.IndexLocation;
 /**
  * 
@@ -62,16 +64,20 @@ public class CRSearcher {
 	 * @param explain - if set to true the searcher will add extra explain output to the logger com.gentics.cr.lucene.searchCRSearcher.explain
 	 * @return HashMap<String,Object with two entries. Entry "query" contains the paresed query and entry "result" contains a Collection of result documents.
 	 */
-	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,boolean explain) {
-		try {
-			IndexReader reader;
-			IndexSearcher searcher;
-			Analyzer analyzer;
+	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,boolean explain) throws IOException{
 		
-			//Directory directory = FSDirectory.getDirectory(indexPath);
-			IndexLocation idsLocation = IndexLocation.getIndexLocation(this.config);
-			reader = IndexReader.open(idsLocation.getDirectory(), true);
-			searcher = new IndexSearcher(reader);
+			
+		Searcher searcher;
+		Analyzer analyzer;
+		TopDocCollector collector = new TopDocCollector(count);
+	
+		//Directory directory = FSDirectory.getDirectory(indexPath);
+		IndexLocation idsLocation = IndexLocation.getIndexLocation(this.config);
+		
+		IndexAccessor indexAccessor = idsLocation.getAccessor();
+		IndexReader reader = indexAccessor.getReader(false);
+		searcher = indexAccessor.getSearcher(reader);
+		try {	
 			boolean doStemming = Boolean.parseBoolean((String)this.config.get(STEMMING_KEY));
 			if(doStemming)
 			{
@@ -90,16 +96,21 @@ public class CRSearcher {
 				
 				HashMap<String,Object> result = new HashMap<String,Object>(2);
 				result.put("query", parsedQuery);
-				LinkedHashMap<Document,Float> coll = runSearch(searcher,parsedQuery,count,explain);
+				LinkedHashMap<Document,Float> coll = runSearch(collector,searcher,parsedQuery,explain);
 				result.put("result", coll);
+				result.put("hits", collector.getTotalHits());
 				int size=0;
 				if(coll!=null)size=coll.size();
-				log.debug("Found "+size+" objects with query: "+query);
+				log.debug("Fetched "+size+" objects with query: "+query);
 				return(result);
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		finally{
+			indexAccessor.release(searcher);
+			indexAccessor.release(reader,false);
 		}
 		return(null);
 	}
@@ -111,14 +122,14 @@ public class CRSearcher {
 	 * @param count
 	 * @return ArrayList of results
 	 */
-	private LinkedHashMap<Document,Float> runSearch(IndexSearcher searcher, Query parsedQuery, int count,boolean explain) {
+	private LinkedHashMap<Document,Float> runSearch(TopDocCollector collector, Searcher searcher, Query parsedQuery,boolean explain) {
 		try {
-		    TopDocCollector collector = new TopDocCollector(count);
+		    
 		    searcher.search(parsedQuery, collector);
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
-	
+		    
 		    LinkedHashMap<Document,Float> result = new LinkedHashMap<Document,Float>(hits.length);
-		    log.debug("Found "+hits.length+" Documents");
+		    log.debug("Fetched "+hits.length+" of "+collector.getTotalHits()+" found Documents");
 		    for(int i = 0 ; i < hits.length ; i++) {
 		    	Document doc = searcher.doc(hits[i].doc);
 		    	result.put(doc,hits[i].score);

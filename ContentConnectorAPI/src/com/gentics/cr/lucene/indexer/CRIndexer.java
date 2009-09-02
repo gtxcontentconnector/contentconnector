@@ -1,6 +1,5 @@
 package com.gentics.cr.lucene.indexer;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
@@ -14,9 +13,6 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
@@ -35,6 +31,7 @@ import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.IndexLocation;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
@@ -280,11 +277,10 @@ public class CRIndexer {
 		
 		private static final String RULE_KEY = "rule";
 		private static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
-		private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
+		
 		private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
 		private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
-		private static final String STEMMING_KEY = "STEMMING";
-		private static final String STEMMER_NAME_KEY = "STEMMERNAME";
+
 		private static final String BATCH_SIZE_KEY = "BATCHSIZE";
 
 		@SuppressWarnings("unchecked")
@@ -368,30 +364,7 @@ public class CRIndexer {
 			
 			
 			
-			//Update/add Documents
-			Analyzer analyzer;
-			boolean doStemming = Boolean.parseBoolean((String)config.get(STEMMING_KEY));
-			if(doStemming)
-			{
-				analyzer = new SnowballAnalyzer((String)config.get(STEMMER_NAME_KEY));
-			}
-			else
-			{
-				
-				//Load StopWordList
-				File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
-				
-				if(stopWordFile!=null)
-				{
-					//initialize Analyzer with stop words
-					analyzer = new StandardAnalyzer(stopWordFile);
-				}
-				else
-				{
-					//if no stop word list exists load fall back
-					analyzer = new StandardAnalyzer();
-				}
-			}
+			
 			
 			
 
@@ -430,8 +403,9 @@ public class CRIndexer {
 			Collection<Resolvable> slice = new Vector(CRBatchSize);
 			int sliceCounter = 0;
 			
-			IndexWriter indexWriter = new IndexWriter(indexLocation.getDirectory(),analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
-
+			IndexAccessor indexAccessor = indexLocation.getAccessor();
+			IndexWriter indexWriter = indexAccessor.getWriter();
+			
 			try
 			{
 				for (Iterator<Resolvable> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
@@ -463,7 +437,8 @@ public class CRIndexer {
 				ex.printStackTrace();
 			}finally{
 				log.debug("Indexed "+status.getObjectsDone()+" objects...");
-				indexWriter.close();
+				indexAccessor.release(indexWriter);
+				
 			}
 			
 			
@@ -504,6 +479,9 @@ public class CRIndexer {
 			}
 			return(ret);
 		}
+		
+		private static final String LANGUAGE_ATTRIBUTE = "languageattribute";
+		private static final String LANGUAGE_KEY = "languagekey";
 
 		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config,Hashtable<String,ContentTransformer> transformertable) {
 			Document doc = new Document();
@@ -577,52 +555,57 @@ public class CRIndexer {
 		private void cleanIndex(CNWriteableDatasource ds, String rule, IndexLocation indexLocation, CRConfigUtil config) throws Exception
 		{
 			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
-			
-			IndexReader reader = IndexReader.open(indexLocation.getDirectory(), false);// open existing index
-			
-			TermEnum uidIter = reader.terms(new Term(idAttribute, "")); // init uid iterator
-			
-			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
-			
-			Iterator<Resolvable> resoIT = objectsToIndex.iterator();
-			
-			Resolvable CRlem = resoIT.next();
-			String crElemID =(String) CRlem.get(idAttribute);
-			
-			//solange index id kleiner cr id delete from index
-			boolean finish=false;
-			
-			while(!finish)
+			IndexAccessor accessor = indexLocation.getAccessor();	
+			IndexReader reader = accessor.getReader(true);
+			try
 			{
+				TermEnum uidIter = reader.terms(new Term(idAttribute, "")); // init uid iterator
 				
-				if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) == 0)
+				Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
+				
+				Iterator<Resolvable> resoIT = objectsToIndex.iterator();
+				
+				Resolvable CRlem = resoIT.next();
+				String crElemID =(String) CRlem.get(idAttribute);
+				
+				//solange index id kleiner cr id delete from index
+				boolean finish=false;
+				
+				while(!finish)
 				{
-					//step both
-					finish = !uidIter.next();
-					if(resoIT.hasNext())
+					
+					if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) == 0)
 					{
+						//step both
+						finish = !uidIter.next();
+						if(resoIT.hasNext())
+						{
+							CRlem = resoIT.next();
+							crElemID =(String) CRlem.get(idAttribute);
+						}
+					}
+					else if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) > 0 && resoIT.hasNext())
+					{
+						//step cr
 						CRlem = resoIT.next();
 						crElemID =(String) CRlem.get(idAttribute);
+						
 					}
-				}
-				else if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) > 0 && resoIT.hasNext())
-				{
-					//step cr
-					CRlem = resoIT.next();
-					crElemID =(String) CRlem.get(idAttribute);
+					else
+					{
+						//delete UIDITER
+						reader.deleteDocuments(uidIter.term());
+						finish = !uidIter.next();
+					}
 					
 				}
-				else
-				{
-					//delete UIDITER
-					reader.deleteDocuments(uidIter.term());
-					finish = !uidIter.next();
-				}
-				
+				uidIter.close();  // close uid iterator
+			    
 			}
-			uidIter.close();  // close uid iterator
-		    reader.close();	//close reader
-		    
+			finally
+			{
+				accessor.release(reader, true);
+			}
 				
 		}
 	}

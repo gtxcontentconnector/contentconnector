@@ -21,6 +21,7 @@ import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.plink.PlinkProcessor;
 import com.gentics.cr.plink.PlinkReplacer;
 import com.gentics.cr.template.ITemplateManager;
+import com.gentics.lib.log.RuntimeProfiler;
 
 /**
  * 
@@ -116,6 +117,7 @@ public abstract class RequestProcessor {
 		return null;
 	}
 	
+	private static final String GET_OBJECTS_PROFILER_MARK = "getObjects";
 	
 	/**
 	 * Get the matching objects using the given CRRequest
@@ -125,7 +127,15 @@ public abstract class RequestProcessor {
 	 */
 	public Collection<CRResolvableBean> getObjects(CRRequest request) throws CRException
 	{
-		return(this.getObjects(request,false));
+		try
+		{
+			RuntimeProfiler.beginMark(GET_OBJECTS_PROFILER_MARK, request);
+			return(this.getObjects(request,false));
+		}
+		finally
+		{
+			RuntimeProfiler.endMark(GET_OBJECTS_PROFILER_MARK, request);
+		}
 	}
 	
 	/**

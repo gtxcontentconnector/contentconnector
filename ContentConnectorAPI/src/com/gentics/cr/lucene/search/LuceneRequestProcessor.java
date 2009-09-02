@@ -1,5 +1,6 @@
 package com.gentics.cr.lucene.search;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -59,6 +60,10 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	
 	private static final String ID_ATTRIBUTE_KEY = "idAttribute";
 	
+	public static final String META_RESOLVABLE_KEY = "metaresolvable";
+	
+	public static final String META_HITS_KEY = "totalhits";
+	
 	@SuppressWarnings("unchecked")
 	private static List<Field> toFieldList(List l)
 	{
@@ -89,9 +94,28 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		
 		String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
 		//GET RESULT
-		HashMap<String,Object> searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,doNavigation);
+		long s1 = System.currentTimeMillis();
+		HashMap<String,Object> searchResult  = null;
+		try
+		{
+			searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,doNavigation);
+		}
+		catch(IOException ex)
+		{
+			ex.printStackTrace();
+			throw new CRException(ex);
+		}
+		long e1 = System.currentTimeMillis();
+		log.debug("Search in Index took "+(e1-s1)+"ms");
 		if(searchResult!=null)
 		{
+			Object metaKey = request.get(META_RESOLVABLE_KEY);
+			if(metaKey !=null && (Boolean)metaKey)
+			{
+				CRResolvableBean metaBean = new CRResolvableBean();
+				metaBean.set(META_HITS_KEY, searchResult.get("hits"));
+				result.add(metaBean);
+			}
 			LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
 			Query parsedQuery = (Query)searchResult.get("query");
 			if(docs!=null)
@@ -127,6 +151,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 					//IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
 					if(highlighters!=null)
 					{
+						long s2 = System.currentTimeMillis();
 						for(Entry<String,ContentHighlighter> ch:highlighters.entrySet())
 						{
 							ContentHighlighter h = ch.getValue();
@@ -138,6 +163,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 								crBean.set(att,ret);
 							}
 						}
+						long e2 = System.currentTimeMillis();
+						log.debug("Highlighters took "+(e2-s2)+"ms");
 					}
 					
 					ext_log.debug("Found "+crBean.getContentid()+" with score "+score.toString());
