@@ -85,8 +85,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter{
 	 */
 	public String highlightTerm(String originalTermText, TokenGroup tokenGroup) {
 		
-	  
-	    if (tokenGroup.getTotalScore() <= 0) 
+		if (tokenGroup.getTotalScore() <= 0) 
 	      return originalTermText;
 	  
 	    return highlightPrefix + originalTermText + highlightPostfix;
@@ -125,7 +124,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter{
 					}
 					result +=frag.toString();
 				}
-				//result = highlighter.getBestFragments(tokenStream,attribute,maxNumFragmentsRequired,fragmentSeparator);
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
