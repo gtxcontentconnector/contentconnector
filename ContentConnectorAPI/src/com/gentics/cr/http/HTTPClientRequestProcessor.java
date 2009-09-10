@@ -2,6 +2,8 @@ package com.gentics.cr.http;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
@@ -10,6 +12,7 @@ import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
@@ -20,6 +23,7 @@ import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
+import com.gentics.cr.lucene.search.LuceneRequestProcessor;
 /**
  * 
  * Last changed: $Date$
@@ -53,6 +57,20 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 	}
 	
 		
+	private String encode(String str)
+	{
+		if(str!=null)
+		{
+			try {
+				return URLEncoder.encode(str, "UTF-8");
+			} catch (UnsupportedEncodingException e2) {
+				log.error(e2.getMessage());
+				e2.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Requests Objects from a remote ContentConnector Servlet using type JavaXML
 	 * @param request
@@ -62,34 +80,57 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 	 */
 	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
 			ArrayList<CRResolvableBean> resultlist = new ArrayList<CRResolvableBean>();
-		 	
-			String filter = "filter="+request.getRequestFilter();
+		 	String additional = null;
+			String filter = "filter="+encode(request.getRequestFilter());
 			
 			String attributesstring = "";
 			for(String att:request.getAttributeArray())
 			{
-				attributesstring+="&attributes="+att;
+				attributesstring+="&attributes="+encode(att);
 			}
 			
 			String countstring="";
 			if(request.getCountString()!=null && !request.getCountString().equals(""))
 			{
-				countstring="&count="+request.getCountString();
+				countstring="&count="+encode(request.getCountString());
+			}
+			
+			String startstring="";
+			if(request.getStartString()!=null && !request.getStartString().equals(""))
+			{
+				startstring="&start="+encode(request.getStartString());
 			}
 			
 			String sortstring="";
 			if(request.getSortArray()!=null && request.getSortArray().length>0)
 			{
 				for(String sort:request.getSortArray()){
-					sortstring+="&sorting="+sort;
+					sortstring+="&sorting="+encode(sort);
 				}
 			}
 			
-			//TODO REQUEST ERWEITERN
+			if(request.get(LuceneRequestProcessor.META_RESOLVABLE_KEY)!=null && (Boolean)request.get(LuceneRequestProcessor.META_RESOLVABLE_KEY))
+			{
+				if(additional==null)
+					additional="";
+				additional+="&"+LuceneRequestProcessor.META_RESOLVABLE_KEY+"=true";
+			}
 			
-			GetMethod method = new GetMethod(this.path+"?"+filter+attributesstring+countstring+sortstring+"&type=JavaBIN");
+			String highlightquery = (String)request.get(LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY);
+			if(highlightquery!=null)
+			{
+				if(additional==null)
+					additional="";
+				additional+="&"+LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY+"="+encode(highlightquery);
+			}
+			//TODO REQUEST ERWEITERN
+			String reqUrl = filter+attributesstring+startstring+countstring+sortstring+"&type=JavaBIN";
+			if(additional!=null) reqUrl +=additional;
+			
+			GetMethod method = new GetMethod(this.path+"?"+reqUrl);
 		    
 		    // Provide custom retry handler is necessary
+		 	method.getParams().setVersion(HttpVersion.HTTP_1_0);
 		 	
 		    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 		    		new DefaultHttpMethodRetryHandler(3, false));
