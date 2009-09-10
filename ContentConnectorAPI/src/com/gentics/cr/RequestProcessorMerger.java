@@ -57,9 +57,12 @@ public class RequestProcessorMerger {
 			resultMap.put(id, crBean);
 		}
 		rp1res=null;
-		request.setRequestFilter("object."+uniquemergeattribute+" CONTAINSONEOF ["+mergefilter+"]");
-		Collection<CRResolvableBean> rp2res = secondaryRP.getObjects(request);
-
+		CRRequest request2 = new CRRequest();
+		request2.setAttributeArray(request.getAttributeArray());
+		request2.setDoReplacePlinks(request.getDoReplacePlinks());
+		request2.setDoVelocity(request.getDoVelocity());
+		request2.setRequestFilter("object."+uniquemergeattribute+" CONTAINSONEOF ["+mergefilter+"]");
+		Collection<CRResolvableBean> rp2res = secondaryRP.getObjects(request2);
 		String[] attributes = request.getAttributeArray();
 		
 		for(CRResolvableBean crBean:rp2res)
