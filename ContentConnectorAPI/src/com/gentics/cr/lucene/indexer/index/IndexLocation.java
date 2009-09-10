@@ -145,9 +145,9 @@ public class IndexLocation {
 			});
 			d.setName("PeriodicIndexJobCreator");
 			d.start();
-			this.queue.startWorker();
+			
 		}
-		
+		this.queue.startWorker();
 	}
 	
 	private Directory createRAMDirectory()
@@ -239,6 +239,7 @@ public class IndexLocation {
 	/**
 	 * Creates a new CRIndexJob for the given CRConfig and adds the job to the queue
 	 * @param config
+	 * @param configmap 
 	 * @return
 	 */
 	public boolean createCRIndexJob(CRConfig config,Hashtable<String,CRConfigUtil> configmap)
@@ -248,7 +249,9 @@ public class IndexLocation {
 	
 	private static final String CR_KEY = "CR";
 	
-	
+	/**
+	 * Creats jobs for all configured CRs
+	 */
 	public void createAllCRIndexJobs() {
 		
 		Hashtable<String,CRConfigUtil> configs = getCRMap();
@@ -263,7 +266,10 @@ public class IndexLocation {
 
 	}
 	
-	
+	/**
+	 * Creates a map of the configured CRs
+	 * @return
+	 */
 	public Hashtable<String,CRConfigUtil> getCRMap()
 	{
 		CRConfig crconfig = this.config;
@@ -305,6 +311,10 @@ public class IndexLocation {
 		return this.queue;
 	}
 	
+	/**
+	 * Tests if this IndexLocation has turned on periodical indexing
+	 * @return
+	 */
 	public boolean isPeriodical()
 	{
 		return this.periodical;
