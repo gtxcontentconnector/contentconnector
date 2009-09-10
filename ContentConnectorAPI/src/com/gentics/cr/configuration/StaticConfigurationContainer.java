@@ -5,7 +5,13 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigFileLoader;
-
+/**
+ * 
+ * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+ * @version $Revision: 180 $
+ * @author $Author: supnig@constantinopel.at $
+ *
+ */
 public class StaticConfigurationContainer {
 	
 	private static Logger log = Logger.getLogger(StaticConfigurationContainer.class);

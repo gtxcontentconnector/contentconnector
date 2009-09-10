@@ -23,6 +23,11 @@ import com.gentics.cr.util.CRUtil;
 public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1599393624385876283L;
+
+	/**
 	 * Key under which the RequestProcessorConfigs are stored
 	 */
 	private static final String REQUEST_PROCESSOR_KEY = "RP";

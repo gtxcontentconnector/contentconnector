@@ -1,5 +1,6 @@
 package com.gentics.cr.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -16,8 +17,12 @@ import java.util.Map.Entry;
  * @author $Author$
  *
  */
-public class GenericConfiguration {
+public class GenericConfiguration implements Serializable{
 	
+	/**
+	 * Version ID for Serialization
+	 */
+	private static final long serialVersionUID = 2984152538932729448L;
 	protected Properties properties;
 	protected Hashtable<String,GenericConfiguration> subconfigs;
 	

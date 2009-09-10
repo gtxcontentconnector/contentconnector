@@ -20,6 +20,10 @@ import com.gentics.cr.util.CRUtil;
  */
 public class CRConfigFileLoader extends CRConfigUtil {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -87744244157623456L;
 	private static Logger log = Logger.getLogger(CRConfigFileLoader.class);
 	private String instancename;
 	private String webapproot;
