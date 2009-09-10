@@ -1,8 +1,6 @@
 package com.gentics.cr.lucene.indexer.index;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -13,9 +11,6 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
@@ -35,12 +30,19 @@ import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerStatus;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
-
+/**
+ * 
+ * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+ * @version $Revision: 180 $
+ * @author $Author: supnig@constantinopel.at $
+ *
+ */
 public class CRIndexJob {
 	protected static Logger log = Logger.getLogger(CRIndexJob.class);
 	private String identifyer;
@@ -50,6 +52,12 @@ public class CRIndexJob {
 	private long duration = 0;
 	private Hashtable<String,CRConfigUtil> configmap;
 	
+	/**
+	 * Create new instance of IndexJob
+	 * @param config
+	 * @param indexLoc
+	 * @param configmap
+	 */
 	public CRIndexJob(CRConfig config, IndexLocation indexLoc,Hashtable<String,CRConfigUtil> configmap)
 	{
 		this.config = config;
@@ -87,6 +95,10 @@ public class CRIndexJob {
 		return status.getObjectCount();
 	}
 	
+	/**
+	 * Get the number ob objects already indexed
+	 * @return
+	 */
 	public int getObjectsDone()
 	{
 		return status.getObjectsDone();
@@ -110,6 +122,9 @@ public class CRIndexJob {
 		return false;
 	}
 	
+	/**
+	 * Executes the index process
+	 */
 	public void process()
 	{
 		long start = System.currentTimeMillis();
@@ -134,11 +149,9 @@ public class CRIndexJob {
 	public final static String PARAM_LASTINDEXRULE = "lastindexrule";
 	private static final String RULE_KEY = "rule";
 	private static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
-	private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
 	private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
 	private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
-	private static final String STEMMING_KEY = "STEMMING";
-	private static final String STEMMER_NAME_KEY = "STEMMERNAME";
+	
 	private static final String BATCH_SIZE_KEY = "BATCHSIZE";
 	private static final String CR_FIELD_KEY = "CRID";
 	/**
@@ -216,7 +229,7 @@ public class CRIndexJob {
 			rule = "";
 		}
 		
-		Hashtable<String,ContentTransformer> transformertable = ContentTransformer.getTransformerTable(config);
+		List<ContentTransformer> transformerlist = ContentTransformer.getTransformerList(config);
 		
 		boolean create = true;
 		
@@ -270,32 +283,6 @@ public class CRIndexJob {
 		
 		log.debug("Using rule: "+rule);
 		
-		//Update/add Documents
-		Analyzer analyzer;
-		boolean doStemming = Boolean.parseBoolean((String)config.get(STEMMING_KEY));
-		if(doStemming)
-		{
-			analyzer = new SnowballAnalyzer((String)config.get(STEMMER_NAME_KEY));
-		}
-		else
-		{
-			
-			//Load StopWordList
-			File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
-			
-			if(stopWordFile!=null)
-			{
-				//initialize Analyzer with stop words
-				analyzer = new StandardAnalyzer(stopWordFile);
-			}
-			else
-			{
-				//if no stop word list exists load fall back
-				analyzer = new StandardAnalyzer();
-			}
-		}
-		
-		
 
 		// prepare the map of indexed/stored attributes
 		Map<String,Boolean> attributes = new HashMap<String,Boolean>();
@@ -328,7 +315,7 @@ public class CRIndexJob {
 		
 		status.setObjectCount(objectsToIndex.size());
 		log.debug("Starting index job with "+objectsToIndex.size()+" objects to index.");
-		// TODO now get the first batch of objects from the collection
+		// now get the first batch of objects from the collection
 		// (remove them from the original collection) and index them
 		Collection<Resolvable> slice = new Vector(CRBatchSize);
 		int sliceCounter = 0;
@@ -347,7 +334,7 @@ public class CRIndexJob {
 				if (sliceCounter == CRBatchSize) {
 					// index the current slice
 					log.debug("Indexing slice with "+slice.size()+" objects.");
-					indexSlice(indexWriter, slice, attributes, ds, create,config,transformertable);
+					indexSlice(indexWriter, slice, attributes, ds, create,config,transformerlist);
 					status.setObjectsDone(status.getObjectsDone()+slice.size());
 					// clear the slice and reset the counter
 					slice.clear();
@@ -357,7 +344,7 @@ public class CRIndexJob {
 
 			if (!slice.isEmpty()) {
 				// index the last slice
-				indexSlice(indexWriter, slice, attributes, ds, create,config, transformertable);
+				indexSlice(indexWriter, slice, attributes, ds, create,config, transformerlist);
 				status.setObjectsDone(status.getObjectsDone()+slice.size());
 			}
 			indexWriter.optimize();
@@ -375,44 +362,39 @@ public class CRIndexJob {
 	}
 
 	private void indexSlice(IndexWriter indexWriter, Collection<Resolvable> slice,
-			Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config, Hashtable<String,ContentTransformer> transformertable) throws NodeException,
+			Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist) throws NodeException,
 			CorruptIndexException, IOException {
 		// prefill all needed attributes
 		GenticsContentFactory.prefillContentObjects(ds, slice,
 				(String[]) attributes.keySet().toArray(
 						new String[attributes.keySet().size()]));
 		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
+		
 		for (Resolvable objectToIndex:slice) {
+			
+			CRResolvableBean bean = new CRResolvableBean(objectToIndex);
+			//CALL PRE INDEX PROCESSORS
+			for(ContentTransformer transformer:transformerlist)
+			{
+				if(transformer.match(bean))
+					transformer.processBean(bean);
+			}
+			
 			if(!create)
 			{
-				indexWriter.updateDocument(new Term(idAttribute, (String)objectToIndex.get(idAttribute)), getDocument(objectToIndex, attributes,config,transformertable));
+				indexWriter.updateDocument(new Term(idAttribute, (String)bean.get(idAttribute)), getDocument(bean, attributes,config));
 			}
 			else
 			{
-				indexWriter.addDocument(getDocument(objectToIndex, attributes, config,transformertable));
+				indexWriter.addDocument(getDocument(bean, attributes, config));
 			}
 		}
 	}
 	
 	
-	private Hashtable<String,ContentTransformer> getResolvableSpecifigTransformerMap(Resolvable resolvable, Hashtable<String,ContentTransformer> transformermap)
-	{
-		Hashtable<String,ContentTransformer> ret = new Hashtable<String,ContentTransformer>();
-		if(transformermap!=null)
-		{
-			for(Entry<String,ContentTransformer> e:transformermap.entrySet())
-			{
-				String att = e.getKey();
-				ContentTransformer t = e.getValue();
-				if(t.match(resolvable))ret.put(att, t);
-			}
-		}
-		return(ret);
-	}
-
-	private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config,Hashtable<String,ContentTransformer> transformertable) {
+	private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
 		Document doc = new Document();
-		Hashtable<String,ContentTransformer> tmap = getResolvableSpecifigTransformerMap(resolvable,transformertable);
+		
 		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 		String crID = (String)config.getName();
 		if(crID!=null)
@@ -434,40 +416,10 @@ public class CRIndexJob {
 				doc.add(new Field(idAttribute, (String)value, Field.Store.YES, Field.Index.NOT_ANALYZED));
 			}
 			else if(value!=null){
-				ContentTransformer t = tmap.get(attributeName);
-				if(t!=null)
+				
+				if(value instanceof String || value instanceof Number)
 				{
-					if(storeField.booleanValue())
-					{
-						String v =  t.getStringContents(value);
-						if(v!=null)
-						{
-							doc.add(new Field(attributeName,v, storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
-						}
-						else
-						{
-							log.equals("Could not add Field to Document"+resolvable.getProperty(idAttribute));
-						}
-					}
-					else
-					{
-						Reader r = t.getContents(value);
-						if(r!=null)
-						{
-							doc.add(new Field(attributeName, r));
-						}
-						else
-						{
-							log.equals("Could not add Field to Document"+resolvable.getProperty(idAttribute));
-						}
-					}
-				}
-				else
-				{
-					if(value instanceof String || value instanceof Number)
-					{
-						doc.add(new Field(attributeName, value.toString(),storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
-					}
+					doc.add(new Field(attributeName, value.toString(),storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
 				}
 			}
 		}
