@@ -1,6 +1,7 @@
 package com.gentics.cr.lucene.indexer.transformer.html;
 import java.io.ByteArrayInputStream;
 
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
@@ -65,4 +66,10 @@ public class HTMLJTidyContentTransformer extends ContentTransformer{
 		}
 		return new HTMLStripReader(TidyHelper.tidy(new ByteArrayInputStream(contents.getBytes())));
     }
+
+	@Override
+	public void processBean(CRResolvableBean bean) {
+		// TODO Auto-generated method stub
+		
+	}
 }

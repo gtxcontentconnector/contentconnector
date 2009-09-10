@@ -13,6 +13,7 @@ import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
@@ -70,9 +71,10 @@ public class HTMLEditorKitStripper extends ContentTransformer{
 	}
 
 	/**
+	 * @param obj 
+	 * @return 
 	 * 
 	 */
-	@Override
 	public Reader getContents(Object obj) {
 		String s = getStringContents(obj);
 		if(s!=null)
@@ -91,9 +93,10 @@ public class HTMLEditorKitStripper extends ContentTransformer{
 	private static String newline = System.getProperty("line.separator");
 	
 	/**
+	 * @param obj 
+	 * @return 
 	 * 
 	 */
-	@Override
 	public String getStringContents(Object obj) {
 		
 		String ret="";
@@ -110,5 +113,11 @@ public class HTMLEditorKitStripper extends ContentTransformer{
 			e.printStackTrace();
 		}
 		return ret;
+	}
+
+	@Override
+	public void processBean(CRResolvableBean bean) {
+		// TODO Auto-generated method stub
+		
 	}
 }

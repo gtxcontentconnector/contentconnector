@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.indexer.transformer.html;
 import java.io.StringReader;
 
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.plink.PLinkStripper;
@@ -18,6 +19,9 @@ import com.gentics.cr.util.CRUtil;
 public class HTMLContentTransformer extends ContentTransformer{
 
 	private static PLinkStripper stripper;
+	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
+	private String attribute="";
+	
 	/**
 	 * Get new instance of HTMLContentTransformer
 	 * @param config
@@ -25,6 +29,7 @@ public class HTMLContentTransformer extends ContentTransformer{
 	public HTMLContentTransformer(GenericConfiguration config)
 	{
 		super(config);
+		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
 		stripper = new PLinkStripper();
 	}
 	
@@ -33,7 +38,7 @@ public class HTMLContentTransformer extends ContentTransformer{
 	 * @param obj
 	 * @return
 	 */
-	public String getStringContents(Object obj)
+	private String getStringContents(Object obj)
 	{
 		String ret = null;
 		HTMLStripReader sr = getContents(obj);
@@ -56,7 +61,7 @@ public class HTMLContentTransformer extends ContentTransformer{
 	 * @param obj
 	 * @return HTMLStripReader of contents
 	 */
-	public HTMLStripReader getContents(Object obj)
+	private HTMLStripReader getContents(Object obj)
 	{
 		String contents = null;
 		if(obj instanceof String)
@@ -69,4 +74,24 @@ public class HTMLContentTransformer extends ContentTransformer{
 		}
 		return new HTMLStripReader(new StringReader(contents));
     }
+
+	@Override
+	public void processBean(CRResolvableBean bean) {
+		if(this.attribute!=null)
+		{
+			Object obj = bean.get(this.attribute);
+			if(obj!=null)
+			{
+				String newString = getStringContents(obj);
+				if(newString!=null)
+				{
+					bean.set(this.attribute, newString);
+				}
+			}
+		}
+		else
+		{
+			log.error("Configured attribute is null. Bean will not be processed");
+		}
+	}
 }
