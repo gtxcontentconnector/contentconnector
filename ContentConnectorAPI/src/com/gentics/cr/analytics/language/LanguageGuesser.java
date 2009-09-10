@@ -3,8 +3,7 @@ package com.gentics.cr.analytics.language;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.nutch.analysis.lang.LanguageIdentifier;
+import org.apache.nutch.analysis.lang.custom.LanguageIdentifier;
 /**
  * 
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
@@ -56,7 +55,7 @@ public class LanguageGuesser {
 	{
 		if(langID==null)
 		{
-			langID = new LanguageIdentifier(new Configuration());
+			langID = new LanguageIdentifier();
 		}
 		return(langID);
 	}
