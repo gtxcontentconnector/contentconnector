@@ -61,22 +61,25 @@ public class CRSearcher {
 	 * @param query query string
 	 * @param searchedAttributes
 	 * @param count - max number of results that are to be returned
+	 * @param start - the start number of the page e.g. if start = 50 and count = 10 you will get the elements 50 - 60
 	 * @param explain - if set to true the searcher will add extra explain output to the logger com.gentics.cr.lucene.searchCRSearcher.explain
 	 * @return HashMap<String,Object with two entries. Entry "query" contains the paresed query and entry "result" contains a Collection of result documents.
+	 * @throws IOException 
 	 */
-	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,boolean explain) throws IOException{
+	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,int start,boolean explain) throws IOException{
 		
 			
 		Searcher searcher;
 		Analyzer analyzer;
-		TopDocCollector collector = new TopDocCollector(count);
+		//Collect count+start hits
+		TopDocCollector collector = new TopDocCollector(count+start);
 	
-		//Directory directory = FSDirectory.getDirectory(indexPath);
 		IndexLocation idsLocation = IndexLocation.getIndexLocation(this.config);
 		
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
 		IndexReader reader = indexAccessor.getReader(false);
 		searcher = indexAccessor.getSearcher(reader);
+		HashMap<String,Object> result = null;
 		try {	
 			boolean doStemming = Boolean.parseBoolean((String)this.config.get(STEMMING_KEY));
 			if(doStemming)
@@ -93,26 +96,26 @@ public class CRSearcher {
 				QueryParser parser = new QueryParser(searchedAttributes[0], analyzer);
 				
 				Query parsedQuery = parser.parse(query);
-				
-				HashMap<String,Object> result = new HashMap<String,Object>(2);
+				result = new HashMap<String,Object>(2);
 				result.put("query", parsedQuery);
-				LinkedHashMap<Document,Float> coll = runSearch(collector,searcher,parsedQuery,explain);
+				LinkedHashMap<Document,Float> coll = runSearch(collector,searcher,parsedQuery,explain,count,start);
 				result.put("result", coll);
 				result.put("hits", collector.getTotalHits());
 				int size=0;
 				if(coll!=null)size=coll.size();
 				log.debug("Fetched "+size+" objects with query: "+query);
-				return(result);
+				
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			result=null;
 		}
 		finally{
 			indexAccessor.release(searcher);
 			indexAccessor.release(reader,false);
 		}
-		return(null);
+		return(result);
 	}
 
 	/**
@@ -122,23 +125,26 @@ public class CRSearcher {
 	 * @param count
 	 * @return ArrayList of results
 	 */
-	private LinkedHashMap<Document,Float> runSearch(TopDocCollector collector, Searcher searcher, Query parsedQuery,boolean explain) {
+	private LinkedHashMap<Document,Float> runSearch(TopDocCollector collector, Searcher searcher, Query parsedQuery,boolean explain,int count, int start) {
 		try {
 		    
 		    searcher.search(parsedQuery, collector);
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		    
 		    LinkedHashMap<Document,Float> result = new LinkedHashMap<Document,Float>(hits.length);
-		    log.debug("Fetched "+hits.length+" of "+collector.getTotalHits()+" found Documents");
-		    for(int i = 0 ; i < hits.length ; i++) {
-		    	Document doc = searcher.doc(hits[i].doc);
-		    	result.put(doc,hits[i].score);
+		    
+		    //Calculate the number of documents to be fetched
+		    int num = Math.min(hits.length - start, count);
+		    for(int i = 0 ; i < num ; i++) {
+		    	Document doc = searcher.doc(hits[start+i].doc);
+		    	result.put(doc,hits[start+i].score);
 		    	if(explain)
 		    	{
-		    		Explanation ex = searcher.explain(parsedQuery, hits[i].doc);
+		    		Explanation ex = searcher.explain(parsedQuery, hits[start+i].doc);
 		    		log_explain.debug("Explanation for "+doc.toString()+" - "+ex.toString());
 		    	}
 			}
+		    log.debug("Fetched Document "+start+" to "+(start+num)+" of "+collector.getTotalHits()+" found Documents");
 			
 			return(result);
 			
