@@ -9,7 +9,13 @@ import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.index.IndexLocation;
-
+/**
+ * 
+ * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+ * @version $Revision: 180 $
+ * @author $Author: supnig@constantinopel.at $
+ *
+ */
 public class IndexController {
 	
 	private static Logger log = Logger.getLogger(IndexController.class);
@@ -19,6 +25,10 @@ public class IndexController {
 	private CRConfigUtil crconfig;
 	private Hashtable<String,IndexLocation> indextable;
 	
+	/**
+	 * Create new instance of IndexController
+	 * @param name
+	 */
 	public IndexController(String name)
 	{
 		crconfig = new CRConfigFileLoader(name, null);
