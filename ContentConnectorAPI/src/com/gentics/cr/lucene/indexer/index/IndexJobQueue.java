@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.gentics.cr.CRConfig;
-
+/**
+ * 
+ * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+ * @version $Revision: 180 $
+ * @author $Author: supnig@constantinopel.at $
+ *
+ */
 public class IndexJobQueue{
 	
 	private static final String INTERVAL_KEY = "CHECKINTERVAL";
@@ -16,6 +22,10 @@ public class IndexJobQueue{
 	private CRIndexJob currentJob;
 	private ArrayList<CRIndexJob> lastJobs;
 	
+	/**
+	 * Create new instance of JobQueue
+	 * @param config
+	 */
 	public IndexJobQueue(CRConfig config)
 	{
 		String i = (String)config.get(INTERVAL_KEY);
@@ -96,6 +106,9 @@ public class IndexJobQueue{
 		this.stop=false;
 	}
 	
+	/**
+	 * Stops the queue worker
+	 */
 	public void stopWorker()
 	{
 		this.stop=true;
