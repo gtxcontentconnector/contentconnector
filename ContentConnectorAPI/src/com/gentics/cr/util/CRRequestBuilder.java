@@ -6,6 +6,7 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import com.gentics.cr.CRRequest;
+import com.gentics.cr.lucene.search.LuceneRequestProcessor;
 import com.gentics.cr.rest.ContentRepository;
 import com.gentics.cr.rest.javabin.JavaBinContentRepository;
 import com.gentics.cr.rest.javaxml.JavaXmlContentRepository;
@@ -25,6 +26,8 @@ public class CRRequestBuilder {
 
 	protected RepositoryType repotype;
 	protected boolean isDebug=false;
+	protected boolean metaresolvable=false;
+	protected String highlightquery;
 	protected String filter;
 	protected String start;
 	protected String count;
@@ -95,7 +98,8 @@ public class CRRequestBuilder {
 		this.options = request.getParameterValues("options");
 		this.type=request.getParameter("type");
 		this.isDebug = (request.getParameter("debug")!=null && request.getParameter("debug").equals("true"));
-		
+		this.metaresolvable = Boolean.parseBoolean(request.getParameter(LuceneRequestProcessor.META_RESOLVABLE_KEY));
+		this.highlightquery = request.getParameter(LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY);
 		//if filter is not set and contentid is => use contentid instad
 		if (("".equals(filter) || filter == null)&& contentid!=null && !contentid.equals("")){
 			filter = "object.contentid ==" + contentid;
@@ -144,7 +148,8 @@ public class CRRequestBuilder {
 		this.options = request.getParameterValues("options");
 		this.type=request.getParameter("type");
 		this.isDebug = (request.getParameter("debug")!=null && request.getParameter("debug").equals("true"));
-		
+		this.metaresolvable = Boolean.parseBoolean(request.getParameter(LuceneRequestProcessor.META_RESOLVABLE_KEY));
+		this.highlightquery = request.getParameter(LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY);
 		//if filter is not set and contentid is => use contentid instad
 		if (("".equals(filter) || filter == null)&& contentid!=null && !contentid.equals("")){
 			filter = "object.contentid == '" + contentid+"'";
@@ -184,6 +189,8 @@ public class CRRequestBuilder {
 		req.setContentid(this.contentid);
 		req.setRequest(this.request);
 		req.setResponse(this.response);
+		req.set(LuceneRequestProcessor.META_RESOLVABLE_KEY, this.metaresolvable);
+		if(this.highlightquery!=null)req.set(LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY, this.highlightquery);
 		return req;
 	}
 	
