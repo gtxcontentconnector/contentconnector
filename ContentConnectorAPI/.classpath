@@ -27,5 +27,9 @@
 	<classpathentry kind="lib" path="lib/Tidy.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-highlighter-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-snowball-2.4.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="lib/hadoop-0.20.0-core.jar"/>
+	<classpathentry kind="lib" path="lib/language-identifier.jar" sourcepath="C:/Users/Christopher/Desktop/lucene-2.4.1-src/nutch-1.0/nutch-1.0/plugins/language-identifier"/>
+	<classpathentry kind="lib" path="lib/nutch-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
