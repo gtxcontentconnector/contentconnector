@@ -1,7 +1,6 @@
 package com.gentics.cr.lucene.indexer;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.IndexLocation;
@@ -37,7 +37,7 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
 
 /**
- * 
+ * CRIndexer is depricated. Use CRIndexerJob and IndexLocation instead
  * Last changed: $Date$
  * @version $Revision$
  * @author $Author$
@@ -280,7 +280,7 @@ public class CRIndexer {
 		
 		private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
 		private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
-
+		private static final String CR_FIELD_KEY = "CRID";
 		private static final String BATCH_SIZE_KEY = "BATCHSIZE";
 
 		@SuppressWarnings("unchecked")
@@ -325,7 +325,7 @@ public class CRIndexer {
 				rule = "";
 			}
 			
-			Hashtable<String,ContentTransformer> transformertable = ContentTransformer.getTransformerTable(config);
+			List<ContentTransformer> transformerlist = ContentTransformer.getTransformerList(config);
 			
 			boolean create = true;
 			
@@ -400,7 +400,7 @@ public class CRIndexer {
 			log.debug("Starting index job with "+objectsToIndex.size()+" objects to index.");
 			// TODO now get the first batch of objects from the collection
 			// (remove them from the original collection) and index them
-			Collection<Resolvable> slice = new Vector(CRBatchSize);
+			Collection<CRResolvableBean> slice = new Vector(CRBatchSize);
 			int sliceCounter = 0;
 			
 			IndexAccessor indexAccessor = indexLocation.getAccessor();
@@ -410,14 +410,14 @@ public class CRIndexer {
 			{
 				for (Iterator<Resolvable> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
 					Resolvable obj = iterator.next();
-					slice.add(obj);
+					slice.add(new CRResolvableBean(obj));
 					iterator.remove();
 					sliceCounter++;
 	
 					if (sliceCounter == CRBatchSize) {
 						// index the current slice
 						log.debug("Indexing slice with "+slice.size()+" objects.");
-						indexSlice(indexWriter, slice, attributes, ds, create,config,transformertable);
+						indexSlice(indexWriter, slice, attributes, ds, create,config,transformerlist);
 						status.setObjectsDone(status.getObjectsDone()+slice.size());
 						// clear the slice and reset the counter
 						slice.clear();
@@ -427,7 +427,7 @@ public class CRIndexer {
 	
 				if (!slice.isEmpty()) {
 					// index the last slice
-					indexSlice(indexWriter, slice, attributes, ds, create,config, transformertable);
+					indexSlice(indexWriter, slice, attributes, ds, create,config, transformerlist);
 				}
 				indexWriter.optimize();
 			}catch(Exception ex)
@@ -444,50 +444,42 @@ public class CRIndexer {
 			
 		}
 
-		private void indexSlice(IndexWriter indexWriter, Collection<Resolvable> slice,
-				Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config, Hashtable<String,ContentTransformer> transformertable) throws NodeException,
+		private void indexSlice(IndexWriter indexWriter, Collection<CRResolvableBean> slice,
+				Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist) throws NodeException,
 				CorruptIndexException, IOException {
 			// prefill all needed attributes
 			GenticsContentFactory.prefillContentObjects(ds, slice,
 					(String[]) attributes.keySet().toArray(
 							new String[attributes.keySet().size()]));
 			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
-			for (Resolvable objectToIndex:slice) {
+			for (CRResolvableBean objectToIndex:slice) {
+				//CALL PRE INDEX PROCESSORS
+				for(ContentTransformer transformer:transformerlist)
+				{
+					if(transformer.match(objectToIndex))
+						transformer.processBean(objectToIndex);
+				}
 				if(!create)
 				{
-					indexWriter.updateDocument(new Term(idAttribute, (String)objectToIndex.get(idAttribute)), getDocument(objectToIndex, attributes,config,transformertable));
+					indexWriter.updateDocument(new Term(idAttribute, (String)objectToIndex.get(idAttribute)), getDocument(objectToIndex, attributes,config));
 				}
 				else
 				{
-					indexWriter.addDocument(getDocument(objectToIndex, attributes, config,transformertable));
+					indexWriter.addDocument(getDocument(objectToIndex, attributes, config));
 				}
 			}
 		}
 		
-		
-		private Hashtable<String,ContentTransformer> getResolvableSpecifigTransformerMap(Resolvable resolvable, Hashtable<String,ContentTransformer> transformermap)
-		{
-			Hashtable<String,ContentTransformer> ret = new Hashtable<String,ContentTransformer>();
-			if(transformermap!=null)
-			{
-				for(Entry<String,ContentTransformer> e:transformermap.entrySet())
-				{
-					String att = e.getKey();
-					ContentTransformer t = e.getValue();
-					if(t.match(resolvable))ret.put(att, t);
-				}
-			}
-			return(ret);
-		}
-		
-		private static final String LANGUAGE_ATTRIBUTE = "languageattribute";
-		private static final String LANGUAGE_KEY = "languagekey";
-
-		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config,Hashtable<String,ContentTransformer> transformertable) {
+		private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
 			Document doc = new Document();
-			Hashtable<String,ContentTransformer> tmap = getResolvableSpecifigTransformerMap(resolvable,transformertable);
-			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 			
+			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
+			String crID = (String)config.getName();
+			if(crID!=null)
+			{
+				//Add content repository identification
+				doc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES, Field.Index.NOT_ANALYZED));
+			}
 			
 			for (Entry<String,Boolean> entry:attributes.entrySet()) {
 				
@@ -502,40 +494,10 @@ public class CRIndexer {
 					doc.add(new Field(idAttribute, (String)value, Field.Store.YES, Field.Index.NOT_ANALYZED));
 				}
 				else if(value!=null){
-					ContentTransformer t = tmap.get(attributeName);
-					if(t!=null)
+					
+					if(value instanceof String || value instanceof Number)
 					{
-						if(storeField.booleanValue())
-						{
-							String v =  t.getStringContents(value);
-							if(v!=null)
-							{
-								doc.add(new Field(attributeName,v, storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
-							}
-							else
-							{
-								log.equals("Could not add Field to Document"+resolvable.getProperty(idAttribute));
-							}
-						}
-						else
-						{
-							Reader r = t.getContents(value);
-							if(r!=null)
-							{
-								doc.add(new Field(attributeName, r));
-							}
-							else
-							{
-								log.equals("Could not add Field to Document"+resolvable.getProperty(idAttribute));
-							}
-						}
-					}
-					else
-					{
-						if(value instanceof String || value instanceof Number)
-						{
-							doc.add(new Field(attributeName, value.toString(),storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
-						}
+						doc.add(new Field(attributeName, value.toString(),storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
 					}
 				}
 			}
