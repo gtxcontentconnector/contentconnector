@@ -92,6 +92,25 @@ public class GenericConfiguration implements Serializable{
 	}
 	
 	/**
+	 * Returns the containing sub configurations sorted by key
+	 * 			
+	 * @return hashtable of configurations with keys or null if there are no containing sub configs
+	 */
+	public synchronized Hashtable<String,GenericConfiguration> getSortedSubconfigs()
+	{
+		Hashtable<String,GenericConfiguration> ret = new Hashtable<String,GenericConfiguration>(this.subconfigs.size());
+		
+		Vector<String> v = new Vector<String>(this.subconfigs.keySet());
+	    Collections.sort(v);
+	    for(String key:v)
+	    {
+	    	ret.put(key, this.subconfigs.get(key));
+	    }
+	    return(ret);
+
+	}
+	
+	/**
 	 * Returns size of properties in this instance
 	 * 		- does not count sub configurations
 	 * @return count
