@@ -30,6 +30,7 @@ public interface MultiIndexAccessor {
   /**
    * @param indexes
    * @return new or cached MultiSearcher
+   * @throws IOException 
    */
   public Searcher getMultiSearcher(Set<Directory> indexes) throws IOException;
 

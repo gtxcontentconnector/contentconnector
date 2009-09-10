@@ -32,6 +32,11 @@ import org.apache.lucene.store.Directory;
  * An IndexAccessorFactory allows the sharing of IndexAccessors and
  * MultiIndexAccessors across threads.
  * 
+ * 
+ * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+ * @version $Revision: 180 $
+ * @author $Author: supnig@constantinopel.at $
+ *
  */
 public class IndexAccessorFactory {
   private static final IndexAccessorFactory indexAccessorFactory = new IndexAccessorFactory();
@@ -76,11 +81,22 @@ public class IndexAccessorFactory {
       indexAccessors.clear();
     }
   }
-
+  /**
+   * 
+   * @param dir
+   * @param analyzer
+   * @throws IOException
+   */
   public void createAccessor(Directory dir, Analyzer analyzer) throws IOException {
     createAccessor(dir, analyzer, null, null);
   }
-
+  /**
+   * 
+   * @param dir
+   * @param analyzer
+   * @param query
+   * @throws IOException
+   */
   public void createAccessor(Directory dir, Analyzer analyzer, Query query) throws IOException {
     createAccessor(dir, analyzer, query, null);
   };

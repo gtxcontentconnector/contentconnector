@@ -21,7 +21,12 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
   // look into making a Set again
   private List<IndexSearcher> retiredSearchers;
     
-  
+  /**
+   * Create new instance
+   * @param dir
+   * @param analyzer
+   * @param warmQuery
+   */
   public WarmingIndexAccessor(Directory dir, Analyzer analyzer, Query warmQuery) {
 	  super(dir, analyzer);
 
@@ -133,10 +138,21 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 
   }
 
+  /**
+   * 
+   * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+   * @version $Revision: 180 $
+   * @author $Author: supnig@constantinopel.at $
+   *
+   */
   public class SearcherWarmer implements Runnable {
     private IndexSearcher searcher;
     private IndexSearcher oldSearcher;
-
+    /**
+     * Create new instance
+     * @param oldSearcher
+     * @param searcher
+     */
     public SearcherWarmer(IndexSearcher oldSearcher, IndexSearcher searcher) {
       this.searcher = searcher;
       this.oldSearcher = oldSearcher;

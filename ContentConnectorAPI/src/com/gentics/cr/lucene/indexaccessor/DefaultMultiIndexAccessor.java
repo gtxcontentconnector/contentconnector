@@ -32,6 +32,11 @@ import org.apache.lucene.store.Directory;
 
 /**
  * Default MultiIndexAccessor implementation.
+ * 
+ * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+ * @version $Revision: 180 $
+ * @author $Author: supnig@constantinopel.at $
+ *
  */
 public class DefaultMultiIndexAccessor implements MultiIndexAccessor {
 
@@ -41,10 +46,17 @@ public class DefaultMultiIndexAccessor implements MultiIndexAccessor {
 
   private Similarity similarity;
 
+  /**
+   * Create new Instance
+   */
   public DefaultMultiIndexAccessor() {
     this.similarity = Similarity.getDefault();
   }
 
+  /**
+   * Create new instance
+   * @param similarity
+   */
   public DefaultMultiIndexAccessor(Similarity similarity) {
     this.similarity = similarity;
   }
