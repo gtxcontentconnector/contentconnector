@@ -1,5 +1,6 @@
 package com.gentics.cr.rest;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Iterator;
@@ -90,8 +91,7 @@ public class RESTSimpleContainer{
 				}
 			}
 			cr.toStream(stream);
-			stream.flush();
-			stream.close();
+			
 		} catch (CRException e1) {
 			//CR Error Handling
 			//CRException is passed down from methods that want to post 
@@ -106,6 +106,14 @@ public class RESTSimpleContainer{
 			cr.respondWithError((OutputStream) stream,crex,myReqBuilder.isDebug());
 			log.debug(ex.getMessage()+" : "+crex.getStringStackTrace());
 			
+		}finally
+		{
+			try {
+				stream.flush();
+				stream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
