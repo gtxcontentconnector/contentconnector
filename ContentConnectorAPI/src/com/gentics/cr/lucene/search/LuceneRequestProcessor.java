@@ -10,8 +10,12 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 
 import com.gentics.cr.CRConfig;
@@ -60,9 +64,31 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	
 	private static final String ID_ATTRIBUTE_KEY = "idAttribute";
 	
+	/**
+	 * KEY to store switch for metaresolvable in request
+	 * if request.get(LuceneRequestProcessor.META_RESOLVABLE_KEY) returns "true", a metaresolvable will be generated
+	 */
 	public static final String META_RESOLVABLE_KEY = "metaresolvable";
 	
+	/**
+	 * Key where to find the total hits of the search in the metaresolvable.
+	 * Metaresolvable has to be enabled => LuceneRequestProcessor.META_RESOLVABLE_KEY
+	 */
 	public static final String META_HITS_KEY = "totalhits";
+	
+	/**
+	 * Key where to find the start position of the search in the metaresolvable.
+	 * Metaresolvable has to be enabled => LuceneRequestProcessor.META_RESOLVABLE_KEY
+	 */
+	public static final String META_START_KEY = "start";
+	
+	/**
+	 * Key where to find the query used for highlighting the content. Usually this is the 
+	 * searchqery without the permissions and meta search informations.
+	 * If this is not set, the requestFilter (default query) will be used
+	 */
+	public static final String HIGHLIGHT_QUERY_KEY = "highlightquery";
+	
 	
 	@SuppressWarnings("unchecked")
 	private static List<Field> toFieldList(List l)
@@ -82,6 +108,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			boolean doNavigation) throws CRException {
 		ArrayList<CRResolvableBean> result = new ArrayList<CRResolvableBean>();
 		int count = request.getCount();
+		int start = request.getStart();
 		//IF COUNT IS NOT SET IN THE REQUEST, USE DEFAULT VALUE LOADED FROM CONFIG
 		if(count<=0)
 		{	
@@ -90,7 +117,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		}
 		if(count<=0)
 			log.error("DEFAULT COUNT IS LOWER OR EQUAL TO 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG (insert rp.<rpnumber>.searchcount=<value> int your properties file)!");
-		
+		if(start<0)
+			log.error("BAD REQUEST: start is lower than 0!");
 		
 		String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
 		//GET RESULT
@@ -98,7 +126,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		HashMap<String,Object> searchResult  = null;
 		try
 		{
-			searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,doNavigation);
+			searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,start,doNavigation);
 		}
 		catch(IOException ex)
 		{
@@ -109,15 +137,31 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		log.debug("Search in Index took "+(e1-s1)+"ms");
 		if(searchResult!=null)
 		{
+			Query parsedQuery = (Query)searchResult.get("query");
+			
+			
 			Object metaKey = request.get(META_RESOLVABLE_KEY);
 			if(metaKey !=null && (Boolean)metaKey)
 			{
 				CRResolvableBean metaBean = new CRResolvableBean();
 				metaBean.set(META_HITS_KEY, searchResult.get("hits"));
+				metaBean.set(META_START_KEY, start);
 				result.add(metaBean);
 			}
 			LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
-			Query parsedQuery = (Query)searchResult.get("query");
+			//PARSE HIGHLIGHT QUERY
+			Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
+			if(highlightQuery!=null)
+			{
+				Analyzer analyzer = new StandardAnalyzer();
+				QueryParser parser = new QueryParser(getSearchedAttributes()[0], analyzer);
+				try {
+					parsedQuery = parser.parse((String)highlightQuery);
+				} catch (ParseException e) {
+					log.error(e.getMessage());
+					e.printStackTrace();
+				}
+			}
 			if(docs!=null)
 			{
 				String idAttribute = (String)this.config.get(ID_ATTRIBUTE_KEY);
