@@ -1,9 +1,8 @@
 package com.gentics.cr.lucene.indexer.transformer.multivaluestring;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Collection;
 
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
@@ -19,6 +18,8 @@ public class SimpleMVString extends ContentTransformer {
 	private String NULLValue="NULL";
 	private static final String NULL_VALUE_KEY = "nullvalue";
 	private static final String DEFAULT_NULL_VALUE="NULL";
+	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
+	private String attribute="";
 	
 	/**
 	 * Create new Instance of SimpleMVString
@@ -29,25 +30,14 @@ public class SimpleMVString extends ContentTransformer {
 		//Define Value for NULLS
 		String NULLValue = (String)config.get(NULL_VALUE_KEY);
 		if(NULLValue==null)NULLValue=DEFAULT_NULL_VALUE;
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public Reader getContents(Object obj) {
-		StringReader r = null;
-		String str = getStringContents(obj);
-		if(str!=null)r=new StringReader(str);
-		return r;
+		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
 
 	/**
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
-	public String getStringContents(Object obj) {
+	private String getStringContents(Object obj) {
 		String ret=NULLValue;
 		if(obj!=null && obj instanceof Collection)
 		{
@@ -63,6 +53,27 @@ public class SimpleMVString extends ContentTransformer {
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public void processBean(CRResolvableBean bean) {
+		if(this.attribute!=null)
+		{
+			Object obj = bean.get(this.attribute);
+			if(obj!=null)
+			{
+				String newString = getStringContents(obj);
+				if(newString!=null)
+				{
+					bean.set(this.attribute, newString);
+				}
+			}
+		}
+		else
+		{
+			log.error("Configured attribute is null. Bean will not be processed");
+		}
+		
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.gentics.cr.lucene.indexer.transformer.pdf;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -9,6 +8,7 @@ import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
@@ -22,6 +22,8 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 public class PDFContentTransformer extends ContentTransformer{
 
 	private PDFTextStripper stripper = null;
+	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
+	private String attribute="";
 	
 	/**
 	 * Get new instance of PDFContentTransformer
@@ -30,6 +32,7 @@ public class PDFContentTransformer extends ContentTransformer{
 	public PDFContentTransformer(GenericConfiguration config)
 	{
 		super(config);
+		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
 	
 	/**
@@ -37,7 +40,7 @@ public class PDFContentTransformer extends ContentTransformer{
 	 * @param obj
 	 * @return
 	 */
-	public String getStringContents(Object obj)
+	private String getStringContents(Object obj)
 	{
 		ByteArrayInputStream is;
 		if(obj instanceof byte[])
@@ -111,18 +114,24 @@ public class PDFContentTransformer extends ContentTransformer{
 		return(contents);
 	}
 	
-	/**
-	 * Converts a byte array containing a pdf file to a StringReader that can be indexed by lucene
-	 * @param obj
-	 * @return StringReader of contents
-	 */
-	public StringReader getContents(Object obj)
-	{
-		String s = getStringContents(obj);
-		if(s!=null)
+	@Override
+	public void processBean(CRResolvableBean bean) {
+		if(this.attribute!=null)
 		{
-			return new StringReader(s);
+			Object obj = bean.get(this.attribute);
+			if(obj!=null)
+			{
+				String newString = getStringContents(obj);
+				if(newString!=null)
+				{
+					bean.set(this.attribute, newString);
+				}
+			}
 		}
-		return null;
-    }
+		else
+		{
+			log.error("Configured attribute is null. Bean will not be processed");
+		}
+		
+	}
 }

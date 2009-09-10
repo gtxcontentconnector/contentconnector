@@ -1,7 +1,7 @@
 package com.gentics.cr.lucene.indexer.transformer.ppt;
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
@@ -15,7 +15,10 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
  *
  */
 public class PPTContentTransformer extends ContentTransformer{
-
+	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
+	private String attribute="";
+	
+	
 	/**
 	 * Get new instance of PPTContentTransformer
 	 * @param config
@@ -23,6 +26,7 @@ public class PPTContentTransformer extends ContentTransformer{
 	public PPTContentTransformer(GenericConfiguration config)
 	{
 		super(config);
+		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
 	
 	/**
@@ -30,7 +34,7 @@ public class PPTContentTransformer extends ContentTransformer{
 	 * @param obj
 	 * @return
 	 */
-	public String getStringContents(Object obj)
+	private String getStringContents(Object obj)
 	{
 		ByteArrayInputStream is;
 		if(obj instanceof byte[])
@@ -45,18 +49,24 @@ public class PPTContentTransformer extends ContentTransformer{
 		String contents = parser.getContents();
 		return(contents);
 	}
-	/**
-	 * Converts a byte array containing a ppt file to a StringReader that can be indexed by lucene
-	 * @param obj
-	 * @return StringReader of contents
-	 */
-	public StringReader getContents(Object obj)
-	{
-		String s = getStringContents(obj);
-		if(s!=null)
+	
+	@Override
+	public void processBean(CRResolvableBean bean) {
+		if(this.attribute!=null)
 		{
-			return new StringReader(s);
+			Object obj = bean.get(this.attribute);
+			if(obj!=null)
+			{
+				String newString = getStringContents(obj);
+				if(newString!=null)
+				{
+					bean.set(this.attribute, newString);
+				}
+			}
 		}
-		return null;
-    }
+		else
+		{
+			log.error("Configured attribute is null. Bean will not be processed");
+		}
+	}
 }

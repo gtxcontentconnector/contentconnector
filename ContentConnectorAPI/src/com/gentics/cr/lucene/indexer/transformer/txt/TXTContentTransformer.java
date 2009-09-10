@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
@@ -17,7 +18,9 @@ import com.gentics.cr.util.CRUtil;
  *
  */
 public class TXTContentTransformer extends ContentTransformer {
-
+	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
+	private String attribute="";
+	
 	/**
 	 * Get new instance of TXTContentTransformer
 	 * @param config
@@ -25,14 +28,14 @@ public class TXTContentTransformer extends ContentTransformer {
 	public TXTContentTransformer(GenericConfiguration config)
 	{
 		super(config);
+		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
 	
 	
 	/**
 	 *
 	 */
-	@Override
-	public Reader getContents(Object obj) {
+	private Reader getContents(Object obj) {
 		ByteArrayInputStream is;
 		if(obj instanceof byte[])
 		{
@@ -48,8 +51,7 @@ public class TXTContentTransformer extends ContentTransformer {
 	/**
 	 * 
 	 */
-	@Override
-	public String getStringContents(Object obj) {
+	private String getStringContents(Object obj) {
 		String ret = null;
 		Reader r = getContents(obj);
 		try
@@ -65,6 +67,28 @@ public class TXTContentTransformer extends ContentTransformer {
 			ex.printStackTrace();
 		}
 		return(ret);
+	}
+
+
+	@Override
+	public void processBean(CRResolvableBean bean) {
+		if(this.attribute!=null)
+		{
+			Object obj = bean.get(this.attribute);
+			if(obj!=null)
+			{
+				String newString = getStringContents(obj);
+				if(newString!=null)
+				{
+					bean.set(this.attribute, newString);
+				}
+			}
+		}
+		else
+		{
+			log.error("Configured attribute is null. Bean will not be processed");
+		}
+		
 	}
 
 }
