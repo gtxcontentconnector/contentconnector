@@ -81,7 +81,7 @@ public abstract class ContentTransformer {
 		GenericConfiguration tconf = (GenericConfiguration)config.get(TRANSFORMER_KEY);
 		if(tconf!=null)
 		{
-			Hashtable<String,GenericConfiguration> confs = tconf.getSubConfigs();
+			Hashtable<String,GenericConfiguration> confs = tconf.getSortedSubconfigs();
 			if(confs!=null && confs.size()>0)
 			{
 				ArrayList<ContentTransformer> ret = new ArrayList<ContentTransformer>(confs.size());
