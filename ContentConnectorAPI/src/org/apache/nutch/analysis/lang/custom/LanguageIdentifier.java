@@ -36,6 +36,7 @@ import org.apache.nutch.analysis.lang.custom.NGramProfile.NGramEntry;
 
 
 /**
+ * Customized Version of LanguageIdentifier.
  * Identify the language of a content, based on statistical analysis.
  *
  * @see <a href="http://www.w3.org/WAI/ER/IG/ert/iso639.htm">ISO 639
