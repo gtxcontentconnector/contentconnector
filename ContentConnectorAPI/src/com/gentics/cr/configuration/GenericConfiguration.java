@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -96,9 +98,9 @@ public class GenericConfiguration implements Serializable{
 	 * 			
 	 * @return hashtable of configurations with keys or null if there are no containing sub configs
 	 */
-	public synchronized Hashtable<String,GenericConfiguration> getSortedSubconfigs()
+	public synchronized Map<String,GenericConfiguration> getSortedSubconfigs()
 	{
-		Hashtable<String,GenericConfiguration> ret = new Hashtable<String,GenericConfiguration>(this.subconfigs.size());
+		Map<String,GenericConfiguration> ret = Collections.synchronizedMap(new LinkedHashMap<String,GenericConfiguration>(this.subconfigs.size()));
 		
 		Vector<String> v = new Vector<String>(this.subconfigs.keySet());
 	    Collections.sort(v);
