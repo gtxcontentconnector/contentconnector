@@ -59,6 +59,12 @@ public class IndexJobQueue{
 		return this.lastJobs;
 	}
 	
+	/**
+	 * Add a Job to the list of finished jobs
+	 * Always keeps 3 jobs
+	 * Only for display in the indexer servlet
+	 * @param j
+	 */
 	private void addToLastJobs(CRIndexJob j)
 	{
 		ArrayList<CRIndexJob> l = new ArrayList<CRIndexJob>(3);
@@ -73,6 +79,9 @@ public class IndexJobQueue{
 		lastJobs = l;
 	}
 	
+	/**
+	 * Check the queue for new jobs each <interval> seconds
+	 */
 	private void workQueue()
 	{
 		boolean interrupted = false;

@@ -178,6 +178,15 @@ public class CRIndexJob {
 		}
 	}
 	
+	/**
+	 * Index a single configured ContentRepository
+	 * @param indexLocation
+	 * @param config
+	 * @throws NodeException
+	 * @throws CorruptIndexException
+	 * @throws IOException
+	 * @throws CRException
+	 */
 	@SuppressWarnings("unchecked")
 	private void indexCR(IndexLocation indexLocation, CRConfigUtil config)
 			throws NodeException, CorruptIndexException, IOException, CRException{
@@ -361,6 +370,19 @@ public class CRIndexJob {
 		
 	}
 
+	/**
+	 * Index a single slice
+	 * @param indexWriter
+	 * @param slice
+	 * @param attributes
+	 * @param ds
+	 * @param create
+	 * @param config
+	 * @param transformerlist
+	 * @throws NodeException
+	 * @throws CorruptIndexException
+	 * @throws IOException
+	 */
 	private void indexSlice(IndexWriter indexWriter, Collection<Resolvable> slice,
 			Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist) throws NodeException,
 			CorruptIndexException, IOException {
@@ -373,7 +395,8 @@ public class CRIndexJob {
 		for (Resolvable objectToIndex:slice) {
 			
 			CRResolvableBean bean = new CRResolvableBean(objectToIndex);
-			//CALL PRE INDEX PROCESSORS
+			//CALL PRE INDEX PROCESSORS/TRANSFORMERS
+			//TODO This could be optimized for multicore servers with a map/reduce algorithm
 			for(ContentTransformer transformer:transformerlist)
 			{
 				if(transformer.match(bean))
@@ -391,7 +414,19 @@ public class CRIndexJob {
 		}
 	}
 	
-	
+	/**
+	 * Convert a resolvable to a Lucene Document
+	 * @param resolvable
+	 * 				Contains the resolvable to be indexed
+	 * @param attributes
+	 * 				A map of attribute names, which values are true if the attribute should be stored or fales if the attribute should only be indexed.
+	 * 				Only attributes configured in this map will be indexed
+	 * @param config
+	 * 				The name of this config will be used as CRID (ContentRepository Identifyer).
+	 * 				The ID-Attribute should also be configured in this config (usually contentid).
+	 * @return
+	 * 				Returns a Lucene Document, ready to be added to the index.
+	 */
 	private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
 		Document doc = new Document();
 		
