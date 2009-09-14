@@ -90,7 +90,7 @@ public class LanguageIdentifier {
     
     Properties p = new Properties();
     try {
-      p.load(this.getClass().getResourceAsStream("langmappings.properties"));
+      p.load(org.apache.nutch.analysis.lang.LanguageIdentifier.class.getResourceAsStream("langmappings.properties"));
 
       Enumeration<Object> alllanguages = p.keys();
      
