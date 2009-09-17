@@ -37,7 +37,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 	{
 		this.encoding = encoding;
 		this.objectstoput = new HashMap<String,Object>();
-		
+		this.templates = new HashMap<String,Template>();
 	}
 	
 	
