@@ -78,7 +78,7 @@ public class RenderContentTag extends SimpleTagSupport {
 		}
 		if (object != null) {
 			try {
-				renderer.renderContent(getJspContext().getOut(), object, contentAttribute, true, pLinkReplacer, false, null);
+				renderer.renderContent(getJspContext().getOut(), object, contentAttribute, true, pLinkReplacer, true, null);
 			} catch (CRException e) {
 				throw new JspException("Error while rendering object "
 						+ object.getContentid(), e);

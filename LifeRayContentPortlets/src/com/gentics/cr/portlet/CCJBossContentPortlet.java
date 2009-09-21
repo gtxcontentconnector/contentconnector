@@ -30,6 +30,8 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.portlet.taglib.RenderContentTag;
 import com.gentics.cr.rendering.ContentRenderer;
+import com.gentics.cr.rendering.image.ImageResizer;
+import com.gentics.cr.util.MLMapper;
 
 public class CCJBossContentPortlet extends GenericPortlet implements
 		ResourceServingPortlet {
@@ -111,6 +113,10 @@ public class CCJBossContentPortlet extends GenericPortlet implements
 			CRResolvableBean crBean = rp.getContent(req);
 			System.out.println("LOADED BEAN: "+crBean.getContentid());
 			String contenttype = crBean.getMimetype();
+			if(contenttype==null)
+			{
+				contenttype = MLMapper.getMimetype(crBean);
+			}
 			if(contenttype==null)contenttype="text/html";
 			response.setContentType(contenttype);
 			request.setAttribute(RenderContentTag.REQUEST_OBJECT_PARAM, crBean);
@@ -182,8 +188,20 @@ public class CCJBossContentPortlet extends GenericPortlet implements
 				String contenttype = crBean.getMimetype();
 				if(contenttype==null)contenttype="text/html";
 				this.log.debug("Responding with mimetype: "+contenttype+" and "+response.getCharacterEncoding());
+				String s_mw = request.getParameter("p.maxwith");
+				String s_mh = request.getParameter("p.maxheight");
+				byte[] data = crBean.getBinaryContent();
+				if(s_mw!=null || s_mh!=null)
+				{
+					if(s_mw!=null && s_mw.equals("0"))s_mw=null;
+					if(s_mh!=null && s_mh.equals("0"))s_mh=null;
+					data = ImageResizer.getResizedImage(crBean, s_mw, s_mh);
+				}
 				response.setContentType(contenttype);
-				response.getPortletOutputStream().write(crBean.getBinaryContent());
+				if(data!=null)
+				{
+					response.getPortletOutputStream().write(data);
+				}
 			}
 						
 		} catch (CRException e1) {
