@@ -9,7 +9,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
@@ -77,8 +76,7 @@ public class CRSearcher {
 		IndexLocation idsLocation = IndexLocation.getIndexLocation(this.config);
 		
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
-		IndexReader reader = indexAccessor.getReader(false);
-		searcher = indexAccessor.getSearcher(reader);
+		searcher = indexAccessor.getSearcher();
 		HashMap<String,Object> result = null;
 		try {	
 			boolean doStemming = Boolean.parseBoolean((String)this.config.get(STEMMING_KEY));
@@ -113,7 +111,6 @@ public class CRSearcher {
 		}
 		finally{
 			indexAccessor.release(searcher);
-			indexAccessor.release(reader,false);
 		}
 		return(result);
 	}
