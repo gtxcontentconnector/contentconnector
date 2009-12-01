@@ -6,7 +6,7 @@
 <body>
 <script type="text/javascript">
 var custom = {};
-custom.ccrlocation="http://"+location.host+":"+location.port+"/ContentRepository/ccr";
+custom.ccrlocation="http://demo-portal.gentics.com/PNApplication/ccr";
 $(function() {
 	$('#update-target a').click(function() {
 	  	$.getJSON(custom.ccrlocation+"?filter=object.obj_type==10007&attributes=contentid&attributes=name&attributes=filename&sorting=contentid:asc&type=json&count=30",
