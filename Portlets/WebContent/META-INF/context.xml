@@ -1,4 +1,0 @@
-<!-- tomcat specific deployment information -->
-<Context reloadable="true" path="/REST_Portlet">
-	<Manager pathname="" className="org.apache.catalina.session.StandardManager"/>
-</Context>
