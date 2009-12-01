@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app xmlns="http://www.gentics.com/gentics-portlet-app">
+	<portlet>
+		<portlet-name>RESTPortlet</portlet-name>
+		<start-parameters/>
+	</portlet>
+	<portlet>
+		<portlet-name>RESTContentPortlet</portlet-name>
+		<start-parameters>
+			<parameter name="contentid">10007.328</parameter>
+		</start-parameters>
+	</portlet>
+	<portlet>
+		<portlet-name>LuceneSearchPortlet</portlet-name>
+		<start-parameters/>
+	</portlet>
+	<portlet>
+		<portlet-name>TESTSenderPortlet</portlet-name>
+		<start-parameters/>
+	</portlet>
+</portlet-app>

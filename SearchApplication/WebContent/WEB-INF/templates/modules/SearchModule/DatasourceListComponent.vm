@@ -1,0 +1,128 @@
+#if ($component.properties.searchquery && $component.properties.searchquery != "") #set($searchquery = $component.properties.searchquery)
+#else #set($searchquery = "---") #end
+#if($component.properties.totalhits)
+		#set($totalhits=$component.properties.totalhits)
+#else
+		#set($totalhits=0)
+#end
+
+<div class="searchmaximized">
+<h3>$portal.i18n("search.searchedterm")</h3>
+<ul>
+<li class="searchheader item">
+	<span class="keyword"><strong>$searchquery</strong></span> |Fetched $count of total $totalhits $portal.i18n("search.hits") $portal.i18n("search.foundin") <span class="searchcategory">$portal.i18n("search.articles")</span>
+	##<span class="positionright"><a href="#" class="searchcategory">$count $portal.i18n("search.applications")</a> | <a href="#" class="searchcategory">$portal.i18n("search.documents")</a></span>
+</li>
+#set( $burl = $javax.portlet.response.createActionURL() )
+$burl.setParameter( "action", "doSearch" )
+$burl.setParameter( "query", "gentics" )
+<a href="$burl">Search Gentics</a><br/>
+
+#set($Integer = 1)
+#if($component.pagesizeselect)$component.pagesizeselect#end<br />
+#foreach ($item in $component.items)
+	<li class="item">
+	#set($multi = $paging.current - 1)
+	#set($itemnumber = ($velocityCount + ($multi * $paging.size)))
+	<em>$itemnumber.</em>
+	#foreach ($prop in $item.props)
+	
+		#if($prop.properties.prefix)
+			$portal.i18n($prop.properties.prefix)
+		#end
+	
+		#set ($target = "")
+		#if ("$item.object.obj_type" == "10008")
+			#set ($target = " target='_blank'")
+		#end
+	
+		#if ( $prop.link && $component.enabled)
+			#set ($label = "Link to $!prop.value")
+			<a$!target class="mainlink" href="$portal.imps.link.to($item.object.contentid, 'ContentWindow')" title="$label">$!prop.value</a><br />
+		#elseif ($prop.properties.type && $prop.properties.type == "timestamp")
+			$!portal.imps.date.format($portal.imps.date.fromTimestamp($prop.value))
+		#else
+			#if( $prop.value && $prop.value != "" )
+				#set($imgurl = "")
+				#if ($item.object.thumbnail)
+					#set($imgurl = $item.object.thumbnail)
+				#end
+				#if ("$item.object.obj_type" == "10008")
+					#set ($imgurl = "/PNApplication/images/pdf.jpg")
+					#set ($target = " target='_blank'")
+				#end
+				<div class="result" #if ($imgurl != "") style="background-image: url('#create_image_url($imgurl 100 0)');"#end>
+					<a$!target href="$portal.imps.link.to($item.object.contentid, 'ContentWindow')" class="thumbnaillink" title="Link to $item.object.name"><span class="hidden">&quot;Link to $item.object.name<br /></span></a>
+					$prop.value.replaceAll("[^&:]#([a-zA-Z0-9]+)","&#35;$1")
+					
+					<div class="additionalinfo"><small>Author: $item.object.editor<br />Erstellt am: $!portal.imps.date.format($portal.imps.date.fromTimestamp($item.object.createtimestamp))<br />Zuletzt aktualisiert: $!portal.imps.date.format($portal.imps.date.fromTimestamp($item.object.edittimestamp))</small></div>
+				</div>
+			#end
+		#end
+		
+		#if($prop.properties.suffix)
+			$portal.i18n($prop.properties.suffix)
+		#end
+	#end
+	</li>
+#end
+
+
+## macro to do paging for DatasourceListComponents and DatasourceTreeComponents
+#set ($minus1 = $paging.current - 1 - 1)
+#if ($minus1 < 0) #set ($minus1 = 0) #end
+#set ($minus1nr = $minus1 + 1)
+
+#set ($plus1 = $paging.current - 1 + 1)
+#if ($plus1 >= $paging.pages.size()) #set ($plus1 = $paging.pages.size() - 1) #end
+#set ($plus1nr = $plus1 + 1)
+
+## show 5 before and 5 after the current page
+#set ($firstshown = $paging.current - 5)
+#set ($lastshown = $paging.current +5)
+#set ($leftellipsis = false)
+#set ($rightellipsis = false)
+
+## zeigt Paging nur an, wenn mehr als 1 Seite vorhanden ist! ;-)
+
+#if ($paging.pages.size() > 1)
+	<li class="textcenter">
+	#set($goto = $portal.i18n('Go to page $page'))
+	$goto.setParameter("page", $minus1nr)
+	#ucfirst($portal.i18n("general.back"))
+	<a href="$paging.pages.get($minus1).link" class="paginglink leftarrow" title="$goto">&nbsp;<span class="hidden">&laquo; $ucfirst_word</span>&nbsp;</a><span class="hidden">|</span>
+	#foreach ($page in $paging.pages)
+		#if (($page.number >= $firstshown && $page.number <= $lastshown) || $page.number == 1 || $page.number == $paging.pages.size())
+			#if ($page.number == $paging.current)
+				<b>$page.number<span class="hidden"> ($portal.i18n("general.location"))</span></b>
+			#else
+				#set($goto = $portal.i18n('Go to page $page'))
+				$goto.setParameter("page", ${page.number})
+				<a class="paginglink" href="$page.link" title="$goto">$page.number</a>
+			#end
+			#if ($page.number != $paging.pages.size())
+				|
+			#end
+		#else
+			#if ($page.number < $paging.current)
+				#if($leftellipsis == false)
+					&nbsp;...&nbsp;
+					#set ($leftellipsis = true)
+				#end
+			#else
+				#if($rightellipsis == false)
+					&nbsp;...&nbsp;
+					#set ($rightellipsis = true)
+				#end
+			#end
+		#end
+	#end
+	#set($goto = $portal.i18n('Go to page $page'))
+	$goto.setParameter("page", $plus1nr)
+	<span class="hidden">|</span>
+	#ucfirst($portal.i18n("general.next"))
+	<a href="$paging.pages.get($plus1).link" class="paginglink rightarrow" title="$goto">&nbsp;<span class="hidden">$ucfirst_word &raquo;</span>&nbsp;</a>
+	</li>
+#end
+</ul>
+</div>

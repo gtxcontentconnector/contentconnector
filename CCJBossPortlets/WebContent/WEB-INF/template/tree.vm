@@ -1,0 +1,16 @@
+#set($obj = $nav.object)
+#if($obj.startpage)
+	#set($renderurl=$response.createActionURL())
+    #set($parametername="contentid")
+    #set($parametervalue="$obj.startpage.contentid")
+	#set($nirvana="$!{renderurl.setParameter($parametername, $parametervalue)}")
+	#set($link="$!renderurl")
+#else
+	#set($link = "#")
+#end
+
+<ul>
+    <li> <a href="$link">$obj.name</a>
+    	$nav.subTree
+    </li>  
+</ul>

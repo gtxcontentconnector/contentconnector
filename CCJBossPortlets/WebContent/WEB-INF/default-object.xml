@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployments>
+	<deployment>
+		<if-exists>overwrite</if-exists>
+		<parent-ref>default</parent-ref>
+		<properties />
+		<page>
+			<page-name>Gentics Content</page-name>
+			<properties />
+			<window>
+				<window-name>Gentics Content</window-name>
+				<instance-ref>CCJBossContentPortletInstance</instance-ref>
+				<region>center</region>
+				<height>0</height>
+			</window>
+			<window>
+				<window-name>Gentics Navigation</window-name>
+				<instance-ref>CCJBossNavigationPortletInstance</instance-ref>
+				<region>left</region>
+				<height>0</height>
+			</window>
+		</page>
+	</deployment>
+</deployments>

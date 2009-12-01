@@ -1,0 +1,189 @@
+<view id="search"
+ xmlns="http://www.gentics.com/xml/ns/portal/view">
+	<callableactions>
+		<callableaction id="search">
+			<actions>
+			
+			<action class="GeneralViewAction">
+				<parameters>
+					<parameter id="set">module.plugins.viewplugin.views.search.components.result.properties.searchquery=module.parameters.query</parameter>
+					
+				</parameters>
+			</action>
+			<action class="RenderTemplateAction" id="querygenerator">
+			<parameters>
+				<parameter id="query" mapped="module.parameters.query"/>
+				<parameter id="userrole" mapped="portal.user.systemrole"/>
+				<parameter id="template"><![CDATA[
+					#if($userrole)
+						#set($perms="(")
+						#set($first="true")
+						#foreach ($perm in $userrole)
+							#if($first=="true")
+								#set($first="false")
+								#set($perms="$perms$perm")
+							#else
+								#set($perms="$perms OR $perm")
+							#end
+						#end
+						#set($perms="$perms)")
+					#else
+						#set($perms="NULL")
+					#end
+					#set($searchquery="((content:$query) OR (binarycontent:$query)) AND (permissions:NULL OR permissions:$perms)")
+				]]></parameter>
+			</parameters>
+			</action>
+			<action class="com.gentics.cr.lucene.GetResultAction" id="fetcher">
+				<parameters>
+					<parameter id="query" mapped="actions.querygenerator.searchquery"/>
+				</parameters>
+				<onsuccess>
+					<actions>
+						<action class="GeneralViewAction">
+							<parameters>
+								<parameter id="set">module.plugins.viewplugin.views.search.components.result.properties.totalhits = actions.fetcher.hits</parameter>
+								<parameter id="set">module.plugins.viewplugin.views.search.components.result.items = actions.fetcher.result</parameter>
+							</parameters>
+						</action>
+					</actions>
+				</onsuccess>
+			</action>
+			</actions>
+		</callableaction>
+	</callableactions>
+	<listcomponent class="form">
+		<properties>
+			<property id="cssclass">nobackground</property>
+		</properties>
+		<content>
+			<listcomponent class="group">
+				<label>Neue Suchanfrage</label>
+				<content>
+					
+					<textcomponent id="query">
+						<label>Suchbegriff</label>
+					</textcomponent>
+					<datecomponent id="from">
+						<label>Von</label>
+						<dateformat>dd.MM.yyyy</dateformat>
+					</datecomponent>
+					<datecomponent id="to">
+						<label>Bis</label>
+						<dateformat>dd.MM.yyyy</dateformat>
+					</datecomponent>
+					<buttoncomponent>
+						<label>Suchen</label>
+						<actions>
+							<action class="EchoAction">
+								<parameters>
+									<parameter id="from" mapped="view.components.from.unixtimestamp"/>
+									<parameter id="to" mapped="view.components.to.unixtimestamp"/>
+								</parameters>
+							</action>
+							<action class="GeneralViewAction">
+								<parameters>
+									<parameter id="set">view.components.result.properties.searchquery=view.components.query.value</parameter>
+									
+								</parameters>
+							</action>
+							<action class="RenderTemplateAction" id="querygenerator">
+							<parameters>
+								<parameter id="query" mapped="view.components.query.value"/>
+								<parameter id="userrole" mapped="portal.user.systemrole"/>
+								<parameter id="from" mapped="view.components.from.unixtimestamp"/>
+								<parameter id="to" mapped="view.components.to.unixtimestamp"/>
+								<parameter id="template"><![CDATA[
+									#if($userrole)
+										#set($perms="(")
+										#set($first="true")
+										#foreach ($perm in $userrole)
+											#if($first=="true")
+												#set($first="false")
+												#set($perms="$perms$perm")
+											#else
+												#set($perms="$perms OR $perm")
+											#end
+										#end
+										#set($perms="$perms)")
+									#else
+										#set($perms="NULL")
+									#end
+									
+									#if("$!from"!="" && "$!to"!="")
+										#set($timespan = "(publishtimestamp:[$from $to]) AND ")
+									#end
+									
+									#set($searchquery="$!timespan((content:$query) OR (binarycontent:$query)) AND (permissions:NULL OR permissions:$perms)")
+								]]></parameter>
+							</parameters>
+							</action>
+							<action class="com.gentics.cr.lucene.GetResultAction" id="fetcher">
+								<parameters>
+									<parameter id="query" mapped="actions.querygenerator.searchquery"/>
+								</parameters>
+								<onsuccess>
+									<actions>
+										<action class="GeneralViewAction">
+											<parameters>
+												<parameter id="set">view.components.result.items = actions.fetcher.result</parameter>
+												<parameter id="set">view.components.result.properties.totalhits = actions.fetcher.hits</parameter>
+											</parameters>
+										</action>
+									</actions>
+								</onsuccess>
+							</action>
+						</actions>
+					</buttoncomponent>
+								
+				</content>
+			</listcomponent>
+		</content>
+	</listcomponent>
+	<datasourcelistcomponent id="result">
+		<datasource>false</datasource>
+		<paging>
+			<size>10</size>
+		</paging>
+		
+		<columns>
+			<column id="name">
+			<label>name</label>
+			<actions>
+				<action class="DownloadAction">
+						<prule>data.object.obj_type == 10008</prule>
+						<parameters>
+							<parameter id="component">filedownload</parameter>
+							<parameter id="content" mapped="data.object.binarycontent" />
+							<parameter id="contenttype" mapped="data.object.mimetype" />
+							<parameter id="filename" mapped="data.object.name" />
+						</parameters>
+					</action>
+					<action class="TriggerEventAction">
+						<prule>object.obj_type != 10008</prule>
+						<parameters>
+							<parameter id="event">openResult</parameter>
+							<parameter id="contentid" mapped="data.object.contentid" />
+							<parameter id="object" mapped="data.object" />
+						</parameters>
+					</action>
+			</actions>
+			</column>
+			<column id="content">
+			<label>content</label>
+			<properties>
+					<property id="style"><![CDATA[float:none;]]></property>
+					<property id="suffix"><![CDATA[]]></property>
+				</properties>
+			</column>
+			<column id="binarycontent">
+			<label>binarycontent</label>
+			<properties>
+					<property id="style"><![CDATA[float:none;]]></property>
+					<property id="suffix"><![CDATA[]]></property>
+				</properties>
+			</column>
+			
+		</columns>
+	</datasourcelistcomponent>
+</view>
