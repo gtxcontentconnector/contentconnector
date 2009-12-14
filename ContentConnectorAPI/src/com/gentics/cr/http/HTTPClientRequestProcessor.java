@@ -132,6 +132,9 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 		    // Provide custom retry handler is necessary
 		 	method.getParams().setVersion(HttpVersion.HTTP_1_0);
 		 	
+		 	//Set request charset
+		 	method.setRequestHeader("Content-type","text/xml; charset=UTF-8");
+		 	
 		    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 		    		new DefaultHttpMethodRetryHandler(3, false));
 
