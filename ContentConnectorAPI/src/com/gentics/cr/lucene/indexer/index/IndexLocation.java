@@ -99,6 +99,31 @@ public class IndexLocation {
 	}
 	
 	/**
+	 * Returns the filename of the reopen file.
+	 * @return filename of the reopen file.
+	 */
+	public String getReopenFilename(){
+		return this.indexLocation+"/"+REOPEN_FILENAME;
+	}
+	
+	/**
+	 * Creates the reopen file to make portlet reload the index.
+	 */
+	public void createReopenFile(){
+		boolean write_reopen_file = Boolean.parseBoolean((String)config.get("writereopenfile"));
+		
+		if(write_reopen_file == true){
+		
+			log.debug("Writing reopen to " + this.getReopenFilename());
+			try {
+				new File(this.getReopenFilename()).createNewFile();
+			} catch (IOException e) {
+				log.warn("Cannot create reopen file! " + e);
+			}
+		}
+	}
+	
+	/**
 	 * Checks Lock and throws Exception if Lock exists
 	 * @throws LockedIndexException 
 	 * @throws IOException 
@@ -299,8 +324,8 @@ public class IndexLocation {
 		{
 			try
 			{
-				log.debug("Check for reopen file at "+this.indexLocation+"/"+REOPEN_FILENAME);
-				File ro_check = new File(this.indexLocation+"/"+REOPEN_FILENAME);
+				log.debug("Check for reopen file at "+this.getReopenFilename());
+				File ro_check = new File(this.getReopenFilename());
 				if(ro_check.exists())
 				{
 					IndexWriter w = acc.getWriter();

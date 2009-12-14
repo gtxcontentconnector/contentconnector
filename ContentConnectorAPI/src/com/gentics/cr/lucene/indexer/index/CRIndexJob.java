@@ -1,5 +1,6 @@
 package com.gentics.cr.lucene.indexer.index;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -313,7 +314,7 @@ public class CRIndexJob implements Runnable{
 			}
 			
 			status.setObjectCount(objectsToIndex.size());
-			log.debug("Starting index job with "+objectsToIndex.size()+" objects to index.");
+			log.debug(" index job with "+objectsToIndex.size()+" objects to index.");
 			// now get the first batch of objects from the collection
 			// (remove them from the original collection) and index them
 			Collection<Resolvable> slice = new Vector(CRBatchSize);
@@ -364,12 +365,16 @@ public class CRIndexJob implements Runnable{
 			ex.printStackTrace();
 		}finally{
 			status.setCurrentStatusString("Finished job.");
-			log.debug("Indexed "+status.getObjectsDone()+" objects...");
+			int objectCount = status.getObjectsDone();
+			log.debug("Indexed "+objectCount+" objects...");
+
 			indexAccessor.release(indexWriter);
 			CRDatabaseFactory.releaseDatasource(ds);
+
+			if(objectCount > 0){
+				indexLocation.createReopenFile();
+			}
 		}
-		
-		
 	}
 
 	/**

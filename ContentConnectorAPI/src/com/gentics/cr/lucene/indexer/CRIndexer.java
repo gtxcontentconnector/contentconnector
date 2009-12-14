@@ -43,6 +43,7 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author$
  *
  */
+@Deprecated
 public class CRIndexer {
 	/**
 	 * Key to be used for saving state to contentstatus
@@ -436,12 +437,15 @@ public class CRIndexer {
 				log.error("Could not complete index run... indexed Objects: "+status.getObjectsDone()+", trying to close index and remove lock.");
 				ex.printStackTrace();
 			}finally{
-				log.debug("Indexed "+status.getObjectsDone()+" objects...");
-				indexAccessor.release(indexWriter);
+				int objectCount = status.getObjectsDone();
+				log.debug("Indexed "+objectCount+" objects...");
 				
+				indexAccessor.release(indexWriter);
+
+				if(objectCount > 0){
+					indexLocation.createReopenFile();
+				}
 			}
-			
-			
 		}
 
 		private void indexSlice(IndexWriter indexWriter, Collection<CRResolvableBean> slice,
