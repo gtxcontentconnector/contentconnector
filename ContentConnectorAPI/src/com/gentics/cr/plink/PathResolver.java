@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.datasource.DatasourceNotAvailableException;
+import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
 import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
@@ -208,14 +209,46 @@ public class PathResolver {
 	 * Supports beautiful URLs, therefore it needs to load DB Objects and Attributes 
 	 */
 	public String getDynamicUrl(String contentid, CRConfig config, CRRequest request) {
-			String url = (String) request.get("url");
-			if(url == null)
+		String url = (String) request.get("url");
+		if(url == null)
+			return getDynamicUrl(contentid);
+		else{
+			//if there is an attribute URL the servlet was called with a beautiful URL so give back a beautiful URL					
+			//check if valid local link
+			String applicationrule = (String)config.get("applicationrule");
+			
+			Expression expression = null;
+			try {
+				expression = PortalConnectorFactory.createExpression("object.contentid == '" + contentid + "' && " + applicationrule);
+			} catch (ParserException exception) {
+				log.error("Error while building expression object for " + contentid, exception);
+				System.out.println("Error while building expression object for " + contentid);
 				return getDynamicUrl(contentid);
-			else{
-				//if there is an attribute URL the servlet was called with a beautiful URL so give back a beautiful URL
+			}
+			
+			DatasourceFilter filter = null;
+			try {
+				filter = config.getDatasource().createDatasourceFilter(expression);
+			} catch (ExpressionParserException e) {
+				log.error("Error while building filter object for " + contentid, e);
+				return getDynamicUrl(contentid);
+			}
+			int count;
+			try {
+				count = config.getDatasource().getCount(filter);
+			} catch (DatasourceException e) {
+				log.error("Error while querying for " + contentid, e);
+				return getDynamicUrl(contentid);
+			}
+			
+			if(count == 0){ //not permitted, build link
+				return config.get("advplr_host") + contentid;
+			}
+			else {
+			
 				Resolvable plinkObject;
 				try {
-					
+							
 					plinkObject = PortalConnectorFactory.getContentObject(contentid, config.getDatasource());
 					//TODO: make this more beautiful and compatible with portlets
 					String filename_attribute = (String) config.get(CRConfig.ADVPLR_FN_KEY);
@@ -231,6 +264,7 @@ public class PathResolver {
 					return getDynamicUrl(contentid);
 				}
 			}
+		}
 	}
 
 }
