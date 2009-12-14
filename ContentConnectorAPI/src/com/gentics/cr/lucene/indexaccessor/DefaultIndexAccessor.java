@@ -383,7 +383,7 @@ class DefaultIndexAccessor implements IndexAccessor {
         logger.fine("opening new writing reader");
       }
 
-      cachedWritingReader = IndexReader.open(directory);
+      cachedWritingReader = IndexReader.open(directory,false);
       writingReaderUseCount = 1;
     }
 
