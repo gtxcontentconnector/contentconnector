@@ -197,7 +197,7 @@ public class PathResolver {
 	 */
 	public String getDynamicUrl(String contentid) {
 
-			return "?contentid=" + contentid;
+		return "?contentid=" + contentid;
 		
 	}
 
