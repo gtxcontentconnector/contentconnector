@@ -232,6 +232,11 @@ public class IndexLocation {
 	
 	private Directory createFSDirectory(File indexLoc) throws IOException
 	{
+		if(!indexLoc.exists())
+		{
+			log.debug("Indexlocation did not exist. Creating directories...");
+			indexLoc.mkdirs();
+		}
 		Directory dir = FSDirectory.open(indexLoc);
 		log.debug("Creating FS Directory for Index ["+name+"]");
 		return(dir);
