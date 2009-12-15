@@ -3,6 +3,7 @@ package com.gentics.cr.lucene;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -96,7 +97,7 @@ public class VelocitySearchServlet extends HttpServlet {
 	 */
 	public void doService(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
+		//request.setCharacterEncoding("UTF-8");
 		this.log.debug("Request:" + request.getQueryString());
 		
 		// starttime
@@ -129,6 +130,7 @@ public class VelocitySearchServlet extends HttpServlet {
 		this.vtl.put("start", new Integer(start));
 		this.vtl.put("count", new Integer(count));
 		this.vtl.put("query", query);
+		this.vtl.put("encquery", URLEncoder.encode(query, "UTF-8"));
 		
 		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
 		objects.put("request", new BeanWrapper(request));
