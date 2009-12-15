@@ -324,18 +324,21 @@ public class IndexLocation {
 	 */
 	public IndexAccessor getAccessor()
 	{
-		IndexAccessor acc = IndexAccessorFactory.getInstance().getAccessor(this.getDirectory());
-		if(reopencheck)
+		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(this.getDirectory());
+		if(this.reopencheck)
 		{
 			try
 			{
 				log.debug("Check for reopen file at "+this.getReopenFilename());
-				File ro_check = new File(this.getReopenFilename());
-				if(ro_check.exists())
+				File reopenFile = new File(this.getReopenFilename());
+				if(reopenFile.exists())
 				{
-					IndexWriter w = acc.getWriter();
-					acc.release(w);
-					ro_check.delete();
+					reopenFile.delete();
+
+					//release writer (Readers and Searchers are refreshed after a Writer is released.)
+					IndexWriter tempWriter = indexAccessor.getWriter();
+					indexAccessor.release(tempWriter);
+
 					log.debug("Reopened index.");
 				}
 			}catch(Exception ex)
@@ -344,7 +347,7 @@ public class IndexLocation {
 				ex.printStackTrace();
 			}
 		}
-		return acc;
+		return indexAccessor;
 	}
 
 	/**
