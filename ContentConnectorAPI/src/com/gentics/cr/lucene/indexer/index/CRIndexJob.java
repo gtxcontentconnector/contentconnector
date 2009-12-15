@@ -1,6 +1,5 @@
 package com.gentics.cr.lucene.indexer.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
