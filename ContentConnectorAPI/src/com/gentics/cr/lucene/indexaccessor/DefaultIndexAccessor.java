@@ -39,6 +39,8 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 import org.apache.lucene.store.Directory;
 
+import com.gentics.cr.lucene.indexer.index.IndexLocation;
+
 /**
  * Provides a default implementation for {@link IndexAccessor}.
  */
@@ -260,6 +262,42 @@ class DefaultIndexAccessor implements IndexAccessor {
     return cachedReadingReader;
   }
 
+  /**
+	 * Fetches a double checked Searcher that has been checked for the presence of a reopen file
+	 * Note that it may occure that a prioritized Searcher may be reopened twice.
+	 * @param indexLocation 
+	 * @return
+	 * @throws IOException
+	 */
+  public Searcher getPrioritizedSearcher(IndexLocation indexLocation) throws IOException
+  {
+	  	boolean reopened = indexLocation.reopenCheck(this);
+		IndexSearcher searcher = (IndexSearcher) getSearcher();
+		
+		if(reopened)
+		{
+			//REOPEN SEARCHER AS IT WAS PRIORITIZED
+			IndexReader reader = searcher.getIndexReader();
+			IndexSearcher oldSearcher = searcher;
+			IndexReader newReader = reader.reopen();
+			if(newReader!=reader)
+			{
+				searcher = new IndexSearcher(newReader);
+				searcher.setSimilarity(oldSearcher.getSimilarity());
+				oldSearcher.getIndexReader().close();
+				for(Map.Entry<Similarity,IndexSearcher> e : cachedSearchers.entrySet())
+				{
+					if(e.getValue()==oldSearcher)
+					{
+						cachedSearchers.put(e.getKey(), searcher);
+					}
+				}
+			}
+		}
+		
+		return searcher;
+  }
+  
   /*
    * (non-Javadoc)
    * 

@@ -319,12 +319,13 @@ public class IndexLocation {
 	}
 	
 	/**
-	 * Returns an index Accessor, which can be used to share access to an index over multiple threads
-	 * @return
+	 * Checks for reopen file and reopens indexAccessor
+	 * @param indexAccessor
+	 * @return true if indexAccessor has been reopened
 	 */
-	public IndexAccessor getAccessor()
+	public boolean reopenCheck(IndexAccessor indexAccessor)
 	{
-		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(this.getDirectory());
+		boolean reopened = false;
 		if(this.reopencheck)
 		{
 			try
@@ -338,7 +339,7 @@ public class IndexLocation {
 					//release writer (Readers and Searchers are refreshed after a Writer is released.)
 					IndexWriter tempWriter = indexAccessor.getWriter();
 					indexAccessor.release(tempWriter);
-
+					reopened = true;
 					log.debug("Reopened index.");
 				}
 			}catch(Exception ex)
@@ -347,6 +348,27 @@ public class IndexLocation {
 				ex.printStackTrace();
 			}
 		}
+		return reopened;
+	}
+	
+	
+	
+	
+	
+	private IndexAccessor getAccessorInstance()
+	{
+		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(this.getDirectory());
+		return indexAccessor;
+	}
+	
+	/**
+	 * Returns an index Accessor, which can be used to share access to an index over multiple threads
+	 * @return
+	 */
+	public IndexAccessor getAccessor()
+	{
+		IndexAccessor indexAccessor = getAccessorInstance();
+		reopenCheck(indexAccessor);
 		return indexAccessor;
 	}
 

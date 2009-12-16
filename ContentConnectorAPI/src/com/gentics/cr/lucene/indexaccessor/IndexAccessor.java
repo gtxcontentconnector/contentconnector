@@ -25,6 +25,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 
+import com.gentics.cr.lucene.indexer.index.IndexLocation;
+
 /**
  * An IndexAccessor coordinates access to Writers, Readers, and Searchers in a
  * way that allows multiple threads to share the same access objects. Also,
@@ -66,6 +68,16 @@ public interface IndexAccessor {
    */
   IndexReader getReader(boolean write) throws IOException;
 
+  
+  /**
+	 * Fetches a double checked Searcher that has been checked for the presence of a reopen file
+	 * Note that it may occure that a prioritized Searcher may be reopened twice.
+	 * @param indexLocation 
+	 * @return
+	 * @throws IOException
+	 */
+  Searcher getPrioritizedSearcher(IndexLocation indexLocation) throws IOException;
+  
   /**
    * Returns a Searcher.
    * 
