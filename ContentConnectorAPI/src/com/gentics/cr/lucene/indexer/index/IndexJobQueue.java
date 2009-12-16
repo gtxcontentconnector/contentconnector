@@ -101,23 +101,17 @@ public class IndexJobQueue{
 				CRIndexJob j = this.queue.poll();
 				if(j!=null)
 				{
-					synchronized(this)
+					synchronized(IndexJobQueue.this)
 					{
 						currentJI = j;
 						currentJob = new Thread(j);
 						currentJob.setName("Current Index Job");
 						currentJob.start();
-					}
-					synchronized(currentJob)
-					{
 						if(currentJob.isAlive())
 						{
 							currentJob.join();
 						}
 						addToLastJobs(j);
-					}
-					synchronized(this)
-					{
 						currentJob = null;
 						currentJI = null;
 					}
@@ -141,37 +135,45 @@ public class IndexJobQueue{
 	 */
 	public void stop()
 	{
-		//END WORKER THREAD
-		if(d!=null)
-		{ 
-			if(d.isAlive())
+		
+		
+		if(currentJob!=null)
+		{
+			if(currentJob.isAlive())
 			{
-				d.interrupt();
-				try {
-					d.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				currentJob.interrupt();
 			}
 		}
 		
 		//END CURRENT JOB
-		synchronized(this)
+		synchronized(IndexJobQueue.this)
 		{
+			//WAIT FOR CURRENT JOB TO END
 			if(currentJob!=null)
 			{
-				if(currentJob.isAlive())
-				{
-					currentJob.interrupt();
-					synchronized(currentJob)
-					{
-						try {
-							if(currentJob.isAlive())
-								currentJob.join();
-							
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+				try {
+						if(currentJob.isAlive())
+						{
+							//INTERRUPT IF A NEW JOB HAS BEEN CREATED
+							if(!currentJob.isInterrupted())
+								currentJob.interrupt();
+							currentJob.join();
 						}
+						
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+			}
+			//END WORKER THREAD
+			if(d!=null)
+			{ 
+				if(d.isAlive())
+				{
+					d.interrupt();
+					try {
+						d.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
 			}
