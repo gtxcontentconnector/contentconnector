@@ -141,6 +141,20 @@ public class IndexJobQueue{
 	 */
 	public void stop()
 	{
+		//END WORKER THREAD
+		if(d!=null)
+		{ 
+			if(d.isAlive())
+			{
+				d.interrupt();
+				try {
+					d.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		//END CURRENT JOB
 		synchronized(this)
 		{
@@ -159,20 +173,6 @@ public class IndexJobQueue{
 							e.printStackTrace();
 						}
 					}
-				}
-			}
-		}
-		
-		//END WORKER THREAD
-		if(d!=null)
-		{ 
-			if(d.isAlive())
-			{
-				d.interrupt();
-				try {
-					d.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 		}
