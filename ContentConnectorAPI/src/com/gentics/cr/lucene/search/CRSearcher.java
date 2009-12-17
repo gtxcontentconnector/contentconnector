@@ -78,7 +78,7 @@ public class CRSearcher {
 		IndexLocation idsLocation = IndexLocation.getIndexLocation(this.config);
 		
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
-		searcher = indexAccessor.getPrioritizedSearcher(idsLocation);
+		searcher = indexAccessor.getPrioritizedSearcher();
 		HashMap<String,Object> result = null;
 		try {	
 			boolean doStemming = Boolean.parseBoolean((String)this.config.get(STEMMING_KEY));

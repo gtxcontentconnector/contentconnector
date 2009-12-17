@@ -39,8 +39,6 @@ import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 import org.apache.lucene.store.Directory;
 
-import com.gentics.cr.lucene.indexer.index.IndexLocation;
-
 /**
  * Provides a default implementation for {@link IndexAccessor}.
  */
@@ -137,6 +135,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 //    for (IndexSearcher s : createdSearchers) {
 //      System.out.println(i++ + ":" + s.getIndexReader().refCount + " :" + s.getIndexReader());
 //    }
+    System.out.println("DIA Closed");
   }
 
   /**
@@ -269,27 +268,30 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * @return
 	 * @throws IOException
 	 */
-  public Searcher getPrioritizedSearcher(IndexLocation indexLocation) throws IOException
+  public Searcher getPrioritizedSearcher() throws IOException
   {
-	  	boolean reopened = indexLocation.reopenCheck(this);
+	  	boolean reopened = this.numReopening > 0;
 		IndexSearcher searcher = (IndexSearcher) getSearcher();
 		
 		if(reopened)
 		{
 			//REOPEN SEARCHER AS IT WAS PRIORITIZED
-			IndexReader reader = searcher.getIndexReader();
-			IndexSearcher oldSearcher = searcher;
-			IndexReader newReader = reader.reopen();
-			if(newReader!=reader)
+			synchronized (DefaultIndexAccessor.this) 
 			{
-				searcher = new IndexSearcher(newReader);
-				searcher.setSimilarity(oldSearcher.getSimilarity());
-				oldSearcher.getIndexReader().close();
-				for(Map.Entry<Similarity,IndexSearcher> e : cachedSearchers.entrySet())
+				IndexReader reader = searcher.getIndexReader();
+				IndexSearcher oldSearcher = searcher;
+				IndexReader newReader = reader.reopen();
+				if(newReader!=reader)
 				{
-					if(e.getValue()==oldSearcher)
+					searcher = new IndexSearcher(newReader);
+					searcher.setSimilarity(oldSearcher.getSimilarity());
+					oldSearcher.getIndexReader().close();
+					for(Map.Entry<Similarity,IndexSearcher> e : cachedSearchers.entrySet())
 					{
-						cachedSearchers.put(e.getKey(), searcher);
+						if(e.getValue()==oldSearcher)
+						{
+							cachedSearchers.put(e.getKey(), searcher);
+						}
 					}
 				}
 			}
