@@ -135,7 +135,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 //    for (IndexSearcher s : createdSearchers) {
 //      System.out.println(i++ + ":" + s.getIndexReader().refCount + " :" + s.getIndexReader());
 //    }
-    System.out.println("DIA Closed");
+//    System.out.println("DIA Closed");
   }
 
   /**
