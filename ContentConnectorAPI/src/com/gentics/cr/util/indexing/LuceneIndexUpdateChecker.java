@@ -26,6 +26,11 @@ import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
  */
 public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 
+	LuceneIndexLocation indexLocation;
+	IndexReader reader;
+	IndexAccessor indexAccessor;
+	LinkedHashMap<String,Integer> docs;
+	Iterator<String> docIT;
 	/**
 	 * Initializes the Lucene Implementation of @link IndexUpdateChecker.
 	 * @param indexLocation
@@ -36,13 +41,14 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	 */
 	public LuceneIndexUpdateChecker(LuceneIndexLocation indexLocation,String termKey, String termValue,String idAttribute) throws IOException
 	{
-		IndexAccessor indexAccessor = indexLocation.getAccessor();
-		IndexReader reader = indexAccessor.getReader(true);
+		this.indexLocation = indexLocation;
+		indexAccessor = indexLocation.getAccessor();
+		reader = indexAccessor.getReader(true);
 		
 		TermDocs termDocs = reader.termDocs(new Term(termKey,termValue));
 		
-		LinkedHashMap<String,Integer> docs = fetchSortedDocs(termDocs, reader, idAttribute);
-		Iterator<String> docIT = docs.keySet().iterator();
+		docs = fetchSortedDocs(termDocs, reader, idAttribute);
+		docIT = docs.keySet().iterator();
 		
 		//TODO CONTINUE HERE PREPARE TO USE ITERATOR IN CHECK METHOD
 		
