@@ -34,10 +34,11 @@ import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
-import com.gentics.cr.lucene.indexer.IndexerStatus;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
+import com.gentics.cr.util.indexing.IndexLocation;
 /**
  * 
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
@@ -45,120 +46,37 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class CRIndexJob implements Runnable{
-	protected static Logger log = Logger.getLogger(CRIndexJob.class);
-	
-	private String identifyer;
-	private IndexLocation indexLocation;
-	private IndexerStatus status;
-	private CRConfig config;
-	private long duration = 0;
-	private Hashtable<String,CRConfigUtil> configmap;
+public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
+	protected static Logger log = Logger.getLogger(CRLuceneIndexJob.class);
 	/**
 	 * Create new instance of IndexJob
 	 * @param config
 	 * @param indexLoc
 	 * @param configmap
 	 */
-	public CRIndexJob(CRConfig config, IndexLocation indexLoc,Hashtable<String,CRConfigUtil> configmap)
+	public CRLuceneIndexJob(CRConfig config, LuceneIndexLocation indexLoc,Hashtable<String,CRConfigUtil> configmap)
 	{
-		this.config = config;
-		this.configmap = configmap;
-		if(this.configmap==null)log.debug("Configmap is empty");
-		this.identifyer = (String) config.getName();
-		this.indexLocation = indexLoc;
-		status = new IndexerStatus();
-		
+		super(config,indexLoc,configmap);
 	}
-	
-	/**
-	 * Get Current Status
-	 * @return
-	 */
-	public String getStatusString()
-	{
-		return status.getCurrentStatusString();
-	}
-	
-	/**
-	 * Gets the Job Identifyer. In most cases this is the CR id.
-	 * @return identifyer as string
-	 */
-	public String getIdentifyer()
-	{
-		return identifyer;
-	}
-	
-	/**
-	 * Get job duration as ms;
-	 * @return
-	 */
-	public long getDuration()
-	{
-		return duration;
-	}
-	
-	/**
-	 * Get total count of objects to index
-	 * @return
-	 */
-	public int getObjectsToIndex()
-	{
-		return status.getObjectCount();
-	}
-	
-	/**
-	 * Get the number ob objects already indexed
-	 * @return
-	 */
-	public int getObjectsDone()
-	{
-		return status.getObjectsDone();
-	}
+
+
 	
 	
 	
 	/**
-	 * Tests if a CRIndexJob has the same identifyer as the given object being an instance of CRIndexJob
+	 * Tests if a CRIndexJob has the same identifier as the given object being an instance of CRIndexJob
 	 */
 	@Override
 	public boolean equals(Object obj)
 	{
-		if(obj instanceof CRIndexJob)
+		if(obj instanceof CRLuceneIndexJob)
 		{
-			if(this.identifyer.equalsIgnoreCase(((CRIndexJob)obj).getIdentifyer()))
+			if(this.identifyer.equalsIgnoreCase(((CRLuceneIndexJob)obj).getIdentifyer()))
 			{
 				return true;
 			}
 		}
 		return false;
-	}
-	
-	/**
-	 * Executes the index process
-	 */
-	public void run()
-	{
-		long start = System.currentTimeMillis();
-		try{
-			indexCR(this.indexLocation,(CRConfigUtil)this.config);
-		}
-		catch(LockedIndexException ex)
-		{
-			log.debug("LOCKED INDEX DETECTED. TRYING AGAIN IN NEXT JOB.");
-			if(this.indexLocation!=null && !this.indexLocation.hasLockDetection())
-			{
-				log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. PLEASE REMOVE LOCK");
-				ex.printStackTrace();
-			}
-		}
-		catch(Exception ex)
-		{
-			log.error(ex.getMessage());
-			ex.printStackTrace();
-		}
-		long end = System.currentTimeMillis();
-		this.duration = end-start;
 	}
 	
 	/**
@@ -170,14 +88,13 @@ public class CRIndexJob implements Runnable{
 	 */
 	public final static String PARAM_LASTINDEXRULE = "lastindexrule";
 	private static final String RULE_KEY = "rule";
-	private static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
+
 	private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
 	private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
 	
 	private static final String BATCH_SIZE_KEY = "BATCHSIZE";
 	private static final String CR_FIELD_KEY = "CRID";
 	
-	private static final String TIMESTAMP_ATTR = "updatetimestamp";
 	/**
 	 * Default batch size is set to 1000 elements
 	 */
@@ -195,7 +112,7 @@ public class CRIndexJob implements Runnable{
 	 * @throws LockedIndexException 
 	 */
 	@SuppressWarnings("unchecked")
-	private void indexCR(IndexLocation indexLocation, CRConfigUtil config)
+	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
 			throws NodeException, CorruptIndexException, IOException, CRException, LockedIndexException{
 		String crID = config.getName();
 		if(crID ==null)crID = this.identifyer;
@@ -265,7 +182,13 @@ public class CRIndexJob implements Runnable{
 				log.debug("Will do differential index.");
 				try {
 					status.setCurrentStatusString("Cleaning index from stale objects...");
-					objectsToIndex = cleanAndGetDiffObjects(ds,rule,indexLocation,config);
+					if(indexLocation instanceof LuceneIndexLocation){
+						//objectsToIndex = cleanAndGetDiffObjects(ds,rule,(LuceneIndexLocation)indexLocation,config);
+						objectsToIndex = getObjectsToUpdate(rule,ds,false);
+					}
+					else{
+						log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Jo by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
+					}
 				} catch (Exception e) {
 					log.error("ERROR while cleaning index");
 					e.printStackTrace();
@@ -274,9 +197,13 @@ public class CRIndexJob implements Runnable{
 			}
 						
 			//Obtain accessor and writer after clean
-			indexAccessor = indexLocation.getAccessor();
-			indexWriter = indexAccessor.getWriter();
-			
+			if(indexLocation instanceof LuceneIndexLocation){
+				indexAccessor = ((LuceneIndexLocation)indexLocation).getAccessor();
+				indexWriter = indexAccessor.getWriter();
+			}
+			else{
+				log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Jo by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
+			}
 			log.debug("Using rule: "+rule);
 			
 	
@@ -302,9 +229,7 @@ public class CRIndexJob implements Runnable{
 			// get all objects to index
 			if(objectsToIndex==null)
 			{
-				objectsToIndex = (Collection<Resolvable>) ds.getResult(ds
-					.createDatasourceFilter(ExpressionParser.getInstance()
-							.parse(rule)), null);
+				objectsToIndex = getObjectsToUpdate(rule,ds,true);
 			}
 			if(objectsToIndex==null)
 			{
@@ -494,7 +419,7 @@ public class CRIndexJob implements Runnable{
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	private void cleanIndex(CNWriteableDatasource ds, String rule, IndexLocation indexLocation, CRConfigUtil config) throws Exception
+	private void cleanIndex(CNWriteableDatasource ds, String rule, LuceneIndexLocation indexLocation, CRConfigUtil config) throws Exception
 	{
 		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 		
@@ -589,9 +514,8 @@ public class CRIndexJob implements Runnable{
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	private Collection<Resolvable> cleanAndGetDiffObjects(CNWriteableDatasource ds, String rule, IndexLocation indexLocation, CRConfigUtil config) throws Exception
+	private Collection<Resolvable> cleanAndGetDiffObjects(CNWriteableDatasource ds, String rule, LuceneIndexLocation indexLocation, CRConfigUtil config) throws Exception
 	{
-		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 		
 		String CRID = (String)config.getName();
 		Collection<Resolvable> diffObjects = new Vector<Resolvable>();
@@ -603,86 +527,7 @@ public class CRIndexJob implements Runnable{
 		{
 			TermDocs termDocs = reader.termDocs(new Term(CR_FIELD_KEY,CRID));
 						
-			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), new String[]{TIMESTAMP_ATTR}, 0, -1, CRUtil.convertSorting("contentid:asc"));
 			
-			Iterator<Resolvable> resoIT = objectsToIndex.iterator();
-			if(resoIT.hasNext())
-			{
-				LinkedHashMap<String,Integer> docs = fetchSortedDocs(termDocs, reader, idAttribute);
-				Iterator docIT = docs.keySet().iterator();
-				
-				Resolvable CRlem = resoIT.next();
-				String crElemID =(String) CRlem.get(idAttribute);
-				String docID="";
-				//solange index id kleiner cr id delete from index
-				boolean finish=!docIT.hasNext();
-				if(finish)
-				{
-					//IF THERE ARE NO INDEXED OBJECTS => ADD ALL
-					diffObjects = objectsToIndex;
-				}
-				else
-				{
-					docID = (String)docIT.next();
-				}
-				
-				while(!finish)
-				{
-					
-					
-					if(docID!=null && docID.compareTo(crElemID) == 0)
-					{
-						//ELEMENT IN BOTH, CR AND INDEX
-						//COMPARE UPDATE and STEP BOTH
-						Integer crUpt = (Integer)CRlem.get(TIMESTAMP_ATTR);
-						Integer docNR = docs.get(docID);
-						Document doc = reader.document(docNR);
-						String docUpt = doc.get(TIMESTAMP_ATTR);
-						if(!(crUpt!=null && docUpt!=null && Integer.parseInt(docUpt)>=crUpt.intValue()))
-						{
-							//IF UPDATE TS DOES NOT EXIST OR TS IN INDEX SMALLER THAN IN CR
-							diffObjects.add(CRlem);
-						}
-						finish = !docIT.hasNext();
-						if(!finish)docID = (String)docIT.next();
-						if(resoIT.hasNext())
-						{
-							CRlem = resoIT.next();
-							crElemID =(String) CRlem.get(idAttribute);
-						}
-					}
-					else if(docID!=null && docID.compareTo(crElemID) > 0 && resoIT.hasNext())
-					{
-						//ELEMENT NOT IN INDEX
-						//ADD TO DIFF OBJECTS and STEP CR
-						diffObjects.add(CRlem);
-						CRlem = resoIT.next();
-						crElemID =(String) CRlem.get(idAttribute);
-					}
-					else
-					{
-						//delete Document
-						Integer docNR = docs.get(docID);
-						reader.deleteDocument(docNR);
-						finish = !docIT.hasNext();
-						if(!finish)docID = (String)docIT.next();
-					}
-					
-				}
-			}
-			else
-			{
-				//NO OBJECTS IN CONTENT REPOSITORY
-				//DELETE ALL FROM INDEX
-				boolean finish=!termDocs.next();
-				
-				while(!finish)
-				{
-					reader.deleteDocument(termDocs.doc());
-					
-					finish = !termDocs.next();
-				}
-			}
 			termDocs.close();  // close docs iterator
 		    
 		}

@@ -19,7 +19,7 @@ import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
-import com.gentics.cr.lucene.indexer.index.IndexLocation;
+import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 /**
  * 
  * Last changed: $Date$
@@ -75,7 +75,7 @@ public class CRSearcher {
 		int hits = count+start;
 		TopScoreDocCollector collector = TopScoreDocCollector.create(hits, true);
 	
-		IndexLocation idsLocation = IndexLocation.getIndexLocation(this.config);
+		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
 		
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
 		searcher = indexAccessor.getPrioritizedSearcher();

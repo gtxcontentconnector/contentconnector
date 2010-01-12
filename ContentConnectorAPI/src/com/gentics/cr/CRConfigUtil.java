@@ -562,5 +562,4 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 		}
 		return(null);
 	}
-		
 }

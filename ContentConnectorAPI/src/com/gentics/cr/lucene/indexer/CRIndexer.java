@@ -32,7 +32,7 @@ import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
-import com.gentics.cr.lucene.indexer.index.IndexLocation;
+import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
 
@@ -244,7 +244,7 @@ public class CRIndexer {
 			int timestamp = (int)(System.currentTimeMillis() / 1000);
 
 			
-			IndexLocation indexLoc = IndexLocation.getIndexLocation(crconfig);					
+			LuceneIndexLocation indexLoc = LuceneIndexLocation.getIndexLocation(crconfig);					
 			GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
 			if(CRc!=null)
 			{
@@ -285,7 +285,7 @@ public class CRIndexer {
 		private static final String BATCH_SIZE_KEY = "BATCHSIZE";
 
 		@SuppressWarnings("unchecked")
-		private void indexCR(IndexLocation indexLocation, int timestamp, CRConfigUtil config)
+		private void indexCR(LuceneIndexLocation indexLocation, int timestamp, CRConfigUtil config)
 				throws NodeException, CorruptIndexException, IOException {
 			// get the datasource
 			CNWriteableDatasource ds = (CNWriteableDatasource)config.getDatasource();
@@ -525,7 +525,7 @@ public class CRIndexer {
 		 * @throws Exception
 		 */
 		@SuppressWarnings("unchecked")
-		private void cleanIndex(CNWriteableDatasource ds, String rule, IndexLocation indexLocation, CRConfigUtil config) throws Exception
+		private void cleanIndex(CNWriteableDatasource ds, String rule, LuceneIndexLocation indexLocation, CRConfigUtil config) throws Exception
 		{
 			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 			IndexAccessor accessor = indexLocation.getAccessor();	
@@ -573,7 +573,6 @@ public class CRIndexer {
 					
 				}
 				uidIter.close();  // close uid iterator
-			    
 			}
 			finally
 			{

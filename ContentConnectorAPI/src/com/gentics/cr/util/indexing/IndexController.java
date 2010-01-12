@@ -1,4 +1,4 @@
-package com.gentics.cr.lucene.indexer;
+package com.gentics.cr.util.indexing;
 
 import java.util.Hashtable;
 import java.util.Map.Entry;
@@ -9,9 +9,8 @@ import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.lucene.indexer.index.IndexLocation;
 /**
- * 
+ * Operates as an Interface between the servlet and the Indexer Engine
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
  * @version $Revision: 180 $
  * @author $Author: supnig@constantinopel.at $
@@ -19,7 +18,7 @@ import com.gentics.cr.lucene.indexer.index.IndexLocation;
  */
 public class IndexController {
 	
-	private static Logger log = Logger.getLogger(IndexController.class);
+	private static Logger logger = Logger.getLogger(IndexController.class);
 	
 	private static final String INDEX_KEY = "index";
 	
@@ -50,18 +49,24 @@ public class IndexController {
 	private Hashtable<String,IndexLocation> buildIndexTable()
 	{
 		Hashtable<String,IndexLocation> indexes = new Hashtable<String,IndexLocation>(1);
-		GenericConfiguration Ic = (GenericConfiguration)crconfig.get(INDEX_KEY);
-		if(Ic!=null)
+		GenericConfiguration indexConfiguration = (GenericConfiguration)crconfig.get(INDEX_KEY);
+		if(indexConfiguration!=null)
 		{
-			Hashtable<String,GenericConfiguration> configs = Ic.getSubConfigs();
+			Hashtable<String,GenericConfiguration> configs = indexConfiguration.getSubConfigs();
 
 			for (Entry<String,GenericConfiguration> e:configs.entrySet()) {
-				indexes.put(e.getKey(), IndexLocation.getIndexLocation(new CRConfigUtil(e.getValue(),INDEX_KEY+"."+e.getKey())));
+				String indexLocationName = e.getKey();
+				IndexLocation indexLocation = IndexLocation.getIndexLocation(new CRConfigUtil(e.getValue(),INDEX_KEY+"."+e.getKey()));
+				if(indexLocation == null){
+					logger.error("Cannot get index location for "+indexLocationName);
+				}
+				else
+					indexes.put(indexLocationName, indexLocation);
 			}
 		}
 		else
 		{
-			log.error("THERE ARE NO INDEXES CONFIGURED FOR INDEXING.");
+			logger.error("THERE ARE NO INDEXES CONFIGURED FOR INDEXING.");
 		}
 		return indexes;
 	}

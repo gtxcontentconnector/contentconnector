@@ -188,16 +188,16 @@ public class GenericConfiguration implements Serializable{
 	}
 	
 	/**
-	 * Gets the property to the given key
-	 * 		- will resolve sub properties like "conf1.A.1.1" to
-	 * 			this config
-	 * 					-config config1
-	 *	 					-config A
-	 * 							-config 1
-	 * 								-config 1
-	 * 		- will resolve properties like "conf1" to 
-	 * 			this config
-	 * 					-property config1
+	 * Gets the property to the given key<br />
+	 * &nbsp;- will resolve sub properties like "conf1.A.1.1" to<br />
+	 * &nbsp;&nbsp;this config<br />
+	 * &nbsp;&nbsp;&nbsp;-config config1<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;-config A<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
+	 * &nbsp;- will resolve properties like "conf1" to <br />
+	 * &nbsp;&nbsp;this config<br />
+	 * &nbsp;&nbsp;&nbsp;-property config1<br />
 	 * @param key
 	 * @return property value as string or a GenericConfiguration object if key points to a config
 	 */
@@ -225,18 +225,32 @@ public class GenericConfiguration implements Serializable{
 		return null;
 	}
 	
+	/**
+	 * Wrapper for {@link #get(String)}
+	 * @param key
+	 * @return returns the result of {@link #get(String)} as a String
+	 */
+	
+	public String getString(String key) {
+		Object result = get(key);
+		if(result!=null)
+			return (String) result;
+		else
+			return null;
+	}
+	
 	
 	/**
-	 * Sets the property value to the given key
-	 * 		- will resolve sub properties like "conf1.A.1.1" to
-	 * 			this config
-	 * 					-config config1
-	 *	 					-config A
-	 * 							-config 1
-	 * 								-config 1
-	 * 		- will resolve properties like "conf1" to 
-	 * 			this config
-	 * 					-property config1
+	 * Sets the property value to the given key<br />
+	 * &nbsp;- will resolve sub properties like "conf1.A.1.1" to<br />
+	 * &nbsp;&nbsp;this config<br />
+	 * &nbsp;&nbsp;&nbsp;-config config1<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;-config A<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
+	 * &nbsp;- will resolve properties like "conf1" to<br />
+	 * &nbsp;&nbsp;this config<br />
+	 * &nbsp;&nbsp;&nbsp;-property config1<br />
 	 * @param key Property key as string
 	 * @param value Property value as string
 	 * 

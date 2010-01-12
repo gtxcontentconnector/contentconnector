@@ -1,4 +1,4 @@
-package com.gentics.cr.lucene.indexer.index;
+package com.gentics.cr.util.indexing;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,13 +15,13 @@ public class IndexJobQueue{
 	
 	private static final String INTERVAL_KEY = "CHECKINTERVAL";
 	
-	private LinkedBlockingQueue<CRIndexJob> queue;
+	private LinkedBlockingQueue<AbstractUpdateCheckerJob> queue;
 	private Thread d;
 	private boolean stop=false;
 	private int interval = 5; // Default 5 sec interval for checking
 	private Thread currentJob;
-	private CRIndexJob currentJI;
-	private ArrayList<CRIndexJob> lastJobs;
+	private AbstractUpdateCheckerJob currentJI;
+	private ArrayList<AbstractUpdateCheckerJob> lastJobs;
 	
 	/**
 	 * Create new instance of JobQueue
@@ -31,8 +31,8 @@ public class IndexJobQueue{
 	{
 		String i = (String)config.get(INTERVAL_KEY);
 		if(i!=null)this.interval = new Integer(i);
-		queue = new LinkedBlockingQueue<CRIndexJob>();
-		lastJobs = new ArrayList<CRIndexJob>(3);
+		queue = new LinkedBlockingQueue<AbstractUpdateCheckerJob>();
+		lastJobs = new ArrayList<AbstractUpdateCheckerJob>(3);
 		this.d = new Thread(new Runnable(){
 			public void run()
 			{
@@ -55,7 +55,7 @@ public class IndexJobQueue{
 	 * Get an ArrayList with the three last jobs. If there where no jobs the list is going to be empty.
 	 * @return
 	 */
-	public ArrayList<CRIndexJob> getLastJobs()
+	public ArrayList<AbstractUpdateCheckerJob> getLastJobs()
 	{
 		return this.lastJobs;
 	}
@@ -66,12 +66,12 @@ public class IndexJobQueue{
 	 * Only for display in the indexer servlet
 	 * @param j
 	 */
-	private void addToLastJobs(CRIndexJob j)
+	private void addToLastJobs(AbstractUpdateCheckerJob j)
 	{
-		ArrayList<CRIndexJob> l = new ArrayList<CRIndexJob>(3);
+		ArrayList<AbstractUpdateCheckerJob> l = new ArrayList<AbstractUpdateCheckerJob>(3);
 		l.add(j);
 		int i=0;
-		for(CRIndexJob e:lastJobs)
+		for(AbstractUpdateCheckerJob e:lastJobs)
 		{
 			if(e!=null)l.add(e);
 			i++;
@@ -84,7 +84,7 @@ public class IndexJobQueue{
 	 * Returns current Index job or null if none is being processed at the moment
 	 * @return
 	 */
-	public CRIndexJob getCurrentJob()
+	public AbstractUpdateCheckerJob getCurrentJob()
 	{
 		return this.currentJI;
 	}
@@ -98,7 +98,7 @@ public class IndexJobQueue{
 
 		while (!interrupted && !stop) {
 			try {
-				CRIndexJob j = this.queue.poll();
+				AbstractUpdateCheckerJob j = this.queue.poll();
 				if(j!=null)
 				{
 					synchronized(IndexJobQueue.this)
@@ -208,7 +208,7 @@ public class IndexJobQueue{
 	 * @param job
 	 * @return
 	 */
-	public synchronized boolean addJob(CRIndexJob job)
+	public synchronized boolean addJob(AbstractUpdateCheckerJob job)
 	{
 		if(!queue.contains(job))
 		{

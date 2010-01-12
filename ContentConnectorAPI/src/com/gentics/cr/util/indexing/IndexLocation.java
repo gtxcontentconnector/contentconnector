@@ -1,21 +1,14 @@
-package com.gentics.cr.lucene.indexer.index;
+package com.gentics.cr.util.indexing;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -23,7 +16,7 @@ import com.gentics.cr.CRException;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
-import com.gentics.cr.lucene.indexer.IndexerUtil;
+import com.gentics.cr.lucene.indexer.index.LockedIndexException;
 
 
 /**
@@ -47,10 +40,11 @@ public class IndexLocation {
 	private static final String STEMMER_NAME_KEY = "STEMMERNAME";
 	private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
+	public static final String UPDATEJOBCLASS_KEY = "updatejobclass";
+	private static final String DEFAULT_UPDATEJOBCLASS = "com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob";
 	
 	
 	//Instance Members
-	private Directory dir=null;
 	private String name = null;
 	private IndexJobQueue queue = null;
 	private CRConfig config;
@@ -60,43 +54,6 @@ public class IndexLocation {
 	private boolean lockdetection = false;
 	private boolean reopencheck = false;
 	private String indexLocation ="";
-	
-	private Analyzer getConfiguredAnalyzer() 
-	{
-		//Update/add Documents
-		Analyzer analyzer;
-		boolean doStemming = Boolean.parseBoolean((String)config.get(STEMMING_KEY));
-		if(doStemming)
-		{
-			analyzer = new SnowballAnalyzer(Version.LUCENE_CURRENT,(String)config.get(STEMMER_NAME_KEY));
-		}
-		else
-		{
-			
-			//Load StopWordList
-			File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
-			
-			if(stopWordFile!=null)
-			{
-				//initialize Analyzer with stop words
-				try
-				{
-					analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT,stopWordFile);
-				}
-				catch(IOException ex)
-				{
-					log.error("Could not open stop words file. Will create standard analyzer. "+ex.getMessage());
-					analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-				}
-			}
-			else
-			{
-				//if no stop word list exists load fall back
-				analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-			}
-		}
-		return analyzer;
-	}
 	
 	/**
 	 * Returns the filename of the reopen file.
@@ -130,22 +87,10 @@ public class IndexLocation {
 	 */
 	public void checkLock() throws LockedIndexException
 	{
-		IndexAccessor indexAccessor = getAccessor();
-		IndexWriter indexWriter;
-		try {
-			indexWriter = indexAccessor.getWriter();
-			indexAccessor.release(indexWriter);
-		}catch (LockObtainFailedException e)
-		{
-			throw new LockedIndexException(e);
-		} catch (IOException e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-		}
 	}
 	
 	
-	private IndexLocation(CRConfig config)
+	protected IndexLocation(CRConfig config)
 	{
 		this.config = config;
 		name = config.getName();
@@ -162,39 +107,6 @@ public class IndexLocation {
 		if(s_lockdetect!=null)
 		{
 			lockdetection = Boolean.parseBoolean(s_lockdetect);
-		}
-		if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
-		{
-			dir = new RAMDirectory();
-			
-		}
-		else
-		{
-			File indexLoc = new File(indexLocation);
-			try
-			{
-				dir = createFSDirectory(indexLoc);
-				if(dir==null) dir = createRAMDirectory();
-			}
-			catch(IOException ioe)
-			{
-				dir = createRAMDirectory();
-			}
-		}
-		//Create index accessor
-		IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
-		if(!IAFactory.hasAccessor(dir)){
-			try
-			{
-				IAFactory.createAccessor(dir, getConfiguredAnalyzer());
-			}
-			catch(IOException ex)
-			{
-				log.fatal("COULD NOT CREATE INDEX ACCESSOR"+ex.getMessage());
-			}
-		}
-		else{
-			log.debug("Accessor already present. we will not create a new one.");
 		}
 		if(periodical)
 		{
@@ -223,25 +135,6 @@ public class IndexLocation {
 		this.queue.startWorker();
 	}
 	
-	private Directory createRAMDirectory()
-	{
-		Directory dir = new RAMDirectory();
-		log.debug("Creating RAM Directory for Index ["+name+"]");
-		return(dir);
-	}
-	
-	private Directory createFSDirectory(File indexLoc) throws IOException
-	{
-		if(!indexLoc.exists())
-		{
-			log.debug("Indexlocation did not exist. Creating directories...");
-			indexLoc.mkdirs();
-		}
-		Directory dir = FSDirectory.open(indexLoc);
-		log.debug("Creating FS Directory for Index ["+name+"]");
-		return(dir);
-	}
-	
 	/**
 	 * Returns if the users has configured lockdetection for the index location
 	 * @return
@@ -249,15 +142,6 @@ public class IndexLocation {
 	public boolean hasLockDetection()
 	{
 		return(this.lockdetection);
-	}
-	
-	/**
-	 * Returns the directory used by this index location
-	 * @return
-	 */
-	public Directory getDirectory()
-	{
-		return(this.dir);
 	}
 	
 	/**
@@ -300,21 +184,8 @@ public class IndexLocation {
 	 */
 	public int getDocCount()
 	{
-		IndexAccessor indexAccessor = this.getAccessor();
-		IndexReader reader  = null;
+		//TODO implement this generic
 		int count = 0;
-		try
-		{
-			reader = indexAccessor.getReader(false);
-			count = reader.numDocs();
-		}catch(IOException ex)
-		{
-			log.error("IOX happened during test of index. "+ex.getMessage());
-		}
-		finally{
-			indexAccessor.release(reader, false);
-		}
-		
 		return count;
 	}
 	
@@ -350,27 +221,6 @@ public class IndexLocation {
 		}
 		return reopened;
 	}
-	
-	
-	
-	
-	
-	private IndexAccessor getAccessorInstance()
-	{
-		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(this.getDirectory());
-		return indexAccessor;
-	}
-	
-	/**
-	 * Returns an index Accessor, which can be used to share access to an index over multiple threads
-	 * @return
-	 */
-	public IndexAccessor getAccessor()
-	{
-		IndexAccessor indexAccessor = getAccessorInstance();
-		reopenCheck(indexAccessor);
-		return indexAccessor;
-	}
 
 	/**
 	 * Tests if the IndexLocation contains an existing Index and returns true if it does.
@@ -389,7 +239,46 @@ public class IndexLocation {
 	 */
 	public boolean createCRIndexJob(CRConfig config,Hashtable<String,CRConfigUtil> configmap)
 	{
-		return this.queue.addJob(new CRIndexJob(config,this,configmap));
+		String updatejobimplementationClassName = config.getString(UPDATEJOBCLASS_KEY);
+		if(updatejobimplementationClassName == null){
+			updatejobimplementationClassName = DEFAULT_UPDATEJOBCLASS;
+		}
+		Class updatejobImplementationClass;
+		AbstractUpdateCheckerJob indexJob = null;
+		try {
+			updatejobImplementationClass = Class.forName(updatejobimplementationClassName);
+			Constructor updatejobImplementationClassConstructor = updatejobImplementationClass.getConstructor(new Class[]{CRConfig.class, IndexLocation.class, Hashtable.class});
+			Object indexJobObject = updatejobImplementationClassConstructor.newInstance(config,this,configmap);
+			if(indexJobObject instanceof AbstractUpdateCheckerJob){
+				indexJob = (AbstractUpdateCheckerJob) indexJobObject;
+				return this.queue.addJob(indexJob);
+			}
+			else{
+				log.error("Please configure an implementation of "+AbstractUpdateCheckerJob.class+" ");
+				return false;
+			}
+		} catch (ClassNotFoundException e) {
+			log.error("Cannot load class for creating a new IndexJob",e);
+			return false;
+		} catch (SecurityException e) {
+			log.error("Cannot load class for creating a new IndexJob",e);
+			return false;
+		} catch (NoSuchMethodException e) {
+			log.error("Cannot find constructor for creating a new IndexJob",e);
+			return false;
+		} catch (IllegalArgumentException e) {
+			log.error("Error creating a new IndexJob",e);
+			return false;
+		} catch (InstantiationException e) {
+			log.error("Error creating a new IndexJob",e);
+			return false;
+		} catch (IllegalAccessException e) {
+			log.error("Error creating a new IndexJob",e);
+			return false;
+		} catch (InvocationTargetException e) {
+			log.error("Error creating a new IndexJob",e);
+			return false;
+		}
 	}
 	
 	private static final String CR_KEY = "CR";
@@ -419,7 +308,6 @@ public class IndexLocation {
 	{
 		CRConfig crconfig = this.config;
 		Hashtable<String,CRConfigUtil> map = new Hashtable<String,CRConfigUtil>();
-		
 		
 		GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
 		if(CRc!=null)

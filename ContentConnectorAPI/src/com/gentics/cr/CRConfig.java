@@ -175,4 +175,10 @@ public interface CRConfig {
 	 * @return
 	 */
 	public Object get(String key);
+	/**
+	 * Wrapper for {@link #get(String)}
+	 * @param key
+	 * @return returns config parameter as String
+	 */
+	public String getString(String key);
 }
