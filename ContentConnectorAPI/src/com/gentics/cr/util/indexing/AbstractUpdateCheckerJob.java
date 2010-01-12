@@ -1,19 +1,14 @@
 package com.gentics.cr.util.indexing;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.CorruptIndexException;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
-import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
@@ -23,7 +18,6 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
 import com.gentics.cr.lucene.indexer.IndexerStatus;
 import com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob;
-import com.gentics.cr.lucene.indexer.index.LockedIndexException;
 import com.gentics.cr.util.CRUtil;
 
 //TODO: complete JavaDoc when class is finished
@@ -45,7 +39,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	protected IndexerStatus status;
 	
 	private Hashtable<String,CRConfigUtil> configmap;
-	private IndexLocation indexLocation;
+	protected IndexLocation indexLocation;
 	
 	private long duration = 0;
 	
@@ -128,8 +122,20 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		return false;
 	}
 	
-	protected abstract void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws NodeException, CorruptIndexException, IOException, CRException, LockedIndexException;
+	protected abstract void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException;
 	
+	
+	/**
+	 * Checks objects in {@link Datasource} that match the rule, if they are up to date in the index. Finally all the objects not checked for an update are removed from the index.
+	 * @param rule Rule describing the objects that should be indexed
+	 * @param ds {@link Datasource} providing the objects to index
+	 * @param forceFullUpdate boolean use to force a full update in the index
+	 * @param indexUpdateChecker {@link IIndexUpdateChecker} to check if the item is up to date in the index
+	 * @return {@link Collection} of {@link Resolvables} that need an update in the index.
+	 * 
+	 * @see {@link IIndexUpdateChecker#isUpToDate(String, int)}
+	 * @see {@link IIndexUpdateChecker#deleteStaleObjects()}
+	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<Resolvable> getObjectsToUpdate(String rule, Datasource ds, boolean forceFullUpdate, IIndexUpdateChecker indexUpdateChecker){
 		Collection<Resolvable> updateObjects = new Vector<Resolvable>();
@@ -149,100 +155,34 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 			if(idAttribute == null)
 				idAttribute = DEFAULT_IDATTRIBUTE;
 
-			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), new String[]{TIMESTAMP_ATTR}, 0, -1, CRUtil.convertSorting("contentid:asc"));
+			//Sorted (by the idAttribute) list of Resolvables to check for Updates.´
+			Collection<Resolvable> objectsToIndex;
+			try{
+				objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), new String[]{TIMESTAMP_ATTR}, 0, -1, CRUtil.convertSorting(idAttribute+":asc"));
+			} catch (DatasourceException e) {
+				log.error("Error getting results for full index from datasource",e);
+				return null;
+			} catch (ExpressionParserException e) {
+				log.error("Error parsing the given rule ("+rule+") for the datasource",e);
+				return null;
+			} catch (ParserException e) {
+				log.error("Error parsing the given rule ("+rule+") for full index",e);
+				return null;
+			}
 			
 			Iterator<Resolvable> resolvableIterator = objectsToIndex.iterator();
 			while(resolvableIterator.hasNext())
 			{
-				
-			}	
-				
-				
-				
-				
-				
-				
-				
-				LinkedHashMap<String,Integer> docs = fetchSortedDocs(termDocs, reader, idAttribute);
-				Iterator docIT = docs.keySet().iterator();
-				
-				Resolvable CRlem = resolvableIterator.next();
-				String crElemID =(String) CRlem.get(idAttribute);
-				String docID="";
-				//solange index id kleiner cr id delete from index
-				boolean finish=!docIT.hasNext();
-				if(finish)
-				{
-					//IF THERE ARE NO INDEXED OBJECTS => ADD ALL
-					diffObjects = objectsToIndex;
-				}
-				else
-				{
-					docID = (String)docIT.next();
-				}
-				
-				while(!finish)
-				{
-					
-					
-					if(docID!=null && docID.compareTo(crElemID) == 0)
-					{
-						//ELEMENT IN BOTH, CR AND INDEX
-						//COMPARE UPDATE and STEP BOTH
-						Integer crUpt = (Integer)CRlem.get(TIMESTAMP_ATTR);
-						Integer docNR = docs.get(docID);
-						Document doc = reader.document(docNR);
-						String docUpt = doc.get(TIMESTAMP_ATTR);
-						if(!(crUpt!=null && docUpt!=null && Integer.parseInt(docUpt)>=crUpt.intValue()))
-						{
-							//IF UPDATE TS DOES NOT EXIST OR TS IN INDEX SMALLER THAN IN CR
-							diffObjects.add(CRlem);
-						}
-						finish = !docIT.hasNext();
-						if(!finish)docID = (String)docIT.next();
-						if(resolvableIterator.hasNext())
-						{
-							CRlem = resolvableIterator.next();
-							crElemID =(String) CRlem.get(idAttribute);
-						}
-					}
-					else if(docID!=null && docID.compareTo(crElemID) > 0 && resolvableIterator.hasNext())
-					{
-						//ELEMENT NOT IN INDEX
-						//ADD TO DIFF OBJECTS and STEP CR
-						diffObjects.add(CRlem);
-						CRlem = resolvableIterator.next();
-						crElemID =(String) CRlem.get(idAttribute);
-					}
-					else
-					{
-						//delete Document
-						Integer docNR = docs.get(docID);
-						reader.deleteDocument(docNR);
-						finish = !docIT.hasNext();
-						if(!finish)docID = (String)docIT.next();
-					}
-					
-				}
-			}
-			else
-			{
-				//NO OBJECTS IN CONTENT REPOSITORY
-				//DELETE ALL FROM INDEX
-				boolean finish=!termDocs.next();
-				
-				while(!finish)
-				{
-					reader.deleteDocument(termDocs.doc());
-					
-					finish = !termDocs.next();
+				Resolvable crElement = resolvableIterator.next();
+				String crElementID = (String) crElement.get(idAttribute);
+				int crElementTimestamp = (Integer) crElement.get(TIMESTAMP_ATTR);
+				if(!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp)){
+					updateObjects.add(crElement);
 				}
 			}
 		}
-		
-		
-		
-		
+		//Finally delete all Objects from Index that are not checked for an Update
+		indexUpdateChecker.deleteStaleObjects();
 		return updateObjects;
 	}
 	
@@ -255,19 +195,9 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		try{
 			indexCR(this.indexLocation,(CRConfigUtil)this.config);
 		}
-		catch(LockedIndexException ex)
+		catch(Exception e)
 		{
-			log.debug("LOCKED INDEX DETECTED. TRYING AGAIN IN NEXT JOB.");
-			if(this.indexLocation!=null && !this.indexLocation.hasLockDetection())
-			{
-				log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. PLEASE REMOVE LOCK");
-				ex.printStackTrace();
-			}
-		}
-		catch(Exception ex)
-		{
-			log.error(ex.getMessage());
-			ex.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
 		long end = System.currentTimeMillis();
 		this.duration = end-start;
