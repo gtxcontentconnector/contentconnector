@@ -131,7 +131,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	protected abstract void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws NodeException, CorruptIndexException, IOException, CRException, LockedIndexException;
 	
 	@SuppressWarnings("unchecked")
-	protected Collection<Resolvable> getObjectsToUpdate(String rule, Datasource ds, boolean forceFullUpdate){
+	protected Collection<Resolvable> getObjectsToUpdate(String rule, Datasource ds, boolean forceFullUpdate, IIndexUpdateChecker indexUpdateChecker){
 		Collection<Resolvable> updateObjects = new Vector<Resolvable>();
 		if(forceFullUpdate){
 			try {
