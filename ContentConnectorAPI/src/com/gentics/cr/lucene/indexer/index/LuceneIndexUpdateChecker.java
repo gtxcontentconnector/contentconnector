@@ -1,4 +1,4 @@
-package com.gentics.cr.util.indexing;
+package com.gentics.cr.lucene.indexer.index;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
-import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
 /**
  * 
