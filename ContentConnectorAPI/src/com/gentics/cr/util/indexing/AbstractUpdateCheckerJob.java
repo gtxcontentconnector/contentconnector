@@ -16,6 +16,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRException;
+import com.gentics.cr.exceptions.WrongOrderException;
 import com.gentics.cr.lucene.indexer.IndexerStatus;
 import com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob;
 import com.gentics.cr.util.CRUtil;
@@ -137,7 +138,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * @see {@link IIndexUpdateChecker#deleteStaleObjects()}
 	 */
 	@SuppressWarnings("unchecked")
-	protected Collection<Resolvable> getObjectsToUpdate(String rule, Datasource ds, boolean forceFullUpdate, IIndexUpdateChecker indexUpdateChecker){
+	protected Collection<Resolvable> getObjectsToUpdate(String rule, Datasource ds, boolean forceFullUpdate, IndexUpdateChecker indexUpdateChecker){
 		Collection<Resolvable> updateObjects = new Vector<Resolvable>();
 		if(forceFullUpdate){
 			try {
@@ -171,14 +172,21 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 			}
 			
 			Iterator<Resolvable> resolvableIterator = objectsToIndex.iterator();
-			while(resolvableIterator.hasNext())
-			{
-				Resolvable crElement = resolvableIterator.next();
-				String crElementID = (String) crElement.get(idAttribute);
-				int crElementTimestamp = (Integer) crElement.get(TIMESTAMP_ATTR);
-				if(!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp)){
-					updateObjects.add(crElement);
+			try {
+				
+				while(resolvableIterator.hasNext())
+				{
+					Resolvable crElement = resolvableIterator.next();
+					String crElementID = (String) crElement.get(idAttribute);
+					int crElementTimestamp = (Integer) crElement.get(TIMESTAMP_ATTR);
+					if(!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp)){
+						updateObjects.add(crElement);
+					}
 				}
+			}
+			catch (WrongOrderException e) {
+				log.error("Got the objects from the datasource in the wrong order.", e);
+				return null;
 			}
 		}
 		//Finally delete all Objects from Index that are not checked for an Update
