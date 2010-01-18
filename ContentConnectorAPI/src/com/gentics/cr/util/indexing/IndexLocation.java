@@ -33,19 +33,17 @@ public class IndexLocation {
 	private static final String REOPEN_CHECK_KEY = "reopencheck";
 	private static final String REOPEN_FILENAME = "reopen";
 	private static final String INDEX_LOCATION_KEY = "indexLocation";
-	private static final String RAM_IDENTIFICATION_KEY = "RAM";
 	private static final String PERIODICAL_KEY = "PERIODICAL";
 	private static Hashtable<String,IndexLocation> indexmap;
-	private static final String STEMMING_KEY = "STEMMING";
-	private static final String STEMMER_NAME_KEY = "STEMMERNAME";
-	private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
+	/**
+	 * The key in the configuration for specifying the update job implementation class
+	 */
 	public static final String UPDATEJOBCLASS_KEY = "updatejobclass";
 	private static final String DEFAULT_UPDATEJOBCLASS = "com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob";
 	
 	
 	//Instance Members
-	private String name = null;
 	private IndexJobQueue queue = null;
 	private CRConfig config;
 	private boolean periodical = false;
@@ -93,7 +91,6 @@ public class IndexLocation {
 	protected IndexLocation(CRConfig config)
 	{
 		this.config = config;
-		name = config.getName();
 		indexLocation = (String)config.get(INDEX_LOCATION_KEY);
 		queue = new IndexJobQueue(config);
 		String per = (String)config.get(PERIODICAL_KEY);
@@ -243,42 +240,34 @@ public class IndexLocation {
 		if(updatejobimplementationClassName == null){
 			updatejobimplementationClassName = DEFAULT_UPDATEJOBCLASS;
 		}
-		Class updatejobImplementationClass;
+		Class<?> updatejobImplementationClassGeneric;
+		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass;
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
-			updatejobImplementationClass = Class.forName(updatejobimplementationClassName);
-			Constructor updatejobImplementationClassConstructor = updatejobImplementationClass.getConstructor(new Class[]{CRConfig.class, IndexLocation.class, Hashtable.class});
+			updatejobImplementationClassGeneric = Class.forName(updatejobimplementationClassName);
+			updatejobImplementationClass = updatejobImplementationClassGeneric.asSubclass(AbstractUpdateCheckerJob.class);
+			Constructor<? extends AbstractUpdateCheckerJob> updatejobImplementationClassConstructor = updatejobImplementationClass.getConstructor(new Class[]{CRConfig.class, IndexLocation.class, Hashtable.class});
 			Object indexJobObject = updatejobImplementationClassConstructor.newInstance(config,this,configmap);
-			if(indexJobObject instanceof AbstractUpdateCheckerJob){
-				indexJob = (AbstractUpdateCheckerJob) indexJobObject;
-				return this.queue.addJob(indexJob);
-			}
-			else{
-				log.error("Please configure an implementation of "+AbstractUpdateCheckerJob.class+" ");
-				return false;
-			}
+			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
+			return this.queue.addJob(indexJob);
+		} catch (ClassCastException e){
+			log.error("Please configure an implementation of "+AbstractUpdateCheckerJob.class+" ",e);
 		} catch (ClassNotFoundException e) {
 			log.error("Cannot load class for creating a new IndexJob",e);
-			return false;
 		} catch (SecurityException e) {
 			log.error("Cannot load class for creating a new IndexJob",e);
-			return false;
 		} catch (NoSuchMethodException e) {
 			log.error("Cannot find constructor for creating a new IndexJob",e);
-			return false;
 		} catch (IllegalArgumentException e) {
 			log.error("Error creating a new IndexJob",e);
-			return false;
 		} catch (InstantiationException e) {
 			log.error("Error creating a new IndexJob",e);
-			return false;
 		} catch (IllegalAccessException e) {
 			log.error("Error creating a new IndexJob",e);
-			return false;
 		} catch (InvocationTargetException e) {
 			log.error("Error creating a new IndexJob",e);
-			return false;
 		}
+		return false;
 	}
 	
 	private static final String CR_KEY = "CR";

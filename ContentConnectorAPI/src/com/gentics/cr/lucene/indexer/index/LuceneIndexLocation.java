@@ -39,7 +39,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	//STATIC MEMBERS
 	protected static final Logger log = Logger.getLogger(LuceneIndexLocation.class);
 	private static final String REOPEN_CHECK_KEY = "reopencheck";
-	private static final String REOPEN_FILENAME = "reopen";
 	private static final String INDEX_LOCATION_KEY = "indexLocation";
 	private static final String RAM_IDENTIFICATION_KEY = "RAM";
 	private static final String PERIODICAL_KEY = "PERIODICAL";
