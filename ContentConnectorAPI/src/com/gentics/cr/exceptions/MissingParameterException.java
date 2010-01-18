@@ -15,8 +15,9 @@ public class MissingParameterException extends ConfigurationException {
 	private static final long serialVersionUID = -1431840546323718286L;
 
 	/**
-	 * Exception if a parameter is missing
+	 * Exception if a parameter in a configuration is missing
 	 * @param missingParameterName name of the missing parameter as String
+	 * @param config {@link CRConfig} where the parameter is missing
 	 */
 	public MissingParameterException(String missingParameterName, CRConfig config){
 		super("MISSINGPARAMETER","The parameter with the name " + config.getName() + missingParameterName + " is missing.",CRException.ERRORTYPE.FATAL_ERROR);
