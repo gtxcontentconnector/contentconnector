@@ -207,7 +207,17 @@ public class PathResolver {
 	 * @return String with the configured servlet / portal url.
 	 */
 	public String getAlternateUrl(String contentid){
-		return conf.get(CRConfig.ADVPLR_HOST) + contentid;
+		String url = null;
+		String obj_type = contentid.split("\\.")[0];
+		if(obj_type != null){
+			//try to get a specific URL for the objecttype
+			url = conf.getString(CRConfig.ADVPLR_HOST + "." +obj_type);
+		}
+		if(url == null){
+			//if we didn't get a specific URL take the generic one
+			url = conf.getString(CRConfig.ADVPLR_HOST);
+		}
+		return url + contentid;
 	}
 
 	/**
