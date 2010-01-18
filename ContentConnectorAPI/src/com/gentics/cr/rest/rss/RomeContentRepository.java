@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rest.ContentRepository;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntryImpl;

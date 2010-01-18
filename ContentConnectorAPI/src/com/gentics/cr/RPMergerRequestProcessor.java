@@ -2,6 +2,8 @@ package com.gentics.cr;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import com.gentics.cr.exceptions.CRException;
 /**
  * 
  * Last changed: $Date$

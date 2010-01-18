@@ -19,8 +19,8 @@ import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.CRException;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 import com.gentics.cr.lucene.indexer.IndexerUtil;

@@ -13,7 +13,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 
-import com.gentics.cr.CRException;
+import com.gentics.cr.exceptions.CRException;
 
 /**
  * 

@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import com.gentics.cr.CRError;
-import com.gentics.cr.CRException;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rest.ContentRepository;
 
 /**

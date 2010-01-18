@@ -32,11 +32,11 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	LinkedHashMap<String,Integer> docs;
 	Iterator<String> docIT;
 	/**
-	 * Initializes the Lucene Implementation of @link IndexUpdateChecker.
+	 * Initializes the Lucene Implementation of {@link IndexUpdateChecker}.
 	 * @param indexLocation
 	 * @param termKey - Key under wich the termValue is stored in the Index e.g. CRID
 	 * @param termValue - Value wich to use for iteration e.g. CRID_1
-	 * @param idAttribute - ID-Attribute key that will be used for Identifyer comparison. This has to represent the field where the identifyer in the method @link {@link #checkUpToDate(String, int)} is present.
+	 * @param idAttribute - ID-Attribute key that will be used for Identifyer comparison. This has to represent the field where the identifyer in the method {@link #checkUpToDate(String, int)} is present.
 	 * @throws IOException 
 	 */
 	public LuceneIndexUpdateChecker(LuceneIndexLocation indexLocation,String termKey, String termValue,String idAttribute) throws IOException

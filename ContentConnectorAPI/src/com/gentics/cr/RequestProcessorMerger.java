@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import com.gentics.cr.exceptions.CRException;
+
 /**
  * 
  * Last changed: $Date$

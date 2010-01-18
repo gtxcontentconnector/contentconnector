@@ -1,4 +1,4 @@
-package com.gentics.cr.lucene.indexer;
+package com.gentics.cr.util.indexing;
 
 import java.util.Date;
 /**

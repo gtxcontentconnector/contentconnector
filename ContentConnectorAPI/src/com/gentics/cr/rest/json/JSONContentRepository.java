@@ -9,8 +9,8 @@ import java.util.Iterator;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rest.ContentRepository;
 
 /**

@@ -1,6 +1,6 @@
 package com.gentics.cr.template;
 
-import com.gentics.cr.CRException;
+import com.gentics.cr.exceptions.CRException;
 /**
  * 
  * Last changed: $Date$

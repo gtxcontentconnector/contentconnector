@@ -1,8 +1,10 @@
-package com.gentics.cr;
+package com.gentics.cr.exceptions;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+
+import com.gentics.cr.CRError;
 
 /**
  * 

@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import org.apache.poi.hwpf.extractor.WordExtractor;
 
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 /**
  * 

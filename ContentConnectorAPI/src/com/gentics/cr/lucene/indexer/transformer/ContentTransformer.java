@@ -11,9 +11,9 @@ import com.gentics.api.lib.expressionparser.Expression;
 import com.gentics.api.lib.expressionparser.ExpressionEvaluator;
 import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 
 
 /**

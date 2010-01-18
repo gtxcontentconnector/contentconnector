@@ -2,9 +2,9 @@ package com.gentics.cr.lucene.indexer.transformer.html;
 import java.io.StringReader;
 
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.plink.PLinkStripper;
 import com.gentics.cr.util.CRUtil;

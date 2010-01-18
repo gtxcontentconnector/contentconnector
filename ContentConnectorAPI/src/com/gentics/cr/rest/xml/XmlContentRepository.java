@@ -22,8 +22,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rest.ContentRepository;
 
 /**

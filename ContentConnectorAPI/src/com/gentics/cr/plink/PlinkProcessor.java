@@ -14,8 +14,8 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PLinkInformation;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.CRConfig;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.ITemplateManager;
 
 /**

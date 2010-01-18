@@ -20,11 +20,11 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
 /**
  * 

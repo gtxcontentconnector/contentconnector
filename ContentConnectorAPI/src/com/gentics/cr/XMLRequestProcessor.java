@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.action.PluggableActionResponse;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.PluggableActionCaller;
 import com.gentics.lib.base.MapResolver;
 

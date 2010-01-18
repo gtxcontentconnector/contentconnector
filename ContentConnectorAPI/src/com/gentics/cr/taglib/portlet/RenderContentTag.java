@@ -14,9 +14,9 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.portalnode.connector.PLinkReplacer;
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rendering.ContentRenderer;
 import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
 

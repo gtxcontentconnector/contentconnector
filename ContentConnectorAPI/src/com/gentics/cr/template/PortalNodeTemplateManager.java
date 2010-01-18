@@ -7,8 +7,8 @@ import com.gentics.api.portalnode.portlet.GenticsPortlet;
 import com.gentics.api.portalnode.templateengine.PrivateKeyException;
 import com.gentics.api.portalnode.templateengine.TemplateNotFoundException;
 import com.gentics.api.portalnode.templateengine.TemplateProcessor;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.portalnode.PortalNodeInteractor;
-import com.gentics.cr.CRException;
 
 /**
  * 

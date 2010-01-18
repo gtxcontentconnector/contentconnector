@@ -31,8 +31,8 @@ import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
@@ -58,8 +58,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	{
 		super(config,indexLoc,configmap);
 	}
-
-
 	
 	
 	
@@ -110,12 +108,18 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	@SuppressWarnings("unchecked")
 	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
 			throws CRException{
-		String crID = config.getName();
-		if(crID ==null)crID = this.identifyer;
+
+		String crid = config.getName();
+		if(crid ==null)crid = this.identifyer;
+
 		
 		//IndexWriter indexWriter = new IndexWriter(indexLocation.getDirectory(),analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
 		IndexAccessor indexAccessor = null;
 		IndexWriter indexWriter = null;
+		LuceneIndexUpdateChecker luceneIndexUpdateChecker = null;
+		
+		
+		
 		try {
 			indexLocation.checkLock();
 			// get the datasource
@@ -168,6 +172,14 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					create=false;
 					log.debug("Index already exists.");
 				}
+				
+				if(indexLocation instanceof LuceneIndexLocation){
+					luceneIndexUpdateChecker = new LuceneIndexUpdateChecker((LuceneIndexLocation) indexLocation,CR_FIELD_KEY,crid,idAttribute);
+				}
+				else{
+					log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Jo by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
+				}
+				
 				Collection<Resolvable> objectsToIndex=null;
 				//Clear Index and remove stale Documents
 				if(!create)
@@ -175,14 +187,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					log.debug("Will do differential index.");
 					try {
 						status.setCurrentStatusString("Cleaning index from stale objects...");
-						if(indexLocation instanceof LuceneIndexLocation){
-							//objectsToIndex = cleanAndGetDiffObjects(ds,rule,(LuceneIndexLocation)indexLocation,config);
-							//TODO: give the IIndexUpdateChecker to the method as fourth argument
-							objectsToIndex = getObjectsToUpdate(rule,ds,false,null);
-						}
-						else{
-							log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Jo by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
-						}
+						objectsToIndex = getObjectsToUpdate(rule,ds,false,luceneIndexUpdateChecker);
 					} catch (Exception e) {
 						log.error("ERROR while cleaning index");
 						e.printStackTrace();
@@ -215,16 +220,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				for (String name:containedAttributes) {
 					attributes.put(name, Boolean.TRUE);
 				}
-		
-				String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 				// finally, put the "contentid" (always contained)
 				attributes.put(idAttribute, Boolean.TRUE);
 		
 				// get all objects to index
 				if(objectsToIndex==null)
 				{
-					//TODO: give the IIndexUpdateChecker to the method as fourth argument
-					objectsToIndex = getObjectsToUpdate(rule,ds,true,null);
+					objectsToIndex = getObjectsToUpdate(rule,ds,true,luceneIndexUpdateChecker);
 				}
 				if(objectsToIndex==null)
 				{
@@ -327,7 +329,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 		GenticsContentFactory.prefillContentObjects(ds, slice,
 				(String[]) attributes.keySet().toArray(
 						new String[attributes.keySet().size()]));
-		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 		
 		for (Resolvable objectToIndex:slice) {
 			
@@ -379,7 +380,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
 		Document doc = new Document();
 		
-		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
 		String crID = (String)config.getName();
 		if(crID!=null)
 		{
@@ -425,6 +425,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
+	@Deprecated
 	private void cleanIndex(CNWriteableDatasource ds, String rule, LuceneIndexLocation indexLocation, CRConfigUtil config) throws Exception
 	{
 		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
@@ -489,6 +490,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 			
 	}
 	
+	@SuppressWarnings("unused")
+	@Deprecated
 	private LinkedHashMap<String,Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute) throws IOException
 	{
 		LinkedHashMap<String,Integer> tmp = new LinkedHashMap<String,Integer>();

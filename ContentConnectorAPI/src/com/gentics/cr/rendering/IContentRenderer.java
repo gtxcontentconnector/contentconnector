@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PLinkReplacer;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.exceptions.CRException;
 /**
  * 
  * Last changed: $Date$

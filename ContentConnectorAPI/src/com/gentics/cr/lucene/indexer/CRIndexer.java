@@ -28,13 +28,14 @@ import com.gentics.contentnode.content.GenticsContentFactory;
 import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.cr.util.indexing.IndexerStatus;
 
 /**
  * CRIndexer is depricated. Use CRIndexerJob and IndexLocation instead

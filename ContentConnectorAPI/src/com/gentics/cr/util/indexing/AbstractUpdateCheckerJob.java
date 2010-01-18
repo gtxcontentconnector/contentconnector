@@ -15,10 +15,8 @@ import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.CRException;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.exceptions.WrongOrderException;
-import com.gentics.cr.lucene.indexer.IndexerStatus;
-import com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob;
 import com.gentics.cr.util.CRUtil;
 
 //TODO: complete JavaDoc when class is finished
@@ -29,7 +27,7 @@ import com.gentics.cr.util.CRUtil;
  */
 public abstract class AbstractUpdateCheckerJob implements Runnable {
 
-	protected static Logger log = Logger.getLogger(CRLuceneIndexJob.class);
+	protected static Logger log = Logger.getLogger(AbstractUpdateCheckerJob.class);
 	
 	protected static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
 	protected static final String DEFAULT_IDATTRIBUTE = "contentid";
@@ -38,6 +36,8 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	protected CRConfig config;
 	protected String identifyer;
 	protected IndexerStatus status;
+	
+	protected String idAttribute;
 	
 	private Hashtable<String,CRConfigUtil> configmap;
 	protected IndexLocation indexLocation;
@@ -59,6 +59,9 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		this.identifyer = (String) config.getName();
 		this.indexLocation = indexLoc;
 		status = new IndexerStatus();
+		idAttribute = config.getString(ID_ATTRIBUTE_KEY);
+		if(idAttribute == null)
+			idAttribute = DEFAULT_IDATTRIBUTE;
 		
 	}
 	
@@ -115,7 +118,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	{
 		if(obj instanceof AbstractUpdateCheckerJob)
 		{
-			if(this.identifyer.equalsIgnoreCase(((CRLuceneIndexJob)obj).getIdentifyer()))
+			if(this.identifyer.equalsIgnoreCase(((AbstractUpdateCheckerJob)obj).getIdentifyer()))
 			{
 				return true;
 			}
@@ -152,10 +155,6 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 			}
 		}
 		else{
-			String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
-			if(idAttribute == null)
-				idAttribute = DEFAULT_IDATTRIBUTE;
-
 			//Sorted (by the idAttribute) list of Resolvables to check for Updates.´
 			Collection<Resolvable> objectsToIndex;
 			try{

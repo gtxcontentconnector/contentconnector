@@ -4,6 +4,8 @@ package com.gentics.cr;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
+
+import com.gentics.cr.exceptions.CRException;
 /**
  * 
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $

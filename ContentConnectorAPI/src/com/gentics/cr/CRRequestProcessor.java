@@ -11,6 +11,7 @@ import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.exceptions.CRException;
 
 /**
  * 

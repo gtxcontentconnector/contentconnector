@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import com.gentics.api.lib.datasource.Datasource;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
 
@@ -26,6 +27,17 @@ public interface CRConfig {
 	 * configuration property name for advanced plinkreplacing
 	 */
 	public static final String ADVPLR_KEY = "ADVPLR";
+	
+	/**
+	 * configuration property name for advanced plinkreplacing
+	 */
+	public static final String ADVPLR_HOST = "ADVPLR_HOST";
+	
+	/**
+	 * configuration property name for advanced plinkreplacing
+	 */
+	public static final String ADVPLR_HOST_FORCE = "ADVPLR_HOST_FORCE";
+	
 	/**
 	 * configuration property name for filename attribute used by advanced plinkreplacing to generate beautiful URLs
 	 */

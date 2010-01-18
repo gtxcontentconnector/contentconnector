@@ -200,6 +200,15 @@ public class PathResolver {
 		return "?contentid=" + contentid;
 		
 	}
+	
+	/**
+	 * Get the alternate URL for the request. This is used if the object cannot be resolved dynamically.
+	 * @param contentid String with the identifier of the object
+	 * @return String with the configured servlet / portal url.
+	 */
+	public String getAlternateUrl(String contentid){
+		return conf.get(CRConfig.ADVPLR_HOST) + contentid;
+	}
 
 	/**
 	 * @param contentid
@@ -209,62 +218,69 @@ public class PathResolver {
 	 * Supports beautiful URLs, therefore it needs to load DB Objects and Attributes 
 	 */
 	public String getDynamicUrl(String contentid, CRConfig config, CRRequest request) {
-		String url = (String) request.get("url");
-		if(url == null)
-			return getDynamicUrl(contentid);
-		else{
-			//if there is an attribute URL the servlet was called with a beautiful URL so give back a beautiful URL					
-			//check if valid local link
-			String applicationrule = (String)config.get("applicationrule");
-			
-			Expression expression = null;
-			try {
-				expression = PortalConnectorFactory.createExpression("object.contentid == '" + contentid + "' && " + applicationrule);
-			} catch (ParserException exception) {
-				log.error("Error while building expression object for " + contentid, exception);
-				System.out.println("Error while building expression object for " + contentid);
+		String url = null;
+		if(request != null){
+			url = (String) request.get("url");
+			if(url == null)
 				return getDynamicUrl(contentid);
-			}
-			
-			DatasourceFilter filter = null;
-			try {
-				filter = config.getDatasource().createDatasourceFilter(expression);
-			} catch (ExpressionParserException e) {
-				log.error("Error while building filter object for " + contentid, e);
-				return getDynamicUrl(contentid);
-			}
-			int count;
-			try {
-				count = config.getDatasource().getCount(filter);
-			} catch (DatasourceException e) {
-				log.error("Error while querying for " + contentid, e);
-				return getDynamicUrl(contentid);
-			}
-			
-			if(count == 0){ //not permitted, build link
-				return config.get("advplr_host") + contentid;
-			}
-			else {
-			
-				Resolvable plinkObject;
+			else{
+				//if there is an attribute URL the servlet was called with a beautiful URL so give back a beautiful URL					
+				//check if valid local link
+				String applicationrule = (String)config.get("applicationrule");
+				
+				Expression expression = null;
 				try {
-							
-					plinkObject = PortalConnectorFactory.getContentObject(contentid, config.getDatasource());
-					//TODO: make this more beautiful and compatible with portlets
-					String filename_attribute = (String) config.get(CRConfig.ADVPLR_FN_KEY);
-					String pub_dir_attribute = (String) config.get(CRConfig.ADVPLR_PB_KEY);
-					String filename = (String) plinkObject.get(filename_attribute);
-					String pub_dir = (String) plinkObject.get(pub_dir_attribute);
-					HttpServletRequest servletRequest = (HttpServletRequest) request.get("request");
-					String contextPath = servletRequest.getContextPath();
-					String servletPath = servletRequest.getServletPath();
-					return contextPath + servletPath + pub_dir + filename;
-				} catch (DatasourceNotAvailableException e) {
-					log.error("Error while getting object for "+contentid, e);
+					expression = PortalConnectorFactory.createExpression("object.contentid == '" + contentid + "' && " + applicationrule);
+				} catch (ParserException exception) {
+					log.error("Error while building expression object for " + contentid, exception);
+					System.out.println("Error while building expression object for " + contentid);
 					return getDynamicUrl(contentid);
+				}
+				
+				DatasourceFilter filter = null;
+				try {
+					filter = config.getDatasource().createDatasourceFilter(expression);
+				} catch (ExpressionParserException e) {
+					log.error("Error while building filter object for " + contentid, e);
+					return getDynamicUrl(contentid);
+				}
+				int count;
+				try {
+					count = config.getDatasource().getCount(filter);
+				} catch (DatasourceException e) {
+					log.error("Error while querying for " + contentid, e);
+					return getDynamicUrl(contentid);
+				}
+				
+				if(count == 0 || "true".equals(config.getString(CRConfig.ADVPLR_HOST_FORCE))){ //not permitted or forced, build link
+					return getAlternateUrl(contentid);
+				}
+				else {
+				
+					Resolvable plinkObject;
+					try {
+								
+						plinkObject = PortalConnectorFactory.getContentObject(contentid, config.getDatasource());
+						//TODO: make this more beautiful and compatible with portlets
+						String filename_attribute = (String) config.get(CRConfig.ADVPLR_FN_KEY);
+						String pub_dir_attribute = (String) config.get(CRConfig.ADVPLR_PB_KEY);
+						String filename = (String) plinkObject.get(filename_attribute);
+						String pub_dir = (String) plinkObject.get(pub_dir_attribute);
+						HttpServletRequest servletRequest = (HttpServletRequest) request.get("request");
+						String contextPath = servletRequest.getContextPath();
+						String servletPath = servletRequest.getServletPath();
+						return contextPath + servletPath + pub_dir + filename;
+					} catch (DatasourceNotAvailableException e) {
+						log.error("Error while getting object for "+contentid, e);
+						return getDynamicUrl(contentid);
+					}
 				}
 			}
 		}
+		else{
+			return getAlternateUrl(contentid);
+		}
+
 	}
 
 }

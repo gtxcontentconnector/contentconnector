@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.gentics.cr.CRConfig;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 /**

@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.gentics.cr.CRException;
+import com.gentics.cr.exceptions.CRException;
 /**
  * loads a template from a file usint an input stream
  * Last changed: $Date$

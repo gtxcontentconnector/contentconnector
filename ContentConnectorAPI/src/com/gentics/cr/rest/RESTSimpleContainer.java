@@ -11,10 +11,10 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.CRException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 /**

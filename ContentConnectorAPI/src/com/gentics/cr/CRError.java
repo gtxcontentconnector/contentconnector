@@ -2,6 +2,8 @@ package com.gentics.cr;
 
 import java.io.Serializable;
 
+import com.gentics.cr.exceptions.CRException;
+
 /**
  * 
  * Last changed: $Date$
