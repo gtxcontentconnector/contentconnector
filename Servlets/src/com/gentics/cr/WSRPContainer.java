@@ -1,5 +1,7 @@
 package com.gentics.cr;
 
+import com.gentics.cr.exceptions.CRException;
+
 public class WSRPContainer {
 
 	private static CRConfigFileLoader crConf;

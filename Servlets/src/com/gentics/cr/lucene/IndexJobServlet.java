@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.lucene.indexer.IndexController;
-import com.gentics.cr.lucene.indexer.index.CRIndexJob;
-import com.gentics.cr.lucene.indexer.index.IndexJobQueue;
-import com.gentics.cr.lucene.indexer.index.IndexLocation;
+import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
+import com.gentics.cr.util.indexing.IndexController;
+import com.gentics.cr.util.indexing.IndexJobQueue;
+import com.gentics.cr.util.indexing.IndexLocation;
 
 
 /**
@@ -94,7 +94,7 @@ public class IndexJobServlet extends HttpServlet {
 						response.getWriter().write("WorkerThread:NOK\n");
 					}
 					response.getWriter().write("ObjectsInIndex:"+loc.getDocCount()+"\n");
-					CRIndexJob j = queue.getCurrentJob();
+					AbstractUpdateCheckerJob j =queue.getCurrentJob();
 					if(j!=null)
 					{
 						response.getWriter().write("CurrentJobObjectsToIndex:"+j.getObjectsToIndex()+"\n");
@@ -147,8 +147,8 @@ public class IndexJobServlet extends HttpServlet {
 					}
 				}
 				response.getWriter().write("ObjectsInIndex: "+loc.getDocCount()+"<br/>\n");
-				ArrayList<CRIndexJob> lastJobs = queue.getLastJobs();
-				for(CRIndexJob lj:lastJobs)
+				ArrayList<AbstractUpdateCheckerJob> lastJobs = queue.getLastJobs();
+				for(AbstractUpdateCheckerJob lj:lastJobs)
 				{
 					response.getWriter().write("Job "+lj.getIdentifyer()+" took "+lj.getDuration()+"ms for "+lj.getObjectsDone()+" objects<br/>\n");
 				}
@@ -167,7 +167,7 @@ public class IndexJobServlet extends HttpServlet {
 				{
 					response.getWriter().write("Worker not running (<a href=\"?action=startWorker&idx="+e.getKey()+nc+"\">start</a>)<br/>\n");
 				}
-				CRIndexJob j = queue.getCurrentJob();
+				AbstractUpdateCheckerJob j = queue.getCurrentJob();
 				
 				if(j!=null)
 				{

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.lucene.indexer.CRIndexer;
-import com.gentics.cr.lucene.indexer.IndexerStatus;
+import com.gentics.cr.util.indexing.IndexerStatus;
 
 
 /**
@@ -23,6 +23,7 @@ import com.gentics.cr.lucene.indexer.IndexerStatus;
  * Used to render the Rest xml.
  * 
  */
+@Deprecated
 public class IndexerServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 0002L;

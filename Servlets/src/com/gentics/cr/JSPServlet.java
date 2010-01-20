@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.PlinkProcessor;
 import com.gentics.cr.plink.PlinkReplacer;
 import com.gentics.cr.rendering.ContentRenderer;
