@@ -1,5 +1,6 @@
 package com.gentics.cr.util.indexing;
 
+import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.exceptions.WrongOrderException;
 
 /**
@@ -19,16 +20,17 @@ public abstract class IndexUpdateChecker {
 	 * These checks have to be performed in ascending order, otherwise a @link WrongOrderException will be thrown.
 	 * @param identifyer
 	 * @param timestamp
+	 * @param object
 	 * @return
 	 * @throws WrongOrderException
 	 */	
-	public boolean isUpToDate(String identifyer, int timestamp) throws WrongOrderException
+	public boolean isUpToDate(String identifyer, int timestamp, Resolvable object) throws WrongOrderException
 	{
 		if(!"".equals(this.lastIdentifyer) && this.lastIdentifyer.compareTo(identifyer)<0)
 		{
 			throw new WrongOrderException();
 		}
-		return checkUpToDate(identifyer,timestamp);
+		return checkUpToDate(identifyer,timestamp, object);
 	}
 	
 	/**
@@ -36,7 +38,7 @@ public abstract class IndexUpdateChecker {
 	 * @param timestamp
 	 * @return
 	 */
-	protected abstract boolean checkUpToDate(String identifyer,int timestamp);
+	protected abstract boolean checkUpToDate(String identifyer,int timestamp, Resolvable object);
 	
 	/**
 	 * 

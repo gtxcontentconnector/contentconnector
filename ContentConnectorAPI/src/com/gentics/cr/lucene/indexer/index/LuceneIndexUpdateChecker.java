@@ -11,6 +11,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 
+import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
@@ -55,7 +56,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	}
 	
 	@Override
-	protected boolean checkUpToDate(String identifyer, int timestamp) {
+	protected boolean checkUpToDate(String identifyer, int timestamp, Resolvable object) {
 		// TODO Auto-generated method stub
 		return false;
 	}

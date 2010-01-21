@@ -178,7 +178,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 					Resolvable crElement = resolvableIterator.next();
 					String crElementID = (String) crElement.get(idAttribute);
 					int crElementTimestamp = (Integer) crElement.get(TIMESTAMP_ATTR);
-					if(!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp)){
+					if(!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp, crElement)){
 						updateObjects.add(crElement);
 					}
 				}
