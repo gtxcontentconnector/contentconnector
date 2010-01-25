@@ -38,6 +38,10 @@ public class PlinkProcessor {
 
 	private static JCS plinkCache;
 	
+	private static String PLINK_CACHE_ACTIVATION_KEY="plinkcache";
+	
+	private boolean plinkcache = true;
+	
 	/**
 	 * Create new instance of plink processor
 	 * @param config
@@ -52,22 +56,34 @@ public class PlinkProcessor {
 			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
 		}
 		
-
-		try {
-			String configName = "shared";
-			if(config!=null){
-				configName=config.getName();
+		String s_plinkcache = config.getString(PLINK_CACHE_ACTIVATION_KEY);
+		if(s_plinkcache!=null && !"".equals(s_plinkcache))
+		{
+			plinkcache = Boolean.parseBoolean(s_plinkcache);
+		}
+		
+		if(plinkcache)
+		{
+			try {
+				String configName = "shared";
+				if(config!=null){
+					configName=config.getName();
+				}
+				else{
+					log.error("Attention i'm using a shared plinkcache because i'm missing my config.");
+				}
+				plinkCache = JCS.getInstance("gentics-cr-" + configName	+ "-plinks");
+				log.debug("Initialized cache zone for \""+ configName + "-plinks\".");
+	
+			} catch (CacheException e) {
+	
+				log.warn("Could not initialize Cache for PlinkProcessor.");
+	
 			}
-			else{
-				log.error("Attention i'm using a shared plinkcache because i'm missing my config.");
-			}
-			plinkCache = JCS.getInstance("gentics-cr-" + configName	+ "-plinks");
-			log.debug("Initialized cache zone for \""+ configName + "-plinks\".");
-
-		} catch (CacheException e) {
-
-			log.warn("Could not initialize Cache for PlinkProcessor.");
-
+		}
+		else
+		{
+			plinkCache=null;
 		}
 	}
 	
