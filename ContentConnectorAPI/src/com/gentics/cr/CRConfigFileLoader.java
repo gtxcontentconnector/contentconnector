@@ -1,16 +1,21 @@
  package com.gentics.cr;
 
+ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.io.RegexFilenameFilter;
 
+import com.gentics.contentnode.object.File;
 import com.gentics.cr.configuration.ConfigurationSettings;
 import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.cr.util.RegexFileFilter;
 /**
  * 
  * Last changed: $Date$
@@ -78,28 +83,38 @@ public class CRConfigFileLoader extends CRConfigUtil {
 		try {
 			//LOAD SERVLET CONFIGURATION
 			String confpath = CRUtil.resolveSystemProperties(path);
+			java.io.File default_configfile = new java.io.File(confpath);
+			String basename = default_configfile.getName();
+			String dirname = default_configfile.getParent();
+			Vector<String> configfiles = new Vector<String>(1);
+			if ( default_configfile.canRead() ) configfiles.add(confpath);
 			
-			props.load(new FileInputStream(confpath));
-			
-			for (Entry<Object,Object> entry:props.entrySet()) {
-				Object value = entry.getValue();
-				Object key = entry.getKey();
-				setProperty((String)key, (String)value);
+			//add all files matching the regex "name.*.properties"
+			java.io.File directory = new java.io.File(dirname);
+			FileFilter regexFilter = new RegexFileFilter(basename.replaceAll("\\..*", "")+".[^\\.]+.properties");
+			for(java.io.File file:directory.listFiles(regexFilter)){
+				configfiles.add(file.getPath());
 			}
 			
-		} catch (FileNotFoundException e1) {
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!");
-			System.out.println(e1.getMessage());
-			e1.printStackTrace();
+			//load all found files into config
+			for(String file:configfiles){
+				props.load(new FileInputStream(file));
+				for (Entry<Object,Object> entry:props.entrySet()) {
+					Object value = entry.getValue();
+					Object key = entry.getKey();
+					setProperty((String)key, (String)value);
+				}
+			}
+			if(configfiles.size() == 0){
+				throw new FileNotFoundException("Cannot find any valid configfile.");
+			}
 			
-		} catch (IOException e1) {
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!");
-			System.out.println(e1.getMessage());
-			e1.printStackTrace();
+		} catch (FileNotFoundException e) {
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!",e);
+		} catch (IOException e) {
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!",e);
 		}catch(NullPointerException e){
-			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!\r\n");
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!\r\n",e);
 		}
 	}
 	
