@@ -25,6 +25,7 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.util.indexing.IndexJobQueue;
+import com.gentics.cr.util.indexing.IndexLocation;
 
 
 /**
@@ -99,23 +100,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	}
 	
 	/**
-	 * Creates the reopen file to make portlet reload the index.
-	 */
-	public void createReopenFile(){
-		boolean write_reopen_file = Boolean.parseBoolean((String)config.get("writereopenfile"));
-		
-		if(write_reopen_file == true){
-		
-			log.debug("Writing reopen to " + this.getReopenFilename());
-			try {
-				new File(this.getReopenFilename()).createNewFile();
-			} catch (IOException e) {
-				log.warn("Cannot create reopen file! " + e);
-			}
-		}
-	}
-	
-	/**
 	 * Checks Lock and throws Exception if Lock exists
 	 * @throws LockedIndexException 
 	 * @throws IOException 
@@ -140,22 +124,7 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	private LuceneIndexLocation(CRConfig config)
 	{
 		super(config);
-		this.config = config;
 		name = config.getName();
-		indexLocation = (String)config.get(INDEX_LOCATION_KEY);
-		queue = new IndexJobQueue(config);
-		String per = (String)config.get(PERIODICAL_KEY);
-		periodical = Boolean.parseBoolean(per);
-		String s_reopen = (String)config.get(REOPEN_CHECK_KEY);
-		if(s_reopen!=null)
-		{
-			reopencheck = Boolean.parseBoolean(s_reopen);
-		}
-		String s_lockdetect = (String)config.get(LOCK_DETECTION_KEY);
-		if(s_lockdetect!=null)
-		{
-			lockdetection = Boolean.parseBoolean(s_lockdetect);
-		}
 		if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
 		{
 			dir = new RAMDirectory();
@@ -189,31 +158,16 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 		else{
 			log.debug("Accessor already present. we will not create a new one.");
 		}
-		if(periodical)
-		{
-			periodical_thread = new Thread(new Runnable(){
-				public void run()
-				{
-					boolean interrupted = false;
-					while(periodical && !interrupted && !Thread.currentThread().isInterrupted())
-					{
-						try
-						{
-							createAllCRIndexJobs();
-							Thread.sleep(periodical_interval*1000);
-							
-						}catch(InterruptedException ex)
-						{
-							interrupted = true;
-						}
-					}
-				}
-			});
-			periodical_thread.setName("PeriodicIndexJobCreator");
-			periodical_thread.start();
-			
+	}
+	
+	public static synchronized LuceneIndexLocation getIndexLocation(CRConfig config) {
+		IndexLocation genericIndexLocation = IndexLocation.getIndexLocation(config);
+		if (genericIndexLocation instanceof LuceneIndexLocation) {
+			return (LuceneIndexLocation) genericIndexLocation;
+		} else {
+			log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Job by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
+			return null;
 		}
-		this.queue.startWorker();
 	}
 	
 	private Directory createRAMDirectory()
@@ -236,15 +190,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	}
 	
 	/**
-	 * Returns if the users has configured lockdetection for the index location
-	 * @return
-	 */
-	public boolean hasLockDetection()
-	{
-		return(this.lockdetection);
-	}
-	
-	/**
 	 * Returns the directory used by this index location
 	 * @return
 	 */
@@ -253,39 +198,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 		return(this.dir);
 	}
 	
-	/**
-	 * Gets the index location configured in config
-	 * @param config
-	 * 			if the config does not hold the param indexLocation or if indexLocation = "RAM", an RAM Directory will be created and returned
-	 * @return initialized IndexLocation
-	 */
-	public static synchronized LuceneIndexLocation getIndexLocation(CRConfig config)
-	{
-		LuceneIndexLocation dir = null;
-		String key = (String)config.get(INDEX_LOCATION_KEY);
-		if(key==null)
-		{
-			log.error("COULD NOT FIND CONFIG FOR INDEXLOCATION. check config @ "+config.getName());
-			return null;
-		}
-		if(indexmap==null)
-		{
-			indexmap = new Hashtable<String,LuceneIndexLocation>();
-			dir = new LuceneIndexLocation(config);
-			indexmap.put(key, dir);
-		}
-		else
-		{
-			dir = indexmap.get(key);
-			if(dir==null)
-			{
-				dir = new LuceneIndexLocation(config);
-				indexmap.put(key, dir);
-			}
-		}
-		
-		return dir;
-	}
 	
 	/**
 	 * Get number of documents in Index
@@ -309,39 +221,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 		}
 		
 		return count;
-	}
-	
-	/**
-	 * Checks for reopen file and reopens indexAccessor
-	 * @param indexAccessor
-	 * @return true if indexAccessor has been reopened
-	 */
-	public boolean reopenCheck(IndexAccessor indexAccessor)
-	{
-		boolean reopened = false;
-		if(this.reopencheck)
-		{
-			try
-			{
-				log.debug("Check for reopen file at "+this.getReopenFilename());
-				File reopenFile = new File(this.getReopenFilename());
-				if(reopenFile.exists())
-				{
-					reopenFile.delete();
-
-					//release writer (Readers and Searchers are refreshed after a Writer is released.)
-					IndexWriter tempWriter = indexAccessor.getWriter();
-					indexAccessor.release(tempWriter);
-					reopened = true;
-					log.debug("Reopened index.");
-				}
-			}catch(Exception ex)
-			{
-				log.error(ex.getMessage());
-				ex.printStackTrace();
-			}
-		}
-		return reopened;
 	}
 	
 	
@@ -372,111 +251,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	public boolean isContainingIndex() {
 		
 		return getDocCount()>0;
-	}
-	
-	/**
-	 * Creates a new CRIndexJob for the given CRConfig and adds the job to the queue
-	 * @param config
-	 * @param configmap 
-	 * @return
-	 */
-	public boolean createCRIndexJob(CRConfig config,Hashtable<String,CRConfigUtil> configmap)
-	{
-		return this.queue.addJob(new CRLuceneIndexJob(config,this,configmap));
-	}
-	
-	private static final String CR_KEY = "CR";
-	
-	/**
-	 * Creats jobs for all configured CRs
-	 */
-	public void createAllCRIndexJobs() {
-		
-		Hashtable<String,CRConfigUtil> configs = getCRMap();
-
-		for (Entry<String,CRConfigUtil> e:configs.entrySet()) {
-			
-				CRConfigUtil crC = e.getValue();
-				createCRIndexJob(new CRConfigUtil(crC,crC.getName()),configs);
-			
-		}
-		
-
-	}
-	
-	/**
-	 * Creates a map of the configured CRs
-	 * @return
-	 */
-	public Hashtable<String,CRConfigUtil> getCRMap()
-	{
-		CRConfig crconfig = this.config;
-		Hashtable<String,CRConfigUtil> map = new Hashtable<String,CRConfigUtil>();
-		
-		
-		GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
-		if(CRc!=null)
-		{
-			Hashtable<String,GenericConfiguration> configs = CRc.getSubConfigs();
-
-			for (Entry<String,GenericConfiguration> e:configs.entrySet()) {
-				try {
-					map.put(crconfig.getName()+"."+e.getKey(), new CRConfigUtil(e.getValue(),crconfig.getName()+"."+e.getKey()));
-				} catch (Exception ex){
-					String name="<no config name>";
-					String key ="<no key>";
-					CRException cex = new CRException(ex);
-					if(e!=null && e.getKey()!=null)key=e.getKey();
-					if(crconfig!=null && crconfig.getName()!=null)name=crconfig.getName();
-					log.error("Error while creating cr map for "+name+"."+key+"  - "+cex.getMessage()+" - "+cex.getStringStackTrace());
-					cex.printStackTrace();
-				}
-			}
-		}
-		else
-		{
-			log.error("THERE ARE NO CRs CONFIGURED FOR INDEXING.");
-		}
-		return map;
-	}
-	
-	/**
-	 * Returns the IndexJobQueue
-	 * @return
-	 */
-	public IndexJobQueue getQueue()
-	{
-		return this.queue;
-	}
-	
-	/**
-	 * Tests if this IndexLocation has turned on periodical indexing
-	 * @return
-	 */
-	public boolean isPeriodical()
-	{
-		return this.periodical;
-	}
-	
-	/**
-	 * Stops all Index workers
-	 */
-	public void stop()
-	{
-		if(this.periodical_thread!=null && this.periodical_thread.isAlive())
-		{
-			this.periodical_thread.interrupt();
-			try {
-				this.periodical_thread.join();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		if(this.queue!=null)
-		{
-			this.queue.stop();
-		}
-		IndexAccessorFactory.getInstance().close();
 	}
 	
 }
