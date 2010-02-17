@@ -54,7 +54,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	 * @param indexLoc
 	 * @param configmap
 	 */
-	public CRLuceneIndexJob(CRConfig config, LuceneIndexLocation indexLoc,Hashtable<String,CRConfigUtil> configmap)
+	public CRLuceneIndexJob(CRConfig config, IndexLocation indexLoc, 
+			Hashtable<String,CRConfigUtil> configmap)
 	{
 		super(config,indexLoc,configmap);
 	}
