@@ -26,6 +26,7 @@ import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.contentnode.content.GenticsContentFactory;
 import com.gentics.contentnode.datasource.CNWriteableDatasource;
+import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
@@ -234,7 +235,7 @@ public class CRIndexer {
 			this.stop=true;
 		}
 
-		private static final String CR_KEY = "CR";
+		
 		
 		
 		private void recreateIndex() {
@@ -246,7 +247,7 @@ public class CRIndexer {
 
 			
 			LuceneIndexLocation indexLoc = LuceneIndexLocation.getIndexLocation(crconfig);					
-			GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
+			GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CRConfig.CR_KEY);
 			if(CRc!=null)
 			{
 				Hashtable<String,GenericConfiguration> configs = CRc.getSubConfigs();

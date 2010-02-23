@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.indexer.CRIndexer;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
 
@@ -46,6 +47,14 @@ public interface CRConfig {
 	 * configuration property name for pub_dir attribute used by advanced plinkreplacing to generate beautiful URLs
 	 */
 	public static final String ADVPLR_PB_KEY = "ADVPLR_PUB_DIR_ATTRIBUTE";
+	
+	/**
+	 * property key to configure multiple indexes.
+	 * @see com.gentics.cr.lucene.indexer.CRIndexer$BackgroundJob#recreateIndex()
+	 * @see com.gentics.cr.util.indexing.IndexLocation#getIndexLocationClass(CRConfig)
+	 */
+	public static final String CR_KEY = "CR";
+	
 	
 	/**
 	 * Creates Datasource from Config
