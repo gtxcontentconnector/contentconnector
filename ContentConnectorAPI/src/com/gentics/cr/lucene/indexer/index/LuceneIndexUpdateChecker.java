@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -13,6 +14,7 @@ import org.apache.lucene.index.TermDocs;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
 /**
@@ -28,10 +30,11 @@ import com.gentics.cr.util.indexing.IndexUpdateChecker;
 public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 
 	LuceneIndexLocation indexLocation;
-	IndexReader reader;
 	IndexAccessor indexAccessor;
 	LinkedHashMap<String,Integer> docs;
 	Iterator<String> docIT;
+	Vector<String> checkedDocuments;
+	Logger log = Logger.getLogger(LuceneIndexUpdateChecker.class);
 	/**
 	 * Initializes the Lucene Implementation of {@link IndexUpdateChecker}.
 	 * @param indexLocation
@@ -44,21 +47,48 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	{
 		this.indexLocation = indexLocation;
 		indexAccessor = indexLocation.getAccessor();
-		reader = indexAccessor.getReader(true);
+		IndexReader reader = indexAccessor.getReader(true);
 		
 		TermDocs termDocs = reader.termDocs(new Term(termKey,termValue));
 		
 		docs = fetchSortedDocs(termDocs, reader, idAttribute);
 		docIT = docs.keySet().iterator();
 		
+		checkedDocuments = new Vector<String>(100);
+		
 		//TODO CONTINUE HERE PREPARE TO USE ITERATOR IN CHECK METHOD
 		
+		
+		indexAccessor.release(reader, true);
 	}
 	
 	@Override
 	protected boolean checkUpToDate(String identifyer, int timestamp, Resolvable object) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean readerWithWritePermissions = false;
+		if (docs.containsKey(identifyer)) {
+			Integer documentId = docs.get(identifyer);
+			try {
+				IndexReader reader = indexAccessor.getReader(readerWithWritePermissions);
+				Document document = reader.document(documentId);
+				checkedDocuments.add(identifyer);
+				int documentUpdateTimestamp = -1;
+				try {
+					documentUpdateTimestamp = Integer.parseInt(document.get(AbstractUpdateCheckerJob.TIMESTAMP_ATTR));
+				} catch (NumberFormatException e) { }
+				indexAccessor.release(reader, readerWithWritePermissions);
+				if(documentUpdateTimestamp == -1 || timestamp == -1 || documentUpdateTimestamp < timestamp){
+					return false;
+				}
+				return true;
+			} catch (IOException e) {
+				//TODO specify witch index is not readable
+				log.error("Cannot open index for reading.",e);
+				return true;
+			}
+		} else {
+			//object is not yet in the index => it is not up to date
+			return false;
+		}
 	}
 
 	@Override

@@ -36,7 +36,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	
 	protected static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
 	protected static final String DEFAULT_IDATTRIBUTE = "contentid";
-	protected static final String TIMESTAMP_ATTR = "updatetimestamp";
+	public static final String TIMESTAMP_ATTR = "updatetimestamp";
 	
 	protected CRConfig config;
 	protected String identifyer;
