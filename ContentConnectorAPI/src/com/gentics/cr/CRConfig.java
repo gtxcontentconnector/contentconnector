@@ -50,7 +50,7 @@ public interface CRConfig {
 	
 	/**
 	 * property key to configure multiple indexes.
-	 * @see com.gentics.cr.lucene.indexer.CRIndexer$BackgroundJob#recreateIndex()
+	 * @see com.gentics.cr.lucene.indexer.CRIndexer.BackgroundJob#recreateIndex()
 	 * @see com.gentics.cr.util.indexing.IndexLocation#getIndexLocationClass(CRConfig)
 	 */
 	public static final String CR_KEY = "CR";

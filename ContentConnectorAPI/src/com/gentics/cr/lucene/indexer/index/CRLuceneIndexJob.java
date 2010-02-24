@@ -31,6 +31,7 @@ import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
+import com.gentics.cr.CRError;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
@@ -48,6 +49,13 @@ import com.gentics.cr.util.indexing.IndexLocation;
  */
 public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	protected static Logger log = Logger.getLogger(CRLuceneIndexJob.class);
+	
+	/**
+	 * Name of class to use for IndexLocation, must extend {@link com.gentics.cr.util.indexing.IndexLocation}
+	 */
+	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.lucene.indexer.index.LuceneIndexLocation";
+	
+	
 	/**
 	 * Create new instance of IndexJob
 	 * @param config
@@ -178,7 +186,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					luceneIndexUpdateChecker = new LuceneIndexUpdateChecker((LuceneIndexLocation) indexLocation,CR_FIELD_KEY,crid,idAttribute);
 				}
 				else{
-					log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Jo by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
+					log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Job by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
+					throw new CRException(new CRError("Error","IndexLocation is not created for Lucene."));
 				}
 				
 				Collection<Resolvable> objectsToIndex=null;
@@ -283,15 +292,16 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				
 			}catch(Exception ex)
 			{
-				log.error("Could not complete index run... indexed Objects: "+status.getObjectsDone()+", trying to close index and remove lock.");
-				ex.printStackTrace();
+				log.error("Could not complete index run... indexed Objects: "+status.getObjectsDone()+", trying to close index and remove lock.",ex);
 			}finally{
 				//Set status for job if it was not locked
 				status.setCurrentStatusString("Finished job.");
 				int objectCount = status.getObjectsDone();
 				log.debug("Indexed "+objectCount+" objects...");
 
-				indexAccessor.release(indexWriter);
+				if ( indexAccessor != null && indexWriter != null) {
+					indexAccessor.release(indexWriter);
+				}
 				CRDatabaseFactory.releaseDatasource(ds);
 
 				if(objectCount > 0){

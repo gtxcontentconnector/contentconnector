@@ -54,7 +54,7 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	private Directory dir=null;
 	private String name = null;
 	private IndexJobQueue queue = null;
-	private CRConfig config;
+	protected CRConfig config;
 	private boolean periodical = false;
 	private int periodical_interval = 60; //60 seconds
 	private Thread periodical_thread;
@@ -121,9 +121,11 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	}
 	
 	
-	private LuceneIndexLocation(CRConfig config)
+	//TODO should be protected, is public because it is used in IndexLocation#createNewIndexLocation
+	public LuceneIndexLocation(CRConfig config)
 	{
 		super(config);
+		this.config = config;
 		name = config.getName();
 		if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
 		{

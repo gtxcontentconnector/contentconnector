@@ -16,6 +16,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
+import com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob;
 import com.gentics.cr.lucene.indexer.index.LockedIndexException;
 
 
@@ -45,7 +46,7 @@ public class IndexLocation {
 	
 	//Instance Members
 	private IndexJobQueue queue = null;
-	private CRConfig config;
+	protected CRConfig config;
 	private boolean periodical = false;
 	private int periodical_interval = 60; //60 seconds
 	private Thread periodical_thread;
@@ -159,7 +160,7 @@ public class IndexLocation {
 		if(indexmap==null)
 		{
 			indexmap = new Hashtable<String,IndexLocation>();
-			dir = new IndexLocation(config);
+			dir = createNewIndexLocation(config);
 			indexmap.put(key, dir);
 		}
 		else
@@ -167,12 +168,104 @@ public class IndexLocation {
 			dir = indexmap.get(key);
 			if(dir==null)
 			{
-				dir = new IndexLocation(config);
+				dir = createNewIndexLocation(config);
 				indexmap.put(key, dir);
 			}
 		}
 		
 		return dir;
+	}
+	
+	/**
+	 * Create new IndexLocation for the configured Implementation of {@link AbstractUpdateCheckerJob}.
+	 * @param config {@link CRConfig} of the actual indexLocation
+	 * @return IndexLocation that can be used for all configured Implementations of {@link AbstractUpdateCheckerJob}
+	 */
+	private static IndexLocation createNewIndexLocation(final CRConfig config) {
+		Class<? extends IndexLocation> indexLocationClass = getIndexLocationClass(config);
+		try {
+			Constructor<? extends IndexLocation> indexLocationConstructor = indexLocationClass.getDeclaredConstructor(new Class[]{CRConfig.class});
+			return indexLocationConstructor.newInstance(config);
+		} catch (SecurityException e) {
+			log.error("Cannot get Constructor(CRConfig) for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
+		} catch (NoSuchMethodException e) {
+			log.error("Cannot get Constructor(CRConfig) for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
+		} catch (IllegalArgumentException e) {
+			log.error("Cannot invoke Constructor for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
+		} catch (InstantiationException e) {
+			log.error("Cannot invoke Constructor for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
+		} catch (IllegalAccessException e) {
+			log.error("Cannot invoke Constructor for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
+		} catch (InvocationTargetException e) {
+			log.error("Cannot invoke Constructor for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
+		}
+		return new IndexLocation(config);
+	}
+
+	private static Class<? extends IndexLocation> getIndexLocationClass(CRConfig config) {
+		Object indexesObject = config.get(CRConfig.CR_KEY);
+		if(indexesObject != null && indexesObject instanceof GenericConfiguration){
+			GenericConfiguration indexes = (GenericConfiguration) config.get(CRConfig.CR_KEY);
+			Class<? extends IndexLocation> indexLocationClass = null;
+			for(Entry<String,GenericConfiguration> subConfigEntry:indexes.getSubConfigs().entrySet()) {
+				String subConfigKey = subConfigEntry.getKey();
+				GenericConfiguration subConfig = subConfigEntry.getValue();
+				Class<? extends AbstractUpdateCheckerJob> subConfigClass = getUpdateJobImplementationClass(new CRConfigUtil(subConfig,config.getName()+"."+subConfigKey));
+				try {
+					String indexLocationClassName = subConfigClass.getField("INDEXLOCATIONCLASS").get(subConfigClass).toString();
+					Class<?> indexLocationClassGeneric = Class.forName(indexLocationClassName);
+					if(indexLocationClass == null){
+						indexLocationClass = indexLocationClassGeneric.asSubclass(IndexLocation.class);
+					}
+					else if(indexLocationClass != indexLocationClassGeneric.asSubclass(IndexLocation.class)){
+						//TODO add advanced error handling. e.g. different classes can be valid if they are subclasses of each other.
+						//in this case we should create an instance of the deepest configured subclass 
+						log.error("Not all of your configured implementations have the same value in the field \"INDEXLOCATIONCLASS\".");
+					}
+				} catch (SecurityException e) {
+					log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on "+subConfigClass.getName()+".",e);
+				} catch (NoSuchFieldException e) {
+					log.error(subConfigClass.getName()+" has no field named \"INDEXLOCATIONCLASS\"",e);
+				} catch (ClassNotFoundException e) {
+					log.error("Cannot find class declared in field name \"INDEXLOCATIONCLASS\" of class "+subConfigClass.getName()+". Therefore i cannot create a specific IndexLocation for the configured AbstractUpdateCheckerJob implementation.",e);
+				} catch (IllegalArgumentException e) {
+					log.error("Error getting static Field \"INDEXLOCATIONLCASS\" of class "+subConfigClass.getName());
+				} catch (IllegalAccessException e) {
+					log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on "+subConfigClass.getName()+".",e);
+				}
+			}
+			if (indexLocationClass == null) {
+				return IndexLocation.class;
+			}
+			else {
+				return indexLocationClass;
+			}
+		}
+		else
+			return IndexLocation.class;
+	}
+
+	/**
+	 * Helper method to get Class of UpdateJobImplementation
+	 * @param config {@link CRConfig} to 
+	 * @return
+	 */
+	private static Class<? extends AbstractUpdateCheckerJob> getUpdateJobImplementationClass(CRConfig config){
+		Class<?> updatejobImplementationClassGeneric;
+		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass;
+		String updatejobimplementationClassName = config.getString(UPDATEJOBCLASS_KEY);
+		if(updatejobimplementationClassName == null){
+			updatejobimplementationClassName = DEFAULT_UPDATEJOBCLASS;
+		}
+		
+		try {
+			updatejobImplementationClassGeneric = Class.forName(updatejobimplementationClassName);
+			updatejobImplementationClass = updatejobImplementationClassGeneric.asSubclass(AbstractUpdateCheckerJob.class);
+			return updatejobImplementationClass;
+		} catch (ClassNotFoundException e) {
+			log.error("Cannot load class for creating a new IndexJob",e);
+		}
+		return null;
 	}
 	
 	/**
@@ -203,7 +296,7 @@ public class IndexLocation {
 				if(reopenFile.exists())
 				{
 					reopenFile.delete();
-
+					
 					//release writer (Readers and Searchers are refreshed after a Writer is released.)
 					IndexWriter tempWriter = indexAccessor.getWriter();
 					indexAccessor.release(tempWriter);
@@ -228,6 +321,8 @@ public class IndexLocation {
 		return getDocCount()>0;
 	}
 	
+
+	
 	/**
 	 * Creates a new CRIndexJob for the given CRConfig and adds the job to the queue
 	 * @param config
@@ -236,24 +331,15 @@ public class IndexLocation {
 	 */
 	public boolean createCRIndexJob(CRConfig config,Hashtable<String,CRConfigUtil> configmap)
 	{
-		String updatejobimplementationClassName = config.getString(UPDATEJOBCLASS_KEY);
-		if(updatejobimplementationClassName == null){
-			updatejobimplementationClassName = DEFAULT_UPDATEJOBCLASS;
-		}
-		Class<?> updatejobImplementationClassGeneric;
-		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass;
+		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass = getUpdateJobImplementationClass(config);
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
-			updatejobImplementationClassGeneric = Class.forName(updatejobimplementationClassName);
-			updatejobImplementationClass = updatejobImplementationClassGeneric.asSubclass(AbstractUpdateCheckerJob.class);
 			Constructor<? extends AbstractUpdateCheckerJob> updatejobImplementationClassConstructor = updatejobImplementationClass.getConstructor(new Class[]{CRConfig.class, IndexLocation.class, Hashtable.class});
 			Object indexJobObject = updatejobImplementationClassConstructor.newInstance(config,this,configmap);
 			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
 			return this.queue.addJob(indexJob);
 		} catch (ClassCastException e){
 			log.error("Please configure an implementation of "+AbstractUpdateCheckerJob.class+" ",e);
-		} catch (ClassNotFoundException e) {
-			log.error("Cannot load class for creating a new IndexJob",e);
 		} catch (SecurityException e) {
 			log.error("Cannot load class for creating a new IndexJob",e);
 		} catch (NoSuchMethodException e) {

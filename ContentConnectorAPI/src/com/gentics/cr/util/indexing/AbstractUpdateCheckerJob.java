@@ -29,6 +29,11 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	protected static Logger log = Logger.getLogger(AbstractUpdateCheckerJob.class);
 	
+	/**
+	 * Name of class to use for IndexLocation, must extend {@link com.gentics.cr.util.indexing.IndexLocation}
+	 */
+	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.util.indexing.IndexLocation";
+	
 	protected static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
 	protected static final String DEFAULT_IDATTRIBUTE = "contentid";
 	protected static final String TIMESTAMP_ATTR = "updatetimestamp";
