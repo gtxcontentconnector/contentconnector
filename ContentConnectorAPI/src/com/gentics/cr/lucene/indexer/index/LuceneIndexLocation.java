@@ -115,8 +115,7 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 		{
 			throw new LockedIndexException(e);
 		} catch (IOException e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
 	}
 	
