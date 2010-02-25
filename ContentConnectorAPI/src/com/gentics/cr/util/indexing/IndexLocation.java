@@ -52,7 +52,7 @@ public class IndexLocation {
 	private Thread periodical_thread;
 	private boolean lockdetection = false;
 	private boolean reopencheck = false;
-	private String indexLocation ="";
+	protected String indexLocation ="";
 	
 	/**
 	 * Returns the filename of the reopen file.

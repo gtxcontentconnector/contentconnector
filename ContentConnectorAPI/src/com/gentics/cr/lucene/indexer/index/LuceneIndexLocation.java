@@ -54,13 +54,11 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	private Directory dir=null;
 	private String name = null;
 	private IndexJobQueue queue = null;
-	protected CRConfig config;
 	private boolean periodical = false;
 	private int periodical_interval = 60; //60 seconds
 	private Thread periodical_thread;
 	private boolean lockdetection = false;
 	private boolean reopencheck = false;
-	private String indexLocation ="";
 	
 	private Analyzer getConfiguredAnalyzer() 
 	{
@@ -124,7 +122,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	public LuceneIndexLocation(CRConfig config)
 	{
 		super(config);
-		this.config = config;
 		name = config.getName();
 		if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
 		{
