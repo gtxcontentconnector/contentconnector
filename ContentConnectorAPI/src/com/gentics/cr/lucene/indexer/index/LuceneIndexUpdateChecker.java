@@ -109,7 +109,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 		} catch (IOException e) {
 			log.error("Cannot delete objects from index.",e);
 		} finally {
-			//allways
+			//always release writeReader it blocks other threads if you don't 
 			if (writeReader!=null) {
 				indexAccessor.release(writeReader, readerNeedsWrite);
 			}
