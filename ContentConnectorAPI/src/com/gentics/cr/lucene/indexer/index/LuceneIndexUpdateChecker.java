@@ -93,7 +93,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 
 	@Override
 	public void deleteStaleObjects() {
-		log.debug(checkedDocuments.size()+" object checked, "+docs.size()+" objects already in the index.");
+		log.debug(checkedDocuments.size()+" objects checked, "+docs.size()+" objects already in the index.");
 		IndexReader writeReader = null;
 		boolean readerNeedsWrite = true;
 		try {
