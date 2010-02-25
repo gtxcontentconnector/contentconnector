@@ -428,7 +428,7 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 			}
 		}
 		
-		if(crBean.getChildRepository().size()>0)
+		if(crBean.getChildRepository() != null && crBean.getChildRepository().size()>0)
 		{
 			Element childContainer = doc.createElement("children");
 			
