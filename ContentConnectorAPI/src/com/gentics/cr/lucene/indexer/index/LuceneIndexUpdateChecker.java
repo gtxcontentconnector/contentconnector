@@ -93,8 +93,28 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 
 	@Override
 	public void deleteStaleObjects() {
-		// TODO Auto-generated method stub
-		
+		log.debug(checkedDocuments.size()+" object checked, "+docs.size()+" objects already in the index.");
+		IndexReader writeReader = null;
+		boolean readerNeedsWrite = true;
+		try {
+			for(String contentId:docs.keySet()){
+				if (!checkedDocuments.contains(contentId)) {
+					log.debug("Object "+contentId+" wasn't checked in the last run. So i will delete it.");
+					if (writeReader==null) {
+							writeReader = indexAccessor.getReader(readerNeedsWrite);
+					}
+					writeReader.deleteDocument(docs.get(contentId));
+				}
+			}
+		} catch (IOException e) {
+			log.error("Cannot delete objects from index.",e);
+		} finally {
+			//allways
+			if (writeReader!=null) {
+				indexAccessor.release(writeReader, readerNeedsWrite);
+			}
+		}
+		checkedDocuments.clear();
 	}
 	
 	private LinkedHashMap<String,Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute) throws IOException
