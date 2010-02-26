@@ -160,7 +160,7 @@ public class CRRequestBuilder {
 		//Parameters used in mnoGoSearch for easier migration (Users should use type=MNOGOSEARCHXML)
 		if ( this.filter == null ) { this.filter = request.getParameter("q"); }
 		if ( this.count == null ) { this.count = request.getParameter("ps"); }
-		if ( this.start != null && this.count != null) {
+		if ( this.start == null && this.count != null) {
 			String numberOfPage = (String) request.getParameter("np");
 			this.start = (Integer.parseInt(numberOfPage) * Integer.parseInt(this.count)) + "";
 		}
