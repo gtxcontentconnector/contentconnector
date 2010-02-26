@@ -43,7 +43,6 @@ public class VelocityContentRepository extends ContentRepository {
 	public void toStream(OutputStream stream) throws CRException {
 		try {
 			if(templateManager==null)templateManager=config.getTemplateManager();
-			//TODO add parameter for template reloading in config so you can develop velocity template more easy
 			if(template==null || templateReloading){
 				String templatePath = (String) config.get(TEMPLATEPATH_KEY);
 				try{
