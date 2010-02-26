@@ -38,6 +38,11 @@ public abstract class ContentRepository implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3367665528658725618L;
+	
+	/**
+	 * property name for config to define if the metaresolvable should be deployed to the repository
+	 */
+	public static final String DEPLOYMETARESOLVABLE_KEY = "cr.deploymetaresolvable";
 
 	private String[] attrArray;
 

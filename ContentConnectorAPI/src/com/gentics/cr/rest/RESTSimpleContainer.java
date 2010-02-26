@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
@@ -30,6 +31,7 @@ public class RESTSimpleContainer{
 	private String response_encoding;
 	private String contenttype="";
 	private static Logger log = Logger.getLogger(RESTSimpleContainer.class);
+	private CRConfigUtil config;
 	
 	/**
 	 * Get the content type as String
@@ -47,7 +49,7 @@ public class RESTSimpleContainer{
 	public RESTSimpleContainer(CRConfigUtil crConf)
 	{
 		this.response_encoding = crConf.getEncoding();
-		
+		this.config = crConf;
 		try {
 			
 			this.rp = crConf.getNewRequestProcessorInstance(1);
@@ -70,7 +72,7 @@ public class RESTSimpleContainer{
 		CRRequestBuilder myReqBuilder = reqBuilder;
 		ContentRepository cr = null;
 		try {
-			cr = myReqBuilder.getContentRepository(this.response_encoding);
+			cr = myReqBuilder.getContentRepository(this.response_encoding,this.config);
 			this.contenttype = cr.getContentType();
 			if (responsetypesetter != null) {
 				responsetypesetter.setContentType(this.getContentType());
@@ -84,6 +86,13 @@ public class RESTSimpleContainer{
 			// Query the Objects from RequestProcessor
 			coll = rp.getObjects(req);
 			
+			boolean deploy_metaresolvable = Boolean.parseBoolean((String) config.get(ContentRepository.DEPLOYMETARESOLVABLE_KEY));
+			if(deploy_metaresolvable){
+				CRResolvableBean metaResolvable = new CRResolvableBean("metaResolvable");
+				//metaResolvable.set(size, )
+				//TODO get values for metaresolvable and put it to the contentrepository
+			}
+			
 			// add the objects to repository as serializeable beans
 			if (coll != null) {
 				for (Iterator<CRResolvableBean> it = coll.iterator(); it.hasNext();) {
@@ -92,22 +101,21 @@ public class RESTSimpleContainer{
 			}
 			cr.toStream(stream);
 			
-		} catch (CRException e1) {
+		} catch (CRException ex) {
 			//CR Error Handling
 			//CRException is passed down from methods that want to post 
 			//the occured error to the client
-			cr.respondWithError((OutputStream) stream,e1,myReqBuilder.isDebug());
-			log.debug(e1.getMessage()+" : "+e1.getStringStackTrace());
+			cr.respondWithError((OutputStream) stream,ex,myReqBuilder.isDebug());
+			log.debug(ex.getMessage(),ex);
 			
 		}
 		catch(Exception ex)
 		{
 			CRException crex = new CRException(ex);
 			cr.respondWithError((OutputStream) stream,crex,myReqBuilder.isDebug());
-			log.debug(ex.getMessage()+" : "+crex.getStringStackTrace());
+			log.debug(ex.getMessage(),crex);
 			
-		}finally
-		{
+		} finally {
 			try {
 				stream.flush();
 				stream.close();

@@ -33,6 +33,8 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 	 */
 	private static final String REQUEST_PROCESSOR_KEY = "RP";
 	
+	public static final String DEFAULT_TEMPLATE_PATH = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/");
+	
 	private static Logger log = Logger.getLogger(CRConfigUtil.class);
 
 	private String name = null;
@@ -472,11 +474,11 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 			ITemplateManager tmplManager=null;
 			try
 			{
-				tmplManager = VelocityTemplateManagerFactory.getConfiguredVelocityTemplateManagerInstance(this.getEncoding(),CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/"));
+				tmplManager = VelocityTemplateManagerFactory.getConfiguredVelocityTemplateManagerInstance(this.getEncoding(),DEFAULT_TEMPLATE_PATH);
 			}catch(Exception e)
 			{
 				CRException ex = new CRException(e);
-				log.error(ex.getMessage()+ex.getStringStackTrace());
+				log.error(ex.getMessage(),ex);
 			}
 			return tmplManager;
 		}

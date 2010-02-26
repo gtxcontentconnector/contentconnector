@@ -30,6 +30,9 @@ public enum RepositoryType {
 	    MNOGOSEARCHXML, /**
 	     * 
 	     */
-	    JAVABIN
-	
+	    JAVABIN,
+	    /**
+	     * 
+	     */
+	    VELOCITY
 }

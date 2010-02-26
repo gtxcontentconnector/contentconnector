@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
+import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.lucene.search.LuceneRequestProcessor;
 import com.gentics.cr.rest.ContentRepository;
@@ -13,6 +16,7 @@ import com.gentics.cr.rest.javaxml.JavaXmlContentRepository;
 import com.gentics.cr.rest.json.JSONContentRepository;
 import com.gentics.cr.rest.php.PHPContentRepository;
 import com.gentics.cr.rest.rss.RomeContentRepository;
+import com.gentics.cr.rest.velocity.VelocityContentRepository;
 import com.gentics.cr.rest.xml.MnogosearchXmlContentRepository;
 import com.gentics.cr.rest.xml.XmlContentRepository;
 /**
@@ -41,6 +45,8 @@ public class CRRequestBuilder {
 	protected String[] options;
 	protected Object request;
 	protected Object response;
+	
+	private Logger logger = Logger.getLogger(CRRequestBuilder.class);
 	
 	/**
 	 * Returns String Array of Attributes to request
@@ -138,8 +144,8 @@ public class CRRequestBuilder {
 		this.request = request;
 		this.filter = (String) request.getParameter("filter");
 		this.contentid = (String) request.getParameter("contentid");
-		this.start = (String) request.getParameter("start");
 		this.count = request.getParameter("count");
+		this.start = (String) request.getParameter("start");
 		this.sorting = request.getParameterValues("sorting");
 		this.attributes =  this.prepareAttributesArray(request.getParameterValues("attributes"));
 		this.plinkattributes =  request.getParameterValues("plinkattributes");
@@ -150,6 +156,17 @@ public class CRRequestBuilder {
 		this.isDebug = (request.getParameter("debug")!=null && request.getParameter("debug").equals("true"));
 		this.metaresolvable = Boolean.parseBoolean(request.getParameter(LuceneRequestProcessor.META_RESOLVABLE_KEY));
 		this.highlightquery = request.getParameter(LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY);
+		
+		//Parameters used in mnoGoSearch for easier migration (Users should use type=MNOGOSEARCHXML)
+		if ( this.filter == null ) { this.filter = request.getParameter("q"); }
+		if ( this.count == null ) { this.count = request.getParameter("ps"); }
+		if ( this.start != null && this.count != null) {
+			String numberOfPage = (String) request.getParameter("np");
+			this.start = (Integer.parseInt(numberOfPage) * Integer.parseInt(this.count)) + "";
+		}
+		
+		
+		
 		//if filter is not set and contentid is => use contentid instad
 		if (("".equals(filter) || filter == null)&& contentid!=null && !contentid.equals("")){
 			filter = "object.contentid == '" + contentid+"'";
@@ -166,6 +183,7 @@ public class CRRequestBuilder {
 			else if(this.type.equalsIgnoreCase("RSS"))this.repotype = RepositoryType.RSS;
 			else if(this.type.equalsIgnoreCase("MNOGOSEARCHXML"))this.repotype=RepositoryType.MNOGOSEARCHXML;
 			else if(this.type.equalsIgnoreCase("JAVABIN"))this.repotype=RepositoryType.JAVABIN;
+			else if(this.type.equalsIgnoreCase("VELOCITY"))this.repotype=RepositoryType.VELOCITY;
 			else this.repotype=RepositoryType.XML;
 		}
 		else
@@ -176,8 +194,8 @@ public class CRRequestBuilder {
 		//Set debug flag
 		if("true".equals(debug))
 			this.isDebug=true;
-
 	}
+	
 	
 	/**
 	 * Creates a CRRequest
@@ -244,6 +262,7 @@ public class CRRequestBuilder {
 		return ret.toArray(new String[ret.size()]);
 	}
 	
+	
 	/**
 	 * Create the ContentRepository for this request
 	 * @param encoding
@@ -272,10 +291,30 @@ public class CRRequestBuilder {
 			case JAVABIN:
 				cr = new JavaBinContentRepository(this.getAttributeArray(), encoding, this.getOptionArray());
 				break;
+			case VELOCITY:
+				logger.debug("Velocity can only be initialized via getContentRepository(encoding,config)");
 			default:
 				cr = new XmlContentRepository(this.getAttributeArray(),encoding,this.getOptionArray());
 		}
 		return cr;
 	}
+	/**
+	 * Create the ContentRepository for this request and give it the configuration. This is needed for the VelocityContentRepository
+	 * @param encoding Output encoding should be used
+	 * @param configUtil Config to get the Velocity Engine from
+	 * @return ContentRepository with the given settings.
+	 */
 	
+	public ContentRepository getContentRepository(String encoding, CRConfigUtil configUtil)
+	{
+		ContentRepository cr;
+		switch (this.getRepositoryType()) {
+			case VELOCITY:
+				cr = new VelocityContentRepository(this.getAttributeArray(), encoding, this.getOptionArray(), configUtil);
+				break;
+			default:
+				cr = getContentRepository(encoding);
+		}
+		return cr;
+	}
 }
