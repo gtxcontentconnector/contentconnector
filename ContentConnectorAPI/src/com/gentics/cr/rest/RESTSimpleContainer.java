@@ -16,6 +16,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.search.LuceneRequestProcessor;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 /**
@@ -78,6 +79,10 @@ public class RESTSimpleContainer{
 				responsetypesetter.setContentType(this.getContentType());
 			}
 			CRRequest req = myReqBuilder.getCRRequest();
+			boolean deploy_metaresolvable = Boolean.parseBoolean((String) config.get(ContentRepository.DEPLOYMETARESOLVABLE_KEY));
+			if(deploy_metaresolvable){
+				req.set(LuceneRequestProcessor.META_RESOLVABLE_KEY, true);
+			}
 			//DEPLOY OBJECTS TO REQUEST
 			for (Iterator<Map.Entry<String, Resolvable>> i = wrappedObjectsToDeploy.entrySet().iterator() ; i.hasNext() ; ) {
 				Map.Entry<String,Resolvable> entry = (Entry<String,Resolvable>) i.next();
@@ -85,13 +90,6 @@ public class RESTSimpleContainer{
 			}
 			// Query the Objects from RequestProcessor
 			coll = rp.getObjects(req);
-			
-			boolean deploy_metaresolvable = Boolean.parseBoolean((String) config.get(ContentRepository.DEPLOYMETARESOLVABLE_KEY));
-			if(deploy_metaresolvable){
-				CRResolvableBean metaResolvable = new CRResolvableBean("metaResolvable");
-				//metaResolvable.set(size, )
-				//TODO get values for metaresolvable and put it to the contentrepository
-			}
 			
 			// add the objects to repository as serializeable beans
 			if (coll != null) {
