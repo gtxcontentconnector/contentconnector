@@ -1,5 +1,7 @@
 package com.gentics.cr.lucene.indexer.transformer.other;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
@@ -15,6 +17,8 @@ public class CopyValue extends ContentTransformer {
 	private String source_attribute;
 	private String target_attribute;
 	
+	private static Logger logger = Logger.getLogger(CopyValue.class);
+	
 	/**
 	 * Creates instance of SetValueTransformer
 	 * @param config
@@ -23,6 +27,8 @@ public class CopyValue extends ContentTransformer {
 		super(config);
 		source_attribute = (String)config.get(TRANSFORMER_SOUCREATTRIBUTE_KEY);
 		target_attribute = (String)config.get(TRANSFORMER_TARGETATTRIBUTE_KEY);
+		if (source_attribute == null) { logger.error("Please configure "+TRANSFORMER_SOUCREATTRIBUTE_KEY + " for my config."); }
+		if (target_attribute == null) { logger.error("Please configure "+TRANSFORMER_TARGETATTRIBUTE_KEY + " for my config."); }
 	}
 	
 	@Override
