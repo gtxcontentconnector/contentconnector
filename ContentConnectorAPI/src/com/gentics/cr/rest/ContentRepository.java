@@ -45,7 +45,7 @@ public abstract class ContentRepository implements Serializable {
 
 	protected Vector<CRResolvableBean> resolvableColl;
 
-	private String response_encoding;
+	protected String response_encoding;
 
 	/**
 	 * Get responce encoding. Defaults to utf-8
