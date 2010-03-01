@@ -207,15 +207,17 @@ public class CRRequestBuilder {
 
 	public CRRequestBuilder(HttpServletRequest request,GenericConfiguration defaultparameters){
 		this(request);
-		if(this.type == null){
-			this.type = (String) defaultparameters.get("type");
-			setRepositoryType(this.type);
+		if(defaultparameters != null){
+			if(this.type == null){
+				this.type = (String) defaultparameters.get("type");
+				setRepositoryType(this.type);
+			}
+			if(this.node_id == null){
+				String default_node = (String) defaultparameters.get("node");
+				this.node_id = default_node.split("^");
+			}
+			addAdvancedSearchParameters();
 		}
-		if(this.node_id == null){
-			String default_node = (String) defaultparameters.get("node");
-			this.node_id = default_node.split("^");
-		}
-		addAdvancedSearchParameters();
 	}
 	
 	
