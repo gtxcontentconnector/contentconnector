@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.search.LuceneRequestProcessor;
 import com.gentics.cr.rest.ContentRepository;
 import com.gentics.cr.rest.javabin.JavaBinContentRepository;
@@ -113,20 +114,7 @@ public class CRRequestBuilder {
 		//SET PERMISSIONS-RULE
 		filter = this.createPermissionsRule(filter, permissions);
 		
-		//Initialize RepositoryType
-		if(this.type!=null)
-		{
-			if(this.type.equalsIgnoreCase("JSON"))this.repotype=RepositoryType.JSON;
-			else if(this.type.equalsIgnoreCase("PHP"))this.repotype=RepositoryType.PHP;
-			else if(this.type.equalsIgnoreCase("JAVAXML"))this.repotype=RepositoryType.JAVAXML;
-			else if(this.type.equalsIgnoreCase("MNOGOSEARCHXML"))this.repotype=RepositoryType.MNOGOSEARCHXML;
-			else if(this.type.equalsIgnoreCase("JAVABIN"))this.repotype=RepositoryType.JAVABIN;
-			else this.repotype=RepositoryType.XML;
-		}
-		else
-		{
-			this.repotype=RepositoryType.XML;
-		}
+		setRepositoryType(this.type);
 		
 		//Set debug flag
 		if("true".equals(debug))
@@ -174,26 +162,42 @@ public class CRRequestBuilder {
 		//SET PERMISSIONS-RULE
 		filter = this.createPermissionsRule(filter, permissions);
 		
+		
+		
+		
+		setRepositoryType(this.type);
+		
+		//Set debug flag
+		if("true".equals(debug))
+			this.isDebug=true;
+	}
+	
+	
+	private void setRepositoryType(String type) {
 		//Initialize RepositoryType
-		if(this.type!=null)
+		if(type!=null)
 		{
-			if(this.type.equalsIgnoreCase("JSON"))this.repotype=RepositoryType.JSON;
-			else if(this.type.equalsIgnoreCase("PHP"))this.repotype=RepositoryType.PHP;
-			else if(this.type.equalsIgnoreCase("JAVAXML"))this.repotype=RepositoryType.JAVAXML;
-			else if(this.type.equalsIgnoreCase("RSS"))this.repotype = RepositoryType.RSS;
-			else if(this.type.equalsIgnoreCase("MNOGOSEARCHXML"))this.repotype=RepositoryType.MNOGOSEARCHXML;
-			else if(this.type.equalsIgnoreCase("JAVABIN"))this.repotype=RepositoryType.JAVABIN;
-			else if(this.type.equalsIgnoreCase("VELOCITY"))this.repotype=RepositoryType.VELOCITY;
+			if(type.equalsIgnoreCase("JSON"))this.repotype=RepositoryType.JSON;
+			else if(type.equalsIgnoreCase("PHP"))this.repotype=RepositoryType.PHP;
+			else if(type.equalsIgnoreCase("JAVAXML"))this.repotype=RepositoryType.JAVAXML;
+			else if(type.equalsIgnoreCase("RSS"))this.repotype = RepositoryType.RSS;
+			else if(type.equalsIgnoreCase("MNOGOSEARCHXML"))this.repotype=RepositoryType.MNOGOSEARCHXML;
+			else if(type.equalsIgnoreCase("JAVABIN"))this.repotype=RepositoryType.JAVABIN;
+			else if(type.equalsIgnoreCase("VELOCITY"))this.repotype=RepositoryType.VELOCITY;
 			else this.repotype=RepositoryType.XML;
 		}
 		else
 		{
 			this.repotype=RepositoryType.XML;
 		}
-		
-		//Set debug flag
-		if("true".equals(debug))
-			this.isDebug=true;
+	}
+
+	public CRRequestBuilder(HttpServletRequest request,GenericConfiguration defaultparameters){
+		this(request);
+		if(this.type == null){
+			this.type = (String) defaultparameters.get("type");
+			setRepositoryType(this.type);
+		}
 	}
 	
 	

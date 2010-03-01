@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRServletConfig;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
@@ -32,6 +33,8 @@ public class RESTServlet extends HttpServlet {
 	private Logger log;
 	private CRServletConfig crConf;
 	private RESTSimpleContainer container;
+	
+	private final static String DEFAULPARAMETERS_KEY = "defaultparameters";
 	
 	public void init(ServletConfig config) throws ServletException {
 
@@ -62,7 +65,7 @@ public class RESTServlet extends HttpServlet {
 		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		CRRequestBuilder rB = new CRRequestBuilder(request);
+		CRRequestBuilder rB = new CRRequestBuilder(request,(GenericConfiguration) crConf.get(DEFAULPARAMETERS_KEY));
 		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
 		container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
 		response.getOutputStream().flush();
