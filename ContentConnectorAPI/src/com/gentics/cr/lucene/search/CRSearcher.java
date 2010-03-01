@@ -95,6 +95,8 @@ public class CRSearcher {
 			{
 				QueryParser parser = new QueryParser(Version.LUCENE_CURRENT,searchedAttributes[0], analyzer);
 				
+				query = replaceBooleanMnoGoSearchQuery(query);
+				
 				Query parsedQuery = parser.parse(query);
 				result = new HashMap<String,Object>(2);
 				result.put("query", parsedQuery);
@@ -115,6 +117,18 @@ public class CRSearcher {
 			indexAccessor.release(searcher);
 		}
 		return(result);
+	}
+	
+	/**
+	 * Helper method to replace search parameters from boolean mnoGoSearch query into their lucene compatible parameters
+	 * @param mnoGoSearchQuery
+	 * @return
+	 */
+	
+	private String replaceBooleanMnoGoSearchQuery(String mnoGoSearchQuery){
+		String luceneQuery = mnoGoSearchQuery.replace("|", "OR").replace("&", "AND").replace('\'', '"');
+		luceneQuery = luceneQuery.replaceAll(" ~([a-zA-Z0-9üöäÜÖÄß]+)", " NOT $1");
+		return luceneQuery;
 	}
 
 	/**
