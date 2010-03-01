@@ -243,7 +243,7 @@ public class JSONContentRepository extends ContentRepository {
 			}
 			objElement.element("attributes",attrContainer);
 		}
-		if(crBean.getChildRepository().size()>0)
+		if(crBean.getChildRepository() != null && crBean.getChildRepository().size()>0)
 		{
 			//JSONObject childContainer = new JSONObject();
 			JSONArray childContainer = new JSONArray();
