@@ -40,5 +40,6 @@
 	<classpathentry kind="lib" path="lib/lucene-fast-vector-highlighter-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-highlighter-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-snowball-3.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/velocity-tools-generic-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

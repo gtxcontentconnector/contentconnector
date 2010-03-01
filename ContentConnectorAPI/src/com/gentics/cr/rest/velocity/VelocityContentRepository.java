@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRError;
@@ -42,7 +43,10 @@ public class VelocityContentRepository extends ContentRepository {
 	@Override
 	public void toStream(OutputStream stream) throws CRException {
 		try {
-			if(templateManager==null)templateManager=config.getTemplateManager();
+			if(templateManager==null){
+				templateManager=config.getTemplateManager();
+				templateManager.put("esc", new EscapeTool());
+			}
 			if(template==null || templateReloading){
 				String templatePath = (String) config.get(TEMPLATEPATH_KEY);
 				try{
