@@ -38,6 +38,7 @@ public class VelocityContentRepository extends ContentRepository {
 	public void respondWithError(OutputStream stream, CRException ex,
 			boolean isDebug) {
 		//TODO respond with templatename.error.vm
+		logger.error("Error getting result.",ex);
 	}
 
 	@Override
