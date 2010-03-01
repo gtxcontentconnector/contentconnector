@@ -1,5 +1,6 @@
 package com.gentics.cr.configuration;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
@@ -33,8 +34,7 @@ public class StringConfigurationLoader  extends CRConfigUtil {
 		if(configstring!=null)
 		{
 			Properties props = new Properties();
-			StringReader sr = new StringReader(configstring);
-			props.load(sr);
+			props.load(new ByteArrayInputStream(configstring.getBytes()));
 			for(Entry<Object,Object> e : props.entrySet())
 			{
 				String value = CRUtil.resolveSystemProperties((String)e.getValue());
