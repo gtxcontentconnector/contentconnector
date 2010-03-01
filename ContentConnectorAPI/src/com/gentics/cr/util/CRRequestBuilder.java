@@ -39,6 +39,7 @@ public class CRRequestBuilder {
 	protected String debug;
 	protected String type;
 	protected String contentid;
+	protected String[] node_id;
 	protected String[] attributes;
 	protected String[] sorting;
 	protected String[] plinkattributes;
@@ -144,6 +145,7 @@ public class CRRequestBuilder {
 		this.isDebug = (request.getParameter("debug")!=null && request.getParameter("debug").equals("true"));
 		this.metaresolvable = Boolean.parseBoolean(request.getParameter(LuceneRequestProcessor.META_RESOLVABLE_KEY));
 		this.highlightquery = request.getParameter(LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY);
+		this.node_id = request.getParameterValues("node");
 		
 		//Parameters used in mnoGoSearch for easier migration (Users should use type=MNOGOSEARCHXML)
 		if ( this.filter == null ) { this.filter = request.getParameter("q"); }
@@ -159,11 +161,11 @@ public class CRRequestBuilder {
 		if (("".equals(filter) || filter == null)&& contentid!=null && !contentid.equals("")){
 			filter = "object.contentid == '" + contentid+"'";
 		}
+		
+		addAdvancedSearchParameters();
+		
 		//SET PERMISSIONS-RULE
 		filter = this.createPermissionsRule(filter, permissions);
-		
-		
-		
 		
 		setRepositoryType(this.type);
 		
@@ -172,6 +174,17 @@ public class CRRequestBuilder {
 			this.isDebug=true;
 	}
 	
+	private void addAdvancedSearchParameters(){
+		if ((filter != null && !"".equals(filter)) && this.node_id != null && this.node_id.length != 0){
+			String node_filter = "";
+			for(int i = 0; i < node_id.length; i++){
+				if(node_filter != "") node_filter += " OR ";
+				node_filter += "node_id:"+node_id[i];
+			}
+			node_id = new String[]{};
+			filter += " AND ("+node_filter+")";
+		}
+	}
 	
 	private void setRepositoryType(String type) {
 		//Initialize RepositoryType
@@ -198,6 +211,11 @@ public class CRRequestBuilder {
 			this.type = (String) defaultparameters.get("type");
 			setRepositoryType(this.type);
 		}
+		if(this.node_id == null){
+			String default_node = (String) defaultparameters.get("node");
+			this.node_id = default_node.split("^");
+		}
+		addAdvancedSearchParameters();
 	}
 	
 	
