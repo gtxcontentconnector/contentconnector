@@ -227,7 +227,8 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	
 	private IndexAccessor getAccessorInstance()
 	{
-		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(this.getDirectory());
+		Directory directory = this.getDirectory();
+		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory);
 		return indexAccessor;
 	}
 	
