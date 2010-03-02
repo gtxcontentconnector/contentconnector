@@ -151,8 +151,15 @@ public class CRRequestBuilder {
 		if ( this.filter == null ) { this.filter = request.getParameter("q"); }
 		if ( this.count == null ) { this.count = request.getParameter("ps"); }
 		if ( this.start == null && this.count != null) {
-			String numberOfPage = (String) request.getParameter("np");
-			this.start = (Integer.parseInt(numberOfPage) * Integer.parseInt(this.count)) + "";
+			String numberOfPageStr = (String) request.getParameter("np");
+			int numberOfPage;
+			if (numberOfPageStr != null) {
+				numberOfPage = Integer.parseInt(numberOfPageStr);
+			} else {
+				numberOfPage = 0;
+			}
+			int intCount = Integer.parseInt(this.count);
+			this.start = (numberOfPage * intCount) + "";
 		}
 		
 		
