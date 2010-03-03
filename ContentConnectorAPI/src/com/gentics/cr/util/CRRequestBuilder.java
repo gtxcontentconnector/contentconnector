@@ -34,6 +34,10 @@ public class CRRequestBuilder {
 	protected boolean metaresolvable=false;
 	protected String highlightquery;
 	protected String filter;
+	protected String query_and;
+	protected String query_or;
+	protected String query_not;
+	protected String query_group;
 	protected String start;
 	protected String count;
 	protected String debug;
@@ -146,6 +150,10 @@ public class CRRequestBuilder {
 		this.metaresolvable = Boolean.parseBoolean(request.getParameter(LuceneRequestProcessor.META_RESOLVABLE_KEY));
 		this.highlightquery = request.getParameter(LuceneRequestProcessor.HIGHLIGHT_QUERY_KEY);
 		this.node_id = request.getParameterValues("node");
+		this.query_and = request.getParameter("q_and");
+		this.query_or = request.getParameter("q_or");
+		this.query_not = request.getParameter("q_not");
+		this.query_group = request.getParameter("q_group");
 		
 		//Parameters used in mnoGoSearch for easier migration (Users should use type=MNOGOSEARCHXML)
 		if ( this.filter == null ) { this.filter = request.getParameter("q"); }
@@ -182,6 +190,48 @@ public class CRRequestBuilder {
 	}
 	
 	private void addAdvancedSearchParameters(){
+		if( filter == null || "" .equals(filter)){
+			if(query_and != null && !"".equals(query_and)){
+				String filter_and = "";
+				for(String query:query_and.split(" ")){
+					if(!"".equals(filter_and))filter_and+=" AND ";
+					filter_and+=query.toLowerCase();
+				}
+				if(!"".equals(filter_and))filter = "(" + filter_and + ")";
+				query_and = "";
+			}
+			if(query_or != null && !"".equals(query_or)){
+				String filter_or = "";
+				for(String query:query_or.split(" ")){
+					if(!"".equals(filter_or))filter_or+=" OR ";
+					filter_or+=query.toLowerCase();
+				}
+				if(!"".equals(filter_or)) {
+					if(!"".equals(filter))filter+= " AND ";
+					filter += "(" + filter_or + ")";
+				}
+				query_or = "";
+			}
+			if(query_not != null && !"".equals(query_not)){
+				String filter_not = "";
+				for(String query:query_not.split(" ")){
+					if(!"".equals(filter_not))filter_not+=" OR ";
+					filter_not+=query.toLowerCase();
+				}
+				if(!"".equals(filter_not)) {
+					if(!"".equals(filter))filter+= " AND ";
+					filter += "NOT (" + filter_not + ")";
+				}
+				query_not = "";
+			}
+			if(query_group != null && !"".equals(query_group)){
+				if(!"".equals(filter))filter+= " AND ";
+				filter += " \"" + query_group.toLowerCase() + "\"";
+				query_group = "";
+			}
+			
+			
+		}
 		if ((filter != null && !"".equals(filter)) && this.node_id != null && this.node_id.length != 0){
 			String node_filter = "";
 			for(int i = 0; i < node_id.length; i++){
