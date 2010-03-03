@@ -84,6 +84,17 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	public static final String META_START_KEY = "start";
 	
 	/**
+	 * TODO
+	 */
+	public static final String META_COUNT_KEY = "count";
+	
+	/**
+	 * TODO
+	 */
+	public static final String META_QUERY_KEY = "query";
+	
+	
+	/**
 	 * Key where to find the query used for highlighting the content. Usually this is the 
 	 * searchqery without the permissions and meta search informations.
 	 * If this is not set, the requestFilter (default query) will be used
@@ -147,6 +158,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				CRResolvableBean metaBean = new CRResolvableBean();
 				metaBean.set(META_HITS_KEY, searchResult.get("hits"));
 				metaBean.set(META_START_KEY, start);
+				metaBean.set(META_COUNT_KEY, count);
+				metaBean.set(META_QUERY_KEY, request.getRequestFilter());
 				result.add(metaBean);
 			}
 			LinkedHashMap<Document,Float> docs = objectToLinkedHashMapDocuments(searchResult.get("result"));
