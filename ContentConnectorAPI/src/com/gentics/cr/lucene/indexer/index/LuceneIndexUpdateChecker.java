@@ -82,7 +82,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 				return true;
 			} catch (IOException e) {
 				//TODO specify witch index is not readable
-				log.error("Cannot open index for reading.",e);
+				log.error("Cannot open index for reading. (Directory: " + indexLocation.getDirectory()+ ")",e);
 				return true;
 			}
 		} else {
