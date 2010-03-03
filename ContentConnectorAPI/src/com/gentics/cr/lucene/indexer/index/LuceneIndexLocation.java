@@ -17,6 +17,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import com.gentics.contentnode.servlet.queue.SleepingQueueEntry;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -228,6 +229,17 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	private IndexAccessor getAccessorInstance()
 	{
 		Directory directory = this.getDirectory();
+		if(directory == null){
+			//FASTFIX
+			//log.error("Directory was null: this.getDirectory()="+this.getDirectory() + " this.dir="+this.dir+" directory="+directory,new NullPointerException());
+			//TODO make this more beautiful 
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				log.debug("sleep interupted");
+			}
+			directory = this.getDirectory();
+		}
 		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory);
 		return indexAccessor;
 	}
