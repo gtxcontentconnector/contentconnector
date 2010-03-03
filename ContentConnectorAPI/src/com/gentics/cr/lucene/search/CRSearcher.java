@@ -110,7 +110,7 @@ public class CRSearcher {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error getting the results.",e);
 			result=null;
 		}
 		finally{

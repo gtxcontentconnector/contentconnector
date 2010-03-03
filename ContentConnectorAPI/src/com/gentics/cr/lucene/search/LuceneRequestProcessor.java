@@ -20,6 +20,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.CRError;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
@@ -127,10 +128,16 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			String cstring = (String)this.config.get(SEARCH_COUNT_KEY);
 			if(cstring!=null)count=new Integer(cstring);
 		}
-		if(count<=0)
-			log.error("DEFAULT COUNT IS LOWER OR EQUAL TO 0! THIS WILL RESULT IN AN ERROR. OVERTHINK YOUR CONFIG (insert rp.<rpnumber>.searchcount=<value> int your properties file)!");
-		if(start<0)
-			log.error("BAD REQUEST: start is lower than 0!");
+		if(count<=0){
+			String message="Default count is lower or equal to 0! This will result in an error. Overthink your config (insert rp.<number>.searchcount=<value> in your properties file)!"; 
+			log.error(message);
+			throw new CRException(new CRError("Error", message));
+		}
+		if(start<0){
+			String message = "Bad request: start is lower than 0!";
+			log.error(message);
+			throw new CRException(new CRError("Error", message));
+		}
 		
 		String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
 		//GET RESULT
