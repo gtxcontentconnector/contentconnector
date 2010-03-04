@@ -232,7 +232,7 @@ public class CRRequestBuilder {
 			
 			
 		}
-		if ((filter != null && !"".equals(filter)) && this.node_id != null && this.node_id.length != 0){
+		if ((filter != null && !"".equals(filter)) && this.node_id != null && this.node_id.length != 0 && !filter.matches("(.+ )?node_id\\:[0-9]+.*")){
 			String node_filter = "";
 			for(int i = 0; i < node_id.length; i++){
 				if(node_filter != "") node_filter += " OR ";
