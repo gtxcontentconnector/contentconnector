@@ -34,6 +34,7 @@ public class IndexLocation {
 	private static final String REOPEN_CHECK_KEY = "reopencheck";
 	private static final String REOPEN_FILENAME = "reopen";
 	private static final String INDEX_LOCATION_KEY = "indexLocation";
+	private static final String INDEX_LOCATION_CLASS_KEY = "indexLocationClass";
 	private static final String PERIODICAL_KEY = "PERIODICAL";
 	private static Hashtable<String,IndexLocation> indexmap;
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
@@ -203,46 +204,49 @@ public class IndexLocation {
 	}
 
 	private static Class<? extends IndexLocation> getIndexLocationClass(CRConfig config) {
-		Object indexesObject = config.get(CRConfig.CR_KEY);
-		if(indexesObject != null && indexesObject instanceof GenericConfiguration){
-			GenericConfiguration indexes = (GenericConfiguration) config.get(CRConfig.CR_KEY);
-			Class<? extends IndexLocation> indexLocationClass = null;
-			for(Entry<String,GenericConfiguration> subConfigEntry:indexes.getSubConfigs().entrySet()) {
-				String subConfigKey = subConfigEntry.getKey();
-				GenericConfiguration subConfig = subConfigEntry.getValue();
-				Class<? extends AbstractUpdateCheckerJob> subConfigClass = getUpdateJobImplementationClass(new CRConfigUtil(subConfig,config.getName()+"."+subConfigKey));
-				try {
-					String indexLocationClassName = subConfigClass.getField("INDEXLOCATIONCLASS").get(subConfigClass).toString();
-					Class<?> indexLocationClassGeneric = Class.forName(indexLocationClassName);
-					if(indexLocationClass == null){
-						indexLocationClass = indexLocationClassGeneric.asSubclass(IndexLocation.class);
+		String indexLocationClassName = config.getString(INDEX_LOCATION_CLASS_KEY);
+		Class<? extends IndexLocation> indexLocationClass = null;
+		if(indexLocationClassName == null){
+			Object indexesObject = config.get(CRConfig.CR_KEY);
+			if(indexesObject != null && indexesObject instanceof GenericConfiguration){
+				GenericConfiguration indexes = (GenericConfiguration) config.get(CRConfig.CR_KEY);
+				for(Entry<String,GenericConfiguration> subConfigEntry:indexes.getSubConfigs().entrySet()) {
+					String subConfigKey = subConfigEntry.getKey();
+					GenericConfiguration subConfig = subConfigEntry.getValue();
+					Class<? extends AbstractUpdateCheckerJob> subConfigClass = getUpdateJobImplementationClass(new CRConfigUtil(subConfig,config.getName()+"."+subConfigKey));
+					try{
+						String nextIndexLocationClassName = subConfigClass.getField("INDEXLOCATIONCLASS").get(subConfigClass).toString();
+						if(indexLocationClassName == null){
+							indexLocationClassName = nextIndexLocationClassName;
+						} else if(!indexLocationClassName.equals(nextIndexLocationClassName)){
+							//TODO add advanced error handling. e.g. different classes can be valid if they are subclasses of each other.
+							//in this case we should create an instance of the deepest configured subclass 
+							log.error("Not all of your configured implementations have the same value in the field \"INDEXLOCATIONCLASS\".");
+						}
+					} catch (NoSuchFieldException e) {
+						log.error(subConfigClass.getName()+" has no field named \"INDEXLOCATIONCLASS\"",e);
+					} catch (SecurityException e) {
+						log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on "+subConfigClass.getName()+".",e);
+					} catch (IllegalArgumentException e) {
+						log.error("Error getting static Field \"INDEXLOCATIONLCASS\" of class "+subConfigClass.getName());
+					} catch (IllegalAccessException e) {
+						log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on "+subConfigClass.getName()+".",e);
 					}
-					else if(indexLocationClass != indexLocationClassGeneric.asSubclass(IndexLocation.class)){
-						//TODO add advanced error handling. e.g. different classes can be valid if they are subclasses of each other.
-						//in this case we should create an instance of the deepest configured subclass 
-						log.error("Not all of your configured implementations have the same value in the field \"INDEXLOCATIONCLASS\".");
-					}
-				} catch (SecurityException e) {
-					log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on "+subConfigClass.getName()+".",e);
-				} catch (NoSuchFieldException e) {
-					log.error(subConfigClass.getName()+" has no field named \"INDEXLOCATIONCLASS\"",e);
-				} catch (ClassNotFoundException e) {
-					log.error("Cannot find class declared in field name \"INDEXLOCATIONCLASS\" of class "+subConfigClass.getName()+". Therefore i cannot create a specific IndexLocation for the configured AbstractUpdateCheckerJob implementation.",e);
-				} catch (IllegalArgumentException e) {
-					log.error("Error getting static Field \"INDEXLOCATIONLCASS\" of class "+subConfigClass.getName());
-				} catch (IllegalAccessException e) {
-					log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on "+subConfigClass.getName()+".",e);
 				}
 			}
-			if (indexLocationClass == null) {
-				return IndexLocation.class;
-			}
-			else {
-				return indexLocationClass;
-			}
 		}
-		else
+		try {
+			Class<?> indexLocationClassGeneric = Class.forName(indexLocationClassName);
+			indexLocationClass = indexLocationClassGeneric.asSubclass(IndexLocation.class);
+		} catch (ClassNotFoundException e) {
+			log.error("Cannot find class the IndexLocationClass defined in the config or your UpdateJobImplementation. Therefore i cannot create a specific IndexLocation for the configured AbstractUpdateCheckerJob implementation.",e);
+		}
+		if (indexLocationClass == null) {
 			return IndexLocation.class;
+		}
+		else {
+			return indexLocationClass;
+		}
 	}
 
 	/**
