@@ -35,6 +35,8 @@ public class RESTBinaryContainer{
 	private String contenttype="";
 	private static Logger log = Logger.getLogger(RESTBinaryContainer.class);
 	CRConfigUtil crConf;
+
+	private final static String LIVEEDITORXHTML_KEY="container.liveeditorXHTML";
 	/**
 	 * get conten type as string
 	 * @return
@@ -152,7 +154,12 @@ public class RESTBinaryContainer{
 					
 				} else {
 					OutputStreamWriter wr = new OutputStreamWriter(stream, this.response_encoding);
-					wr.write(crBean.getContent(this.response_encoding));
+					String content = crBean.getContent(this.response_encoding);
+					if(Boolean.parseBoolean((String) crConf.get(LIVEEDITORXHTML_KEY))){
+						//Gentics Content.Node Liveeditor produces non XHTML brakes. Therefore we must replace them before we return the code
+						content = content.replace("<BR>", "</ br>");
+					}
+					wr.write(content);
 					wr.flush();
 					wr.close();
 				}
