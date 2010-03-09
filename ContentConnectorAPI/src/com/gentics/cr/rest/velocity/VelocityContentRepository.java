@@ -50,6 +50,7 @@ public class VelocityContentRepository extends ContentRepository {
 			templateManager.put("debug",isDebug);
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding",encoding);
+			//TODO use errorTemplateName (absolute) instead of errorTemplate.getKey()
 			String output = templateManager.render(errorTemplate.getKey(), errorTemplate.getSource());
 			stream.write(output.getBytes(encoding));
 		} catch (Exception e){
@@ -67,6 +68,7 @@ public class VelocityContentRepository extends ContentRepository {
 			templateManager.put("resolvables", this.resolvableColl);
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding",encoding);
+			//TODO use templateName (absolute) instead of errorTemplate.getKey()
 			String output = templateManager.render(template.getKey(), template.getSource());
 			stream.write(output.getBytes(encoding));
 		} catch (CRException e) {
