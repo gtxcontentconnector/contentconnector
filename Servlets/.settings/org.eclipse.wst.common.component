@@ -3,7 +3,7 @@
     <wb-module deploy-name="CCServlets">
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/ContentConnectorAPI 1.0 ERS/ContentConnectorAPI 1.0 ERS">
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/ContentConnectorAPI/ContentConnectorAPI">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="CCServlets"/>
