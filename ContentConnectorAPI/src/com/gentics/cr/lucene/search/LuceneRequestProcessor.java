@@ -265,4 +265,5 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		return ret;
 	}
 
+	
 }

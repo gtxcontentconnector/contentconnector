@@ -414,5 +414,28 @@ public abstract class RequestProcessor {
 	{
 		return (Collection<CRResolvableBean>)col;	
 	}
+	
+	/**
+	 * Fills the attributes defined in the requests attribute array to each element of the collection col
+	 * @param col
+	 * @param request
+	 * @param idAttribute 
+	 * @throws CRException 
+	 */
+	public void fillAttributes(Collection<CRResolvableBean> col,CRRequest request,String idAttribute) throws CRException
+	{
+		RequestProcessorMerger.fillAttributes(this, col, request, idAttribute);
+	}
+	
+	/**
+	 * Fills the attributes defined in the requests attribute array to each element of the collection col
+	 * @param col
+	 * @param request
+	 * @throws CRException 
+	 */
+	public void fillAttributes(Collection<CRResolvableBean> col,CRRequest request) throws CRException
+	{
+		fillAttributes(col,request,"contentid");
+	}
 
 }

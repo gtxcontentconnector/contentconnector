@@ -2,6 +2,7 @@ package com.gentics.cr;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -20,6 +21,65 @@ public class RequestProcessorMerger {
 	 * Set this property of the request to true in order to use the beans of the secondary request processor
 	 */
 	public static final String USE_SECONDARY_KEY="secondary";
+	
+	/**
+	 * Fills the attributes defined in the requests attribute array to each element of the collection col
+	 * @param rp
+	 * @param col
+	 * @param request
+	 * @param idAttribute
+	 * @throws CRException
+	 */
+	public static void fillAttributes(RequestProcessor rp, Collection<CRResolvableBean> col,CRRequest request,String idAttribute) throws CRException
+	{
+		LinkedHashMap<Object,CRResolvableBean> resultMap = new LinkedHashMap<Object,CRResolvableBean>();
+		
+		String mergefilter="";
+		
+		boolean first=true;
+		
+		for(CRResolvableBean crBean:col)
+		{
+			Object id = crBean.get(idAttribute);
+			if(first)
+			{
+				first=false;
+				mergefilter+="\""+id+"\"";
+			}
+			else
+			{
+				mergefilter+=","+"\""+id+"\"";
+			}
+			resultMap.put(id, crBean);
+		}
+		
+		request.setRequestFilter("object."+idAttribute+" CONTAINSONEOF ["+mergefilter+"]");
+		
+		Collection<CRResolvableBean> res = rp.getObjects(request);
+		String[] attributes = request.getAttributeArray();
+		//MERGE
+		for(Iterator<CRResolvableBean> resBean_it = res.iterator();resBean_it.hasNext();)
+		{
+			CRResolvableBean resBean = resBean_it.next();
+			String key = (String)resBean.get(idAttribute);
+			CRResolvableBean finishedBean = resultMap.get(key);
+			if(finishedBean!=null)
+			{
+				for(String att:attributes)
+				{
+					Object val = resBean.get(att);
+					if(val!=null)
+					{
+						finishedBean.set(att, val);
+					}
+				}
+				resBean_it.remove();
+			}
+		}
+		
+	}
+	
+	
 	
 	/**
 	 * Merge the results of two request processor. The primary RequestProcessor overrules the secondary RP. The request is made using the CRRequest

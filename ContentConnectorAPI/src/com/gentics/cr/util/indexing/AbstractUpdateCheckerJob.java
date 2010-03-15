@@ -1,5 +1,7 @@
 package com.gentics.cr.util.indexing;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -8,16 +10,13 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
-import com.gentics.api.lib.datasource.DatasourceException;
-import com.gentics.api.lib.exception.ParserException;
-import com.gentics.api.lib.expressionparser.ExpressionParser;
-import com.gentics.api.lib.expressionparser.ExpressionParserException;
-import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.CRRequest;
+import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.exceptions.WrongOrderException;
-import com.gentics.cr.util.CRUtil;
 
 //TODO: complete JavaDoc when class is finished
 /**
@@ -36,6 +35,9 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	
 	protected static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
 	protected static final String DEFAULT_IDATTRIBUTE = "contentid";
+	/**
+	 * Timestamp attribute name
+	 */
 	public static final String TIMESTAMP_ATTR = "updatetimestamp";
 	
 	protected CRConfig config;
@@ -146,41 +148,35 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * @see {@link IIndexUpdateChecker#deleteStaleObjects()}
 	 */
 	@SuppressWarnings("unchecked")
-	protected Collection<Resolvable> getObjectsToUpdate(String rule, Datasource ds, boolean forceFullUpdate, IndexUpdateChecker indexUpdateChecker){
-		Collection<Resolvable> updateObjects = new Vector<Resolvable>();
+	protected Collection<CRResolvableBean> getObjectsToUpdate(CRRequest request, RequestProcessor rp, boolean forceFullUpdate, IndexUpdateChecker indexUpdateChecker){
+		Collection<CRResolvableBean> updateObjects = new Vector<CRResolvableBean>();
+		
+		
 		if(forceFullUpdate){
 			try {
-				updateObjects = (Collection<Resolvable>) ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null);
-			} catch (DatasourceException e) {
-				log.error("Error getting results for full index from datasource",e);
-			} catch (ExpressionParserException e) {
-				log.error("Error parsing the given rule ("+rule+") for the datasource",e);
-			} catch (ParserException e) {
-				log.error("Error parsing the given rule ("+rule+") for full index",e);
-			}
+				updateObjects = (Collection<CRResolvableBean>) rp.getObjects(request);
+			} catch (CRException e) {
+				log.error("Error getting results for full index from requestprocessor",e);
+			} 
 		}
 		else{
 			//Sorted (by the idAttribute) list of Resolvables to check for Updates.´
-			Collection<Resolvable> objectsToIndex;
+			Collection<CRResolvableBean> objectsToIndex;
 			try{
-				objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), new String[]{TIMESTAMP_ATTR}, 0, -1, CRUtil.convertSorting(idAttribute+":asc"));
-			} catch (DatasourceException e) {
-				log.error("Error getting results for full index from datasource",e);
-				return null;
-			} catch (ExpressionParserException e) {
-				log.error("Error parsing the given rule ("+rule+") for the datasource",e);
-				return null;
-			} catch (ParserException e) {
-				log.error("Error parsing the given rule ("+rule+") for full index",e);
+				defaultizeRequest(request);
+				objectsToIndex = (Collection<CRResolvableBean>) rp.getObjects(request);
+			}
+			catch (CRException e) {
+				log.error("Error getting results for full index from requestprocessor",e);
 				return null;
 			}
 			
-			Iterator<Resolvable> resolvableIterator = objectsToIndex.iterator();
+			Iterator<CRResolvableBean> resolvableIterator = objectsToIndex.iterator();
 			try {
 				
 				while(resolvableIterator.hasNext())
 				{
-					Resolvable crElement = resolvableIterator.next();
+					CRResolvableBean crElement = resolvableIterator.next();
 					String crElementID = (String) crElement.get(idAttribute);
 					int crElementTimestamp = (Integer) crElement.get(TIMESTAMP_ATTR);
 					if(!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp, crElement)){
@@ -196,6 +192,30 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		//Finally delete all Objects from Index that are not checked for an Update
 		indexUpdateChecker.deleteStaleObjects();
 		return updateObjects;
+	}
+
+	private void defaultizeRequest(CRRequest request) {
+		String[] prefill = request.getAttributeArray();
+		if(Arrays.asList(prefill).contains(TIMESTAMP_ATTR))
+		{
+			ArrayList<String> pf = new ArrayList<String>(Arrays.asList(prefill));
+			pf.add(TIMESTAMP_ATTR);
+			request.setAttributeArray(pf.toArray(prefill));
+		}
+		String[] sorting = request.getSortArray();
+		if(sorting == null)
+		{
+			request.setSortArray(new String[]{idAttribute+":asc"});
+		}
+		else
+		{
+			if(!Arrays.asList(sorting).contains(idAttribute+":asc"))
+			{
+				ArrayList<String> sf = new ArrayList<String>(Arrays.asList(sorting));
+				sf.add(idAttribute+":asc");
+				request.setSortArray(sf.toArray(sorting));
+			}
+		}
 	}
 	
 	/**

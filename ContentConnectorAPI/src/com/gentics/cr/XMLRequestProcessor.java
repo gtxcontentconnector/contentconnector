@@ -145,6 +145,8 @@ public class XMLRequestProcessor extends RequestProcessor{
 			log.debug("Got code of "+url+" from cache");
 		return content;
 	}
+
+	
 	
 
 }

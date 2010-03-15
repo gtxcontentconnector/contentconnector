@@ -2,11 +2,9 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -17,27 +15,21 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
 
 import com.gentics.api.lib.exception.NodeException;
-import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.resolving.Resolvable;
-import com.gentics.contentnode.content.GenticsContentFactory;
-import com.gentics.contentnode.datasource.CNWriteableDatasource;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRError;
+import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
-import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
 /**
@@ -54,7 +46,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	 * Name of class to use for IndexLocation, must extend {@link com.gentics.cr.util.indexing.IndexLocation}
 	 */
 	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.lucene.indexer.index.LuceneIndexLocation";
-	
+	private RequestProcessor rp = null;
 	
 	/**
 	 * Create new instance of IndexJob
@@ -66,6 +58,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 			Hashtable<String,CRConfigUtil> configmap)
 	{
 		super(config,indexLoc,configmap);
+		try {
+			rp = config.getNewRequestProcessorInstance(1);
+		} catch (CRException e) {
+			log.error("Could not create RequestProcessor instance.",e);
+		}
 	}
 	
 	
@@ -131,14 +128,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 		
 		try {
 			indexLocation.checkLock();
-			// get the datasource
-			CNWriteableDatasource ds=null;
+			
 			try
 			{ 
 				status.setCurrentStatusString("Writer accquired. Starting index job.");
-				ds = (CNWriteableDatasource)config.getDatasource();
-			
-				if(ds==null)
+							
+				if(rp==null)
 				{
 					throw new CRException("FATAL ERROR","Datasource not available");
 				}
@@ -190,14 +185,16 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					throw new CRException(new CRError("Error","IndexLocation is not created for Lucene."));
 				}
 				
-				Collection<Resolvable> objectsToIndex=null;
+				Collection<CRResolvableBean> objectsToIndex=null;
 				//Clear Index and remove stale Documents
 				if(!create)
 				{
 					log.debug("Will do differential index.");
 					try {
+						CRRequest req = new CRRequest();
+						req.setRequestFilter(rule);
 						status.setCurrentStatusString("Cleaning index from stale objects...");
-						objectsToIndex = getObjectsToUpdate(rule,ds,false,luceneIndexUpdateChecker);
+						objectsToIndex = getObjectsToUpdate(req,rp,false,luceneIndexUpdateChecker);
 					} catch (Exception e) {
 						log.error("ERROR while cleaning index");
 						e.printStackTrace();
@@ -236,7 +233,9 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				// get all objects to index
 				if(objectsToIndex==null)
 				{
-					objectsToIndex = getObjectsToUpdate(rule,ds,true,luceneIndexUpdateChecker);
+					CRRequest req = new CRRequest();
+					req.setRequestFilter(rule);
+					objectsToIndex = getObjectsToUpdate(req,rp,true,luceneIndexUpdateChecker);
 				}
 				if(objectsToIndex==null)
 				{
@@ -248,13 +247,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				log.debug(" index job with "+objectsToIndex.size()+" objects to index.");
 				// now get the first batch of objects from the collection
 				// (remove them from the original collection) and index them
-				Collection<Resolvable> slice = new Vector(CRBatchSize);
+				Collection<CRResolvableBean> slice = new Vector(CRBatchSize);
 				int sliceCounter = 0;
 				
 				status.setCurrentStatusString("Starting to index slices.");
 				boolean interrupted = Thread.currentThread().isInterrupted();
-				for (Iterator<Resolvable> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
-					Resolvable obj = iterator.next();
+				for (Iterator<CRResolvableBean> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
+					CRResolvableBean obj = iterator.next();
 					slice.add(obj);
 					iterator.remove();
 					sliceCounter++;
@@ -266,7 +265,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					if (sliceCounter == CRBatchSize) {
 						// index the current slice
 						log.debug("Indexing slice with "+slice.size()+" objects.");
-						indexSlice(indexWriter, slice, attributes, ds, create,config,transformerlist);
+						indexSlice(indexWriter, slice, attributes, rp, create,config,transformerlist);
 						status.setObjectsDone(status.getObjectsDone()+slice.size());
 						// clear the slice and reset the counter
 						slice.clear();
@@ -276,7 +275,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 
 				if (!slice.isEmpty()) {
 					// index the last slice
-					indexSlice(indexWriter, slice, attributes, ds, create,config, transformerlist);
+					indexSlice(indexWriter, slice, attributes, rp, create,config, transformerlist);
 					status.setObjectsDone(status.getObjectsDone()+slice.size());
 				}
 				if(!interrupted)
@@ -302,7 +301,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				if ( indexAccessor != null && indexWriter != null) {
 					indexAccessor.release(indexWriter);
 				}
-				CRDatabaseFactory.releaseDatasource(ds);
 
 				if(objectCount > 0){
 					indexLocation.createReopenFile();
@@ -333,13 +331,14 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
-	private void indexSlice(IndexWriter indexWriter, Collection<Resolvable> slice,
-			Map<String,Boolean> attributes, CNWriteableDatasource ds, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist) throws NodeException,
+	private void indexSlice(IndexWriter indexWriter, Collection<CRResolvableBean> slice, Map<String,Boolean> attributes, RequestProcessor rp, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist) throws CRException,
 			CorruptIndexException, IOException {
 		// prefill all needed attributes
-		GenticsContentFactory.prefillContentObjects(ds, slice,
+		CRRequest req = new CRRequest();
+		req.setAttributeArray(
 				(String[]) attributes.keySet().toArray(
 						new String[attributes.keySet().size()]));
+		rp.fillAttributes(slice, req,idAttribute);
 		
 		for (Resolvable objectToIndex:slice) {
 			
@@ -424,106 +423,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 			}
 		}
 		return doc;
-	}
-	
-	
-	
-	/**
-	 * Deletes all Objects from index, which are not returned from the datasource using the given rule
-	 * @param ds
-	 * @param rule
-	 * @param indexLocation
-	 * @throws Exception
-	 */
-	@SuppressWarnings({ "unchecked", "unused" })
-	@Deprecated
-	private void cleanIndex(CNWriteableDatasource ds, String rule, LuceneIndexLocation indexLocation, CRConfigUtil config) throws Exception
-	{
-		String idAttribute = (String)config.get(ID_ATTRIBUTE_KEY);
-		
-		//IndexReader reader = IndexReader.open(indexLocation.getDirectory(), false);// open existing index
-		IndexAccessor indexAccessor = indexLocation.getAccessor();
-		IndexReader reader = indexAccessor.getReader(true);
-		try
-		{
-			TermEnum uidIter = reader.terms(new Term(idAttribute, "")); // init uid iterator
-			
-			Collection<Resolvable> objectsToIndex = (Collection<Resolvable>)ds.getResult(ds.createDatasourceFilter(ExpressionParser.getInstance().parse(rule)), null, 0, -1, CRUtil.convertSorting("contentid:asc"));
-			
-			Iterator<Resolvable> resoIT = objectsToIndex.iterator();
-			
-			Resolvable CRlem = resoIT.next();
-			String crElemID =(String) CRlem.get(idAttribute);
-			
-			//solange index id kleiner cr id delete from index
-			boolean finish=false;
-			
-			while(!finish)
-			{
-				
-				if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) == 0)
-				{
-					//step both
-					finish = !uidIter.next();
-					if(resoIT.hasNext())
-					{
-						CRlem = resoIT.next();
-						crElemID =(String) CRlem.get(idAttribute);
-					}
-				}
-				else if(uidIter.term() != null && uidIter.term().field() == idAttribute && uidIter.term().text().compareTo(crElemID) > 0 && resoIT.hasNext())
-				{
-					//step cr
-					CRlem = resoIT.next();
-					crElemID =(String) CRlem.get(idAttribute);
-					
-				}
-				else
-				{
-					//delete UIDITER
-					Term t = uidIter.term();
-					if(t!=null)
-					{
-						reader.deleteDocuments(t);
-						
-					}
-					finish = !uidIter.next();
-				}
-				
-			}
-			uidIter.close();  // close uid iterator
-		   
-		}
-		finally
-		{
-			indexAccessor.release(reader,true);
-		}
-			
-	}
-	
-	@SuppressWarnings("unused")
-	@Deprecated
-	private LinkedHashMap<String,Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute) throws IOException
-	{
-		LinkedHashMap<String,Integer> tmp = new LinkedHashMap<String,Integer>();
-		boolean finish=!termDocs.next();
-		
-		while(!finish)
-		{
-			Document doc = reader.document(termDocs.doc());
-			String docID = doc.get(idAttribute);
-			tmp.put(docID, termDocs.doc());
-			finish=!termDocs.next();
-		}
-		
-		LinkedHashMap<String,Integer> ret = new LinkedHashMap<String,Integer>(tmp.size());
-		Vector<String> v = new Vector<String>(tmp.keySet());
-		Collections.sort(v);
-		for(String id:v)
-		{
-			ret.put(id, tmp.get(id));
-		}
-		return ret;
 	}
 	
 }
