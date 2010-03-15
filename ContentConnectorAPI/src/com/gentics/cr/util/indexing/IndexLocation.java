@@ -16,7 +16,6 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
-import com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob;
 import com.gentics.cr.lucene.indexer.index.LockedIndexException;
 
 
@@ -107,6 +106,14 @@ public class IndexLocation {
 		{
 			lockdetection = Boolean.parseBoolean(s_lockdetect);
 		}
+		
+	}
+	
+	/**
+	 * 
+	 */
+	private void initializeQueue()
+	{
 		if(periodical)
 		{
 			periodical_thread = new Thread(new Runnable(){
@@ -186,7 +193,10 @@ public class IndexLocation {
 		Class<? extends IndexLocation> indexLocationClass = getIndexLocationClass(config);
 		try {
 			Constructor<? extends IndexLocation> indexLocationConstructor = indexLocationClass.getDeclaredConstructor(new Class[]{CRConfig.class});
-			return indexLocationConstructor.newInstance(config);
+			IndexLocation instance = indexLocationConstructor.newInstance(config);
+			//Start worker threads on created indexLocation
+			instance.initializeQueue();
+			return instance;
 		} catch (SecurityException e) {
 			log.error("Cannot get Constructor(CRConfig) for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
 		} catch (NoSuchMethodException e) {

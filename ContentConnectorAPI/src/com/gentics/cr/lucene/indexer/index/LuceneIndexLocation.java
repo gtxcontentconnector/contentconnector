@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -17,11 +16,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
-import com.gentics.contentnode.servlet.queue.SleepingQueueEntry;
 import com.gentics.cr.CRConfig;
-import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
@@ -120,6 +115,10 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	
 	
 	//TODO should be protected, is public because it is used in IndexLocation#createNewIndexLocation
+	/**
+	 * @param config 
+	 * 
+	 */
 	public LuceneIndexLocation(CRConfig config)
 	{
 		super(config);
@@ -230,14 +229,6 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	{
 		Directory directory = this.getDirectory();
 		if(directory == null){
-			//FASTFIX
-			//log.error("Directory was null: this.getDirectory()="+this.getDirectory() + " this.dir="+this.dir+" directory="+directory,new NullPointerException());
-			//TODO make this more beautiful 
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				log.debug("sleep interupted");
-			}
 			directory = this.getDirectory();
 		}
 		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory);
