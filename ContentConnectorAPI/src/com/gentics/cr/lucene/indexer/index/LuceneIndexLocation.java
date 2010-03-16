@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -16,7 +15,6 @@ import org.apache.lucene.store.RAMDirectory;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
-import com.gentics.cr.util.indexing.IndexJobQueue;
 import com.gentics.cr.util.indexing.IndexLocation;
 
 
@@ -31,25 +29,27 @@ import com.gentics.cr.util.indexing.IndexLocation;
 public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocation{
 	//STATIC MEMBERS
 	protected static final Logger log = Logger.getLogger(LuceneIndexLocation.class);
-	private static final String REOPEN_CHECK_KEY = "reopencheck";
-	private static final String INDEX_LOCATION_KEY = "indexLocation";
 	private static final String RAM_IDENTIFICATION_KEY = "RAM";
+	//TODO Clean this
+	/*private static final String REOPEN_CHECK_KEY = "reopencheck";
+	private static final String INDEX_LOCATION_KEY = "indexLocation";
+	
 	private static final String PERIODICAL_KEY = "PERIODICAL";
 
-	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
-	private static Hashtable<String,LuceneIndexLocation> indexmap;
+	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";*/
+
 
 	
 	
 	//Instance Members
 	private Directory dir=null;
 	private String name = null;
-	private IndexJobQueue queue = null;
+	/*private IndexJobQueue queue = null;
 	private boolean periodical = false;
 	private int periodical_interval = 60; //60 seconds
 	private Thread periodical_thread;
 	private boolean lockdetection = false;
-	private boolean reopencheck = false;
+	private boolean reopencheck = false;*/
 	
 	private Analyzer getConfiguredAnalyzer() 
 	{

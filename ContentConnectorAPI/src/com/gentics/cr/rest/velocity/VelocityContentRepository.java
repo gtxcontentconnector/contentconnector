@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.tools.generic.EscapeTool;
@@ -17,9 +16,19 @@ import com.gentics.cr.rest.ContentRepository;
 import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
-
+/**
+ * 
+ * Last changed: $Date: 2010-02-26 17:25:31 +0100 (Fr, 26 Feb 2010) $
+ * @version $Revision: 456 $
+ * @author $Author: bigbear.ap $
+ *
+ */
 public class VelocityContentRepository extends ContentRepository {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3555742920271252693L;
 	private CRConfigUtil config;
 	private ITemplateManager templateManager;
 	private ITemplate template;
@@ -30,6 +39,13 @@ public class VelocityContentRepository extends ContentRepository {
 	private static final String TEMPLATEPATH_KEY = "cr.velocity.defaulttemplate";
 	private static final String TEMPLATERELOADING_KEY = "cr.velocity.templatereloading";
 	
+	/**
+	 * Create new Instance of VelocityContentRepository
+	 * @param attr
+	 * @param encoding
+	 * @param options
+	 * @param configUtil
+	 */
 	public VelocityContentRepository(String[] attr, String encoding,
 			String[] options, CRConfigUtil configUtil) {
 		super(attr, encoding, options);

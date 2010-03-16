@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
-import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
