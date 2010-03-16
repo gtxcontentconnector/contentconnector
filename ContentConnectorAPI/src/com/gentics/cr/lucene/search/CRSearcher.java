@@ -150,6 +150,7 @@ public class CRSearcher {
 				String charsAfterValue = valueMatcher.group(3);
 				if(!"AND".equalsIgnoreCase(value)
 					&& !"OR".equalsIgnoreCase(value)
+					&& !"NOT".equalsIgnoreCase(value)
 					&& !value.contains(":")
 				) {
 					valueMatcher.appendReplacement(new_query, charsBeforeValue+replacement+charsAfterValue);
