@@ -6,20 +6,16 @@ import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
-import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.util.indexing.IndexJobQueue;
 import com.gentics.cr.util.indexing.IndexLocation;
 
@@ -39,11 +35,10 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	private static final String INDEX_LOCATION_KEY = "indexLocation";
 	private static final String RAM_IDENTIFICATION_KEY = "RAM";
 	private static final String PERIODICAL_KEY = "PERIODICAL";
-	private static Hashtable<String,LuceneIndexLocation> indexmap;
-	private static final String STEMMING_KEY = "STEMMING";
-	private static final String STEMMER_NAME_KEY = "STEMMERNAME";
-	private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
+
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
+	private static Hashtable<String,LuceneIndexLocation> indexmap;
+
 	
 	
 	//Instance Members
@@ -58,39 +53,7 @@ public class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocat
 	
 	private Analyzer getConfiguredAnalyzer() 
 	{
-		//Update/add Documents
-		Analyzer analyzer;
-		boolean doStemming = Boolean.parseBoolean((String)config.get(STEMMING_KEY));
-		if(doStemming)
-		{
-			analyzer = new SnowballAnalyzer(Version.LUCENE_CURRENT,(String)config.get(STEMMER_NAME_KEY));
-		}
-		else
-		{
-			
-			//Load StopWordList
-			File stopWordFile = IndexerUtil.getFileFromPath((String)config.get(STOP_WORD_FILE_KEY));
-			
-			if(stopWordFile!=null)
-			{
-				//initialize Analyzer with stop words
-				try
-				{
-					analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT,stopWordFile);
-				}
-				catch(IOException ex)
-				{
-					log.error("Could not open stop words file. Will create standard analyzer. "+ex.getMessage());
-					analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-				}
-			}
-			else
-			{
-				//if no stop word list exists load fall back
-				analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-			}
-		}
-		return analyzer;
+		return LuceneAnalyzerFactory.createAnalyzer(config);
 	}
 	
 	/**

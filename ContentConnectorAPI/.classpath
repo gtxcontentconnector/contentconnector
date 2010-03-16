@@ -35,7 +35,7 @@
 	<classpathentry kind="lib" path="lib/xmlbeans-qname.jar"/>
 	<classpathentry kind="lib" path="lib/xmlpublic.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/lucene-core-3.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-3.0.0.jar" sourcepath="C:/Users/Christopher/Desktop/old/lucene 3/lucene-3.0.0-src/lucene-3.0.0/src/java"/>
 	<classpathentry kind="lib" path="lib/lucene-fast-vector-highlighter-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-highlighter-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-snowball-3.0.0.jar"/>

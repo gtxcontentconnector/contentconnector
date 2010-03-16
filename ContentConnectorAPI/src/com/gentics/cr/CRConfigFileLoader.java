@@ -9,11 +9,10 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.apache.oro.io.RegexFilenameFilter;
 
-import com.gentics.contentnode.object.File;
 import com.gentics.cr.configuration.ConfigurationSettings;
 import com.gentics.cr.configuration.EnvironmentConfiguration;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.RegexFileFilter;
 /**
@@ -79,7 +78,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 	
 	private void loadConfigFile(String path)
 	{
-		Properties props = new Properties();
+		
 		try {
 			//LOAD SERVLET CONFIGURATION
 			String confpath = CRUtil.resolveSystemProperties(path);
@@ -98,12 +97,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			
 			//load all found files into config
 			for(String file:configfiles){
-				props.load(new FileInputStream(file));
-				for (Entry<Object,Object> entry:props.entrySet()) {
-					Object value = entry.getValue();
-					Object key = entry.getKey();
-					setProperty((String)key, (String)value);
-				}
+				loadConfiguration(this,file,webapproot);
 			}
 			if(configfiles.size() == 0){
 				throw new FileNotFoundException("Cannot find any valid configfile.");
@@ -118,30 +112,44 @@ public class CRConfigFileLoader extends CRConfigUtil {
 		}
 	}
 	
+	
 	/**
-	 * Sets and prepares the properties
-	 * @param key
-	 * @param value
+	 * Loads a configuration file into a GenericConfig instance and resolves system variables
+	 * @param emptyConfig
+	 * @param path
+	 * @param webapproot
+	 * @throws IOException
 	 */
-	protected void setProperty(String key, String value)
+	public static void loadConfiguration(GenericConfiguration emptyConfig,String path,String webapproot) throws IOException
+	{
+		Properties props = new Properties();
+		props.load(new FileInputStream(CRUtil.resolveSystemProperties(path)));
+		for (Entry<Object,Object> entry:props.entrySet()) {
+			Object value = entry.getValue();
+			Object key = entry.getKey();
+			setProperty(emptyConfig,(String)key, (String)value, webapproot);
+		}
+	}
+	
+	private static void setProperty(GenericConfiguration config,String key, String value, String webapproot)
 	{
 		//Resolve system properties, so that they can be used in config values
 		value = CRUtil.resolveSystemProperties((String)value);
 		
 		//Replace webapproot in the properties values, so that this variable can be used
-		if(this.webapproot!=null)
+		if(webapproot!=null)
 		{
-			value = resolveProperty("\\$\\{webapproot\\}", this.webapproot.replace('\\', '/'), value);
+			value = resolveProperty("\\$\\{webapproot\\}", webapproot.replace('\\', '/'), value);
 		}
 		
 		//Set the property
-		set(key,value);
+		config.set(key,value);
 		log.debug("CONFIG: "+key+" has been set to "+value);
 	}
 	
 	
     
-    protected String resolveProperty(String pattern, String replacement, String value)
+    protected static String resolveProperty(String pattern, String replacement, String value)
     {
     	value = value.replaceAll(pattern,replacement);
     	return(value);
