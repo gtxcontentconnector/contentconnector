@@ -2,7 +2,6 @@ package com.gentics.cr.configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Properties;
 import java.util.Map.Entry;
 
