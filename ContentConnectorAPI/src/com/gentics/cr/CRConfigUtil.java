@@ -32,8 +32,9 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 	 * Key under which the RequestProcessorConfigs are stored
 	 */
 	private static final String REQUEST_PROCESSOR_KEY = "RP";
+	
 	/**
-	 * 
+	 * Path where the {@link VelocityContentRepository} looks for templates when no other path is specified.
 	 */
 	public static final String DEFAULT_TEMPLATE_PATH = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/");
 	
