@@ -86,19 +86,19 @@ public class LuceneAnalyzerFactory {
 			//First try to create an Analyzer that takes a config object
 			a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[]{GenericConfiguration.class}).newInstance(config);
 		}
-		catch(Exception f1)
+		catch(Exception e1)
 		{
 			try {
 				//IF FIRST FAILS TRY SIMPLE CONSTRUCTOR
 				a = (Analyzer) Class.forName(analyzerclass).getConstructor().newInstance();
-			} catch (Exception e) {
+			} catch (Exception e2) {
 				//IF SIMPLE FAILS, PROBABLY DID NOT FIND CONSTRUCTOR, TRYING WITH VERSION ADDED
 				try{
 					a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[]{Version.class}).newInstance(Version.LUCENE_CURRENT);
 				}
-				catch(Exception er)
+				catch(Exception e3)
 				{
-					log.error("Could not instantiate Analyzer with class "+analyzerclass, er);
+					log.error("Could not instantiate Analyzer with class "+analyzerclass, e3);
 				}
 			}
 		}
