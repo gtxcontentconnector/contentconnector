@@ -7,12 +7,10 @@ import java.util.Vector;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
-import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Resolvable;
-import com.gentics.contentnode.content.GenticsContentFactory;
 import com.gentics.cr.exceptions.CRException;
 
 /**
