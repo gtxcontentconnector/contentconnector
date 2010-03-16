@@ -262,6 +262,11 @@ public class CRRequestBuilder {
 		}
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param defaultparameters
+	 */
 	public CRRequestBuilder(HttpServletRequest request,GenericConfiguration defaultparameters){
 		this(request);
 		if(defaultparameters != null){
