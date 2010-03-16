@@ -3,6 +3,8 @@ package com.gentics.cr.lucene.search;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -97,6 +99,9 @@ public class CRSearcher {
 				
 				query = replaceBooleanMnoGoSearchQuery(query);
 				
+				if (searchedAttributes.length > 1) {
+					query = addMultipleSearchedAttributes(query,searchedAttributes);
+				}
 				Query parsedQuery = parser.parse(query);
 				result = new HashMap<String,Object>(2);
 				result.put("query", parsedQuery);
@@ -119,6 +124,44 @@ public class CRSearcher {
 		return(result);
 	}
 	
+	/**
+	 * parse given query and prepare it to search in multiple attributes with lucene, only words are replaced that are not one of AND, OR, NOT and do not contain a ":" char.
+	 * @param query String with query to parse
+	 * @param searchedAttributes Array of attributes to search in.
+	 * @return parsed query, in case no searchedAttributes are given the original query is given back.
+	 */
+	private String addMultipleSearchedAttributes(String query,
+			String[] searchedAttributes) {
+		StringBuffer new_query;
+		String replacement = "";
+		String seperatorCharacterClass = " \\(\\)";
+		for(String attribute:searchedAttributes) {
+			if(replacement.length()>0)replacement += " OR ";
+			replacement += attribute+":$2";
+		}
+		if(replacement.length()>0){
+			replacement = "("+replacement+")";
+			Pattern valuePattern = Pattern.compile("(["+seperatorCharacterClass+"]*)([^"+seperatorCharacterClass+"]+)(["+seperatorCharacterClass+"]*)");
+			Matcher valueMatcher = valuePattern.matcher(query);
+			new_query = new StringBuffer();
+			while(valueMatcher.find()){
+				String charsBeforeValue = valueMatcher.group(1);
+				String value = valueMatcher.group(2);
+				String charsAfterValue = valueMatcher.group(3);
+				if(!"AND".equalsIgnoreCase(value)
+					&& !"OR".equalsIgnoreCase(value)
+					&& !value.contains(":")
+				) {
+					valueMatcher.appendReplacement(new_query, charsBeforeValue+replacement+charsAfterValue);
+				}
+			}
+			valueMatcher.appendTail(new_query);
+		} else {
+			return query;
+		}
+		return new_query.toString();
+	}
+
 	/**
 	 * Helper method to replace search parameters from boolean mnoGoSearch query into their lucene compatible parameters
 	 * @param mnoGoSearchQuery
