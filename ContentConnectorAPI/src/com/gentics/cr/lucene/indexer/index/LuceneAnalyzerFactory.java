@@ -41,7 +41,7 @@ public class LuceneAnalyzerFactory {
 	public static Analyzer createAnalyzer(CRConfig config)
 	{
 		PerFieldAnalyzerWrapper analyzerWrapper = new PerFieldAnalyzerWrapper(createDefaultAnalyzer(config));
-		
+		//TODO Cache analyzer instances and do not read file each time
 		//Load analyzer config
 		GenericConfiguration aconfig = loadAnalyzerConfig(config);
 		if(aconfig!=null)

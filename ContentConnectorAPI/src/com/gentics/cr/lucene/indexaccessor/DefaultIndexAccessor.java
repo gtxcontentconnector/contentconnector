@@ -729,4 +729,9 @@ class DefaultIndexAccessor implements IndexAccessor {
     return writingReaderUseCount;
   }
 
+	public void reopen() throws IOException {
+		IndexWriter tempWriter = this.getWriter();
+		this.release(tempWriter);
+	}
+
 }

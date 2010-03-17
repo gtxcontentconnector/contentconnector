@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Explanation;
@@ -21,6 +19,7 @@ import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 /**
  * 
@@ -38,16 +37,8 @@ public class CRSearcher {
 	protected static final String STEMMING_KEY = "STEMMING";
 	protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
 	
-	protected String indexPath;
 	protected CRConfig config;
-	/**
-	 * Create new instance of CRSearcher
-	 * @param indexPath
-	 */
-	public CRSearcher(String indexPath) {
-		this.indexPath = indexPath;
-		this.config=null;
-	}
+	
 	
 	/**
 	 * Create new instance of CRSearcher
@@ -55,7 +46,6 @@ public class CRSearcher {
 	 */
 	public CRSearcher(CRConfig config) {
 		this.config = config;
-		this.indexPath = (String)config.get(INDEX_LOCATION_KEY);
 	}
 	
 	/**
@@ -83,16 +73,9 @@ public class CRSearcher {
 		searcher = indexAccessor.getPrioritizedSearcher();
 		HashMap<String,Object> result = null;
 		try {	
-			boolean doStemming = Boolean.parseBoolean((String)this.config.get(STEMMING_KEY));
-			if(doStemming)
-			{
-				analyzer = new SnowballAnalyzer(Version.LUCENE_CURRENT,(String)this.config.get(STEMMER_NAME_KEY));
-			}
-			else
-			{
-				analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-			}
 			
+			analyzer = LuceneAnalyzerFactory.createAnalyzer(this.config);
+						
 			if(searchedAttributes!=null && searchedAttributes.length>0)
 			{
 				QueryParser parser = new QueryParser(Version.LUCENE_CURRENT,searchedAttributes[0], analyzer);

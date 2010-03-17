@@ -41,8 +41,7 @@ import org.apache.lucene.store.Directory;
 public class IndexAccessorFactory {
   private static final IndexAccessorFactory indexAccessorFactory = new IndexAccessorFactory();
   private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors = new ConcurrentHashMap<Directory, IndexAccessor>();
-  private MultiIndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor();
-
+ 
   static {
     LogManager manager = LogManager.getLogManager();
     InputStream is = ClassLoader.getSystemResourceAsStream(
@@ -151,9 +150,12 @@ public class IndexAccessorFactory {
   }
 
   /**
+   * @param dirs 
    * @return
    */
-  public MultiIndexAccessor getMultiIndexAccessor() {
-    return multiIndexAccessor;
+  public IndexAccessor getMultiIndexAccessor(Directory[] dirs) {
+	  IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
+	  
+	  return multiIndexAccessor;
   }
 }

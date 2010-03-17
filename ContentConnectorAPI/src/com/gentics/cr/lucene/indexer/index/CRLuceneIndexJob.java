@@ -45,7 +45,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	/**
 	 * Name of class to use for IndexLocation, must extend {@link com.gentics.cr.util.indexing.IndexLocation}
 	 */
-	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.lucene.indexer.index.LuceneIndexLocation";
+	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
 	private RequestProcessor rp = null;
 	
 	/**

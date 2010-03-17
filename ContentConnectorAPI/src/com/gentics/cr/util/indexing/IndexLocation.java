@@ -1,14 +1,13 @@
 package com.gentics.cr.util.indexing;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexWriter;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -27,12 +26,13 @@ import com.gentics.cr.lucene.indexer.index.LockedIndexException;
  *
  */
 
-public class IndexLocation {
+public abstract class IndexLocation {
 	//STATIC MEMBERS
 	protected static final Logger log = Logger.getLogger(IndexLocation.class);
 	private static final String REOPEN_CHECK_KEY = "reopencheck";
-	private static final String REOPEN_FILENAME = "reopen";
-	private static final String INDEX_LOCATION_KEY = "indexLocation";
+	protected static final String REOPEN_FILENAME = "reopen";
+	protected static final String INDEX_LOCATIONS_KEY = "indexLocations";
+	protected static final String INDEX_PATH_KEY = "path";
 	private static final String INDEX_LOCATION_CLASS_KEY = "indexLocationClass";
 	private static final String PERIODICAL_KEY = "PERIODICAL";
 	private static Hashtable<String,IndexLocation> indexmap;
@@ -51,48 +51,25 @@ public class IndexLocation {
 	private int periodical_interval = 60; //60 seconds
 	private Thread periodical_thread;
 	private boolean lockdetection = false;
-	private boolean reopencheck = false;
-	protected String indexLocation ="";
+	protected boolean reopencheck = false;
 	
-	/**
-	 * Returns the filename of the reopen file.
-	 * @return filename of the reopen file.
-	 */
-	public String getReopenFilename(){
-		return this.indexLocation+"/"+REOPEN_FILENAME;
-	}
-	
+		
 	/**
 	 * Creates the reopen file to make portlet reload the index.
 	 */
-	public void createReopenFile(){
-		boolean write_reopen_file = Boolean.parseBoolean((String)config.get("writereopenfile"));
-		
-		if(write_reopen_file == true){
-		
-			log.debug("Writing reopen to " + this.getReopenFilename());
-			try {
-				new File(this.getReopenFilename()).createNewFile();
-			} catch (IOException e) {
-				log.warn("Cannot create reopen file! " + e);
-			}
-		}
-	}
+	public abstract void createReopenFile();
 	
 	/**
 	 * Checks Lock and throws Exception if Lock exists
 	 * @throws LockedIndexException 
 	 * @throws IOException 
 	 */
-	public void checkLock() throws LockedIndexException
-	{
-	}
+	public abstract void checkLock() throws LockedIndexException;
 	
 	
 	protected IndexLocation(CRConfig config)
 	{
 		this.config = config;
-		indexLocation = (String)config.get(INDEX_LOCATION_KEY);
 		queue = new IndexJobQueue(config);
 		String per = (String)config.get(PERIODICAL_KEY);
 		periodical = Boolean.parseBoolean(per);
@@ -150,6 +127,29 @@ public class IndexLocation {
 		return(this.lockdetection);
 	}
 	
+	
+	protected static String getIndexLocationKey(CRConfig config)
+	{
+		String path="";
+		GenericConfiguration locs = (GenericConfiguration)config.get(INDEX_LOCATIONS_KEY);
+		if(locs!=null)
+		{
+			Map<String,GenericConfiguration> locationmap = locs.getSortedSubconfigs();
+			if(locationmap!=null)
+			{
+				for(GenericConfiguration locconf:locationmap.values())
+				{
+					String p = locconf.getString(INDEX_PATH_KEY);
+					if(p!=null && !"".equals(p))
+					{
+						path+=p;
+					}
+				}
+			}
+		}
+		return path;
+	}
+	
 	/**
 	 * Gets the index location configured in config
 	 * @param config
@@ -159,7 +159,7 @@ public class IndexLocation {
 	public static synchronized IndexLocation getIndexLocation(CRConfig config)
 	{
 		IndexLocation dir = null;
-		String key = (String)config.get(INDEX_LOCATION_KEY);
+		String key = getIndexLocationKey(config);
 		if(key==null)
 		{
 			log.error("COULD NOT FIND CONFIG FOR INDEXLOCATION. check config @ "+config.getName());
@@ -210,7 +210,7 @@ public class IndexLocation {
 		} catch (InvocationTargetException e) {
 			log.error("Cannot invoke Constructor for IndexLocation class \""+indexLocationClass.getName()+"\"",e);
 		}
-		return new IndexLocation(config);
+		return new DefaultIndexLocation(config);
 	}
 
 	private static Class<? extends IndexLocation> getIndexLocationClass(CRConfig config) {
@@ -298,33 +298,8 @@ public class IndexLocation {
 	 * @param indexAccessor
 	 * @return true if indexAccessor has been reopened
 	 */
-	public boolean reopenCheck(IndexAccessor indexAccessor)
-	{
-		boolean reopened = false;
-		if(this.reopencheck)
-		{
-			try
-			{
-				log.debug("Check for reopen file at "+this.getReopenFilename());
-				File reopenFile = new File(this.getReopenFilename());
-				if(reopenFile.exists())
-				{
-					reopenFile.delete();
-					
-					//release writer (Readers and Searchers are refreshed after a Writer is released.)
-					IndexWriter tempWriter = indexAccessor.getWriter();
-					indexAccessor.release(tempWriter);
-					reopened = true;
-					log.debug("Reopened index.");
-				}
-			}catch(Exception ex)
-			{
-				log.error(ex.getMessage());
-				ex.printStackTrace();
-			}
-		}
-		return reopened;
-	}
+	public abstract boolean reopenCheck(IndexAccessor indexAccessor);
+	
 
 	/**
 	 * Tests if the IndexLocation contains an existing Index and returns true if it does.

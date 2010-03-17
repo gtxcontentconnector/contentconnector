@@ -122,6 +122,12 @@ public interface IndexAccessor {
    * 
    */
   void open();
+  
+  /**
+   * @throws IOException 
+   * 
+   */
+  void reopen() throws IOException ;
 
   /**
    * @return

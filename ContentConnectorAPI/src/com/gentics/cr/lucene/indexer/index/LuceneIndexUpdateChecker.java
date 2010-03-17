@@ -11,6 +11,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.store.Directory;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
@@ -82,7 +83,13 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 				return true;
 			} catch (IOException e) {
 				//TODO specify witch index is not readable
-				log.error("Cannot open index for reading. (Directory: " + indexLocation.getDirectory()+ ")",e);
+				String directories = "";
+				Directory[] dirs = indexLocation.getDirectories();
+				for(Directory dir:dirs)
+				{
+					directories+=dir.toString()+'\n';
+				}
+				log.error("Cannot open index for reading. (Directory: " + directories+ ")",e);
 				return true;
 			}
 		} else {
