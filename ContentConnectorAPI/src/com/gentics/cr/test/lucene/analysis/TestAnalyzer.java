@@ -7,7 +7,8 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.util.Version;
+
+import com.gentics.cr.lucene.LuceneVersion;
 /**
  * 
  * 
@@ -20,7 +21,7 @@ public class TestAnalyzer extends Analyzer {
 
 	@Override
 	public TokenStream tokenStream(String arg0, Reader reader) {
-		Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,reader);
+		Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.getVersion(),reader);
 		TokenStream stream = new StandardFilter(tokenizer);
 		TokenStream f_stream = new TestFilter(stream);
 		return f_stream;

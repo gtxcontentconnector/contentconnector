@@ -5,7 +5,6 @@ import java.io.StringReader;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.search.highlight.Highlighter;
@@ -13,9 +12,9 @@ import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.TextFragment;
 import org.apache.lucene.search.highlight.TokenGroup;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 /**
  * 
  * Last changed: $Date: 2009-06-26 15:48:16 +0200 (Fr, 26 Jun 2009) $
@@ -44,7 +43,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter{
 	 */
 	public PhraseBolder(GenericConfiguration config) {
 		super(config);
-		analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+		analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
 		
 		highlightPrefix = (String)config.get(PHRASE_PREFIX_KEY);
 		if(highlightPrefix==null)highlightPrefix="<b>";

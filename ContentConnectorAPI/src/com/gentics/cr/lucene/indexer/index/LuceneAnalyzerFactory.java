@@ -11,9 +11,9 @@ import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 
-import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 
 /**
@@ -38,7 +38,7 @@ public class LuceneAnalyzerFactory {
 	 * @param config
 	 * @return
 	 */
-	public static Analyzer createAnalyzer(CRConfig config)
+	public static Analyzer createAnalyzer(GenericConfiguration config)
 	{
 		PerFieldAnalyzerWrapper analyzerWrapper = new PerFieldAnalyzerWrapper(createDefaultAnalyzer(config));
 		//TODO Cache analyzer instances and do not read file each time
@@ -62,7 +62,7 @@ public class LuceneAnalyzerFactory {
 	}
 	
 	
-	private static GenericConfiguration loadAnalyzerConfig(CRConfig config)
+	private static GenericConfiguration loadAnalyzerConfig(GenericConfiguration config)
 	{
 		GenericConfiguration a_conf = null;
 		String confpath = (String)config.get(ANALYZER_CONFIG_KEY);
@@ -94,7 +94,7 @@ public class LuceneAnalyzerFactory {
 			} catch (Exception e2) {
 				//IF SIMPLE FAILS, PROBABLY DID NOT FIND CONSTRUCTOR, TRYING WITH VERSION ADDED
 				try{
-					a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[]{Version.class}).newInstance(Version.LUCENE_CURRENT);
+					a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[]{Version.class}).newInstance(LuceneVersion.getVersion());
 				}
 				catch(Exception e3)
 				{
@@ -105,14 +105,14 @@ public class LuceneAnalyzerFactory {
 		return a;
 	}
 	
-	private static Analyzer createDefaultAnalyzer(CRConfig config)
+	private static Analyzer createDefaultAnalyzer(GenericConfiguration config)
 	{
 		//Update/add Documents
 		Analyzer analyzer;
 		boolean doStemming = Boolean.parseBoolean((String)config.get(STEMMING_KEY));
 		if(doStemming)
 		{
-			analyzer = new SnowballAnalyzer(Version.LUCENE_CURRENT,(String)config.get(STEMMER_NAME_KEY));
+			analyzer = new SnowballAnalyzer(LuceneVersion.getVersion(),(String)config.get(STEMMER_NAME_KEY));
 		}
 		else
 		{
@@ -125,18 +125,18 @@ public class LuceneAnalyzerFactory {
 				//initialize Analyzer with stop words
 				try
 				{
-					analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT,stopWordFile);
+					analyzer = new StandardAnalyzer(LuceneVersion.getVersion(),stopWordFile);
 				}
 				catch(IOException ex)
 				{
 					log.error("Could not open stop words file. Will create standard analyzer. "+ex.getMessage());
-					analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+					analyzer = new StandardAnalyzer(LuceneVersion.getVersion());
 				}
 			}
 			else
 			{
 				//if no stop word list exists load fall back
-				analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+				analyzer = new StandardAnalyzer(LuceneVersion.getVersion());
 			}
 		}
 		return analyzer;

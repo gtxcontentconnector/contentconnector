@@ -15,9 +15,10 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
@@ -74,11 +75,11 @@ public class CRSearcher {
 		HashMap<String,Object> result = null;
 		try {	
 			
-			analyzer = LuceneAnalyzerFactory.createAnalyzer(this.config);
+			analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration)this.config);
 						
 			if(searchedAttributes!=null && searchedAttributes.length>0)
 			{
-				QueryParser parser = new QueryParser(Version.LUCENE_CURRENT,searchedAttributes[0], analyzer);
+				QueryParser parser = new QueryParser(LuceneVersion.getVersion(),searchedAttributes[0], analyzer);
 				
 				query = replaceBooleanMnoGoSearchQuery(query);
 				

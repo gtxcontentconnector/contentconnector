@@ -35,11 +35,13 @@
 	<classpathentry kind="lib" path="lib/xmlbeans-qname.jar"/>
 	<classpathentry kind="lib" path="lib/xmlpublic.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/lucene-core-3.0.0.jar" sourcepath="C:/Users/Christopher/Desktop/old/lucene 3/lucene-3.0.0-src/lucene-3.0.0/src/java"/>
-	<classpathentry kind="lib" path="lib/lucene-fast-vector-highlighter-3.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-highlighter-3.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-snowball-3.0.0.jar" sourcepath="C:/Users/Christopher/Desktop/old/lucene 3/lucene-3.0.0-src/lucene-3.0.0/contrib/snowball/src/java"/>
 	<classpathentry kind="lib" path="lib/velocity-tools-generic-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-0.20.2-core-java15compliant.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-analyzers-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-3.0.1.jar" sourcepath="C:/Users/Christopher/Desktop/old/lucene 301/lucene-3.0.1-src/lucene-3.0.1/src/java"/>
+	<classpathentry kind="lib" path="lib/lucene-fast-vector-highlighter-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-highlighter-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-memory-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-snowball-3.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

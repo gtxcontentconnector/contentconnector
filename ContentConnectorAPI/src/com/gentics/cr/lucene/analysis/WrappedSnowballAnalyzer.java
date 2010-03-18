@@ -1,9 +1,9 @@
 package com.gentics.cr.lucene.analysis;
 
 import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.LuceneVersion;
 /**
  * 
  * 
@@ -19,7 +19,7 @@ public class WrappedSnowballAnalyzer extends SnowballAnalyzer {
 	 * @param config 
 	 */
 	public WrappedSnowballAnalyzer(GenericConfiguration config) {
-		super(Version.LUCENE_CURRENT, config.getString(STEMMER_NAME_KEY));
+		super(LuceneVersion.getVersion(), config.getString(STEMMER_NAME_KEY));
 	}
 
 }

@@ -11,13 +11,11 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRError;
@@ -26,6 +24,8 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
 /**
  * 
@@ -174,8 +174,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
 			if(highlightQuery!=null)
 			{
-				Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-				QueryParser parser = new QueryParser(Version.LUCENE_CURRENT,getSearchedAttributes()[0], analyzer);
+				Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration)this.config);
+				QueryParser parser = new QueryParser(LuceneVersion.getVersion(),getSearchedAttributes()[0], analyzer);
 				try {
 					parsedQuery = parser.parse((String)highlightQuery);
 				} catch (ParseException e) {

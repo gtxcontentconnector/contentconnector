@@ -12,6 +12,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.indexing.IndexLocation;
 
@@ -34,7 +35,7 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	
 	protected Analyzer getConfiguredAnalyzer() 
 	{
-		return LuceneAnalyzerFactory.createAnalyzer(config);
+		return LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration)config);
 	}
 	
 	/**
