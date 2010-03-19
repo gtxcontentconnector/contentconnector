@@ -239,7 +239,7 @@ public class CRRequestBuilder {
 				node_filter += "node_id:"+node_id[i];
 			}
 			node_id = new String[]{};
-			filter += " AND ("+node_filter+")";
+			filter = "(" + filter + ") AND ("+node_filter+")";
 		}
 	}
 	
