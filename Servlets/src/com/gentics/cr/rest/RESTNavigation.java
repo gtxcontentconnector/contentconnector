@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRServletConfig;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
@@ -44,6 +45,12 @@ public class RESTNavigation extends HttpServlet{
 		this.log = Logger.getLogger("com.gentics.cr");
 		CRServletConfig crConf = new CRServletConfig(config);
 		container = new RESTNavigationContainer(crConf);
+	}
+	
+	@Override
+	public void destroy()
+	{
+		CRDatabaseFactory.destroy();
 	}
 	
 	public void doService(HttpServletRequest request,

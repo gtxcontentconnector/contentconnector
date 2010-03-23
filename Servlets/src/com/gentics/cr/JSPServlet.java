@@ -56,6 +56,12 @@ public class JSPServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void destroy()
+	{
+		CRDatabaseFactory.destroy();
+	}
 
 	/**
 	 * Wrapper Method for the doGet and doPost Methods

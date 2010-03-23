@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRServletConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.BeanWrapper;
@@ -43,6 +44,12 @@ public class RESTServlet extends HttpServlet {
 		this.crConf = new CRServletConfig(config);
 		container = new RESTSimpleContainer(crConf);
 
+	}
+	
+	@Override
+	public void destroy()
+	{
+		CRDatabaseFactory.destroy();
 	}
 
 	/**

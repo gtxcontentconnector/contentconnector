@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.CRServletConfig;
@@ -206,6 +207,12 @@ public class VelocitySearchServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doService(request, response);
+	}
+	
+	@Override
+	public void destroy()
+	{
+		CRDatabaseFactory.destroy();
 	}
 
 }
