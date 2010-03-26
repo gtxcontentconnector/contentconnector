@@ -140,7 +140,7 @@ public class CRConfigUtil extends CRConfig {
 	{
 		String ft = (String)this.get(FOLDER_TYPE_KEY);
 		if(ft==null)ft="10007";
-		return((String)this.get(FOLDER_TYPE_KEY));
+		return(ft);
 	}
 	
 	/**
