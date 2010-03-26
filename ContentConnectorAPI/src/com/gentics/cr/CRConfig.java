@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import com.gentics.api.lib.datasource.Datasource;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
@@ -15,7 +16,7 @@ import com.gentics.cr.template.ITemplateManager;
  * @author $Author$
  *
  */
-public interface CRConfig {
+public abstract class CRConfig extends GenericConfiguration{
 
 	
 	/**
@@ -59,127 +60,127 @@ public interface CRConfig {
 	 * Creates Datasource from Config
 	 * @return Datasource
 	 */
-	public Datasource getDatasource();
+	public abstract Datasource getDatasource();
 
 	/**
 	 * Returns a PathResolver to resolve Paths of a ContentObject
 	 * @return PathResolver
 	 */
-	public PathResolver getPathResolver();
+	public abstract PathResolver getPathResolver();
 
 	/**
 	 * Returns The configured PlinkTemplate
 	 * @return String PlinkTemplate
 	 */
-	public String getPlinkTemplate();
+	public abstract String getPlinkTemplate();
 	
 	/**
 	 * Returns the Name of the current Config (ServletName, PortletName, ApplicationName,...)
 	 * @return String Name
 	 */
-	public String getName();
+	public abstract String getName();
 	
 	/**
 	 * Returns the configured Response Encoding
 	 * @return String Encoding
 	 */
-	public String getEncoding();
+	public abstract String getEncoding();
 	
 	/**
 	 * Returns a string to identify binary objects e.g. 10008
 	 * @return String BinaryType
 	 */
-	public String getBinaryType();
+	public abstract String getBinaryType();
 	
 	/**
 	 * Returns a string to identify folder objects e.g. 10002
 	 * @return String FolderType
 	 */
-	public String getFolderType();
+	public abstract String getFolderType();
 	
 	/**
 	 * Returns a string to identify page objects e.g. 10007
 	 * @return String PageType
 	 */
-	public String getPageType();
+	public abstract String getPageType();
 	
 	/**
 	 * Returns the configured ApplicationRule. This Rule is intended to be added to each query, in order to provide a server side filtering method (personalization)
 	 * @return String Application Rule
 	 */
-	public String getApplicationRule();
+	public abstract String getApplicationRule();
 	
 	/**
 	 * Returns the Properties Map
 	 * @return Properties
 	 */
-	public Properties getProps();
+	public abstract Properties getProps();
 	
 	/**
 	 * Returns if the Application is running in portal.node compatibility mode => Velocity turned off
 	 * @return boolean Portal.Node Compatibility Mode
 	 */
-	public boolean getPortalNodeCompMode();
+	public abstract boolean getPortalNodeCompMode();
 	
 	/**
 	 * Returns an instance of the configured Template Manager to render Velocity
 	 * @return ITemplateManager
 	 */
-	public ITemplateManager getTemplateManager();
+	public abstract ITemplateManager getTemplateManager();
 
 	/**
 	 * XML Url for XMLRequest Processor
 	 * @return String 
 	 */
-	public String getXmlUrl();
+	public abstract String getXmlUrl();
 	
 	/**
 	 * XSLT Url for XMLRequest Processor
 	 * @return String 
 	 */
-	public String getXsltUrl();
+	public abstract String getXsltUrl();
 	
 	/**
 	 * Contentid Regex for XMLRequest Processor
 	 * @return String 
 	 */
-	public String getContentidRegex();
+	public abstract String getContentidRegex();
 	
 	/**
 	 * Chain of filter classes that is performed on the result
 	 * @return String 
 	 */
-	public ArrayList<String> getFilterChain();
+	public abstract ArrayList<String> getFilterChain();
 	
 	/**
 	 * Custom Permission for XMLRequest Processor
 	 * @return String 
 	 */
-	public String getObjectPermissionAttribute();
+	public abstract String getObjectPermissionAttribute();
 	
 	/**
 	 * Custom Permission for XMLRequest Processor
 	 * @return String 
 	 */
-	public String getUserPermissionAttribute();
+	public abstract String getUserPermissionAttribute();
 	
 	/**
 	 * Defines if RequestProcessor is to use shared caches with Portal.Node
 	 * @return boolean
 	 */
-	public boolean useSharedCache();
+	public abstract boolean useSharedCache();
 	
 	/**
 	 * Defines if the BinaryContainer translates contentidurls eg: /ContentRepository/pcr_bin/90033.305/Quicklinks.png to /ContentRepository/pcr_bin?contentid=90033.305&contentdisposition=Quicklinks.png
 	 * @return
 	 */
-	public boolean usesContentidUrl();
+	public abstract boolean usesContentidUrl();
 	
 	/**
 	 * Sets response encoding
 	 * @param encoding
 	 */
-	public void setEncoding(String encoding);
+	public abstract void setEncoding(String encoding);
 	
 	/**
 	 * Returns a new instance of the RequestProcessor configured in the config with the given requestProcessorId
@@ -187,18 +188,6 @@ public interface CRConfig {
 	 * @return RequestProcessor
 	 * @throws CRException
 	 */
-	public RequestProcessor getNewRequestProcessorInstance(int requestProcessorId) throws CRException;
+	public abstract RequestProcessor getNewRequestProcessorInstance(int requestProcessorId) throws CRException;
 	
-	/**
-	 * Get value for key
-	 * @param key
-	 * @return
-	 */
-	public Object get(String key);
-	/**
-	 * Wrapper for {@link #get(String)}
-	 * @param key
-	 * @return returns config parameter as String
-	 */
-	public String getString(String key);
 }

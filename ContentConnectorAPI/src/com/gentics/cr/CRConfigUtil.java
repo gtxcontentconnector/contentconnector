@@ -21,7 +21,7 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author$
  *
  */
-public class CRConfigUtil extends GenericConfiguration implements CRConfig {
+public class CRConfigUtil extends CRConfig {
 
 	/**
 	 * 
@@ -117,7 +117,9 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 	 */
 	public String getBinaryType()
 	{
-		return((String)this.get(BINARY_TYPE_KEY));
+		String bt =(String)this.get(BINARY_TYPE_KEY);
+		if(bt==null)bt="10008";
+		return(bt);
 	}
 	
 	/**
@@ -136,6 +138,8 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 	 */
 	public String getFolderType()
 	{
+		String ft = (String)this.get(FOLDER_TYPE_KEY);
+		if(ft==null)ft="10007";
 		return((String)this.get(FOLDER_TYPE_KEY));
 	}
 	
@@ -155,7 +159,9 @@ public class CRConfigUtil extends GenericConfiguration implements CRConfig {
 	 */
 	public String getPageType()
 	{
-		return((String)this.get(PAGE_TYPE_KEY));
+		String pt = (String)this.get(PAGE_TYPE_KEY);
+		if(pt==null)pt="10007";
+		return(pt);
 	}
 	
 	/**
