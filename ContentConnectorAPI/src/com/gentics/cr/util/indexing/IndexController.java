@@ -27,11 +27,22 @@ public class IndexController {
 	
 	/**
 	 * Create new instance of IndexController
+	 * This constructor will read the config file with this name
 	 * @param name
 	 */
 	public IndexController(String name)
 	{
 		crconfig = new CRConfigFileLoader(name, null);
+		this.indextable = buildIndexTable();
+	}
+	
+	/**
+	 * Create new instance of IndexController
+	 * @param config
+	 */
+	public IndexController(CRConfigUtil config)
+	{
+		crconfig = config;
 		this.indextable = buildIndexTable();
 	}
 	

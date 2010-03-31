@@ -36,4 +36,10 @@ public class CopyValue extends ContentTransformer {
 		bean.set(target_attribute, bean.get(source_attribute));
 	}
 
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

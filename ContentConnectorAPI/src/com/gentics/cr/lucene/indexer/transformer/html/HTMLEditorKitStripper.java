@@ -120,4 +120,10 @@ public class HTMLEditorKitStripper extends ContentTransformer{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
 }

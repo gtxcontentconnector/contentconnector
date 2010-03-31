@@ -30,4 +30,10 @@ public class SetValue extends ContentTransformer {
 		bean.set(attribute, value);
 	}
 
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

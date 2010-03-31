@@ -85,4 +85,10 @@ public class RegexReplacer extends ContentTransformer{
 		return str;
 	}
 
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -345,19 +345,22 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 			CRResolvableBean bean = new CRResolvableBean(objectToIndex);
 			//CALL PRE INDEX PROCESSORS/TRANSFORMERS
 			//TODO This could be optimized for multicore servers with a map/reduce algorithm
-			for(ContentTransformer transformer:transformerlist)
+			if(transformerlist!=null)
 			{
-				
-				try{
-					status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "+transformer.getTransformerKey()+"; BEAN: "+bean.get(idAttribute));
-					if(transformer.match(bean))
-						transformer.processBean(bean);
-				}
-				catch(Exception e)
+				for(ContentTransformer transformer:transformerlist)
 				{
-					//TODO Remember broken files
-					log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "+bean.get(idAttribute));
-					e.printStackTrace();
+					
+					try{
+						status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "+transformer.getTransformerKey()+"; BEAN: "+bean.get(idAttribute));
+						if(transformer.match(bean))
+							transformer.processBean(bean);
+					}
+					catch(Exception e)
+					{
+						//TODO Remember broken files
+						log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "+bean.get(idAttribute));
+						e.printStackTrace();
+					}
 				}
 			}
 			

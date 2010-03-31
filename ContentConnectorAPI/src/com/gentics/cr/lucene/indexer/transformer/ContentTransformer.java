@@ -58,6 +58,11 @@ public abstract class ContentTransformer {
 	}
 	
 	/**
+	 * Destroys the transformer.
+	 */
+	public abstract void destroy();
+	
+	/**
 	 * Processes the specified bean
 	 * @param bean
 	 * @throws CRException throws exception if bean could not be processed

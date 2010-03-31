@@ -70,4 +70,10 @@ public class LanguageIdentifyer extends ContentTransformer {
 		return LanguageGuesser.detectLanguage(string);
 	}
 
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

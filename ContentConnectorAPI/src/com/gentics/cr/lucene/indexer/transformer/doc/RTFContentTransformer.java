@@ -94,4 +94,10 @@ public class RTFContentTransformer extends ContentTransformer{
 			log.error("Configured attribute is null. Bean will not be processed");
 		}
 	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
 }

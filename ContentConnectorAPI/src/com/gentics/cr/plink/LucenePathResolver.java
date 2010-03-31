@@ -1,8 +1,5 @@
 package com.gentics.cr.plink;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -12,41 +9,42 @@ import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.datasource.DatasourceNotAvailableException;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
-import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
-import com.gentics.api.lib.expressionparser.filtergenerator.FilterGeneratorException;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.CRConfigFileLoader;
+import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.RequestProcessor;
+import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.util.indexing.IndexController;
 
 /**
  * This class is used to resolve URLs to objects an vice versa.
  *
  * 
- * Last changed: $Date$
- * @version $Revision$
- * @author $Author$
+ * Last changed: $Date: 2010-01-18 15:57:21 +0100 (Mo, 18 Jän 2010) $
+ * @version $Revision: 401 $
+ * @author $Author: bigbear.ap $
  *
  */
-public class PathResolver {
+public class LucenePathResolver {
 
 	private CRConfig conf = null;
-	private String appRule = null;
-
-	private Expression expression = null;
-
-	private static Logger log = Logger.getLogger(PathResolver.class);
 	
-	private static final String rule = "object.filename == data.filename && (object.folder_id.pub_dir == data.path || object.folder_id.pub_dir == concat(data.path, '/'))";
-	private static final String fast_rule = "object.filename == data.filename && (object.pub_dir == data.path || object.pub_dir == concat(data.path, '/'))";
-	private static final String[] prefillAttributes = new String[]{"filename","pub_dir","folder_id"};
-	private static final String[] fastprefillAttributes = new String[]{"filename","pub_dir"};
+	private static Logger log = Logger.getLogger(LucenePathResolver.class);
 	
-	private boolean fast = false;
+	private static final String INDEXER_CONFIG_FILE_KEY="indexconfig";
+	private static final String SEARCH_CONFIG_FILE_KEY="searchconfig";
+		
+	private IndexController idx = null;
+	
+	private RequestProcessor rp = null;
+		
 
 	/**
 	 * Initialize the expression needed to resolve Objects from passed URLs. As
@@ -56,106 +54,34 @@ public class PathResolver {
 	 * @param appRule 
 	 * 
 	 */
-	public PathResolver(CRConfig conf, String appRule) {
+	public LucenePathResolver(CRConfig conf) {
 
 		this.conf = conf;
-		this.appRule = appRule;
+		String cx_name = this.conf.getString(INDEXER_CONFIG_FILE_KEY);
+		if(cx_name==null)cx_name="indexer";		
+		CRConfigUtil idxConfig = new CRConfigFileLoader(cx_name,null);
 		
-		initRule(rule);
+		String cs_name = this.conf.getString(SEARCH_CONFIG_FILE_KEY);
+		if(cs_name==null)cs_name="searcher";		
+		CRConfigUtil srcConfig = new CRConfigFileLoader(cs_name,null);
 		
-	}
-	
-	/**
-	 * Initialize the expression needed to resolve Objects from passed URLs. As
-	 * this uses a lot of time initalization in the constructor improves
-	 * performance. Initialize PathResolver once on Server startup.
-	 * @param conf 
-	 * @param appRule 
-	 * @param usefastrule if this is set to true, the PathResolver will from now on use a much simpler rule to acquire the objects
-	 * 							it is required that the pub_dir is published with each page to use this rule
-	 */
-	public PathResolver(CRConfig conf, String appRule, boolean usefastrule) {
-
-		this.conf = conf;
-		this.appRule = appRule;
-		
-		if(usefastrule)
-		{
-			initRule(fast_rule);
-			fast = true;
-		}
-		else
-		{
-			initRule(rule);
-			fast = false;
-		}
-		
-	}
-	
-	private void initRule(String r)
-	{
-		// define the rule for finding pages or files with path/filename
-		//Apply AppRule
-		if (appRule!=null && !appRule.equals(""))
-		{
-			r = "("+r+") AND "+appRule;
-		}
-		// parse the rule into an expression object (check for syntax
-		// errors)
+		idx = new IndexController(idxConfig);
 		try {
-			this.expression = ExpressionParser.getInstance().parse(r);
-		} catch (Exception e) {
-			log.error("Could create expression path rule.");
+			rp = srcConfig.getNewRequestProcessorInstance(1);
+		} catch (CRException e) {
+			log.error("Could not initialize searcher request processor. Check your searcher config.", e);
 		}
 	}
 	
 	/**
-	 * This method has to be called right after the constructor.
-	 * 
-	 * It prefetches all objects with their contentids and pubdirs and paths.
-	 * 
-	 * @param cacheWarmRule - Rule that is used to fetch the objects
+	 * Destroys the PathResolver
 	 */
-	@SuppressWarnings("unchecked")
-	public void warmCache(String cacheWarmRule)
+	public void destroy()
 	{
-		
-		Datasource ds = null;
-		try {
-				
-				// prepare the filter
-				ds= this.conf.getDatasource();
-				DatasourceFilter filter = ds.createDatasourceFilter(ExpressionParser.getInstance().parse(cacheWarmRule));
-				
-				// use the filter to get matching objects
-				String[] atts = null;
-				if(fast)
-					atts = fastprefillAttributes;
-				else
-					atts = prefillAttributes;
-				Collection<Resolvable> coll = (Collection<Resolvable>)ds.getResult(filter,atts);
-				for(Resolvable res:coll)
-				{
-					CRRequest req = new CRRequest();
-					req.setUrl((String)res.get("pub_dir")+(String)res.get("filename"));
-					this.getObject(req);
-				}
-				
-
-			} catch (FilterGeneratorException e) {
-				log.error("Could not create filter with cacheWarmRule ("+cacheWarmRule+") expression.");
-			} catch (ExpressionParserException e) {
-				log.error("Error while parsing path expression ("+cacheWarmRule+").");
-			} catch (DatasourceException e) {
-				log.error("Error while prefetching objects with rule ("+cacheWarmRule+").");
-			} catch (ParserException e) {
-				log.error("Could not create filter with cacheWarmRule ("+cacheWarmRule+") expression.");
-			}
-			finally{
-				CRDatabaseFactory.releaseDatasource(ds);
-			}
-		
+		this.idx.toString();
 	}
+	
+	
 
 	/**
 	 * The Method looks in the repository with the expression initialized in the
@@ -169,51 +95,31 @@ public class PathResolver {
 	 */
 	@SuppressWarnings("unchecked")
 	public CRResolvableBean getObject(CRRequest request) {
-		Resolvable contentObject = null;
+		CRResolvableBean contentObject = null;
 		String url = request.getUrl();
-		Datasource ds = null;
 		if (url != null) {
-			try {
+			
+				CRRequest r = new CRRequest();
 				
-				// prepare the filter
-				ds= this.conf.getDatasource();
-				DatasourceFilter filter = ds.createDatasourceFilter(expression);
+				PathBean pb = new PathBean(request.getUrl());
+				String path = pb.getPath();
 				
-				//Deploy base objects
-				Iterator<String> it = request.getObjectsToDeploy().keySet().iterator();
-				while(it.hasNext())
-				{
-					String key = it.next();
-					filter.addBaseResolvable(key,request.getObjectsToDeploy().get(key));
+				String filter = "";
+				if(path==null || "".equals(path))
+					filter = "(pub_dir:(/)) AND filename:("+pb.getFilename()+")";
+				else
+					filter = "(pub_dir:("+pb.getPath()+") OR pub_dir:("+pb.getPath()+"/)) AND filename:("+pb.getFilename()+")";
+				log.debug("Using filter: "+filter);
+				r.setRequestFilter(filter);
+				try {
+					contentObject = rp.getFirstMatchingResolvable(r);
+				} catch (CRException e) {
+					log.error("Could not load object from path "+url, e);
 				}
-				
-				// add the data to the filter
-				filter.addBaseResolvable("data", new PathBean(url));
-
-				// use the filter to get matching objects
-				Collection<Resolvable> objects = ds.getResult(filter,request.getAttributeArray());
-
-				Iterator<Resolvable> i = objects.iterator();
-				if (i.hasNext()) {
-					// we found at least one object, take the first one
-					contentObject = i.next();
-				}
-
-			} catch (FilterGeneratorException e) {
-				log.error("Could not create filter with path expression.");
-			} catch (ExpressionParserException e) {
-				log.error("Error while parsing path expression.");
-			} catch (DatasourceException e) {
-				log.error("Datasource error while getting object for url "
-						+ url);
-			}
-			finally{
-				CRDatabaseFactory.releaseDatasource(ds);
-			}
+			
 		}
-		CRResolvableBean ret = null;
-		if(contentObject!=null)ret = new CRResolvableBean(contentObject, new String[]{});
-		return ret;
+		
+		return contentObject;
 	}
 
 	/**

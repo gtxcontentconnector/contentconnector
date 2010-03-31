@@ -134,4 +134,10 @@ public class PDFContentTransformer extends ContentTransformer{
 		}
 		
 	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
 }

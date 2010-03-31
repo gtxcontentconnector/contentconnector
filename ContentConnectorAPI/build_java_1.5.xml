@@ -71,7 +71,7 @@
 	
 	<target name="doclientpackage" depends="dopackage">
 			<mkdir dir="${out}/tmpclient/com/gentics/cr"/>
-			<copy file="${out}/bin/com/gentics/cr/CRException.class" toDir="${out}/tmpclient/com/gentics/cr" />
+			<copy file="${out}/bin/com/gentics/cr/Exceptions/CRException.class" toDir="${out}/tmpclient/com/gentics/cr" />
 			<copy file="${out}/bin/com/gentics/cr/CRResolvableBean.class" toDir="${out}/tmpclient/com/gentics/cr" />
 			<zip destfile="${out}/RESTClient.zip">
 				<fileset dir="${out}/tmpclient">
