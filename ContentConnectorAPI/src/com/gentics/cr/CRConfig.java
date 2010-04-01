@@ -18,7 +18,6 @@ import com.gentics.cr.template.ITemplateManager;
  */
 public abstract class CRConfig extends GenericConfiguration{
 
-	public test test = nothing;
 	
 	/**
 	 * Reserved Attributes for Advanced Plinkreplacing without Velocity
