@@ -1,6 +1,6 @@
 <!-- 
 /**
- * 
+ * THIS SCRIPT WILL BE USED FOR BUILDING ON THE HUDSON BUILD SERVER
  * Last changed: $Date$
  * @version $Revision$
  * @author $Author$
@@ -41,6 +41,11 @@
 			</classpath>
 			
 		</javac>
+		<javadoc  destdir="javadoc">
+		    <packageset dir="${out}/tmpscr/" defaultexcludes="yes">
+		      <include name="**"/>
+		    </packageset>
+		</javadoc>
 		<delete dir="${out}/tmpscr/"/>
 	</target>
 	
@@ -65,6 +70,7 @@
 					<fileset dir="${out}/tmp/classes">
 					</fileset>
 				</zip>
+				
 				
 				
 	</target>
