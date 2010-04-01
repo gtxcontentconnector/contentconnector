@@ -56,7 +56,6 @@
 		             Windowtitle="Gentics ContentConnector API"
 		             Doctitle="Gentics ContentConnector API"
 		             bottom="Gentics Software GmbH">
-		      <arg line="-private" />
 		      <fileset dir="${out}/tmpscr/">
 		        <include name="**/*.java"/>
 		      </fileset>
