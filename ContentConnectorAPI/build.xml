@@ -49,17 +49,19 @@
 		
 		
 		<javadoc destdir="javadoc"
-					classpathref="classpath"
-			         packagenames="com.gentics.cr"
 		             sourcepath="${out}/tmpscr/"
 		             Author="true" version="true" Use="true" noindex="true"
 		             Windowtitle="Gentics ContentConnector API"
 		             Doctitle="Gentics ContentConnector API"
 		             bottom="Gentics Software GmbH">
+		      <arg line="-private" />
 		      <fileset dir="${out}/tmpscr/">
 		        <include name="**/*.java"/>
 		      </fileset>
-			
+				<classpath>
+							<fileset dir="${webappdir}/lib" />
+							<fileset dir="${sharedlibs}" />
+				</classpath>
 		 </javadoc>
 		
 		<delete dir="${out}/tmpscr/"/>
