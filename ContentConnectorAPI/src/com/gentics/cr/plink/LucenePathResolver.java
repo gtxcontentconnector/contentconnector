@@ -78,7 +78,7 @@ public class LucenePathResolver {
 	 */
 	public void destroy()
 	{
-		this.idx.toString();
+		this.idx.stop();
 	}
 	
 	
