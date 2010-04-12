@@ -26,10 +26,69 @@ import com.gentics.cr.util.indexing.IndexController;
 /**
  * This class is used to resolve URLs to objects an vice versa.
  *
+ * Sample Configuration:
+ *  main.properties
+ *  ================
+ * 	before.transformer.2.ds-handle.type=jdbc
+ *	before.transformer.2.ds-handle.driverClass=com.mysql.jdbc.Driver
+ *	before.transformer.2.ds-handle.url=jdbc:mysql://localhost:3306/content
+ *	before.transformer.2.ds.cache=true
+ *	before.transformer.2.ds.cache.foreignlinkattributes=true
+ *	before.transformer.2.ds.cache.syncchecking=true
+ *	before.transformer.2.attribute=content
+ *	before.transformer.2.staticprefix=/Content.Node
+ *	before.transformer.2.hostprefix=http://www.mydomain.at
+ *	before.transformer.2.rule=object.obj_type==10007
+ *	before.transformer.2.searchconfig=searcher
+ *	before.transformer.2.indexconfig=indexer
+ *	before.transformer.2.transformerclass=com.gentics.cr.lucene.indexer.transformer.LinkToPlinkTransformer
+ *	before.transformer.3.attribute=content
+ *	before.transformer.3.rule=object.obj_type==10007
+ *	before.transformer.3.transformerclass=com.gentics.cr.lucene.indexer.transformer.LinkTargetTransformer
+ *	before.transformer.3.externaltarget=_blank
+ *	before.transformer.3.externalalt=&Ouml;ffnet in einem neuen Fenster
+ *
+ *  indexer.properties
+ *  ==================
+ *  #file system location of index
+ *  index.1.indexLocations.1.path=${com.gentics.portalnode.confpath}/index/index
+ *  #index.1.indexLocations.1.path=RAM
+ *  #interval in seconds
+ *  index.1.interval=5
+ *  #job check interval
+ *  index.1.checkinterval=5
+ *  index.1.periodical=true
+ *  #job batch size
+ *  index.1.batchsize=10
+ *  #ContentRepository specific config
+ *  index.1.CR.1.rp.1.rpClass=com.gentics.cr.CRRequestProcessor
+ *  index.1.analyzerconfig=${com.gentics.portalnode.confpath}/rest/analyzer.properties
+ *  #Datasource
+ *  index.1.CR.1.rp.1.ds-handle.type=jdbc
+ *  index.1.CR.1.rp.1.ds-handle.driverClass=com.mysql.jdbc.Driver
+ *  index.1.CR.1.rp.1.ds-handle.url=jdbc:mysql://localhost:3306/content
+ *  #DO NOT USE CACHE FOR INDEXING
+ *  index.1.CR.1.rp.1.ds.cache=false
+ *  index.1.CR.1.rp.1.ds.cache.foreignlinkattributes=false
+ *  index.1.CR.1.rp.1.ds.cache.syncchecking=false
+ *  index.1.CR.1.rp.1.response-charset=UTF-8
+ *  index.1.CR.1.rp.1.binarytype=10008
+ *  index.1.CR.1.rp.1.foldertype=10002
+ *  index.1.CR.1.rp.1.pagetype=10007
+ *  #index.1.CR.2.ds-handle.portalnodedb=ccr
+ *  index.1.CR.1.rule=object.node_id==15 AND object.obj_type==10007
+ *  #index.1.CR.1.rule=10009==10008
+ *  index.1.CR.1.indexedAttributes=pub_dir,filename
+ *  index.1.CR.1.containedAttributes=pub_dir,filename
+ *  index.1.CR.1.idattribute=contentid
+ *  index.1.CR.1.batchsize=5
+ *  
+ *  indexer.properties
+ *  ==================
  * 
  * Last changed: $Date: 2010-01-18 15:57:21 +0100 (Mo, 18 Jän 2010) $
  * @version $Revision: 401 $
- * @author $Author: bigbear.ap $
+ * @author $Author: supnig@constantinopel.at $
  *
  */
 public class LucenePathResolver {

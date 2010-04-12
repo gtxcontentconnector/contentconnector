@@ -77,7 +77,7 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 		  while (matcher.find()) {
 			  String linkform = matcher.group(1);
 			  String link = matcher.group(2);
-			  
+			  String staticlink = link;
 			  if(this.staticprefix!=null)
 			  {
 				  link = link.replaceFirst(this.staticprefix, "");
@@ -118,7 +118,10 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 			  link+=parameters;
 			  //PREFIX HOST
 			  Matcher host_m = excludeHostPattern.matcher(link);
-			  if(!host_m.find())link = this.hostprefix+link;
+			  if(!host_m.find())
+			  {
+				  link = this.hostprefix+staticlink;
+			  }
 			  //REAPPEND FINISHED LINK
 			  matcher.appendReplacement(buf, linkform+"=\""+link+"\"");
 		  }
