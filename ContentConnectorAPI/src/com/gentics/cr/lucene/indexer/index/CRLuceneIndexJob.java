@@ -47,6 +47,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 	 */
 	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
 	private RequestProcessor rp = null;
+	private boolean ignoreoptimize = false;
 	
 	/**
 	 * Create new instance of IndexJob
@@ -58,6 +59,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 			Hashtable<String,CRConfigUtil> configmap)
 	{
 		super(config,indexLoc,configmap);
+		String ignoreoptimize_s = config.getString(IGNOREOPTIMIZE_KEY);
+		if(ignoreoptimize_s!=null)
+		{
+			ignoreoptimize = Boolean.parseBoolean(ignoreoptimize_s);
+		}
 		try {
 			rp = config.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
@@ -95,6 +101,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 
 	private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
 	private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
+	private static final String IGNOREOPTIMIZE_KEY = "ignoreoptimize";
 	
 	private static final String BATCH_SIZE_KEY = "BATCHSIZE";
 	private static final String CR_FIELD_KEY = "CRID";
@@ -281,7 +288,14 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				if(!interrupted)
 				{
 					//Only Optimize the Index if the thread has not been interrupted
-					indexWriter.optimize();
+					if(!ignoreoptimize)
+					{
+						indexWriter.optimize();	
+					}
+					else
+					{
+						log.debug("Will not execute OptimizeCommand.");
+					}
 				}
 				else
 				{
