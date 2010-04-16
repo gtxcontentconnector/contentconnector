@@ -21,13 +21,13 @@ public class LinkTargetTransformer extends ContentTransformer {
 	private static final String ATTRIBUTE_KEY="attribute";
 		
 	private static final String EXTERNALTARGET_KEY="externaltarget";
-	private static final String EXTERNAL_ALT_KEY="externalalt";
+	private static final String EXTERNAL_TITLE_KEY="externaltitle";
 	
 	private String attribute="content";
 	Pattern targetlinkResolverPattern = Pattern.compile("\\<a [^>]*(href)\\=\"([^\"]+)\"[^>]*>");
 	
 	GenericConfiguration config;
-	String externalalt = null;
+	String externaltitle = null;
 	String externaltarget = null;
 	/**
 	 * Create new Instance
@@ -42,7 +42,7 @@ public class LinkTargetTransformer extends ContentTransformer {
 			this.attribute = att_string;
 		}
 		externaltarget = this.config.getString(EXTERNALTARGET_KEY);
-		externalalt = this.config.getString(EXTERNAL_ALT_KEY);
+		externaltitle = this.config.getString(EXTERNAL_TITLE_KEY);
 		
 		
 	}
@@ -77,10 +77,10 @@ public class LinkTargetTransformer extends ContentTransformer {
 				  {
 					  //DOES NOT HAVE TARGET
 					  String replacement = " target=\""+this.externaltarget+"\"";
-					  if(whole.indexOf("alt=\"")==-1)
+					  if(whole.indexOf("title=\"")==-1)
 					  {
-						  //DOES NOT HAVE ALT
-						  replacement+=" alt=\""+this.externalalt+"\"";
+						  //DOES NOT HAVE TITLE
+						  replacement+=" title=\""+this.externaltitle+"\"";
 					  }
 					  String rep = newlink.substring(0, newlink.length()-1);
 					  newlink = rep+replacement+">";
