@@ -24,6 +24,9 @@
 	        	<execution>
 	        		<id>default</id>
 	        		<phase>install</phase>
+	        		<goals>
+	        			<goal>install</goal>
+	        		</goals>
 	        	</execution>
 	        </executions>
 	       
