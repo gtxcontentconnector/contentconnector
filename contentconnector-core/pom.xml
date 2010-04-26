@@ -23,7 +23,7 @@
 	        <executions>
 	        	<execution>
 	        		<id>default</id>
-	        		<phase>compile</phase>
+	        		<phase>install</phase>
 	        	</execution>
 	        </executions>
 	       
