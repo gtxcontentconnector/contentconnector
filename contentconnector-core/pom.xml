@@ -22,7 +22,7 @@
 	        <version>2.6.1</version>
 	        <executions>
 	        	<execution>
-	        		<id>compile</id>
+	        		<id>default</id>
 	        		<phase>compile</phase>
 	        	</execution>
 	        </executions>
