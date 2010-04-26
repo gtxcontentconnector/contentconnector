@@ -56,10 +56,16 @@
 			</snapshots>
 		</repository>
 		<repository>
-        <id>gcc-nightly.gcc-nightly.gentics.com</id>
-        <name>gcc-nightly.gcc-nightly.gentics.com-releases</name>
-        <url>http://gcc-nightly.gentics.com:8081/artifactory/libs-releases-local</url>
-    </repository>
+	      <id>internal</id>
+	      <name>Archiva Managed Internal Repository</name>
+	      <url>http://gcc-nightly.gentics.com:8081/archiva/repository/internal/</url>
+	      <releases>
+	        <enabled>true</enabled>
+	      </releases>
+	      <snapshots>
+	        <enabled>false</enabled>
+	      </snapshots>
+	    </repository>
 	</repositories>
 	
 	<dependencies>
