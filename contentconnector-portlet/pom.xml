@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>contentconnector</groupId>
-  <artifactId>contentconnector-poi-transformer</artifactId>
+  <artifactId>contentconnector-portlet</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Gentics Content.Connector - POI TRANSFORMER</name>
-  <description>This is the POI-TRANSFORMER-Extension to the Gentics Content.Connector Suite</description>
+  <name>Gentics Content.Connector - PORTLET</name>
+  <description>This is the PORTLET-Extension to the Gentics Content.Connector Suite</description>
   
   <build>
   	<plugins>
