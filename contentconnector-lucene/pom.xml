@@ -113,6 +113,12 @@
       <artifactId>contentconnector-core</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+    	<artifactId>servlet-api</artifactId>
+      	<groupId>javax.servlet</groupId>
+      	<version>2.3</version>
+      	<scope>provided</scope>
+    </dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>
