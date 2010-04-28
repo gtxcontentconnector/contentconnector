@@ -13,7 +13,6 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.action.PluggableActionResponse;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.PluggableActionCaller;
-import com.gentics.lib.base.MapResolver;
 
 /**
  * 
@@ -74,7 +73,7 @@ public class XMLRequestProcessor extends RequestProcessor{
 		crCollection = new ArrayList<CRResolvableBean>(collection.size());
 		Iterator<Resolvable> colIterator = collection.iterator();
 		while(colIterator.hasNext()){
-			MapResolver item = (MapResolver) colIterator.next();
+			Resolvable item =  colIterator.next();
 			CRResolvableBean crItem = new CRResolvableBean(item,request.getAttributeArray());
 			if(contentid_regex!=null)crItem.set("contentid",((String) crItem.get("contentid")).replaceAll(contentid_regex, "$1"));
 			crCollection.add(crItem);

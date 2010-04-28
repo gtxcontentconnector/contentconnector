@@ -102,23 +102,23 @@
     <dependency>
     	<groupId>gentics-portalnode</groupId>
       <artifactId>gentics-portalnode-api</artifactId>
-      <version>4.9658</version>
+      <version>4_build_9658</version>
     </dependency>
     <dependency>
     	<groupId>gentics-portalnode</groupId>
       <artifactId>gentics-portalnode</artifactId>
-      <version>4.9658</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
-      <version>2.0</version>
+      <version>4_build_9658</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>contentconnector</groupId>
+      <artifactId>contentconnector-apihelper</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
 	</dependencies>
 	<distributionManagement>
