@@ -34,7 +34,7 @@ public class RESTServlet extends HttpServlet {
 	private CRServletConfig crConf;
 	private RESTSimpleContainer container;
 	
-	private final static String DEFAULPARAMETERS_KEY = "defaultparameters";
+	
 	
 	public void init(ServletConfig config) throws ServletException {
 
@@ -65,7 +65,7 @@ public class RESTServlet extends HttpServlet {
 		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		CRRequestBuilder rB = new CRRequestBuilder(request,(GenericConfiguration) crConf.get(DEFAULPARAMETERS_KEY));
+		CRRequestBuilder rB = new CRRequestBuilder(request,(GenericConfiguration) crConf);
 		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
 		container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
 		response.getOutputStream().flush();
