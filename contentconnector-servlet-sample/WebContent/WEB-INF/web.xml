@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>contentconnector-servlet-sample</display-name>
+	
+	<servlet>
+		<description>
+			Gentics .Node REST API for a Contnet Content Repository
+		</description>
+		<display-name>ccr</display-name>
+		<servlet-name>ccr</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ccr</servlet-name>
+		<url-pattern>/ccr/*</url-pattern>
+	</servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>
