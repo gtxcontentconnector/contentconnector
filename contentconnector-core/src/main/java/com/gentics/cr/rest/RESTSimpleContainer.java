@@ -102,14 +102,16 @@ public class RESTSimpleContainer{
 			//CRException is passed down from methods that want to post 
 			//the occured error to the client
 			cr.respondWithError((OutputStream) stream,ex,myReqBuilder.isDebug());
-			log.debug(ex.getMessage(),ex);
+			log.error(ex.getMessage(),ex);
 			
 		}
 		catch(Exception ex)
 		{
 			CRException crex = new CRException(ex);
+			ex.printStackTrace();
+			System.out.println(""+myReqBuilder+stream+crex);
 			cr.respondWithError((OutputStream) stream,crex,myReqBuilder.isDebug());
-			log.debug(ex.getMessage(),crex);
+			log.error(ex.getMessage(),crex);
 			
 		} finally {
 			try {

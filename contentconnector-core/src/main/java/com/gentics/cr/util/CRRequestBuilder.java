@@ -214,15 +214,21 @@ public class CRRequestBuilder {
 		this.repotype = type;
 		
 	}
+	
+	
+	
+	private final static String DEFAULPARAMETERS_KEY = "defaultparameters";
 
 	/**
 	 * 
 	 * @param request
 	 * @param defaultparameters
 	 */
-	public CRRequestBuilder(HttpServletRequest request,GenericConfiguration defaultparameters){
+	public CRRequestBuilder(HttpServletRequest request,GenericConfiguration conf){
 
-		this.config = defaultparameters;
+		this.config = conf;
+		
+		GenericConfiguration defaultparameters = (GenericConfiguration)this.config.get(DEFAULPARAMETERS_KEY);
 		this.request = request;
 		this.filter = (String) request.getParameter("filter");
 		this.contentid = (String) request.getParameter("contentid");
@@ -417,7 +423,7 @@ public class CRRequestBuilder {
 		
 		Hashtable<String,String> classmap = getRepositoryClassMap();
 		
-		String cls = classmap.get(this.repotype);
+		String cls = classmap.get(this.getRepositoryType());
 		if(cls!=null)
 		{
 			//XmlContentRepository(String[] attr, String encoding)
