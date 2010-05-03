@@ -249,7 +249,7 @@ public class PHPContentRepository extends ContentRepository {
 			}
 			objElement.put("attributes",attribContainer);
 		}
-		if(crBean.getChildRepository().size()>0)
+		if(crBean.hasChildren())
 		{
 			HashMap<String,HashMap<String,Object>> childContainer = new HashMap<String,HashMap<String,Object>>();
 			

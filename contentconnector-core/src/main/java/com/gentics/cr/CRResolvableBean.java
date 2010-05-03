@@ -73,6 +73,19 @@ public class CRResolvableBean implements Serializable, Resolvable{
 		return(this.childRepository);
 	}
 	
+	
+	/**
+	 * Returns if this CRResolvableBean has a filled children list
+	 * @return
+	 */
+	public boolean hasChildren()
+	{
+		boolean children = false;
+		if(this.childRepository!=null && this.childRepository.size()>0)
+			children = true;
+		return children;
+	}
+	
 	/**
 	 * Set the child elements to the given collection of CRResolvableBeans
 	 * @param children
