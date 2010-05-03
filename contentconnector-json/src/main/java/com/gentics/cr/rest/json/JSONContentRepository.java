@@ -123,7 +123,8 @@ public class JSONContentRepository extends ContentRepository {
 		else
 		{
 			this.rootObject.element("status","ok");
-			JSONObject objListElement = new JSONObject();
+			
+			JSONArray jsArray = new JSONArray();
 			
 			for (Iterator<CRResolvableBean> it = this.resolvableColl.iterator(); it.hasNext();) {
 	
@@ -131,21 +132,20 @@ public class JSONContentRepository extends ContentRepository {
 	
 				JSONObject objElement = processElement(crBean);
 	
-				objListElement.element(crBean.getContentid(), objElement);
+				jsArray.add(objElement);
+				
 			}
-			this.rootObject.element("Objects",objListElement);
+			this.rootObject.element("Objects",jsArray);
 		}
 
 		try
 		{
 			// use JSONObject.write instead toString is not a good solution
 			OutputStreamWriter wr = new OutputStreamWriter(stream, this.getResponseEncoding());
-			//TODO auch bei den anderen repositories den output charset übergeben
-			//TODO output charset über web.xml konfigurierbar machen
+			
 			this.rootObject.write(wr);
 			wr.flush();
 			wr.close();
-			//stream.write(this.rootObject.toString().getBytes());
 		}catch(IOException ioex)
 		{
 			;
