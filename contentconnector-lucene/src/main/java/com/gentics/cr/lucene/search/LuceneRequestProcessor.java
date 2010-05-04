@@ -262,5 +262,10 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		return ret;
 	}
 
+	@Override
+	public void finalize() {
+		if(this.searcher!=null)this.searcher.finalize();
+	}
+
 	
 }

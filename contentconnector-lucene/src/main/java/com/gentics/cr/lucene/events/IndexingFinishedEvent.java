@@ -4,7 +4,7 @@ import com.gentics.cr.events.Event;
 
 public class IndexingFinishedEvent extends Event {
 
-	private static final String eventtype = "LUCENEINDEXINGFINISHEDEVENT";
+	public static final String INDEXING_FINISHED_EVENT_TYPE = "LUCENEINDEXINGFINISHEDEVENT";
 	private Object data;
 	
 	/**
@@ -23,7 +23,7 @@ public class IndexingFinishedEvent extends Event {
 
 	@Override
 	public String getType() {
-		return eventtype;
+		return INDEXING_FINISHED_EVENT_TYPE;
 	}
 
 }

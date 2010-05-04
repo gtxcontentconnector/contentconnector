@@ -269,4 +269,10 @@ public class CRSearcher {
 		}
 		return(null);
 	}
+	
+	public void finalize()
+	{
+		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
+		idsLocation.finalize();
+	}
 }
