@@ -26,7 +26,9 @@ import com.gentics.cr.CRError;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
+import com.gentics.cr.events.EventManager;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
@@ -215,7 +217,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					indexWriter = indexAccessor.getWriter();
 				}
 				else{
-					log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Jo by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
+					log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Job by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
 				}
 				log.debug("Using rule: "+rule);
 				
@@ -319,6 +321,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				if(objectCount > 0){
 					indexLocation.createReopenFile();
 				}
+				EventManager.getInstance().fireEvent(new IndexingFinishedEvent(indexLocation));
 			}
 		}
 		catch(LockedIndexException ex)
