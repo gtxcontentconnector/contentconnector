@@ -197,5 +197,11 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 	}
 
 
+	@Override
+	public void finalize() {
+		
+	}
+
+
 
 }
