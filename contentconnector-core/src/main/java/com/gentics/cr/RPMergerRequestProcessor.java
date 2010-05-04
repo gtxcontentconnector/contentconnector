@@ -46,4 +46,11 @@ public class RPMergerRequestProcessor extends RequestProcessor {
 	}
 
 
+	@Override
+	public void finalize() {
+		this.rp1.finalize();
+		this.rp2.finalize();
+	}
+
+
 }

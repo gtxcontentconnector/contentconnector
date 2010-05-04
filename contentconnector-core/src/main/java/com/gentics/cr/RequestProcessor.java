@@ -439,5 +439,7 @@ public abstract class RequestProcessor {
 	{
 		fillAttributes(col,request,"contentid");
 	}
+	
+	public abstract void finalize();
 
 }

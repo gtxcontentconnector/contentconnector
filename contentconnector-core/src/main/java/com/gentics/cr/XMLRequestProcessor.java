@@ -145,6 +145,12 @@ public class XMLRequestProcessor extends RequestProcessor{
 		return content;
 	}
 
+	@Override
+	public void finalize() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 	
 
