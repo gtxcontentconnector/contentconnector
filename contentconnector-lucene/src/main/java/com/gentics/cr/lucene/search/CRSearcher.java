@@ -1,8 +1,10 @@
 package com.gentics.cr.lucene.search;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +16,10 @@ import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TopDocsCollector;
+import org.apache.lucene.search.TopFieldCollector;
 import org.apache.lucene.search.TopScoreDocCollector;
 
 import com.gentics.cr.CRConfig;
@@ -35,11 +41,12 @@ public class CRSearcher {
 	protected static Logger log_explain = Logger.getLogger(CRSearcher.class);
 	
 	protected static final String INDEX_LOCATION_KEY = "indexLocation";
+	protected static final String COMPUTE_SCORES_KEY = "computescores";
 	protected static final String STEMMING_KEY = "STEMMING";
 	protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
 	
 	protected CRConfig config;
-	
+	private boolean computescores = true;
 	
 	/**
 	 * Create new instance of CRSearcher
@@ -47,6 +54,71 @@ public class CRSearcher {
 	 */
 	public CRSearcher(CRConfig config) {
 		this.config = config;
+		String s_cs = config.getString(COMPUTE_SCORES_KEY);
+		if(s_cs!=null && !"".equals(s_cs))
+		{
+			computescores = Boolean.parseBoolean(s_cs);
+		}
+	}
+	
+	
+	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,int start,boolean explain) throws IOException{
+		return search(query,searchedAttributes,count,start,explain,null);
+	}
+	
+	/**
+	 * Creates a Sort object for the Sort collector. The general syntax for sort properties is [property][:asc|:desc] where the postfix determines the sortorder. If neither :asc nor :desc is given, the sorting will be done ascending for this property.
+	 * @param sorting
+	 * @return
+	 */
+	private Sort createSort(String[] sorting)
+	{
+		Sort ret = null;
+		ArrayList<SortField> sf = new ArrayList<SortField>();
+		for(String s:sorting)
+		{
+			// split attribute on :. First element is attribute name the
+			// second is the direction
+			String[] sort = s.split(":");
+
+			if (sort[0] != null) {
+				boolean reverse;
+				if ("desc".equals(sort[1].toLowerCase())) {
+					reverse = true;
+				} else {
+					reverse = false;
+				}
+				sf.add(new SortField(sort[0],Locale.getDefault(),reverse));
+			}
+			
+		}
+		ret = new Sort(sf.toArray(new SortField[]{}));
+		
+		return ret;
+	}
+	
+	/**
+	 * Create the appropriate collector
+	 * @param hits
+	 * @param sorting
+	 * @return
+	 * @throws IOException 
+	 */
+	private TopDocsCollector<?> createCollector(int hits, String[] sorting, boolean computescores) throws IOException
+	{
+		TopDocsCollector<?> coll = null;
+		
+		if(sorting!=null)
+		{
+			coll=TopFieldCollector.create(createSort(sorting), hits, true, computescores, computescores, computescores);
+		}
+		
+		if(coll==null)
+		{
+			coll=TopScoreDocCollector.create(hits, true);
+		}
+		
+		return coll;
 	}
 	
 	/**
@@ -56,17 +128,18 @@ public class CRSearcher {
 	 * @param count - max number of results that are to be returned
 	 * @param start - the start number of the page e.g. if start = 50 and count = 10 you will get the elements 50 - 60
 	 * @param explain - if set to true the searcher will add extra explain output to the logger com.gentics.cr.lucene.searchCRSearcher.explain
+	 * @param sorting - this argument takes the sorting array that can look like this: ["contentid:asc","name:desc"]
 	 * @return HashMap<String,Object with two entries. Entry "query" contains the paresed query and entry "result" contains a Collection of result documents.
 	 * @throws IOException 
 	 */
-	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,int start,boolean explain) throws IOException{
+	public HashMap<String,Object> search(String query,String[] searchedAttributes,int count,int start,boolean explain,String[] sorting) throws IOException{
 		
 			
 		Searcher searcher;
 		Analyzer analyzer;
 		//Collect count+start hits
 		int hits = count+start;
-		TopScoreDocCollector collector = TopScoreDocCollector.create(hits, true);
+		TopDocsCollector<?> collector = createCollector(hits,sorting,computescores);
 	
 		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
 		
@@ -166,9 +239,11 @@ public class CRSearcher {
 	 * @param count
 	 * @return ArrayList of results
 	 */
-	private LinkedHashMap<Document,Float> runSearch(TopScoreDocCollector collector, Searcher searcher, Query parsedQuery,boolean explain,int count, int start) {
+	private LinkedHashMap<Document,Float> runSearch(TopDocsCollector<?> collector, Searcher searcher, Query parsedQuery,boolean explain,int count, int start) {
 		try {
 		    
+			
+			
 		    searcher.search(parsedQuery, collector);
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		    

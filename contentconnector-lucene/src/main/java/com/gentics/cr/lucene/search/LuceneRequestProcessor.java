@@ -135,13 +135,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			throw new CRException(new CRError("Error", message));
 		}
 		
+		
 		String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
 		//GET RESULT
 		long s1 = System.currentTimeMillis();
 		HashMap<String,Object> searchResult  = null;
 		try
 		{
-			searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,start,doNavigation);
+			searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,start,doNavigation,request.getSortArray());
 		}
 		catch(IOException ex)
 		{
