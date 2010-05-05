@@ -106,6 +106,11 @@ public class CRRequestBuilder {
 		this.config = config;
 		this.request = request;
 		this.filter = (String) request.getParameter("filter");
+		String q = (String)request.getParameter("q");
+		if((this.filter==null || "".equals(filter)) && q!=null && !"".equals(q))
+		{
+			this.filter = q;
+		}
 		this.contentid = (String) request.getParameter("contentid");
 		this.start = (String) request.getParameter("start");
 		this.count = request.getParameter("count");
