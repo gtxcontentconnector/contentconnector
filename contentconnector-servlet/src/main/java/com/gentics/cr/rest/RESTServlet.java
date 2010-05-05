@@ -44,6 +44,12 @@ public class RESTServlet extends HttpServlet {
 		container = new RESTSimpleContainer(crConf);
 
 	}
+	
+	@Override
+	public void destroy()
+	{
+		if(this.container!=null)this.container.finalize();
+	}
 
 	/**
 	 * Wrapper Method for the doGet and doPost Methods

@@ -56,6 +56,12 @@ public class JSPServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void destroy()
+	{
+		if(this.rp!=null)this.rp.finalize();
+	}
 
 	/**
 	 * Wrapper Method for the doGet and doPost Methods
