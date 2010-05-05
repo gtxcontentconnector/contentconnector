@@ -70,10 +70,8 @@ public abstract class LuceneIndexLocation extends
 		name = config.getName();
 	}
 
-	public static synchronized LuceneIndexLocation getIndexLocation(
-			CRConfig config) {
-		IndexLocation genericIndexLocation = IndexLocation
-				.getIndexLocation(config);
+	public static synchronized LuceneIndexLocation getIndexLocation(CRConfig config) {
+		IndexLocation genericIndexLocation = IndexLocation.getIndexLocation(config);
 		if (genericIndexLocation instanceof LuceneIndexLocation) {
 			return (LuceneIndexLocation) genericIndexLocation;
 		} else {
