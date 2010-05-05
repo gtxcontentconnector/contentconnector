@@ -47,6 +47,14 @@ public class RESTBinaryContainer{
 	}
 	
 	/**
+	 * Finalize the Container
+	 */
+	public void finalize()
+	{
+		if(this.rp!=null)this.rp.finalize();
+	}
+	
+	/**
 	 * Create new instance
 	 * @param crConf
 	 */

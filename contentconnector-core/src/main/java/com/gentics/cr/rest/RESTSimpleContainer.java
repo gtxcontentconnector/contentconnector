@@ -59,6 +59,14 @@ public class RESTSimpleContainer{
 	}
 	
 	/**
+	 * Finalize the Container
+	 */
+	public void finalize()
+	{
+		if(this.rp!=null)this.rp.finalize();
+	}
+	
+	/**
 	 * Process the whole service
 	 * @param reqBuilder
 	 * @param wrappedObjectsToDeploy
