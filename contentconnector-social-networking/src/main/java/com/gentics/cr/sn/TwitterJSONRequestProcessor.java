@@ -158,4 +158,10 @@ public class TwitterJSONRequestProcessor extends RequestProcessor {
 		}
 		return null;
 	}
+
+	@Override
+	public void finalize() {
+		// TODO Auto-generated method stub
+		
+	}
 }
