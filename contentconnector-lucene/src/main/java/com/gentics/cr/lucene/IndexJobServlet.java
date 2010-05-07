@@ -23,33 +23,29 @@ import com.gentics.cr.util.indexing.IndexLocation;
 
 /**
  * @author haymo
- * 
  * Used to render the Rest xml.
- * 
  */
 public class IndexJobServlet extends HttpServlet {
 
 	private static final String NAGIOS_PARAM = "nagios";
 	private static final long serialVersionUID = 0002L;
 	private Logger log;
-	
+
 	private IndexController indexer;
-	
-	
-	
-	public void init(ServletConfig config) throws ServletException {
+
+
+
+	public final void init(final ServletConfig config) throws ServletException {
 
 		super.init(config);
 		this.log = Logger.getLogger("com.gentics.cr.lucene");
 		this.indexer = new IndexController(config.getServletName());
-		
+
 	}
-	
+
 	@Override
-	public void destroy()
-	{
-		if(indexer!=null)
-		{
+	public final void destroy() {
+		if (indexer != null) {
 			indexer.stop();
 		}
 	}
@@ -71,10 +67,10 @@ public class IndexJobServlet extends HttpServlet {
 		// starttime
 		long s = new Date().getTime();
 		// get the objects
-		
+
 		String action = request.getParameter("action");
 		String index = request.getParameter("idx");
-		
+
 		if(doNag)
 		{
 			response.setContentType("text/plain");
@@ -94,21 +90,19 @@ public class IndexJobServlet extends HttpServlet {
 						response.getWriter().write("WorkerThread:NOK\n");
 					}
 					response.getWriter().write("ObjectsInIndex:"+loc.getDocCount()+"\n");
-					AbstractUpdateCheckerJob j =queue.getCurrentJob();
+					AbstractUpdateCheckerJob j = queue.getCurrentJob();
 					if(j!=null)
 					{
 						response.getWriter().write("CurrentJobObjectsToIndex:"+j.getObjectsToIndex()+"\n");
 					}
-					
-				
-					
+
+
+
 				}
 			}
-		}
-		else
-		{
+		} else {
 			String nc = "&t="+System.currentTimeMillis();
-			
+
 			response.setContentType("text/html");
 			response.getWriter().write("<html>\r\n"+
 					"<head>\r\n" +
@@ -168,9 +162,8 @@ public class IndexJobServlet extends HttpServlet {
 					response.getWriter().write("Worker not running (<a href=\"?action=startWorker&idx="+e.getKey()+nc+"\">start</a>)<br/>\n");
 				}
 				AbstractUpdateCheckerJob j = queue.getCurrentJob();
-				
-				if(j!=null)
-				{
+
+				if (j != null) {
 					response.getWriter().write("<hr><br/>\n");
 					response.getWriter().write("Current Job "+j.getIdentifyer()+"<br/>\n");
 					response.getWriter().write("Current Status: "+j.getStatusString()+"<br/>\n");
