@@ -30,7 +30,7 @@ import com.gentics.cr.util.response.ServletResponseTypeSetter;
 public class RESTServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 0002L;
-	private Logger log;
+	private static Logger log = Logger.getLogger(RESTServlet.class);
 	private CRServletConfig crConf;
 	private RESTSimpleContainer container;
 	
@@ -39,7 +39,6 @@ public class RESTServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 
 		super.init(config);
-		this.log = Logger.getLogger("com.gentics.cr");
 		this.crConf = new CRServletConfig(config);
 		container = new RESTSimpleContainer(crConf);
 
