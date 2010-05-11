@@ -153,7 +153,7 @@ public class CRSearcher {
 			if(searchedAttributes!=null && searchedAttributes.length>0)
 			{
 				QueryParser parser = new QueryParser(LuceneVersion.getVersion(),searchedAttributes[0], analyzer);
-				
+				parser.setAllowLeadingWildcard(true);
 				query = replaceBooleanMnoGoSearchQuery(query);
 				
 				if (searchedAttributes.length > 1) {
