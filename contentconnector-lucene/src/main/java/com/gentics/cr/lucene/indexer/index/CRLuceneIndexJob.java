@@ -237,7 +237,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				Map<String,Boolean> attributes = new HashMap<String,Boolean>();
 				List<String> containedAttributes = IndexerUtil.getListFromString((String)config.get(CONTAINED_ATTRIBUTES_KEY), ",");
 				List<String> indexedAttributes = IndexerUtil.getListFromString((String)config.get(INDEXED_ATTRIBUTES_KEY), ",");
-		
+				List<String> reverseAttributes = ((LuceneIndexLocation)indexLocation).getReverseAttributes();
 				// first put all indexed attributes into the map
 				for (String name:indexedAttributes) {
 					attributes.put(name, Boolean.FALSE);
@@ -285,7 +285,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					if (sliceCounter == CRBatchSize) {
 						// index the current slice
 						log.debug("Indexing slice with "+slice.size()+" objects.");
-						indexSlice(indexWriter, slice, attributes, rp, create,config,transformerlist);
+						indexSlice(indexWriter, slice, attributes, rp, create,config,transformerlist,reverseAttributes);
 						status.setObjectsDone(status.getObjectsDone()+slice.size());
 						// clear the slice and reset the counter
 						slice.clear();
@@ -295,7 +295,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
 				if (!slice.isEmpty()) {
 					// index the last slice
-					indexSlice(indexWriter, slice, attributes, rp, create,config, transformerlist);
+					indexSlice(indexWriter, slice, attributes, rp, create,config, transformerlist,reverseAttributes);
 					status.setObjectsDone(status.getObjectsDone()+slice.size());
 				}
 				if(!interrupted)
@@ -368,7 +368,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
-	private void indexSlice(IndexWriter indexWriter, Collection<CRResolvableBean> slice, Map<String,Boolean> attributes, RequestProcessor rp, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist) throws CRException,
+	private void indexSlice(IndexWriter indexWriter, Collection<CRResolvableBean> slice, Map<String,Boolean> attributes, RequestProcessor rp, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist,List<String> reverseattributes) throws CRException,
 			CorruptIndexException, IOException {
 		// prefill all needed attributes
 		CRRequest req = new CRRequest();
@@ -403,17 +403,18 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			
 			if(!create)
 			{
-				indexWriter.updateDocument(new Term(idAttribute, (String)bean.get(idAttribute)), getDocument(bean, attributes,config));
+				indexWriter.updateDocument(new Term(idAttribute, (String)bean.get(idAttribute)), getDocument(bean, attributes,config,reverseattributes));
 			}
 			else
 			{
-				indexWriter.addDocument(getDocument(bean, attributes, config));
+				indexWriter.addDocument(getDocument(bean, attributes, config,reverseattributes));
 			}
 			//Stop Indexing when thread has been interrupted
 			if(Thread.currentThread().isInterrupted())break;
 		}
 	}
 	
+		
 	/**
 	 * Convert a resolvable to a Lucene Document
 	 * @param resolvable
@@ -427,7 +428,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @return
 	 * 				Returns a Lucene Document, ready to be added to the index.
 	 */
-	private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config) {
+	private Document getDocument(Resolvable resolvable, Map<String,Boolean> attributes, CRConfigUtil config, List<String> reverseattributes) {
 		Document doc = new Document();
 		
 		String crID = (String)config.getName();
@@ -459,6 +460,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				if(value instanceof String || value instanceof Number)
 				{
 					doc.add(new Field(attributeName, value.toString(),storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+					
+					//ADD REVERSEATTRIBUTE IF NEEDED
+					if(reverseattributes!=null && reverseattributes.contains(attributeName))
+					{
+						String rev_attrib_name = attributeName + LuceneAnalyzerFactory.REVERSE_ATTRIBUTE_SUFFIX;
+						doc.add(new Field(rev_attrib_name, value.toString(),storeField.booleanValue() ? Store.YES : Store.NO,Field.Index.ANALYZED));
+					}
 				}
 			}
 		}

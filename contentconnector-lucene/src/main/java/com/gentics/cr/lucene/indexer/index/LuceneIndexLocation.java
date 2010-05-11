@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -38,6 +39,17 @@ public abstract class LuceneIndexLocation extends
 		return LuceneAnalyzerFactory
 				.createAnalyzer((GenericConfiguration) config);
 	}
+	
+	
+	/**
+	 * Get a List of configured Attributes to be reversed
+	 * @return
+	 */
+	public List<String> getReverseAttributes()
+	{
+		return LuceneAnalyzerFactory.getReverseAttributes((GenericConfiguration) config);
+	}
+	
 
 	/**
 	 * Checks Lock and throws Exception if Lock exists

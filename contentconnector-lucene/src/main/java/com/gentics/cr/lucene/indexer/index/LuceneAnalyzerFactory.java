@@ -2,6 +2,8 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -14,6 +16,7 @@ import org.apache.lucene.util.Version;
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.cr.lucene.analysis.ReverseAnalyzer;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 
 /**
@@ -31,7 +34,21 @@ public class LuceneAnalyzerFactory {
 	private static final String ANALYZER_CONFIG_KEY = "ANALYZERCONFIG";
 	private static final String ANALYZER_CLASS_KEY = "ANALYZERCLASS";
 	private static final String FIELD_NAME_KEY = "FIELDNAME";
+	private static final String REVERSE_ATTRIBUTES_KEY="REVERSEATTRIBUTES";
 	
+	public static final String REVERSE_ATTRIBUTE_SUFFIX="_REVERSE";
+	
+	public static List<String> getReverseAttributes(GenericConfiguration config)
+	{
+		GenericConfiguration aconfig = loadAnalyzerConfig(config);
+		if(aconfig!=null)
+		{
+			String s_rev = (String)aconfig.get(REVERSE_ATTRIBUTES_KEY);
+			return IndexerUtil.getListFromString(s_rev,",");
+			
+		}
+		return null;
+	}
 	
 	/**
 	 * Creates an analyzer from the given config
@@ -46,13 +63,35 @@ public class LuceneAnalyzerFactory {
 		GenericConfiguration aconfig = loadAnalyzerConfig(config);
 		if(aconfig!=null)
 		{
+			ArrayList<String> addedRattributes= new ArrayList<String>(); 
+			List<String> reverseAttributes = getReverseAttributes(config);
 			Map<String,GenericConfiguration> subconfigs = aconfig.getSortedSubconfigs();
 			for(Map.Entry<String, GenericConfiguration> e:subconfigs.entrySet())
 			{
 				GenericConfiguration analyzerconfig = e.getValue();
 				String fieldname = analyzerconfig.getString(FIELD_NAME_KEY);
 				String analyzerclass = analyzerconfig.getString(ANALYZER_CLASS_KEY);
-				analyzerWrapper.addAnalyzer(fieldname, createAnalyzer(analyzerclass,analyzerconfig));
+				Analyzer a = createAnalyzer(analyzerclass,analyzerconfig);
+				analyzerWrapper.addAnalyzer(fieldname, a);
+				
+				//ADD REVERSE ANALYZERS
+				if(reverseAttributes.contains(fieldname))
+				{
+					addedRattributes.add(fieldname);
+					analyzerWrapper.addAnalyzer(fieldname+REVERSE_ATTRIBUTE_SUFFIX, new ReverseAnalyzer(a));
+				}
+				
+			}
+			//ADD ALL NON CONFIGURED REVERSE ANALYZERS
+			if(reverseAttributes!=null && reverseAttributes.size()>0)
+			{
+				for(String att:reverseAttributes)
+				{
+					if(!addedRattributes.contains(att))
+					{
+						analyzerWrapper.addAnalyzer(att+REVERSE_ATTRIBUTE_SUFFIX, new ReverseAnalyzer(null));
+					}
+				}
 			}
 		}
 		
