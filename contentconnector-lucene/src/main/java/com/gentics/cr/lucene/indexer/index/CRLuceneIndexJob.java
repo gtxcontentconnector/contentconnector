@@ -35,85 +35,98 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
 /**
- * 
+ * CRLuceneIndexJob handles the indexing of a Gentics ContentRepository into
+ * Lucene.
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
  * @version $Revision: 180 $
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
-	protected static Logger log = Logger.getLogger(CRLuceneIndexJob.class);
-	
-	/**
-	 * Name of class to use for IndexLocation, must extend {@link com.gentics.cr.util.indexing.IndexLocation}
-	 */
-	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
-	private RequestProcessor rp = null;
-	private boolean ignoreoptimize = false;
-	
-	/**
-	 * Create new instance of IndexJob
-	 * @param config
-	 * @param indexLoc
-	 * @param configmap
-	 */
-	public CRLuceneIndexJob(CRConfig config, IndexLocation indexLoc, 
-			Hashtable<String,CRConfigUtil> configmap)
-	{
-		super(config,indexLoc,configmap);
-		String ignoreoptimize_s = config.getString(IGNOREOPTIMIZE_KEY);
-		if(ignoreoptimize_s!=null)
-		{
-			ignoreoptimize = Boolean.parseBoolean(ignoreoptimize_s);
-		}
-		try {
-			rp = config.getNewRequestProcessorInstance(1);
-		} catch (CRException e) {
-			log.error("Could not create RequestProcessor instance.",e);
-		}
-	}
-	
-	
-	
-	/**
-	 * Tests if a CRIndexJob has the same identifier as the given object being an instance of CRIndexJob
-	 */
-	@Override
-	public boolean equals(Object obj)
-	{
-		if(obj instanceof CRLuceneIndexJob)
-		{
-			if(this.identifyer.equalsIgnoreCase(((CRLuceneIndexJob)obj).getIdentifyer()))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Key to be used for saving state to contentstatus
-	 */
-	public final static String PARAM_LASTINDEXRUN = "lastindexrun";
-	/**
-	 * Key to be used for saving state to contentstatus
-	 */
-	public final static String PARAM_LASTINDEXRULE = "lastindexrule";
-	private static final String RULE_KEY = "rule";
+public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
+  /**
+   * static log4j {@link Logger} to log errors and debug.
+   */
+  private static Logger log = Logger.getLogger(CRLuceneIndexJob.class);
 
-	private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
-	private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
-	private static final String IGNOREOPTIMIZE_KEY = "ignoreoptimize";
-	
-	private static final String BATCH_SIZE_KEY = "BATCHSIZE";
-	private static final String CR_FIELD_KEY = "CRID";
-	
-	/**
-	 * Default batch size is set to 1000 elements
-	 */
-	protected int batchSize = 1000;
+  /**
+   * Name of class to use for IndexLocation, must extend
+   * {@link com.gentics.cr.util.indexing.IndexLocation}.
+   */
+  public static final String INDEXLOCATIONCLASS =
+    "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
 
-		
+  /**
+   * Variable for RequestProcessor which gets us the objects for updating the
+   * index.
+   */
+  private RequestProcessor rp = null;
+
+  /**
+   * indicates if the lucene index should be optimized after indexing.
+   */
+  private boolean ignoreoptimize = false;
+
+  /**
+   * Create new instance of IndexJob.
+   * @param config configuration for the index job
+   * @param indexLoc location of the lucene index
+   * @param configmap TODO add javadoc comment here
+   */
+  public CRLuceneIndexJob(final CRConfig config, final IndexLocation indexLoc,
+      final Hashtable<String, CRConfigUtil> configmap) {
+    super(config, indexLoc, configmap);
+    String ignoreoptimizeString = config.getString(IGNOREOPTIMIZE_KEY);
+    if (ignoreoptimizeString != null) {
+      ignoreoptimize = Boolean.parseBoolean(ignoreoptimizeString);
+    }
+    try {
+      rp = config.getNewRequestProcessorInstance(1);
+    } catch (CRException e) {
+      log.error("Could not create RequestProcessor instance.", e);
+    }
+  }
+
+
+
+  /**
+   * Tests if a CRIndexJob has the same identifier as the given object being an
+   * instance of CRIndexJob.
+   * @param obj Object to test if it equals the CRIndexJob.
+   */
+  @Override
+  public final boolean equals(final Object obj) {
+    if (obj instanceof CRLuceneIndexJob) {
+      if (this.identifyer.equalsIgnoreCase(
+          ((CRLuceneIndexJob) obj).getIdentifyer())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Key to be used for saving state to contentstatus.
+   */
+  public static final  String PARAM_LASTINDEXRUN = "lastindexrun";
+  /**
+   * Key to be used for saving state to contentstatus.
+   */
+  public static final String PARAM_LASTINDEXRULE = "lastindexrule";
+  private static final String RULE_KEY = "rule";
+
+  private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
+  private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
+  private static final String IGNOREOPTIMIZE_KEY = "ignoreoptimize";
+
+  private static final String BATCH_SIZE_KEY = "BATCHSIZE";
+  private static final String CR_FIELD_KEY = "CRID";
+
+  /**
+   * Default batch size is set to 1000 elements.
+   */
+  private int batchSize = 1000;
+
+
 	/**
 	 * Index a single configured ContentRepository
 	 * @param indexLocation
@@ -127,30 +140,29 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 		String crid = config.getName();
 		if(crid ==null)crid = this.identifyer;
 
-		
-		//IndexWriter indexWriter = new IndexWriter(indexLocation.getDirectory(),analyzer, create,IndexWriter.MaxFieldLength.LIMITED);
+
 		IndexAccessor indexAccessor = null;
 		IndexWriter indexWriter = null;
 		LuceneIndexUpdateChecker luceneIndexUpdateChecker = null;
-		
-		
-		
+		boolean finished_index_job_successfull = false;
+		boolean finished_index_job_with_error = false;
+
 		try {
 			indexLocation.checkLock();
-			
+			Collection<CRResolvableBean> slice = null;
 			try
 			{ 
 				status.setCurrentStatusString("Writer accquired. Starting index job.");
-							
+
 				if(rp==null)
 				{
 					throw new CRException("FATAL ERROR","Datasource not available");
 				}
-							
+
 				String bsString = (String)config.get(BATCH_SIZE_KEY);
-				
+
 				int CRBatchSize = batchSize;
-				
+
 				if(bsString!=null)
 				{
 					try
@@ -161,12 +173,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					{
 						log.error("The configured "+BATCH_SIZE_KEY+" for the Current CR did not contain a parsable integer. "+e.getMessage());
 					}
-					
 				}
-				
+
 				// and get the current rule
 				String rule = (String)config.get(RULE_KEY);
-		
+
 				if (rule == null) {
 					rule = "";
 				}
@@ -175,11 +186,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				} else {
 					rule = "(" + rule + ")";
 				}
-				
+
 				List<ContentTransformer> transformerlist = ContentTransformer.getTransformerList(config);
-				
+
 				boolean create = true;
-				
+
 				if(indexLocation.isContainingIndex())
 				{
 					create=false;
@@ -256,7 +267,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 				log.debug(" index job with "+objectsToIndex.size()+" objects to index.");
 				// now get the first batch of objects from the collection
 				// (remove them from the original collection) and index them
-				Collection<CRResolvableBean> slice = new Vector(CRBatchSize);
+				slice = new Vector(CRBatchSize);
 				int sliceCounter = 0;
 				
 				status.setCurrentStatusString("Starting to index slices.");
@@ -304,11 +315,16 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob{
 					log.debug("Job has been interrupted and will now be closed. Objects will be reindexed next run.");
 				}
 				
-				
+				finished_index_job_successfull = true;
 			}catch(Exception ex)
 			{
 				log.error("Could not complete index run... indexed Objects: "+status.getObjectsDone()+", trying to close index and remove lock.",ex);
+				finished_index_job_with_error = true;
 			}finally{
+				if(!finished_index_job_successfull && !finished_index_job_with_error){
+					log.fatal("There seems to be a run time exception from this" +
+							" index job.\nLast slice was: "+slice);
+				}
 				//Set status for job if it was not locked
 				status.setCurrentStatusString("Finished job.");
 				int objectCount = status.getObjectsDone();
