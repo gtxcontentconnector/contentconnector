@@ -75,7 +75,7 @@ public class LuceneAnalyzerFactory {
 				analyzerWrapper.addAnalyzer(fieldname, a);
 				
 				//ADD REVERSE ANALYZERS
-				if(reverseAttributes.contains(fieldname))
+				if(reverseAttributes != null && reverseAttributes.contains(fieldname))
 				{
 					addedRattributes.add(fieldname);
 					analyzerWrapper.addAnalyzer(fieldname+REVERSE_ATTRIBUTE_SUFFIX, new ReverseAnalyzer(a));
