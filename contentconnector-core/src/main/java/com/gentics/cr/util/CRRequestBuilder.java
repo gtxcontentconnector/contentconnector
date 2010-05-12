@@ -232,8 +232,10 @@ public class CRRequestBuilder {
 	public CRRequestBuilder(HttpServletRequest request,GenericConfiguration conf){
 
 		this.config = conf;
-		
-		GenericConfiguration defaultparameters = (GenericConfiguration)this.config.get(DEFAULPARAMETERS_KEY);
+		GenericConfiguration defaultparameters = null;
+		if(config != null){
+			defaultparameters = (GenericConfiguration)this.config.get(DEFAULPARAMETERS_KEY);
+		}
 		this.request = request;
 		this.filter = (String) request.getParameter("filter");
 		this.contentid = (String) request.getParameter("contentid");
