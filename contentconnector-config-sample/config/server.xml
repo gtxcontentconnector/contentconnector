@@ -374,7 +374,7 @@ added 2 Portal.Node and Samples Webapp
                  directory="logs"  prefix="localhost_access_log." suffix=".txt"
                  pattern="common" resolveHosts="false"/>
         -->
-      <Context docBase="contentconnector-servlet-sample" path="/contentconnector-servlet-sample" reloadable="true" source="org.eclipse.jst.j2ee.server:contentconnector-servlet-sample"/></Host>
+      <Context docBase="ServletTest" path="/ServletTest" reloadable="true" source="org.eclipse.jst.j2ee.server:ServletTest"/></Host>
 
     </Engine>
 

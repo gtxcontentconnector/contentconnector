@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>contentconnector</groupId>
   <artifactId>contentconnector-social-networking</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
   <name>Gentics Content.Connector - SOCIAL NETWORKING</name>
   <description>This is the SOCIAL NETWORKING-Extension to the Gentics Content.Connector Suite</description>
@@ -87,12 +87,12 @@
 	    <dependency>
 	      <groupId>contentconnector</groupId>
 	      <artifactId>contentconnector-core</artifactId>
-	      <version>0.0.1-SNAPSHOT</version>
+	      <version>1.1.0</version>
 	    </dependency>
 	    <dependency>
 	      <groupId>contentconnector</groupId>
 	      <artifactId>contentconnector-json</artifactId>
-	      <version>0.0.1-SNAPSHOT</version>
+	      <version>1.1.0</version>
 	    </dependency>
 	    <dependency>
 		    <groupId>commons-httpclient</groupId>
