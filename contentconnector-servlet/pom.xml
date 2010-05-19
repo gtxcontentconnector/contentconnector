@@ -8,87 +8,88 @@
   <description>This is the SERVLET-Extension to the Gentics Content.Connector Suite</description>
   
   <build>
-  	<plugins>
-  		<plugin>
-  			<groupId>org.apache.maven.plugins</groupId>
-  			<artifactId>maven-compiler-plugin</artifactId>
-  			<configuration>
-			<source>1.5</source>
-			<target>1.5</target>
-			</configuration>
-  		</plugin>
-  		<plugin>
-  			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-javadoc-plugin</artifactId>
-			<executions>
-				<execution>
-					<id>attach-javadocs</id>
-					<goals>
-						<goal>jar</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-source-plugin</artifactId>
-			<executions>
-				<execution>
-					<id>attach-sources</id>
-					<goals>
-						<goal>jar</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-  	</plugins>
-  	<extensions>
-			<!-- begin - needed for deploying to repository using webdav -->
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-webdav</artifactId>
-				<version>1.0-beta-2</version>
-			</extension>
-			<!-- end - needed for deploying to repository using webdav -->
-		</extensions>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+      <source>1.5</source>
+      <target>1.5</target>
+      </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>attach-javadocs</id>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-source-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>attach-sources</id>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    </plugins>
+    <extensions>
+      <!-- begin - needed for deploying to repository using webdav -->
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+      <!-- end - needed for deploying to repository using webdav -->
+    </extensions>
   </build>
   <repositories>
-		<repository>
-			<id>asf-snapshot</id>
-			<name>ASF Maven Repository</name>
-			<layout>default</layout>
-			<url>
-				http://people.apache.org/maven-snapshot-repository
-			</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-	      <id>internal</id>
-	      <name>Archiva Managed Internal Repository</name>
-	      <url>http://gcc-nightly.gentics.com:8081/archiva/repository/internal/</url>
-	      <releases>
-	        <enabled>true</enabled>
-	      </releases>
-	      <snapshots>
-	        <enabled>true</enabled>
-	      </snapshots>
-	    </repository>
-	</repositories>
-	
-	<dependencies>
-		<dependency>
+    <repository>
+      <id>asf-snapshot</id>
+      <name>ASF Maven Repository</name>
+      <layout>default</layout>
+      <url>
+        http://people.apache.org/maven-snapshot-repository
+      </url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+        <id>internal</id>
+        <name>Archiva Managed Internal Repository</name>
+        <url>http://gcc-nightly.gentics.com:8081/archiva/repository/internal/</url>
+        <releases>
+          <enabled>true</enabled>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+      </repository>
+  </repositories>
+  
+  <dependencies>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.14</version>
     </dependency>
     <dependency>
-	    <groupId>javax.servlet.jsp</groupId>
-	    <artifactId>jsp-api</artifactId>
-	    <version>2.1</version>
-	</dependency>
-	<dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+  </dependency>
+  <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
@@ -100,17 +101,17 @@
       <version>1.1.1-SNAPSHOT</version>
     </dependency>
     
-	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>archiva.internal</id>
-			<name>Internal Release Repository</name>
-			<url>dav:http://gcc-nightly.gentics.com:8081/archiva/repository/internal</url>
-		</repository>
-		<snapshotRepository>
-			<id>archiva.snapshots</id>
-			<name>Internal Snapshot Repository</name>
-			<url>dav:http://gcc-nightly.gentics.com:8081/archiva/repository/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+  </dependencies>
+  <distributionManagement>
+    <repository>
+      <id>archiva.internal</id>
+      <name>Internal Release Repository</name>
+      <url>dav:http://gcc-nightly.gentics.com:8081/archiva/repository/internal</url>
+    </repository>
+    <snapshotRepository>
+      <id>archiva.snapshots</id>
+      <name>Internal Snapshot Repository</name>
+      <url>dav:http://gcc-nightly.gentics.com:8081/archiva/repository/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
