@@ -298,7 +298,10 @@ public class CRRequestBuilder {
 			}
 			if(this.node_id == null){
 				String default_node = (String) defaultparameters.get("node");
-				this.node_id = default_node.split("^");
+				if(default_node!=null)
+				{
+					this.node_id = default_node.split("^");
+				}
 			}
 			addAdvancedSearchParameters();
 		}
