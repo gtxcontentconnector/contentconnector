@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,136 +36,205 @@ public class CRRequestBuilder {
   protected String query_group;
   protected String start;
   protected String count;
-  protected String debug;
   protected String type;
   protected String contentid;
+  protected String wordmatch;
   protected String[] node_id;
   protected String[] attributes;
   protected String[] sorting;
   protected String[] plinkattributes;
   protected String[] permissions;
   protected String[] options;
-  protected Object request;
+  protected RequestWrapper request;
   protected Object response;
   
   protected GenericConfiguration config;
-  
-  private Logger logger = Logger.getLogger(CRRequestBuilder.class);
-  
+
+  private static Logger logger = Logger.getLogger(CRRequestBuilder.class);
+
   /**
-   * Returns String Array of Attributes to request
-   * @return
+   * Initializes the CRRequestBuilder from a {@link Portlet}.
+   * @param portletRequest request from the {@link Portlet}
    */
-  public String[] getAttributeArray()
-  {
-    return(this.attributes);
+  public CRRequestBuilder(final PortletRequest portletRequest) {
+    this(portletRequest, null);
   }
-  
+
   /**
-   * Returns Array of Options
-   * @return
+   * Initializes the CRRequestBuilder from a {@link Portlet}.
+   * @param portletRequest request from the {@link Portlet}
+   * @param requestBuilderConfiguration configuration for the request builder
    */
-  public String[] getOptionArray()
-  {
-    return(this.options);
+  public CRRequestBuilder(final PortletRequest portletRequest,
+      final GenericConfiguration requestBuilderConfiguration) {
+    this(new RequestWrapper(portletRequest), requestBuilderConfiguration);
   }
-  
+
+
   /**
-   * Get Type of ContentRepository
-   * @return
+   * Initializes the CRRequestBuilder from a {@link Servlet}.
+   * @param servletRequest request from the {@link Servlet}
    */
-  public String getRepositoryType()
-  {
-    if(this.repotype==null)
-    {
-      Properties props= this.getConfiguredContentRepositories();
-      if(props!=null)
-      {
-        String v = props.getProperty("DEFAULT");
-        if(v!=null)
-          this.repotype =  v;
-        
+  public CRRequestBuilder(final HttpServletRequest servletRequest) {
+    this(servletRequest, null);
+  }
+
+
+  /**
+   * Initializes the CRRequestBuilder from a {@link Servlet}.
+   * @param servletRequest request from the {@link Servlet}
+   * @param conf configuration for the request builder where we get the default
+   * parameters from.
+   */
+  public CRRequestBuilder(final HttpServletRequest servletRequest,
+      final GenericConfiguration conf) {
+    this(new RequestWrapper(servletRequest), conf);
+  }
+
+  /**
+   * Initializes the CRRequestBuilder in a general manner that is compatible
+   * with {@link Portlet}s and {@link Servlet}s.
+   * @param requestWrapper wrapped request from a {@link Servlet} or a
+   * {@link Portlet}
+   * @param requestBuilderConfiguration configuration for the request builder
+   */
+  public CRRequestBuilder(final RequestWrapper requestWrapper,
+      final GenericConfiguration requestBuilderConfiguration) {
+
+    this.config = requestBuilderConfiguration;
+    GenericConfiguration defaultparameters = null;
+    if (this.config != null) {
+      defaultparameters = (GenericConfiguration)this.config.get(DEFAULPARAMETERS_KEY);
+    }
+    this.request = requestWrapper;
+    this.filter = (String) requestWrapper.getParameter("filter");
+    this.contentid = (String) requestWrapper.getParameter("contentid");
+    this.count = requestWrapper.getParameter("count");
+    this.start = (String) requestWrapper.getParameter("start");
+    this.sorting = requestWrapper.getParameterValues("sorting");
+    this.attributes =  this.prepareAttributesArray(requestWrapper.getParameterValues("attributes"));
+    this.plinkattributes =  requestWrapper.getParameterValues("plinkattributes");
+    this.permissions = requestWrapper.getParameterValues("permissions"); 
+    this.options = requestWrapper.getParameterValues("options");
+    this.type=requestWrapper.getParameter("type");
+    this.isDebug = (requestWrapper.getParameter("debug")!=null && requestWrapper.getParameter("debug").equals("true"));
+    this.metaresolvable = Boolean.parseBoolean(requestWrapper.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
+    this.highlightquery = requestWrapper.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
+    this.node_id = requestWrapper.getParameterValues("node");
+    this.query_and = requestWrapper.getParameter("q_and");
+    this.query_or = requestWrapper.getParameter("q_or");
+    this.query_not = requestWrapper.getParameter("q_not");
+    this.query_group = requestWrapper.getParameter("q_group");
+
+    //Parameters used in mnoGoSearch for easier migration (Users should use
+    //type=MNOGOSEARCHXML)
+    if (this.filter == null) {
+      this.filter = requestWrapper.getParameter("q");
+    }
+    if (this.count == null) {
+      this.count = requestWrapper.getParameter("ps");
+    }
+    if (this.start == null && this.count != null) {
+      String numberOfPageStr = (String) requestWrapper.getParameter("np");
+      int numberOfPage;
+      if (numberOfPageStr != null) {
+        numberOfPage = Integer.parseInt(numberOfPageStr);
+      } else {
+        numberOfPage = 0;
       }
-      if(this.repotype==null)this.repotype="XML";
-      
+      int intCount = Integer.parseInt(this.count);
+      this.start = (numberOfPage * intCount) + "";
+    }
+
+    //if filter is not set and contentid is => use contentid instad
+    if (("".equals(filter) || filter == null) && contentid != null
+        && !contentid.equals("")) {
+      filter = "object.contentid == '" + contentid + "'";
+    }
+
+    addAdvancedSearchParameters();
+
+    //SET PERMISSIONS-RULE
+    filter = this.createPermissionsRule(filter, permissions);
+
+    setRepositoryType(this.type);
+
+
+    if (defaultparameters != null) {
+      if (this.type == null) {
+        this.type = (String) defaultparameters.get("type");
+        setRepositoryType(this.type);
+      }
+      if (this.node_id == null) {
+        String defaultNode = (String) defaultparameters.get("node");
+        if (defaultNode != null) {
+          this.node_id = defaultNode.split("^");
+        }
+      }
+      if (this.attributes == null || this.attributes.length == 0) {
+        String defaultAttributes =
+          (String) defaultparameters.get("attributes");
+        if (defaultAttributes != null) {
+          this.attributes = defaultAttributes.split(",[ ]*");
+        }
+      }
+      addAdvancedSearchParameters();
+    }
+  }
+
+  /**
+   * Returns String Array of Attributes to request.
+   * @return string array with the attributes
+   */
+  public final String[] getAttributeArray() {
+    return this.attributes;
+  }
+
+  /**
+   * Get array of options.
+   * @return array with options
+   */
+  public final String[] getOptionArray() {
+    return this.options;
+  }
+
+  /**
+   * Get Type of ContentRepository.
+   * @return type of the contentrepository
+   */
+  public final String getRepositoryType() {
+    if (this.repotype == null) {
+      Properties props = this.getConfiguredContentRepositories();
+      if (props != null) {
+        String v = props.getProperty("DEFAULT");
+        if (v != null) {
+          this.repotype =  v;
+        }
+      }
+      if (this.repotype == null) {
+        this.repotype = "XML";
+      }
+
     }
     return this.repotype;
   }
-  
+
   /**
-   * Returns true if this is a debug request
-   * @return
+   * Returns true if this is a debug request.
+   * @return true if debug is enabled
    */
-  public boolean isDebug()
-  {
+  public final boolean isDebug() {
     return this.isDebug;
   }
-  
-  
-  public CRRequestBuilder(PortletRequest request, GenericConfiguration config)
-  {
-    this.config = config;
-    this.request = request;
-    this.filter = (String) request.getParameter("filter");
-    String q = (String)request.getParameter("q");
-    if((this.filter==null || "".equals(filter)) && q!=null && !"".equals(q))
-    {
-      this.filter = q;
-    }
-    this.contentid = (String) request.getParameter("contentid");
-    this.start = (String) request.getParameter("start");
-    this.count = request.getParameter("count");
-    this.sorting = request.getParameterValues("sorting");
-    this.attributes =  this.prepareAttributesArray(request.getParameterValues("attributes"));
-    this.plinkattributes =  request.getParameterValues("plinkattributes");
-    this.debug = (String)request.getParameter("debug");
-    this.permissions = request.getParameterValues("permissions"); 
-    this.options = request.getParameterValues("options");
-    this.type=request.getParameter("type");
-    this.isDebug = (request.getParameter("debug")!=null && request.getParameter("debug").equals("true"));
-    this.metaresolvable = Boolean.parseBoolean(request.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
-    this.highlightquery = request.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
-    //if filter is not set and contentid is => use contentid instad
-    if (("".equals(filter) || filter == null)&& contentid!=null && !contentid.equals("")){
-      filter = "object.contentid ==" + contentid;
-    }
-    //SET PERMISSIONS-RULE
-    filter = this.createPermissionsRule(filter, permissions);
-    
-    setRepositoryType(this.type);
-    
-    //Set debug flag
-    if("true".equals(debug))
-      this.isDebug=true;
-  }
-  
-  /**
-   * Create new Instance
-   * @param request
-   */
-  public CRRequestBuilder(PortletRequest request)
-  {
-    this(request,null);
-  }
-  
-    
-  /**
-   * 
-   *  Create New Instance
-   * @param request
-   */
-  public CRRequestBuilder(HttpServletRequest request)
-  {
-    this(request,null);
-    
-  }
-  
-  private void addAdvancedSearchParameters(){
-    if( filter == null || "" .equals(filter)){
-      if(query_and != null && !"".equals(query_and)){
+
+  private void addAdvancedSearchParameters() {
+    if (filter == null || "".equals(filter)) {
+      if (query_and != null && !"".equals(query_and)) {
         String filter_and = "";
-        for(String query:query_and.split(" ")){
-          if(!"".equals(filter_and))filter_and+=" AND ";
+        for (String query : query_and.split(" ")) {
+          if (!"".equals(filter_and)) {
+            filter_and+=" AND ";
+          }
           filter_and+=query.toLowerCase();
         }
         if(!"".equals(filter_and))filter = "(" + filter_and + ")";
@@ -224,98 +294,7 @@ public class CRRequestBuilder {
   
   private final static String DEFAULPARAMETERS_KEY = "defaultparameters";
 
-  /**
-   * 
-   * @param request
-   * @param defaultparameters
-   */
-  public CRRequestBuilder(HttpServletRequest request,GenericConfiguration conf){
 
-    this.config = conf;
-    GenericConfiguration defaultparameters = null;
-    if(config != null){
-      defaultparameters = (GenericConfiguration)this.config.get(DEFAULPARAMETERS_KEY);
-    }
-    this.request = request;
-    this.filter = (String) request.getParameter("filter");
-    this.contentid = (String) request.getParameter("contentid");
-    this.count = request.getParameter("count");
-    this.start = (String) request.getParameter("start");
-    this.sorting = request.getParameterValues("sorting");
-    this.attributes =  this.prepareAttributesArray(request.getParameterValues("attributes"));
-    this.plinkattributes =  request.getParameterValues("plinkattributes");
-    this.debug = (String)request.getParameter("debug");
-    this.permissions = request.getParameterValues("permissions"); 
-    this.options = request.getParameterValues("options");
-    this.type=request.getParameter("type");
-    this.isDebug = (request.getParameter("debug")!=null && request.getParameter("debug").equals("true"));
-    this.metaresolvable = Boolean.parseBoolean(request.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
-    this.highlightquery = request.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
-    this.node_id = request.getParameterValues("node");
-    this.query_and = request.getParameter("q_and");
-    this.query_or = request.getParameter("q_or");
-    this.query_not = request.getParameter("q_not");
-    this.query_group = request.getParameter("q_group");
-
-    //Parameters used in mnoGoSearch for easier migration (Users should use
-    //type=MNOGOSEARCHXML)
-    if (this.filter == null) {
-      this.filter = request.getParameter("q");
-    }
-    if (this.count == null) {
-      this.count = request.getParameter("ps");
-    }
-    if (this.start == null && this.count != null) {
-      String numberOfPageStr = (String) request.getParameter("np");
-      int numberOfPage;
-      if (numberOfPageStr != null) {
-        numberOfPage = Integer.parseInt(numberOfPageStr);
-      } else {
-        numberOfPage = 0;
-      }
-      int intCount = Integer.parseInt(this.count);
-      this.start = (numberOfPage * intCount) + "";
-    }
-
-    //if filter is not set and contentid is => use contentid instad
-    if (("".equals(filter) || filter == null) && contentid != null
-        && !contentid.equals("")) {
-      filter = "object.contentid == '" + contentid + "'";
-    }
-
-    addAdvancedSearchParameters();
-
-    //SET PERMISSIONS-RULE
-    filter = this.createPermissionsRule(filter, permissions);
-
-    setRepositoryType(this.type);
-
-    //Set debug flag
-    if ("true".equals(debug)) {
-      this.isDebug = true;
-    }
-
-    if (defaultparameters != null) {
-      if (this.type == null) {
-        this.type = (String) defaultparameters.get("type");
-        setRepositoryType(this.type);
-      }
-      if (this.node_id == null) {
-        String defaultNode = (String) defaultparameters.get("node");
-        if (defaultNode != null) {
-          this.node_id = defaultNode.split("^");
-        }
-      }
-      if (this.attributes == null || this.attributes.length == 0) {
-        String defaultAttributes =
-          (String) defaultparameters.get("attributes");
-        if (defaultAttributes != null) {
-          this.attributes = defaultAttributes.split(",[ ]*");
-        }
-      }
-      addAdvancedSearchParameters();
-    }
-  }
 
 
   /**
@@ -382,23 +361,20 @@ public class CRRequestBuilder {
   }
 
 
-  private Properties getConfiguredContentRepositories()
-  {
+  private final Properties getConfiguredContentRepositories() {
     Object crs = this.config.get(REPOSITORIES_KEY);
-    if(crs!=null && crs instanceof GenericConfiguration)
-    {
-      GenericConfiguration cr_conf = (GenericConfiguration)crs;
-      Properties cr_confs = cr_conf.getProperties();
-      return cr_confs;
-      
+    if (crs != null && crs instanceof GenericConfiguration) {
+      GenericConfiguration crConf = (GenericConfiguration) crs;
+      Properties crProperties = crConf.getProperties();
+      return crProperties;
     }
     return null;
   }
-  
+
   private static final String REPOSITORIES_KEY = "cr";
-    
-  
-  
+
+
+
   private Hashtable<String,String> getRepositoryClassMap()
   {
     Hashtable<String,String> classmap = new Hashtable<String,String>();
