@@ -395,11 +395,10 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					{
 						for(ContentTransformer transformer:transformerlist)
 						{
-							UseCase tcase = MonitorFactory.startUseCase("indexSlice.indexBean.Transformer: "+transformer.getClass());
-							try{
+							try {
 								status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "+transformer.getTransformerKey()+"; BEAN: "+bean.get(idAttribute));
 								if(transformer.match(bean))
-									transformer.processBean(bean);
+									transformer.processBeanWithMonitoring(bean);
 							}
 							catch(Exception e)
 							{
@@ -407,9 +406,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 								log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "+bean.get(idAttribute));
 								e.printStackTrace();
 							}
-							finally{
-								tcase.stop();
-							}
+							
 						}
 					}
 					if(!create)

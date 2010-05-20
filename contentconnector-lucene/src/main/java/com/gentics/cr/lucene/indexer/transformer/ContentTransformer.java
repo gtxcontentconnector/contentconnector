@@ -14,6 +14,8 @@ import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
 
 
 /**
@@ -61,6 +63,23 @@ public abstract class ContentTransformer {
 	 * Destroys the transformer.
 	 */
 	public abstract void destroy();
+	
+	/**
+	 * Process the specified bean with monitoring
+	 * @param bean
+	 * @throws CRException
+	 */
+	public void processBeanWithMonitoring(CRResolvableBean bean) throws CRException
+	{
+		UseCase pcase = MonitorFactory.startUseCase("Transformer:"+this.getClass());
+		try
+		{
+			processBean(bean);
+		}
+		finally{
+			pcase.stop();
+		}
+	}
 	
 	/**
 	 * Processes the specified bean
