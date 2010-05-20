@@ -22,7 +22,7 @@ public class MonitorFactory {
 		{
 			return new UseCase(com.jamonapi.MonitorFactory.start(identifyer),monitorenabled);
 		}
-		return null;
+		return new UseCase(null,monitorenabled);
 		
 	}
 }
