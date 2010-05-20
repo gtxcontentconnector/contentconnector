@@ -9,6 +9,7 @@ import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.monitoring.MonitorFactory;
 /**
  * Operates as an Interface between the servlet and the Indexer Engine
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
@@ -33,7 +34,9 @@ public class IndexController {
 	public IndexController(String name)
 	{
 		crconfig = new CRConfigFileLoader(name, null);
+		MonitorFactory.init(crconfig);
 		this.indextable = buildIndexTable();
+		
 	}
 	
 	/**

@@ -130,6 +130,11 @@
       <artifactId>contentconnector-apihelper</artifactId>
       <version>1.1.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>jamon</groupId>
+      <artifactId>jamon</artifactId>
+      <version>2.7.0</version>
+    </dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>
