@@ -32,6 +32,8 @@ import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
 /**
@@ -213,6 +215,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					try {
 						CRRequest req = new CRRequest();
 						req.setRequestFilter(rule);
+						req.set(CR_FIELD_KEY, crid);
 						status.setCurrentStatusString("Cleaning index from stale objects...");
 						objectsToIndex = getObjectsToUpdate(req,rp,false,luceneIndexUpdateChecker);
 					} catch (Exception e) {
@@ -255,6 +258,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				{
 					CRRequest req = new CRRequest();
 					req.setRequestFilter(rule);
+					req.set(CR_FIELD_KEY, crid);
 					objectsToIndex = getObjectsToUpdate(req,rp,true,luceneIndexUpdateChecker);
 				}
 				if(objectsToIndex==null)
@@ -285,7 +289,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					if (sliceCounter == CRBatchSize) {
 						// index the current slice
 						log.debug("Indexing slice with "+slice.size()+" objects.");
-						indexSlice(indexWriter, slice, attributes, rp, create,config,transformerlist,reverseAttributes);
+						indexSlice(crid,indexWriter, slice, attributes, rp, create,config,transformerlist,reverseAttributes);
 						status.setObjectsDone(status.getObjectsDone()+slice.size());
 						// clear the slice and reset the counter
 						slice.clear();
@@ -295,7 +299,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
 				if (!slice.isEmpty()) {
 					// index the last slice
-					indexSlice(indexWriter, slice, attributes, rp, create,config, transformerlist,reverseAttributes);
+					indexSlice(crid,indexWriter, slice, attributes, rp, create,config, transformerlist,reverseAttributes);
 					status.setObjectsDone(status.getObjectsDone()+slice.size());
 				}
 				if(!interrupted)
@@ -368,49 +372,63 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
-	private void indexSlice(IndexWriter indexWriter, Collection<CRResolvableBean> slice, Map<String,Boolean> attributes, RequestProcessor rp, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist,List<String> reverseattributes) throws CRException,
+	private void indexSlice(String crid,IndexWriter indexWriter, Collection<CRResolvableBean> slice, Map<String,Boolean> attributes, RequestProcessor rp, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist,List<String> reverseattributes) throws CRException,
 			CorruptIndexException, IOException {
 		// prefill all needed attributes
-		CRRequest req = new CRRequest();
-		req.setAttributeArray(
-				(String[]) attributes.keySet().toArray(
-						new String[attributes.keySet().size()]));
-		rp.fillAttributes(slice, req,idAttribute);
-		
-		for (Resolvable objectToIndex:slice) {
+		UseCase uc = MonitorFactory.startUseCase("indexSlice("+crid+")");
+		try
+		{
+			CRRequest req = new CRRequest();
+			req.setAttributeArray(
+					(String[]) attributes.keySet().toArray(
+							new String[attributes.keySet().size()]));
+			rp.fillAttributes(slice, req,idAttribute);
 			
-			CRResolvableBean bean = new CRResolvableBean(objectToIndex);
-			//CALL PRE INDEX PROCESSORS/TRANSFORMERS
-			//TODO This could be optimized for multicore servers with a map/reduce algorithm
-			if(transformerlist!=null)
-			{
-				for(ContentTransformer transformer:transformerlist)
-				{
-					
-					try{
-						status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "+transformer.getTransformerKey()+"; BEAN: "+bean.get(idAttribute));
-						if(transformer.match(bean))
-							transformer.processBean(bean);
-					}
-					catch(Exception e)
+			for (Resolvable objectToIndex:slice) {
+				
+				CRResolvableBean bean = new CRResolvableBean(objectToIndex);
+				UseCase bcase = MonitorFactory.startUseCase("indexSlice.indexBean");
+				try {
+					//CALL PRE INDEX PROCESSORS/TRANSFORMERS
+					//TODO This could be optimized for multicore servers with a map/reduce algorithm
+					if(transformerlist!=null)
 					{
-						//TODO Remember broken files
-						log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "+bean.get(idAttribute));
-						e.printStackTrace();
+						for(ContentTransformer transformer:transformerlist)
+						{
+							UseCase tcase = MonitorFactory.startUseCase("indexSlice.indexBean.Transformer: "+transformer.getClass());
+							try{
+								status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "+transformer.getTransformerKey()+"; BEAN: "+bean.get(idAttribute));
+								if(transformer.match(bean))
+									transformer.processBean(bean);
+							}
+							catch(Exception e)
+							{
+								//TODO Remember broken files
+								log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "+bean.get(idAttribute));
+								e.printStackTrace();
+							}
+							finally{
+								tcase.stop();
+							}
+						}
+					}
+					if(!create)
+					{
+						indexWriter.updateDocument(new Term(idAttribute, (String)bean.get(idAttribute)), getDocument(bean, attributes,config,reverseattributes));
+					}
+					else
+					{
+						indexWriter.addDocument(getDocument(bean, attributes, config,reverseattributes));
 					}
 				}
+				finally {
+					bcase.stop();
+				}
+				//Stop Indexing when thread has been interrupted
+				if(Thread.currentThread().isInterrupted())break;
 			}
-			
-			if(!create)
-			{
-				indexWriter.updateDocument(new Term(idAttribute, (String)bean.get(idAttribute)), getDocument(bean, attributes,config,reverseattributes));
-			}
-			else
-			{
-				indexWriter.addDocument(getDocument(bean, attributes, config,reverseattributes));
-			}
-			//Stop Indexing when thread has been interrupted
-			if(Thread.currentThread().isInterrupted())break;
+		}finally{
+			uc.stop();
 		}
 	}
 	

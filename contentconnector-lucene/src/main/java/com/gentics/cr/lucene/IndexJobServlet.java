@@ -40,7 +40,7 @@ public class IndexJobServlet extends HttpServlet {
 		super.init(config);
 		this.log = Logger.getLogger("com.gentics.cr.lucene");
 		this.indexer = new IndexController(config.getServletName());
-
+		
 	}
 
 	@Override
