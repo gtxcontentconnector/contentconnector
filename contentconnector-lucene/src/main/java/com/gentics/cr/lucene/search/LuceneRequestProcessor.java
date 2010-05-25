@@ -142,7 +142,9 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		HashMap<String,Object> searchResult  = null;
 		try
 		{
-			searchResult = this.searcher.search(request.getRequestFilter(),getSearchedAttributes(),count,start,doNavigation,request.getSortArray());
+			searchResult = this.searcher.search(request.getRequestFilter(),
+				getSearchedAttributes(), count, start, doNavigation,
+				request.getSortArray(), request);
 		}
 		catch(IOException ex)
 		{
