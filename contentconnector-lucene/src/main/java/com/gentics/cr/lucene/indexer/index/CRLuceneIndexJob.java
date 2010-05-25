@@ -17,8 +17,6 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.lib.resolving.Resolvable;
@@ -68,7 +66,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
   /**
    * indicates if the lucene index should be optimized after indexing.
    */
-  private boolean ignoreoptimize = false;
+  private boolean optimize = false;
+  private String max_segments = null;
 
   /**
    * Create new instance of IndexJob.
@@ -79,10 +78,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
   public CRLuceneIndexJob(final CRConfig config, final IndexLocation indexLoc,
       final Hashtable<String, CRConfigUtil> configmap) {
     super(config, indexLoc, configmap);
-    String ignoreoptimizeString = config.getString(IGNOREOPTIMIZE_KEY);
+    String ignoreoptimizeString = config.getString(OPTIMIZE_KEY);
     if (ignoreoptimizeString != null) {
-      ignoreoptimize = Boolean.parseBoolean(ignoreoptimizeString);
+      optimize = Boolean.parseBoolean(ignoreoptimizeString);
     }
+    max_segments = config.getString(MAXSEGMENTS_KEY);
     try {
       rp = config.getNewRequestProcessorInstance(1);
     } catch (CRException e) {
@@ -120,7 +120,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
   private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
   private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
-  private static final String IGNOREOPTIMIZE_KEY = "ignoreoptimize";
+  private static final String OPTIMIZE_KEY = "optimize";
+  private static final String MAXSEGMENTS_KEY = "maxsegments";
 
   private static final String BATCH_SIZE_KEY = "BATCHSIZE";
   private static final String CR_FIELD_KEY = "CRID";
@@ -237,7 +238,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				}
 				log.debug("Using rule: "+rule);
 				
-		
+				
 				// prepare the map of indexed/stored attributes
 				Map<String,Boolean> attributes = new HashMap<String,Boolean>();
 				List<String> containedAttributes = IndexerUtil.getListFromString((String)config.get(CONTAINED_ATTRIBUTES_KEY), ",");
@@ -307,13 +308,30 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				if(!interrupted)
 				{
 					//Only Optimize the Index if the thread has not been interrupted
-					if(!ignoreoptimize)
+					if(optimize)
 					{
-						indexWriter.optimize();	
+						log.debug("Executing optimize command.");
+						UseCase uc = MonitorFactory.startUseCase("optimize("+crid+")");
+						try
+						{
+							indexWriter.optimize();
+						}
+						finally {
+							uc.stop();
+						}
 					}
-					else
+					else if(max_segments!=null)
 					{
-						log.debug("Will not execute OptimizeCommand.");
+						log.debug("Executing optimize command with max segments: "+max_segments);
+						int maxs = Integer.parseInt(max_segments);
+						UseCase uc = MonitorFactory.startUseCase("optimize("+crid+")");
+						try
+						{
+							indexWriter.optimize(maxs);
+						}
+						finally {
+							uc.stop();
+						}
 					}
 				}
 				else
