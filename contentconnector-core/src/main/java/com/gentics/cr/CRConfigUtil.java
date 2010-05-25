@@ -139,7 +139,7 @@ public class CRConfigUtil extends CRConfig {
 	public String getFolderType()
 	{
 		String ft = (String)this.get(FOLDER_TYPE_KEY);
-		if(ft==null)ft="10007";
+		if(ft==null)ft="10002";
 		return(ft);
 	}
 	
