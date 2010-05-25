@@ -50,23 +50,64 @@ public abstract class LuceneIndexLocation extends
 		return LuceneAnalyzerFactory.getReverseAttributes((GenericConfiguration) config);
 	}
 	
+	
+	
+	/**
+	 * Requests an optimize command on the index
+	 */
+	public void optimizeIndex() {
+		IndexAccessor indexAccessor = getAccessor();
+		IndexWriter indexWriter;
+		try {
+			indexWriter = indexAccessor.getWriter();
+			indexWriter.optimize(true);
+			indexAccessor.release(indexWriter);
+		} catch (IOException e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Forcibly removes locks from the subsequent directories
+	 * This code should only be used by failure recovery code... when it is certain that no other thread is accessing the index.
+	 */
+	public void forceRemoveLock()
+	{
+		Directory[] dirs = this.getDirectories();
+		if(dirs!=null)
+		{
+			for(Directory dir:dirs)
+			{
+				try {
+					if(IndexWriter.isLocked(dir))
+					{
+						IndexWriter.unlock(dir);
+					}
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Checks Lock and throws Exception if Lock exists
 	 * 
 	 * @throws LockedIndexException
-	 * @throws IOException
 	 */
 	public void checkLock() throws LockedIndexException {
-		IndexAccessor indexAccessor = getAccessor();
-		IndexWriter indexWriter;
-		try {
-			indexWriter = indexAccessor.getWriter();
-			indexAccessor.release(indexWriter);
-		} catch (LockObtainFailedException e) {
-			throw new LockedIndexException(e);
-		} catch (IOException e) {
-			log.error(e.getMessage(), e);
+		Directory[] dirs = this.getDirectories();
+		
+		if(dirs!=null)
+		{
+			for(Directory dir:dirs)
+			{
+				try {
+					if(IndexWriter.isLocked(dir))throw new LockedIndexException();
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
+				} 
+			}
 		}
 	}
 

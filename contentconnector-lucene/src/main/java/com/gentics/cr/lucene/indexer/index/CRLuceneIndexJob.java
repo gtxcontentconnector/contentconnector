@@ -17,6 +17,8 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.lib.resolving.Resolvable;
@@ -349,8 +351,9 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			log.debug("LOCKED INDEX DETECTED. TRYING AGAIN IN NEXT JOB.");
 			if(this.indexLocation!=null && !this.indexLocation.hasLockDetection())
 			{
-				log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. PLEASE REMOVE LOCK");
+				log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. TRYING TO REMOVE THE LOCK");
 				ex.printStackTrace();
+				((LuceneIndexLocation)this.indexLocation).forceRemoveLock();
 			}
 		}
 		catch(Exception ex)

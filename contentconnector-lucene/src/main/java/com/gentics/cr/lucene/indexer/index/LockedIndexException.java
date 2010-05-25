@@ -22,4 +22,12 @@ public class LockedIndexException extends Exception {
 	{
 		super(ex.getMessage(), ex);
 	}
+	
+	/**
+	 * Create new LocketIndexException without a causing exception
+	 */
+	public LockedIndexException()
+	{
+		
+	}
 }
