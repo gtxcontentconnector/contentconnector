@@ -28,6 +28,11 @@ import com.gentics.cr.util.RequestWrapper;
 public class CRRequest implements Cloneable, Serializable {
   private static final long serialVersionUID = 1L;
 
+  /**
+   * key for storing the wordmatch parameter into.
+   */
+  public static final String WORDMATCH_KEY = "wordmatch";
+
 
   private HashMap<String,Resolvable> objectsToDeploy = new HashMap<String,Resolvable>();
   
