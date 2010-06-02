@@ -395,7 +395,7 @@ public class CRRequestBuilder {
         String key = (String)e.getKey();
         if(!"default".equalsIgnoreCase(key))
         {
-          classmap.put(key, (String)e.getValue());
+          classmap.put(key.toUpperCase(), (String)e.getValue());
         }
       }
     }
@@ -417,7 +417,7 @@ public class CRRequestBuilder {
     
     Hashtable<String,String> classmap = getRepositoryClassMap();
     
-    String cls = classmap.get(this.getRepositoryType());
+    String cls = classmap.get(this.getRepositoryType().toUpperCase());
     if(cls!=null)
     {
       //XmlContentRepository(String[] attr, String encoding)
