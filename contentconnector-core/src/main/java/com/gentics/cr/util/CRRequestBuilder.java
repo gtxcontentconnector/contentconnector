@@ -53,6 +53,12 @@ public class CRRequestBuilder {
   private static Logger logger = Logger.getLogger(CRRequestBuilder.class);
 
   /**
+   * name of the configuration attribute where the defaultparameters are stored
+   * in.
+   */
+  private static final String DEFAULPARAMETERS_KEY = "defaultparameters";
+
+  /**
    * Initializes the CRRequestBuilder from a {@link Portlet}.
    * @param portletRequest request from the {@link Portlet}
    */
@@ -102,29 +108,33 @@ public class CRRequestBuilder {
       final GenericConfiguration requestBuilderConfiguration) {
 
     this.config = requestBuilderConfiguration;
-    GenericConfiguration defaultparameters = null;
-    if (this.config != null) {
-      defaultparameters = (GenericConfiguration)this.config.get(DEFAULPARAMETERS_KEY);
-    }
     this.request = requestWrapper;
     this.filter = (String) requestWrapper.getParameter("filter");
     this.contentid = (String) requestWrapper.getParameter("contentid");
     this.count = requestWrapper.getParameter("count");
     this.start = (String) requestWrapper.getParameter("start");
     this.sorting = requestWrapper.getParameterValues("sorting");
-    this.attributes =  this.prepareAttributesArray(requestWrapper.getParameterValues("attributes"));
-    this.plinkattributes =  requestWrapper.getParameterValues("plinkattributes");
-    this.permissions = requestWrapper.getParameterValues("permissions"); 
+    this.attributes =
+      prepareAttributesArray(requestWrapper.getParameterValues("attributes"));
+    this.plinkattributes =
+      requestWrapper.getParameterValues("plinkattributes");
+    this.permissions =
+      requestWrapper.getParameterValues("permissions");
     this.options = requestWrapper.getParameterValues("options");
-    this.type=requestWrapper.getParameter("type");
-    this.isDebug = (requestWrapper.getParameter("debug")!=null && requestWrapper.getParameter("debug").equals("true"));
-    this.metaresolvable = Boolean.parseBoolean(requestWrapper.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
-    this.highlightquery = requestWrapper.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
+    this.type = requestWrapper.getParameter("type");
+    this.isDebug =
+      (requestWrapper.getParameter("debug") != null
+          && requestWrapper.getParameter("debug").equals("true"));
+    this.metaresolvable = Boolean.parseBoolean(
+        requestWrapper.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
+    this.highlightquery =
+      requestWrapper.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
     this.node_id = requestWrapper.getParameterValues("node");
     this.query_and = requestWrapper.getParameter("q_and");
     this.query_or = requestWrapper.getParameter("q_or");
     this.query_not = requestWrapper.getParameter("q_not");
     this.query_group = requestWrapper.getParameter("q_group");
+    this.wordmatch = requestWrapper.getParameter("wm");
 
     //Parameters used in mnoGoSearch for easier migration (Users should use
     //type=MNOGOSEARCHXML)
@@ -159,7 +169,18 @@ public class CRRequestBuilder {
 
     setRepositoryType(this.type);
 
+    getDefaultParameters();
+  }
 
+  /**
+   * try to get the default parameters from the config.
+   */
+  private void getDefaultParameters() {
+    GenericConfiguration defaultparameters = null;
+    if (this.config != null) {
+      defaultparameters =
+        (GenericConfiguration) this.config.get(DEFAULPARAMETERS_KEY);
+    }
     if (defaultparameters != null) {
       if (this.type == null) {
         this.type = (String) defaultparameters.get("type");
@@ -282,20 +303,11 @@ public class CRRequestBuilder {
       filter = "(" + filter + ") AND ("+node_filter+")";
     }
   }
-  
+
   private void setRepositoryType(String type) {
     //Initialize RepositoryType
-    
     this.repotype = type;
-    
   }
-  
-  
-  
-  private final static String DEFAULPARAMETERS_KEY = "defaultparameters";
-
-
-
 
   /**
    * Creates a CRRequest from the configuration.
@@ -308,6 +320,7 @@ public class CRRequestBuilder {
     req.setRequest(this.request);
     req.setResponse(this.response);
     req.set(RequestProcessor.META_RESOLVABLE_KEY, this.metaresolvable);
+    req.set(CRRequest.WORDMATCH_KEY, this.wordmatch);
     if (this.highlightquery != null) {
       req.set(RequestProcessor.HIGHLIGHT_QUERY_KEY, this.highlightquery);
     }
