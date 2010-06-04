@@ -161,7 +161,7 @@ public abstract class IndexLocation {
       final CRConfig config) {
     IndexLocation dir = null;
     String key = getIndexLocationKey(config);
-    if (key == null) {
+    if (key == null || "".equals(key)) {
       log.error("COULD NOT FIND CONFIG FOR INDEXLOCATION. check config @ "
           + config.getName());
       return null;
