@@ -27,8 +27,7 @@ public class IndexJobQueue{
 	 * Create new instance of JobQueue
 	 * @param config
 	 */
-	public IndexJobQueue(CRConfig config)
-	{
+	public IndexJobQueue(CRConfig config) {
 		String i = (String)config.get(INTERVAL_KEY);
 		if(i!=null)this.interval = new Integer(i);
 		queue = new LinkedBlockingQueue<AbstractUpdateCheckerJob>();
@@ -39,7 +38,7 @@ public class IndexJobQueue{
 				workQueue();
 			}
 		});
-		this.d.setName("IndexJobQueueWorker");
+		this.d.setName("IndexJobQueueWorker-" + config.getName());
 	}
 	
 	/**
