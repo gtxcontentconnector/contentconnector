@@ -22,10 +22,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.LogManager;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 
 /**
@@ -39,9 +41,27 @@ import org.apache.lucene.store.Directory;
  *
  */
 public class IndexAccessorFactory {
-  private static final IndexAccessorFactory indexAccessorFactory = new IndexAccessorFactory();
-  private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors = new ConcurrentHashMap<Directory, IndexAccessor>();
- 
+
+  /**
+   * Log4j logger for debug and error messages.
+   */
+  private static Logger logger = Logger.getLogger(IndexAccessorFactory.class);
+
+  /**
+   * Holds an single instance of {@link IndexAccessorFactory} to give it to
+   * others who want to read a lucene index.
+   */
+  private static final IndexAccessorFactory INDEXACCESSORFACTORY =
+    new IndexAccessorFactory();
+
+  private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors =
+    new ConcurrentHashMap<Directory, IndexAccessor>();
+
+  /**
+   * boolean mark for indicating {@link IndexAccessorFactory} was closed before.
+   */
+  private static boolean wasClosed = false;
+
   static {
     LogManager manager = LogManager.getLogManager();
     InputStream is = ClassLoader.getSystemResourceAsStream(
@@ -62,7 +82,7 @@ public class IndexAccessorFactory {
    * @return
    */
   public static IndexAccessorFactory getInstance() {
-    return indexAccessorFactory;
+    return INDEXACCESSORFACTORY;
   }
 
   private IndexAccessorFactory() {
@@ -72,14 +92,19 @@ public class IndexAccessorFactory {
   /**
    * Closes all of the open IndexAccessors and releases any open resources.
    */
-  public void close() {
-    synchronized (indexAccessors) {
-      for (IndexAccessor accessor : indexAccessors.values()) {
-        accessor.close();
+  public synchronized void close() {
+    if (!wasClosed) {
+      synchronized (indexAccessors) {
+        for (IndexAccessor accessor : indexAccessors.values()) {
+          accessor.close();
+        }
+        indexAccessors.clear();
       }
-      indexAccessors.clear();
+      wasClosed = true;
+      logger.debug("IndexAccessorFactory is now closed.");
     }
   }
+
   /**
    * 
    * @param dir
@@ -103,10 +128,10 @@ public class IndexAccessorFactory {
   private void createAccessor(Directory dir, Analyzer analyzer, Query query, Set<Sort> sortFields)
       throws IOException {
     IndexAccessor accessor = null;
-    if(query != null) {
-    	accessor = new WarmingIndexAccessor(dir, analyzer, query);
-    }else {
-    	accessor = new DefaultIndexAccessor(dir, analyzer);
+    if (query != null) {
+      accessor = new WarmingIndexAccessor(dir, analyzer, query);
+    } else {
+      accessor = new DefaultIndexAccessor(dir, analyzer);
     }
     accessor.open();
 
@@ -123,11 +148,15 @@ public class IndexAccessorFactory {
   }
 
   /**
-   * @param indexDir
-   * @return
+   * Get an {@link IndexAccessor} for the specified {@link Directory}.
+   * @param indexDir {@link Directory} to get the {@link IndexAccessor} for.
+   * @return {@link IndexAccessor} for the {@link Directory}.
    */
-  public IndexAccessor getAccessor(Directory indexDir) {
-
+  public IndexAccessor getAccessor(final Directory indexDir) {
+    if (wasClosed) {
+      throw new AlreadyClosedException("IndexAccessorFactory was already closed"
+          + ". Maybe there is a shutdown in progress.");
+    }
     IndexAccessor indexAccessor = indexAccessors.get(indexDir);
     if (indexAccessor == null) {
       throw new IllegalStateException("Requested Accessor does not exist");
@@ -135,7 +164,6 @@ public class IndexAccessorFactory {
     return indexAccessor;
 
   }
-  
   /**
    * Check if an Accessor is already created for that directory
    * @param indexDir directory in which contains the index file
@@ -154,8 +182,8 @@ public class IndexAccessorFactory {
    * @return
    */
   public IndexAccessor getMultiIndexAccessor(Directory[] dirs) {
-	  IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
-	  
-	  return multiIndexAccessor;
+    IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
+    
+    return multiIndexAccessor;
   }
 }
