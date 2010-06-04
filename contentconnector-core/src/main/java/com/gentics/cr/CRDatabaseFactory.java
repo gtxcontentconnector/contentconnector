@@ -32,7 +32,7 @@ public class CRDatabaseFactory {
    * @param ds
    */
   public static void releaseDatasource(Datasource ds) {
-    log.debug("Release Datasource" + ds);
+    log.debug("Release Datasource " + ds);
     if (ds != null) {
       getInstance().releaseDS();
       ds = null;
@@ -50,13 +50,13 @@ public class CRDatabaseFactory {
   }
 
   private synchronized boolean destroyFactory() {
-    if(dbcount<=0)
-    {
+    if (dbcount <= 0) {
       PortalConnectorFactory.destroy();
       log.debug("Factory, resources and threads have been closed.");
       return true;
     }
-    log.error("There are still unreleased datasources => could not destroy the factory");
+    log.error("There are still unreleased datasources => could not destroy the"
+        + "factory");
     return false;
   }
   
