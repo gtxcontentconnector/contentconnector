@@ -13,44 +13,56 @@ import com.gentics.cr.exceptions.CRException;
  */
 public class RPMergerRequestProcessor extends RequestProcessor {
 
-	private RequestProcessor rp1;
-	private RequestProcessor rp2;
-	private String mergeattribute;
-	
-	private static final String MERGE_ATTRIBUTE_KEY="mergeattribute";
-	
-	/**
-	 * 
-	 * @param config
-	 * @throws CRException
-	 */
-	public RPMergerRequestProcessor(CRConfig config) throws CRException {
-		super(config);
-		this.rp1 = config.getNewRequestProcessorInstance(1);
-		this.rp2 = config.getNewRequestProcessorInstance(2);
-		this.mergeattribute = (String)config.get(MERGE_ATTRIBUTE_KEY);
-	}
+  private RequestProcessor rp1;
+  private RequestProcessor rp2;
+  private String mergeattribute;
 
-	
-	/**
-	 * Merges two reuquest processor instances configured in the config
-	 */
-	@Override
-	public Collection<CRResolvableBean> getObjects(CRRequest request,
-			boolean doNavigation) throws CRException {
-		ArrayList<CRResolvableBean> coll = null;
-		
-		coll = (ArrayList<CRResolvableBean>) RequestProcessorMerger.merge(this.mergeattribute, this.rp1, this.rp2, request);
-		
-		return coll;
-	}
+  /**
+   * Configuration key for defining the merge attribute.
+   */
+  private static final String MERGE_ATTRIBUTE_KEY = "mergeattribute";
+
+  /**
+   * Default value for the merge attribute if it is not definied in the
+   * configuration.
+   */
+  private static final String MERGE_ATTRIBUTE_DEFAULT = "contentid";
+
+  /**
+   * Initialize the RequestProcessorMergerRequestProcessor.
+   * @param config Configuration for the RequestProcessor
+   * @throws CRException in case one of the RequestProcessors could not be
+   * initialized.
+   */
+  public RPMergerRequestProcessor(final CRConfig config) throws CRException {
+    super(config);
+    rp1 = config.getNewRequestProcessorInstance(1);
+    rp2 = config.getNewRequestProcessorInstance(2);
+    mergeattribute = (String) config.get(MERGE_ATTRIBUTE_KEY);
+    if (mergeattribute == null) {
+      mergeattribute = MERGE_ATTRIBUTE_DEFAULT;
+    }
+  }
 
 
-	@Override
-	public void finalize() {
-		this.rp1.finalize();
-		this.rp2.finalize();
-	}
+
+  @Override
+  public final Collection<CRResolvableBean> getObjects(final CRRequest request,
+      final boolean doNavigation) throws CRException {
+    ArrayList<CRResolvableBean> coll = null;
+    coll = (ArrayList<CRResolvableBean>) RequestProcessorMerger
+        .merge(mergeattribute, rp1, rp2, request);
+    return coll;
+  }
+
+  /**
+   * clean up all RequestProcessors we initialized.
+   */
+  @Override
+  public final void finalize() {
+    rp1.finalize();
+    rp2.finalize();
+  }
 
 
 }
