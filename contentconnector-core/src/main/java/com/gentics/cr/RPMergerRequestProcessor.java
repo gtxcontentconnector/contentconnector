@@ -5,7 +5,12 @@ import java.util.Collection;
 
 import com.gentics.cr.exceptions.CRException;
 /**
- * 
+ * {@link RPMergerRequestProcessor} initializes 2 child
+ * {@link RequestProcessor}s and enriches the objects from the first
+ * {@link RequestProcessor} with objects from the second
+ * {@link RequestProcessor}. Both {@link RequestProcessor}s must have an
+ * attribute in their objects that is unique within the {@link RequestProcessor}
+ * and identical for both {@link RequestProcessor}s.
  * Last changed: $Date: 2010-04-01 15:24:02 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 541 $
  * @author $Author: supnig@constantinopel.at $
@@ -13,8 +18,18 @@ import com.gentics.cr.exceptions.CRException;
  */
 public class RPMergerRequestProcessor extends RequestProcessor {
 
+  /**
+   * First {@link RequestProcessor} witch gets the objects primarily.
+   */
   private RequestProcessor rp1;
+  /**
+   * Second {@link RequestProcessor} witch enriches the objects from the first
+   * {@link RequestProcessor}.
+   */
   private RequestProcessor rp2;
+  /**
+   * Attribute to join the objects from both {@link RequestProcessor}s.
+   */
   private String mergeattribute;
 
   /**
