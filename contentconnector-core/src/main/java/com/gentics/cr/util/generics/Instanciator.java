@@ -23,6 +23,28 @@ public final class Instanciator {
    * private constructor so the utility class couldn't be instantiated.
    */
   private Instanciator() { }
+
+  /**
+   * try to get an instance of a class with multiple parameter variations.<br />
+   * e.g. (myCollection.class, [ [1,2], ["1","2"] ])
+   * @param className Name of the class to instantiate with the parameters.
+   * @param prioritizedParameters array with arrays with parameters
+   * @return instantiated object of given class, null in case of an error.
+   */
+  public static Object getInstance(final String className,
+      final Object[][] prioritizedParameters) {
+    if (className != null) {
+      try {
+        Class<?> clazz = Class.forName(className);
+        return getInstance(clazz, prioritizedParameters);
+      } catch (ClassNotFoundException e) {
+        logger.debug("Cannot find class " + className + ".", e);
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   /**
    * try to get an instance of a class with multiple parameter variations.<br />
    * e.g. (myCollection.class, [ [1,2], ["1","2"] ])
