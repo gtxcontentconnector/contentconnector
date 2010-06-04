@@ -62,9 +62,9 @@ public class CRSearcher {
       computescores = Boolean.parseBoolean(s_cs);
     }
   }
-  
+
   /**
-   * Create the appropriate collector
+   * Create the appropriate collector.
    * @param hits
    * @param sorting
    * @return
@@ -98,27 +98,27 @@ public class CRSearcher {
     }
     if (coll == null && sorting != null) {
       //TODO make collector configurable
-      coll=TopFieldCollector.create(createSort(sorting), hits, true, computescores, computescores, computescores);
+      coll = TopFieldCollector.create(createSort(sorting), hits, true,
+          computescores, computescores, computescores);
     }
-    
     if (coll == null) {
-      coll=TopScoreDocCollector.create(hits, true);
+      coll = TopScoreDocCollector.create(hits, true);
     }
-    
     return coll;
   }
-  
+
   /**
-   * Creates a Sort object for the Sort collector. The general syntax for sort properties is [property][:asc|:desc] where the postfix determines the sortorder. If neither :asc nor :desc is given, the sorting will be done ascending for this property.
+   * Creates a Sort object for the Sort collector. The general syntax for sort
+   * properties is [property][:asc|:desc] where the postfix determines the
+   * sortorder. If neither :asc nor :desc is given, the sorting will be done
+   * ascending for this property.
    * @param sorting
    * @return
    */
-  private Sort createSort(String[] sorting)
-  {
+  private Sort createSort(String[] sorting) {
     Sort ret = null;
     ArrayList<SortField> sf = new ArrayList<SortField>();
-    for(String s:sorting)
-    {
+    for (String s : sorting) {
       // split attribute on :. First element is attribute name the
       // second is the direction
       String[] sort = s.split(":");
@@ -130,19 +130,21 @@ public class CRSearcher {
         } else {
           reverse = false;
         }
-        sf.add(new SortField(sort[0],Locale.getDefault(),reverse));
+        sf.add(new SortField(sort[0], Locale.getDefault(), reverse));
       }
-      
+
     }
     ret = new Sort(sf.toArray(new SortField[]{}));
-    
+
     return ret;
   }
-  
-  public void finalize()
-  {
-    LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
-    idsLocation.finalize();
+
+  public void finalize() {
+    LuceneIndexLocation idsLocation =
+      LuceneIndexLocation.getIndexLocation(this.config);
+    if (idsLocation != null) {
+      idsLocation.finalize();
+    }
   }
 
   /**
