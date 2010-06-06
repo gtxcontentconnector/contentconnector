@@ -1,9 +1,15 @@
 package com.gentics.cr.file;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRResolvableBean;
 
@@ -13,6 +19,11 @@ import com.gentics.cr.CRResolvableBean;
  *
  */
 public class ResolvableFileBean extends CRResolvableBean {
+
+  /**
+   * Log4 logger for error messages.
+   */
+  private static Logger logger = Logger.getLogger(ResolvableFileBean.class);
 
   /**
    * Generated serial version uid.
@@ -43,6 +54,16 @@ public class ResolvableFileBean extends CRResolvableBean {
    * {@link Iterator} to get an order for the descendants to check.
    */
   private Iterator<ResolvableFileBean> descendantsToCheck = null;
+
+  /**
+   * Object type for files.
+   */
+  private static final String FILEOBJTYPE = "10008";
+
+  /**
+   * Object type for directory.
+   */
+  private static final String DIROBJTYPE = "10002";
 
   /**
    * Generate a new {@link ResolvableFileBean} for the specified {@link File}.
@@ -188,6 +209,54 @@ public class ResolvableFileBean extends CRResolvableBean {
    */
   public final String toString() {
     return file.toString();
+  }
+
+  @Override
+  /**
+   * get an attribute from the file
+   */
+  public Object get(final String propertyName) {
+    if ("binarycontent".equals(propertyName)) {
+      return getBinaryContent();
+    } else if ("obj_type".equals(propertyName)) {
+      return getObjType();
+    }
+    return super.get(propertyName);
+  }
+
+  @Override
+  /**
+   * get the binary data from the file
+   */
+  public byte[] getBinaryContent() {
+    if (FILEOBJTYPE.equals(getObjType())) {
+      try {
+        FileInputStream fileReader = new FileInputStream(file);
+        byte[] buffer = new byte[(int) file.length()];
+        for (int i = 0; i < buffer.length; i++) {
+          buffer[i] = (byte) fileReader.read();
+        }
+        return buffer;
+      } catch (FileNotFoundException e) {
+        logger.error("File not found: " + file, e);
+        //TODO should we remove the file from the indexes?
+      } catch (IOException e) {
+        logger.error("Error reading file " + file + ".");
+      }
+    }
+    return null;
+  }
+
+  /**
+   * get object type. if file is a directory it returns "10002" else it returns
+   * "10008".
+   */
+  public String getObjType() {
+    if (file.isDirectory()) {
+      return DIROBJTYPE;
+    } else {
+      return FILEOBJTYPE;
+    }
   }
 
 }
