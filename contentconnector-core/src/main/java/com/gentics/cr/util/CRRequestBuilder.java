@@ -25,6 +25,7 @@ import com.gentics.cr.rest.ContentRepository;
  */
 public class CRRequestBuilder {
 
+  private boolean addPermissionsToRule = true;
   protected String repotype;
   protected boolean isDebug=false;
   protected boolean metaresolvable=false;
@@ -57,6 +58,13 @@ public class CRRequestBuilder {
    * in.
    */
   private static final String DEFAULPARAMETERS_KEY = "defaultparameters";
+
+  /**
+   * Configuration key for setting if the permissions should be added to the
+   * rule. (This is to disable this feature because it breaks lucene)
+   */
+  private static final String ADD_PERMISSIONS_TO_RULE_KEY =
+    "addPermissionsToRule";
 
   /**
    * Initializes the CRRequestBuilder from a {@link Portlet}.
@@ -135,6 +143,12 @@ public class CRRequestBuilder {
     this.query_not = requestWrapper.getParameter("q_not");
     this.query_group = requestWrapper.getParameter("q_group");
     this.wordmatch = requestWrapper.getParameter("wm");
+    String addPermissionsToRuleConfig =
+      config.getString(ADD_PERMISSIONS_TO_RULE_KEY);
+    if (addPermissionsToRuleConfig != null) {
+      this.addPermissionsToRule = Boolean.parseBoolean(
+          addPermissionsToRuleConfig);
+    }
 
     //Parameters used in mnoGoSearch for easier migration (Users should use
     //type=MNOGOSEARCHXML)
@@ -165,7 +179,9 @@ public class CRRequestBuilder {
     addAdvancedSearchParameters();
 
     //SET PERMISSIONS-RULE
-    filter = this.createPermissionsRule(filter, permissions);
+    if (addPermissionsToRule) {
+      filter = this.createPermissionsRule(filter, permissions);
+    }
 
     setRepositoryType(this.type);
 
@@ -300,7 +316,7 @@ public class CRRequestBuilder {
         node_filter += "node_id:"+node_id[i];
       }
       node_id = new String[]{};
-      filter = "(" + filter + ") AND ("+node_filter+")";
+      filter = "(" + filter + ") AND (" + node_filter + ")";
     }
   }
 
@@ -321,6 +337,7 @@ public class CRRequestBuilder {
     req.setResponse(this.response);
     req.set(RequestProcessor.META_RESOLVABLE_KEY, this.metaresolvable);
     req.set(CRRequest.WORDMATCH_KEY, this.wordmatch);
+    req.set(CRRequest.PERMISSIONS_KEY, this.permissions);
     if (this.highlightquery != null) {
       req.set(RequestProcessor.HIGHLIGHT_QUERY_KEY, this.highlightquery);
     }

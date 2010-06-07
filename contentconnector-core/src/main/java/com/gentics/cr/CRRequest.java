@@ -33,6 +33,11 @@ public class CRRequest implements Cloneable, Serializable {
    */
   public static final String WORDMATCH_KEY = "wordmatch";
 
+  /**
+   * key for storing the permissions parameter into.
+   */
+  public static final String PERMISSIONS_KEY = "permissions";
+
 
   private HashMap<String,Resolvable> objectsToDeploy = new HashMap<String,Resolvable>();
   
