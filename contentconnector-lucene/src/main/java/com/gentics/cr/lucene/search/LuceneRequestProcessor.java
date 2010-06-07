@@ -48,20 +48,6 @@ public class LuceneRequestProcessor extends RequestProcessor {
   
   private Hashtable<String,ContentHighlighter> highlighters;
   
-  
-  /**
-   * Create new instance of LuceneRequestProcessor
-   * @param config
-   * @throws CRException
-   */
-  public LuceneRequestProcessor(CRConfig config) throws CRException {
-    super(config);
-    this.name=config.getName();
-    this.searcher = new CRSearcher(config);
-    getStoredAttributes = Boolean.parseBoolean((String)config.get(GET_STORED_ATTRIBUTE_KEY));
-    highlighters = ContentHighlighter.getTransformerTable((GenericConfiguration)config);
-  }
-  
   private static final String SEARCH_COUNT_KEY = "SEARCHCOUNT";
   
   private static final String ID_ATTRIBUTE_KEY = "idAttribute";
@@ -97,19 +83,35 @@ public class LuceneRequestProcessor extends RequestProcessor {
    * If this is not set, the requestFilter (default query) will be used
    */
   public static final String HIGHLIGHT_QUERY_KEY = "highlightquery";
-  
-  
-  @SuppressWarnings("unchecked")
-  private static List<Field> toFieldList(List l)
-  {
-    return((List<Field>) l);
-  }
-  
+
+  private static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
+
   /**
-   * This returns a collection of CRResolvableBeans containing the IDATTRIBUTE and all STORED ATTRIBUTES of the Lucene Documents
-   * 
+   * Create new instance of LuceneRequestProcessor.
+   * @param config
+   * @throws CRException
+   */
+  public LuceneRequestProcessor(final CRConfig config) throws CRException {
+    super(config);
+    this.name = config.getName();
+    this.searcher = new CRSearcher(config);
+    getStoredAttributes = Boolean.parseBoolean(
+        (String) config.get(GET_STORED_ATTRIBUTE_KEY));
+    highlighters = ContentHighlighter.getTransformerTable(
+        (GenericConfiguration) config);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static List<Field> toFieldList(final List l) {
+    return (List<Field>) l;
+  }
+
+  /**
+   * This returns a collection of CRResolvableBeans containing the IDATTRIBUTE
+   * and all STORED ATTRIBUTES of the Lucene Documents.
    * @param request - CRRequest containing the query in RequestFilter
-   * @param doNavigation - if set to true there will be generated explanation output to the explanation logger of CRSearcher
+   * @param doNavigation - if set to true there will be generated explanation
+   * output to the explanation logger of CRSearcher
    * @return search result as Collection of CRResolvableBean
    * @throws CRException 
    */
@@ -119,24 +121,25 @@ public class LuceneRequestProcessor extends RequestProcessor {
     int count = request.getCount();
     int start = request.getStart();
     //IF COUNT IS NOT SET IN THE REQUEST, USE DEFAULT VALUE LOADED FROM CONFIG
-    if(count<=0)
-    {  
-      String cstring = (String)this.config.get(SEARCH_COUNT_KEY);
-      if(cstring!=null)count=new Integer(cstring);
+    if (count <= 0) {
+      String cstring = (String) this.config.get(SEARCH_COUNT_KEY);
+      if (cstring != null) {
+        count = new Integer(cstring);
+      }
     }
-    if(count<=0){
-      String message="Default count is lower or equal to 0! This will result in an error. Overthink your config (insert rp.<number>.searchcount=<value> in your properties file)!"; 
+    if (count <= 0) {
+      String message = "Default count is lower or equal to 0! This will result"
+        + "in an error. Overthink your config (insert rp.<number>.searchcount="
+        + "<value> in your properties file)!";
       log.error(message);
       throw new CRException(new CRError("Error", message));
     }
-    if(start<0){
+    if (start < 0) {
       String message = "Bad request: start is lower than 0!";
       log.error(message);
       throw new CRException(new CRError("Error", message));
     }
-    
-    
-    String scoreAttribute = (String)config.get(SCORE_ATTRIBUTE_KEY);
+    String scoreAttribute = (String) config.get(SCORE_ATTRIBUTE_KEY);
     //GET RESULT
     long s1 = System.currentTimeMillis();
     HashMap<String, Object> searchResult  = null;
@@ -167,10 +170,12 @@ public class LuceneRequestProcessor extends RequestProcessor {
       //PARSE HIGHLIGHT QUERY
       Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
       if (highlightQuery != null) {
-        Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration)this.config);
-        QueryParser parser = new QueryParser(LuceneVersion.getVersion(),getSearchedAttributes()[0], analyzer);
+        Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(
+            (GenericConfiguration) this.config);
+        QueryParser parser = new QueryParser(LuceneVersion.getVersion(),
+            getSearchedAttributes()[0], analyzer);
         try {
-          parsedQuery = parser.parse((String)highlightQuery);
+          parsedQuery = parser.parse((String) highlightQuery);
         } catch (ParseException e) {
           log.error(e.getMessage());
           e.printStackTrace();
@@ -183,24 +188,17 @@ public class LuceneRequestProcessor extends RequestProcessor {
           Float score = e.getValue();
           CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
           if (getStoredAttributes) {
-            for(Field f:toFieldList(doc.getFields()))
-            {
-              if(f.isStored())
-              {
-                if(f.isBinary())
-                {
+            for (Field f : toFieldList(doc.getFields())) {
+              if (f.isStored()) {
+                if (f.isBinary()) {
                   crBean.set(f.name(), f.getBinaryValue());
-                }
-                else
-                {
+                } else {
                   crBean.set(f.name(), f.stringValue());
                 }
               }
             }
           }
-          
-          if(scoreAttribute!=null && !"".equals(scoreAttribute))
-          {
+          if (scoreAttribute != null && !"".equals(scoreAttribute)) {
             crBean.set(scoreAttribute, score);
           }
           //IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
@@ -245,9 +243,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
       final Object obj) {
     return (LinkedHashMap<Document, Float>) obj;
   }
-
-  private static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
-
+  
   private String[] getSearchedAttributes()
   {
     String sa = (String)this.config.get(SEARCHED_ATTRIBUTES_KEY);
