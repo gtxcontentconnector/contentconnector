@@ -70,8 +70,9 @@ public class CRSearcher {
    * @return
    * @throws IOException 
    */
-  private TopDocsCollector<?> createCollector(Searcher searcher, int hits, String[] sorting, boolean computescores) throws IOException
-  {
+  private TopDocsCollector<?> createCollector(final Searcher searcher,
+      final int hits, final String[] sorting, final boolean computescores,
+      final String[] userPermissions) throws IOException {
     TopDocsCollector<?> coll = null;
     String collectorClassName = (String) config.get(COLLECTOR_CLASS_KEY);
     if (collectorClassName != null) {
@@ -79,11 +80,13 @@ public class CRSearcher {
       try {
         genericCollectorClass = Class.forName(collectorClassName);
         GenericConfiguration collectorConfiguration =
-          config.getSubConfigs().get(COLLECTOR_CONFIG_KEY);
-        Object[][] prioritizedParameters = new Object[2][];
+          config.getSubConfigs().get(COLLECTOR_CONFIG_KEY.toUpperCase());
+        Object[][] prioritizedParameters = new Object[3][];
         prioritizedParameters[0] =
-          new Object[]{searcher, hits, collectorConfiguration};
+          new Object[]{searcher, hits, collectorConfiguration, userPermissions};
         prioritizedParameters[1] =
+          new Object[]{searcher, hits, collectorConfiguration};
+        prioritizedParameters[2] =
           new Object[]{hits, collectorConfiguration};
         Object collectorObject = Instanciator.getInstance(genericCollectorClass,
             prioritizedParameters);
@@ -234,8 +237,13 @@ public class CRSearcher {
 
     IndexAccessor indexAccessor = idsLocation.getAccessor();
     searcher = indexAccessor.getPrioritizedSearcher();
+    Object userPermissionsObject = request.get(CRRequest.PERMISSIONS_KEY);
+    String[] userPermissions = new String[0];
+    if (userPermissionsObject instanceof String[]) {
+      userPermissions = (String[]) userPermissionsObject;
+    }
     TopDocsCollector<?> collector =
-      createCollector(searcher,hits, sorting, computescores);
+      createCollector(searcher, hits, sorting, computescores,userPermissions);
     HashMap<String, Object> result = null;
     try {
 
