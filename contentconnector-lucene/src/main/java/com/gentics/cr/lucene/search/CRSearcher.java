@@ -243,7 +243,7 @@ public class CRSearcher {
       userPermissions = (String[]) userPermissionsObject;
     }
     TopDocsCollector<?> collector =
-      createCollector(searcher, hits, sorting, computescores,userPermissions);
+      createCollector(searcher, hits, sorting, computescores, userPermissions);
     HashMap<String, Object> result = null;
     try {
 
