@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRServletConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
@@ -29,65 +31,65 @@ import com.gentics.cr.util.response.ServletResponseTypeSetter;
  */
 public class RESTServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 0002L;
-	private static Logger log = Logger.getLogger(RESTServlet.class);
-	private CRServletConfig crConf;
-	private RESTSimpleContainer container;
-	
-	
-	public void init(ServletConfig config) throws ServletException {
+  private static final long serialVersionUID = 0002L;
+  private static Logger log = Logger.getLogger(RESTServlet.class);
+  private CRServletConfig crConf;
+  private RESTSimpleContainer container;
+  
+  
+  public void init(ServletConfig config) throws ServletException {
 
-		super.init(config);
-		this.crConf = new CRServletConfig(config);
-		container = new RESTSimpleContainer(crConf);
+    super.init(config);
+    this.crConf = new CRServletConfig(config);
+    container = new RESTSimpleContainer(crConf);
 
-	}
-	
-	@Override
-	public void destroy()
-	{
-		if(this.container!=null)this.container.finalize();
-	}
+  }
+  
+  @Override
+  public void destroy()
+  {
+    if(this.container!=null)this.container.finalize();
+  }
 
-	/**
-	 * Wrapper Method for the doGet and doPost Methods
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+  /**
+   * Wrapper Method for the doGet and doPost Methods
+   * 
+   * @param request
+   * @param response
+   * @throws ServletException
+   * @throws IOException
+   */
+  public void doService(HttpServletRequest request,
+      HttpServletResponse response) throws ServletException, IOException {
+    UseCase uc = MonitorFactory.startUseCase("RESTServlet(" + request.getServletPath() + ")");
+    this.log.debug("Request:" + request.getQueryString());
+    
+    // starttime
+    long s = new Date().getTime();
+    // get the objects
+    
+    HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
+    objects.put("request", new BeanWrapper(request));
+    objects.put("session", new HttpSessionWrapper(request.getSession()));
+    CRRequestBuilder rB = new CRRequestBuilder(request, crConf);
+    //response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
+    container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
+    response.getOutputStream().flush();
+    response.getOutputStream().close();
+    // endtime
+    long e = new Date().getTime();
+    this.log.info("Executiontime for " + request.getQueryString() + ":" + (e - s));
+    uc.stop();
+  }
 
-		this.log.debug("Request:" + request.getQueryString());
-		
-		// starttime
-		long s = new Date().getTime();
-		// get the objects
-		
-		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
-		objects.put("request", new BeanWrapper(request));
-		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		CRRequestBuilder rB = new CRRequestBuilder(request, crConf);
-		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
-		container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
-		response.getOutputStream().flush();
-		response.getOutputStream().close();
-		// endtime
-		long e = new Date().getTime();
-		this.log.info("Executiontime for " + request.getQueryString() + ":" + (e - s));
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doService(request, response);
+  }
 
-	}
-
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doService(request, response);
-	}
-
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doService(request, response);
-	}
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    doService(request, response);
+  }
 
 }
