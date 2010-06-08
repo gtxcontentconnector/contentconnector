@@ -158,7 +158,7 @@ public class CRQueryParser extends QueryParser {
     String seperatorCharacterClass = " \\(\\)";
     Pattern valuePattern = Pattern.compile(
         "([" + seperatorCharacterClass + "]*)"
-        + "([^" + seperatorCharacterClass + "]+)"
+        + "(\"[^\"]+\"|[^" + seperatorCharacterClass + "]+)"
         + "([" + seperatorCharacterClass + "]*)");
     Matcher valueMatcher = valuePattern.matcher(query);
     return valueMatcher;
