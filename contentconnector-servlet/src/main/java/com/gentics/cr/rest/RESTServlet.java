@@ -35,7 +35,6 @@ public class RESTServlet extends HttpServlet {
 	private RESTSimpleContainer container;
 	
 	
-	
 	public void init(ServletConfig config) throws ServletException {
 
 		super.init(config);
@@ -70,7 +69,7 @@ public class RESTServlet extends HttpServlet {
 		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		CRRequestBuilder rB = new CRRequestBuilder(request,(GenericConfiguration) crConf);
+		CRRequestBuilder rB = new CRRequestBuilder(request, crConf);
 		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
 		container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
 		response.getOutputStream().flush();
