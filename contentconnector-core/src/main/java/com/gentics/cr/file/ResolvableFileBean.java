@@ -12,6 +12,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.util.StringUtils;
 
 /**
  * ResolvableFileBean is used to wrap a File into a {@link CRResolvableBean}.
@@ -248,7 +249,8 @@ public class ResolvableFileBean extends CRResolvableBean {
   }
 
   /**
-   * get object type. if file is a directory it returns "10002" else it returns
+   * get object type.
+   * @return if file is a directory it returns "10002" else it returns
    * "10008".
    */
   public String getObjType() {
@@ -257,6 +259,14 @@ public class ResolvableFileBean extends CRResolvableBean {
     } else {
       return FILEOBJTYPE;
     }
+  }
+
+  /**
+   * get unique id for file.
+   * @return md5sum for absolute path of file.
+   */
+  public String getContentid(){
+    return StringUtils.md5sum(file.getAbsolutePath());
   }
 
 }
