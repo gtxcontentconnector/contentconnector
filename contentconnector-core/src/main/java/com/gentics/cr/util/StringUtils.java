@@ -64,6 +64,9 @@ public final class StringUtils {
     StringBuffer hexCode = new StringBuffer(bytes.length * 2);
     for (byte b : bytes) {
       int i = (int) b;
+      if (i < 0) {
+        i += 256;
+      }
       int x = i % HEX_BASE;
       int y = (i - x) / HEX_BASE;
       hexCode.append(new char[]{hexCodes[y], hexCodes[x]});
