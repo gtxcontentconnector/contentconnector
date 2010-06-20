@@ -106,12 +106,14 @@ public class ResolvableFileBean extends CRResolvableBean {
     } else {
       if (!checkForUpdate() && children == null) {
         File[] fetchedChildren = file.listFiles();
+        if (fetchedChildren != null) {
         children = new ResolvableFileBean[fetchedChildren.length];
-        for (int i = 0; i < fetchedChildren.length; i++) {
-          ResolvableFileBean resolvableChild =
-            new ResolvableFileBean(fetchedChildren[i], this);
-          children[i] = resolvableChild;
-          registerDescendant(resolvableChild);
+          for (int i = 0; i < fetchedChildren.length; i++) {
+            ResolvableFileBean resolvableChild =
+              new ResolvableFileBean(fetchedChildren[i], this);
+            children[i] = resolvableChild;
+            registerDescendant(resolvableChild);
+          }
         }
       }
       return children;
@@ -123,7 +125,11 @@ public class ResolvableFileBean extends CRResolvableBean {
    * @return registered descendants
    */
   public final Collection<ResolvableFileBean> getRegisteredDescendants() {
-    return descendants;
+    if (descendants == null) {
+      return new Vector<ResolvableFileBean>(0);
+    } else { 
+      return descendants;
+    }
   }
 
   /**
@@ -166,11 +172,12 @@ public class ResolvableFileBean extends CRResolvableBean {
    * @return descendant that should be checked for an update.
    */
   protected final ResolvableFileBean getNextDescendantToCheck() {
-    if (descendantsToCheck == null || !descendantsToCheck.hasNext()) {
+    if ((descendantsToCheck == null || !descendantsToCheck.hasNext())
+        && descendants != null) {
       descendantsToCheck =
         new Vector<ResolvableFileBean>(descendants).iterator();
     }
-    if (descendantsToCheck.hasNext()) {
+    if (descendantsToCheck != null && descendantsToCheck.hasNext()) {
       return descendantsToCheck.next();
     }
     return null;

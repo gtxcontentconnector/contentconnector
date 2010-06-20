@@ -51,11 +51,15 @@ public class FileSystemCheckerJob extends Thread {
       ResolvableFileBean rootElement =
         fileSystemChecker.getNextElementToIndex();
         //Fill children of the root element if not already done.
-      rootElement.getChildren();
-      if (!stopped) {
-        ResolvableFileBean updateElement =
-          rootElement.getNextDescendantToCheck();
-        updateElement.getChildren();
+      if (rootElement != null) {
+        rootElement.getChildren();
+        if (!stopped) {
+          ResolvableFileBean updateElement =
+            rootElement.getNextDescendantToCheck();
+          if (updateElement != null) {
+            updateElement.getChildren();
+          }
+        }
       }
     }
   }
