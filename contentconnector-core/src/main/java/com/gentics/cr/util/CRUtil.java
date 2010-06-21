@@ -1,5 +1,6 @@
 package com.gentics.cr.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -153,6 +154,10 @@ public class CRUtil {
         // avoid NPE here
         if (string == null) {
             return null;
+        }
+        //init com.gentics.portalnode.confpath if it isn't set
+        if(System.getProperty("com.gentics.portalnode.confpath").equals("")){
+          System.setProperty("com.gentics.portalnode.confpath", System.getProperty("catalina.base")+File.separator+"conf"+File.separator+"gentics"+File.separator);
         }
         // create a matcher
         Matcher m = findSystemProperties.matcher(string);

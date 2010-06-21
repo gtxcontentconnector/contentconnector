@@ -48,9 +48,6 @@ public class EnvironmentConfiguration {
 	{
 		Properties logprops = new Properties();
 		try {
-			if(CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}").equals("")){
-				System.setProperty("com.gentics.portalnode.confpath", System.getProperty("catalina.base")+File.separator+"conf"+File.separator+"gentics"+File.separator);
-			}
 			String confpath = CRUtil.resolveSystemProperties(LOGGER_FILE_PATH);
 			//System.out.println("TRYING TO LOAD NODELOGPROPS FROM: "+confpath);
 			logprops.load(new FileInputStream(confpath));
