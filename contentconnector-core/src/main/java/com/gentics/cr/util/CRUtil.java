@@ -156,7 +156,7 @@ public class CRUtil {
             return null;
         }
         //init com.gentics.portalnode.confpath if it isn't set
-        if(System.getProperty("com.gentics.portalnode.confpath").equals("")){
+        if(System.getProperty("com.gentics.portalnode.confpath") == null || System.getProperty("com.gentics.portalnode.confpath").equals("")){
           System.setProperty("com.gentics.portalnode.confpath", System.getProperty("catalina.base")+File.separator+"conf"+File.separator+"gentics"+File.separator);
         }
         // create a matcher
