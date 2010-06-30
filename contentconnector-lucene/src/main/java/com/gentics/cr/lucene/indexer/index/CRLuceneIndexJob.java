@@ -411,42 +411,38 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
     try
     {
       CRRequest req = new CRRequest();
-      req.setAttributeArray(
-          (String[]) attributes.keySet().toArray(
-              new String[attributes.keySet().size()]));
-      rp.fillAttributes(slice, req,idAttribute);
+      String[] prefillAttributes = attributes.keySet().toArray(new String[0]);
+      req.setAttributeArray(prefillAttributes);
+      rp.fillAttributes(slice, req, idAttribute);
       
       for (Resolvable objectToIndex:slice) {
         
-        CRResolvableBean bean = new CRResolvableBean(objectToIndex);
+        CRResolvableBean bean =
+          new CRResolvableBean(objectToIndex, prefillAttributes);
         UseCase bcase = MonitorFactory.startUseCase("indexSlice.indexBean");
         try {
           //CALL PRE INDEX PROCESSORS/TRANSFORMERS
           //TODO This could be optimized for multicore servers with a map/reduce algorithm
-          if(transformerlist!=null)
-          {
-            for(ContentTransformer transformer:transformerlist)
-            {
+          if (transformerlist != null) {
+            for(ContentTransformer transformer : transformerlist) {
               try {
-                status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "+transformer.getTransformerKey()+"; BEAN: "+bean.get(idAttribute));
-                if(transformer.match(bean))
+                status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "
+                    + transformer.getTransformerKey() + "; BEAN: "
+                    + bean.get(idAttribute));
+                if(transformer.match(bean)) {
                   transformer.processBeanWithMonitoring(bean);
-              }
-              catch(Exception e)
-              {
+                }
+              } catch(Exception e) {
                 //TODO Remember broken files
-                log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "+bean.get(idAttribute));
-                e.printStackTrace();
+                log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "
+                    + bean.get(idAttribute), e);
               }
               
             }
           }
-          if(!create)
-          {
+          if(!create) {
             indexWriter.updateDocument(new Term(idAttribute, (String)bean.get(idAttribute)), getDocument(bean, attributes,config,reverseattributes));
-          }
-          else
-          {
+          } else {
             indexWriter.addDocument(getDocument(bean, attributes, config,reverseattributes));
           }
         }
