@@ -80,7 +80,8 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
     return null;
   }
 
-  public Enumeration getAttributeNames() {
+  @SuppressWarnings("unchecked")
+public Enumeration getAttributeNames() {
     // TODO Auto-generated method stub
     logger.error("Method getAttributeNames() is not yet implemented.");
     return null;
@@ -116,7 +117,8 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
     return null;
   }
 
-  public Enumeration getLocales() {
+  @SuppressWarnings("unchecked")
+public Enumeration getLocales() {
     // TODO Auto-generated method stub
     logger.error("Method getLocales() is not yet implemented.");
     return null;
@@ -137,13 +139,15 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
     return null;
   }
 
-  public Map getParameterMap() {
+  @SuppressWarnings("unchecked")
+public Map getParameterMap() {
     // TODO Auto-generated method stub
     logger.error("Method getParameterMap() is not yet implemented.");
     return null;
   }
 
-  public Enumeration getParameterNames() {
+  @SuppressWarnings("unchecked")
+public Enumeration getParameterNames() {
     // TODO Auto-generated method stub
     logger.error("Method getParameterNames() is not yet implemented.");
     return null;

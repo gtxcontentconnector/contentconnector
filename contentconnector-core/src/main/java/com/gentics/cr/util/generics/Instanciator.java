@@ -158,7 +158,8 @@ public final class Instanciator {
    * @param clazz {@link Class} to get the primitive type from.
    * @return primitive type of the class if the class has one.
    */
-  private static Class<?> getPrimitiveType(final Class<?> clazz) {
+@SuppressWarnings("unchecked")
+private static Class<?> getPrimitiveType(final Class<?> clazz) {
     try {
       Field primitiveType = clazz.getField("TYPE");
       if (primitiveType != null) {

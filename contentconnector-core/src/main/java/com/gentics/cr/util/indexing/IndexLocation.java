@@ -34,7 +34,7 @@ public abstract class IndexLocation {
   /**
    * default value for index location class.
    */
-  private static final String INDEX_LOCATION_CLASS_DEFAULT = "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
+  //private static final String INDEX_LOCATION_CLASS_DEFAULT = "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
   private static final String PERIODICAL_KEY = "PERIODICAL";
   private static Hashtable<String,IndexLocation> indexmap;
   private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
