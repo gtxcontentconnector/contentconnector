@@ -227,6 +227,10 @@ public class ResolvableFileBean extends CRResolvableBean {
       return getBinaryContent();
     } else if ("obj_type".equals(propertyName)) {
       return getObjType();
+    } else if("filename".equals(propertyName)) {
+      return getFileName();
+    } else if("pub_dir".equals(propertyName)) {
+      return getPubDir();
     }
     return super.get(propertyName);
   }
@@ -255,9 +259,33 @@ public class ResolvableFileBean extends CRResolvableBean {
   }
 
   /**
+   * get the name of the file
+   * @return name of the file as string, null in case the file is a directory.
+   */
+  public String getFileName() {
+    if (FILEOBJTYPE.equals(getObjType())) {
+      return file.getName();
+    } else {
+      return null;
+    }
+  }
+  
+  /**
+   * gets the directory name of the file
+   * @return absolute name of the directory of the file or the directory itself.
+   */
+  public String getPubDir() {
+    if(FILEOBJTYPE.equals(getObjType())) {
+      return file.getParentFile().getAbsolutePath();
+    } else {
+      return file.getAbsolutePath();
+    }
+  }
+  
+  /**
    * get object type.
-   * @return if file is a directory it returns "10002" else it returns
-   * "10008".
+   * @return if file is a directory it returns {@value #DIROBJTYPE} else it returns
+   * {@value #FILEOBJTYPE}.
    */
   public String getObjType() {
     if (file.isDirectory()) {
@@ -271,7 +299,7 @@ public class ResolvableFileBean extends CRResolvableBean {
    * get unique id for file.
    * @return md5sum for absolute path of file.
    */
-  public String getContentid(){
+  public String getContentid() {
     return StringUtils.md5sum(file.getAbsolutePath());
   }
 
