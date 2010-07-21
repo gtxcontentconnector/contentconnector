@@ -1,4 +1,7 @@
+
 package com.gentics.cr.portalnode.expressions;
+
+import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.exception.ParserException;
@@ -16,6 +19,11 @@ import com.gentics.api.lib.resolving.Resolvable;
  */
 public final class ExpressionParserHelper {
 
+  /**
+   * Log4j logger for error and debug messages
+   */
+  private static Logger logger = Logger.getLogger(ExpressionParserHelper.class);
+  
   /**
    * {@link ExpressionParser} instance from Gentics Portal.Node API.
    */
@@ -111,7 +119,13 @@ public final class ExpressionParserHelper {
    */
   public static DatasourceFilter createDatasourceFilter(final Expression expression,
       final Datasource ds) throws ExpressionParserException {
-    return ds.createDatasourceFilter(expression);
+    if (ds != null) {
+      return ds.createDatasourceFilter(expression);
+    } else {
+      logger.error("I can only generate a DatasourceFilter for a specific"
+          + "datasource. Not for null. (ds paramater was null)");
+      return null;
+    }
   }
 
 }
