@@ -59,10 +59,12 @@ public class CRDatabaseFactory {
         + "factory");
     return false;
   }
-  
+
   /**
-   * Destroys the Factory and releases all resources and stops threads if there are no more datasources that were not released
-   * @return true if there were no unreleased datasources and the factory was destroyed
+   * Destroys the Factory and releases all resources and stops threads if there
+   * are no more datasources that were not released.
+   * @return true if there were no unreleased datasources and the factory was
+   * destroyed
    */
   public static boolean destroy() {
     return getInstance().destroyFactory();
@@ -94,11 +96,10 @@ public class CRDatabaseFactory {
       if (ds != null) {
         getInstance().accquireDS();
       }
+    } else {
+      log.debug("No Datasource created for "
+          + requestProcessorConfig.getName());
     }
-    else
-    {
-      log.debug("No Datasource created for " + requestProcessorConfig.getName());
-    }
-    return(ds);
+    return ds;
   }
 }
