@@ -3,6 +3,19 @@
 	<name>contentconnector-servlet-sample</name>
 	<comment></comment>
 	<projects>
+		<project>contentconnector-servlet</project>
+		<project>contentconnector-social-networking</project>
+		<project>contentconnector-jtidy</project>
+		<project>contentconnector-lucene-autocomplete</project>
+		<project>contentconnector-poi-transformer</project>
+		<project>contentconnector-core</project>
+		<project>contentconnector-json</project>
+		<project>contentconnector-apihelper</project>
+		<project>contentconnector-portlet</project>
+		<project>contentconnector-language</project>
+		<project>contentconnector-rss</project>
+		<project>contentconnector-lucene</project>
+		<project>contentconnector-http</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
