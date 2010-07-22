@@ -143,11 +143,12 @@ public class CRRequestBuilder {
     this.query_not = requestWrapper.getParameter("q_not");
     this.query_group = requestWrapper.getParameter("q_group");
     this.wordmatch = requestWrapper.getParameter("wm");
-    String addPermissionsToRuleConfig =
-      config.getString(ADD_PERMISSIONS_TO_RULE_KEY);
-    if (addPermissionsToRuleConfig != null) {
-      this.addPermissionsToRule = Boolean.parseBoolean(
-          addPermissionsToRuleConfig);
+    if(config != null) {
+	    String addPermissionsToRuleConfig = config.getString(ADD_PERMISSIONS_TO_RULE_KEY);
+	    if (addPermissionsToRuleConfig != null) {
+	      this.addPermissionsToRule = Boolean.parseBoolean(
+	          addPermissionsToRuleConfig);
+	    }
     }
 
     //Parameters used in mnoGoSearch for easier migration (Users should use

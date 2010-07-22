@@ -7,6 +7,8 @@ import java.util.Iterator;
 import javax.portlet.PortletRequest;
 import javax.servlet.ServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.api.lib.exception.ParserException;
@@ -27,7 +29,7 @@ import com.gentics.cr.util.RequestWrapper;
  */
 public class CRRequest implements Cloneable, Serializable {
   private static final long serialVersionUID = 1L;
-
+  private static Logger log = Logger.getLogger(CRRequest.class);
   /**
    * key for storing the wordmatch parameter into.
    */
@@ -420,7 +422,7 @@ public class CRRequest implements Cloneable, Serializable {
     {
       filter=config.getApplicationRule();
     }
-    
+    log.debug("Using rule: "+filter);
     expression = PortalConnectorFactory.createExpression(filter);
     
     dsFilter = ds.createDatasourceFilter(expression);
