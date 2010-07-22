@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
@@ -25,8 +26,14 @@ import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
+import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.search.highlight.AdvancedContentHighlighter;
 import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -117,6 +124,10 @@ public class LuceneRequestProcessor extends RequestProcessor {
    */
   public Collection<CRResolvableBean> getObjects(CRRequest request,
       boolean doNavigation) throws CRException {
+    UseCase uc = MonitorFactory.startUseCase("LuceneRequestProcessor."
+        + "getObjects(" + name + ")");
+    UseCase ucPrepareSearch = MonitorFactory.startUseCase(
+        "LuceneRequestProcessor.getObjects(" + name + ")#prepareSearch");
     ArrayList<CRResolvableBean> result = new ArrayList<CRResolvableBean>();
     int count = request.getCount();
     int start = request.getStart();
@@ -142,6 +153,9 @@ public class LuceneRequestProcessor extends RequestProcessor {
     String scoreAttribute = (String) config.get(SCORE_ATTRIBUTE_KEY);
     //GET RESULT
     long s1 = System.currentTimeMillis();
+    ucPrepareSearch.stop();
+    UseCase ucSearch = MonitorFactory.startUseCase("LuceneRequestProcessor."
+        + "getObjects(" + name + ")#search");
     HashMap<String, Object> searchResult  = null;
     try {
       searchResult = this.searcher.search(request.getRequestFilter(),
@@ -151,9 +165,15 @@ public class LuceneRequestProcessor extends RequestProcessor {
       ex.printStackTrace();
       throw new CRException(ex);
     }
+    ucSearch.stop();
+    UseCase ucProcessSearch = MonitorFactory.startUseCase(
+        "LuceneRequestProcessor." + "getObjects(" + name + ")#processSearch");
     long e1 = System.currentTimeMillis();
     log.debug("Search in Index took " + (e1 - s1) + "ms");
     if (searchResult != null) {
+      UseCase ucProcessSearchMeta = MonitorFactory.startUseCase(
+          "LuceneRequestProcessor." + "getObjects(" + name + ")#processSearch"
+          + ".Metaresolvables");
       Query parsedQuery = (Query) searchResult.get("query");
 
       Object metaKey = request.get(META_RESOLVABLE_KEY);
@@ -165,6 +185,10 @@ public class LuceneRequestProcessor extends RequestProcessor {
         metaBean.set(META_QUERY_KEY, request.getRequestFilter());
         result.add(metaBean);
       }
+      ucProcessSearchMeta.stop();
+      UseCase ucProcessSearchResolvables = MonitorFactory.startUseCase(
+          "LuceneRequestProcessor." + "getObjects(" + name + ")#processSearch"
+          + ".Resolvables");
       LinkedHashMap<Document, Float> docs =
         objectToLinkedHashMapDocuments(searchResult.get("result"));
       //PARSE HIGHLIGHT QUERY
@@ -202,33 +226,62 @@ public class LuceneRequestProcessor extends RequestProcessor {
             crBean.set(scoreAttribute, score);
           }
           //IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
-          if(highlighters!=null)
-          {
+          if (highlighters != null) {
+            UseCase ucProcessSearchHighlight = MonitorFactory.startUseCase(
+                "LuceneRequestProcessor." + "getObjects(" + name
+                + ")#processSearch.Highlight");
             long s2 = System.currentTimeMillis();
-            for(Entry<String,ContentHighlighter> ch:highlighters.entrySet())
-            {
+            for (Entry<String, ContentHighlighter> ch
+                : highlighters.entrySet()) {
               ContentHighlighter h = ch.getValue();
               String att = ch.getKey();
               //IF crBean matches the highlighters rule => highlight
-              if(h.match(crBean))
-              { 
-                String ret = h.highlight((String)crBean.get(att), parsedQuery);
-                crBean.set(att,ret);
+              if (h.match(crBean)) {
+                String ret = null;
+                if (h instanceof AdvancedContentHighlighter) {
+                  AdvancedContentHighlighter advancedHighlighter =
+                    (AdvancedContentHighlighter) h;
+                  int documentId = Integer.parseInt(doc.get("id"));
+                  LuceneIndexLocation idsLocation =
+                    LuceneIndexLocation.getIndexLocation(this.config);
+                  IndexAccessor indexAccessor = idsLocation.getAccessor();
+                  IndexReader reader = null;
+                  try {
+                    reader = indexAccessor.getReader(false);
+                    ret = advancedHighlighter.highlight(parsedQuery, reader,
+                        documentId, att);
+                  } catch (IOException ioException) {
+                    log.error("Cannot get Index reader for "
+                        + "AdvancedContentHighlighter");
+                  } finally {
+                    indexAccessor.release(reader, false);
+                  }
+                } else {
+                  ret = h.highlight((String) crBean.get(att), parsedQuery);
+                }
+                if (ret != null && !"".equals(ret)) {
+                  crBean.set(att, ret);
+                }
               }
             }
             long e2 = System.currentTimeMillis();
-            log.debug("Highlighters took "+(e2-s2)+"ms");
+            log.debug("Highlighters took " + (e2 - s2) + "ms");
+            ucProcessSearchHighlight.stop();
           }
-          ext_log.debug("Found "+crBean.getContentid()+" with score "+score.toString());
+          ext_log.debug("Found " + crBean.getContentid() + " with score "
+              + score.toString());
           result.add(crBean);
         }
       }
+      ucProcessSearchResolvables.stop();
       /*if(doNavigation)
       {
         //NOT IMPLEMENTED YET, BUT WE DO GENERATE MORE EXPLANATION OUTPUT YET
         //log.error("LUCENEREQUESTPROCESSER CAN NOT YET RETURN A TREE STRUCTURE");
       }*/
     }
+    ucProcessSearch.stop();
+    uc.stop();
     return result;
   }
 

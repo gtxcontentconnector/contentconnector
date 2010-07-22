@@ -11,6 +11,7 @@ import java.util.Locale;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -176,6 +177,9 @@ public class CRSearcher {
         int num = Math.min(hits.length - start, count);
         for (int i = 0; i < num; i++) {
           Document doc = searcher.doc(hits[start + i].doc);
+          //add id field for AdvancedContentHighlighter
+          doc.add(new Field("id", hits[start + i].doc + "", Field.Store.YES,
+              Field.Index.NO));
           result.put(doc, hits[start + i].score);
           if (explain) {
             Explanation ex = searcher.explain(parsedQuery, hits[start + i].doc);
