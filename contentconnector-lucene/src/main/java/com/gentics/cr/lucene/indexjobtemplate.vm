@@ -1,0 +1,133 @@
+<html>
+	<head>
+		<title>IndexerServlet for Lucene by Gentics</title>
+		<meta http-equiv="refresh" content="5; URL=?action=show$nc" />
+		<style>
+			body { font-family: verdana,geneva,arial,helvetica,sans-serif; font-size: 11px; }
+			h2 { background-color:#C6E7FF; border-color:#576C7F; border-style:solid; border-width:0 0 2px; font-size:16px; padding:2px; }
+			table { border: 1px solid #c0c0c0; width: 500px; margin-bottom: 10px; }
+			table th { text-align: left; font-weight: normal; background: #D8D8DA; font-size: 13px; }
+			table td { font-size: 12px; }
+			table tr.even { background: #EDF5FF; }
+			table tr.odd { }
+			table td.key { width: 70% }
+			table td.value { width: 30%; }
+			.center { text-align: center; }
+		</style>
+	</head>
+	<body>
+		<h1>Lucene Indexes</h1>
+	
+		#foreach($e in $indexes)
+			<h2>Index <em>$e.getKey()</em></h2>
+			#set($loc = $e.getValue())
+			#set($queue = $loc.getQueue())
+			#set($map = $loc.getCRMap())
+			
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Index and Queue</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="even">
+						<td class="key">Objects in index</td>
+						<td class="value center">$loc.getDocCount()</td>
+					</tr>
+					<tr class="odd">
+						<td class="key">Periodical indexing</td>
+						<td class="value center">
+							#if($loc.isPeriodical()) yes #else no #end
+						</td>
+					</tr>
+					<tr class="even">
+						<td class="key">Current checkinterval</td>
+						<td class="value center">$queue.getInterval() s</td>
+					</tr>
+					<tr class="odd">
+						<td class="key">Elements in queue</td>
+						<td class="value center">$queue.getSize()</td>
+					</tr>
+					<tr class="even">
+						#if($queue.isRunning())
+							<td class="key">Worker is processing</td>
+							<td class="value center"><a href="?action=stopWorker&idx=$e.getKey()$nc">stop</a></td>
+						#else
+							<td class="key">Worker not running</td>
+							<td class="value center"><a href="?action=startWorker&idx=$e.getKey()$nc">start</a></td>
+						#end
+					</tr>
+				</tbody>
+			</table>
+
+			#set($lastJobs = $queue.getLastJobs())
+			#if($lastJobs)
+			<table>
+				<thead>
+					<tr>
+						<th>Last 3 Jobs</th>
+						<th class="center">Duration</th>
+						<th class="center">Objects done</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach($lj in $lastJobs)
+					<tr>
+						<td><em>$lj.getIdentifyer()</em></td>
+						<td class="center">$lj.getDuration() ms</td>
+						<td class="center">$lj.getObjectsDone()</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+			#end
+
+			#set($j = $queue.getCurrentJob())
+			#if ($j)
+				<table>
+					<thead>
+						<tr>
+							<th colspan="2">Current Job <em>$j.getIdentifyer()</em></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="even">
+							<td class="key">Status</td>
+							<td class="value center">$j.getStatusString()</td>
+						</tr>
+						<tr class="odd">
+							<td class="key">Objects to index</td>
+							<td class="value center">$j.getObjectsToIndex()</td>
+						</tr>
+						<tr class="even">
+							<td class="key">Objects done</td>
+							<td class="value center">$j.getObjectsDone()</td>
+						</tr>
+					</tbody>
+				</table>
+			#end
+
+			<table>
+				<thead>
+					<tr>
+						<th colspan="2">Indexpart Operations </th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach($crc in $map.entrySet())
+					<tr>
+						<td class="key"><em>$crc.getKey()</em></td>
+						<td class="value center"><a href="?action=addJob&idx=$e.getKey()&cr=$crc.getKey()$nc">add job</a></td>
+					</tr>
+					#end
+					<tr>
+						<td class="key">All Parts</td>
+						<td class="value center"><a href="?action=addJob&idx=$e.getKey()&cr=all$nc">add job</a></td>
+					</tr>
+				</tbody>
+			</table>
+		#end
+		<a href="?action=show$nc">Refresh</a><br/>
+	</body>
+</html>
