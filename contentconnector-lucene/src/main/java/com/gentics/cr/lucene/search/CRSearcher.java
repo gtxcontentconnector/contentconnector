@@ -1,8 +1,6 @@
 package com.gentics.cr.lucene.search;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -71,7 +69,8 @@ public class CRSearcher {
    * @return
    * @throws IOException 
    */
-  private TopDocsCollector<?> createCollector(final Searcher searcher,
+  @SuppressWarnings("unchecked")
+private TopDocsCollector<?> createCollector(final Searcher searcher,
       final int hits, final String[] sorting, final boolean computescores,
       final String[] userPermissions) throws IOException {
     TopDocsCollector<?> coll = null;
@@ -169,7 +168,7 @@ public class CRSearcher {
 
       searcher.search(parsedQuery, collector);
       ScoreDoc[] hits = collector.topDocs().scoreDocs;
-
+      
       LinkedHashMap<Document, Float> result =
         new LinkedHashMap<Document, Float>(hits.length);
 
