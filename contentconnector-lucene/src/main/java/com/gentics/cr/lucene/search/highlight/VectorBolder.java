@@ -1,17 +1,11 @@
 package com.gentics.cr.lucene.search.highlight;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Formatter;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
-import org.apache.lucene.search.highlight.QueryScorer;
-import org.apache.lucene.search.highlight.TextFragment;
 import org.apache.lucene.search.highlight.TokenGroup;
 import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
 import org.apache.lucene.search.vectorhighlight.FieldQuery;

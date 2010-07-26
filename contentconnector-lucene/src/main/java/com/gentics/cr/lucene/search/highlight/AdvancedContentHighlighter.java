@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.search.highlight;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.search.highlight.TokenGroup;
 
 import com.gentics.cr.configuration.GenericConfiguration;
