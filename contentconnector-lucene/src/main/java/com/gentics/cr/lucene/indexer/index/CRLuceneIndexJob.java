@@ -1,6 +1,5 @@
 package com.gentics.cr.lucene.indexer.index;
 
-import java.awt.Stroke;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,7 +37,6 @@ import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
-import com.gentics.portalnode.genericmodules.object.actions.StoreFileAction;
 /**
  * CRLuceneIndexJob handles the indexing of a Gentics ContentRepository into
  * Lucene.
