@@ -45,8 +45,6 @@ public class IndexJobServlet extends HttpServlet {
     this.log = Logger.getLogger("com.gentics.cr.lucene");
     this.indexer = new IndexController(config.getServletName());
 
-    
-    
     this.crConf = new CRConfigUtil();
     this.vtl = crConf.getTemplateManager();
     
@@ -91,83 +89,67 @@ public class IndexJobServlet extends HttpServlet {
       response.setContentType("text/plain");
       Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
       for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
-        if(e.getKey().equalsIgnoreCase(index))
-        {
+        if (e.getKey().equalsIgnoreCase(index)) {
           IndexLocation loc = e.getValue();
           IndexJobQueue queue = loc.getQueue();
-          if(queue!=null && queue.isRunning())
-          {
+          if (queue != null && queue.isRunning()) {
             response.getWriter().write("WorkerThread:OK\n");
-          }
-          else
-          {
+          } else {
             response.getWriter().write("WorkerThread:NOK\n");
           }
-          response.getWriter().write("ObjectsInIndex:"+loc.getDocCount()+"\n");
+          response.getWriter().write("ObjectsInIndex:" + loc.getDocCount()
+              + "\n");
           AbstractUpdateCheckerJob j = queue.getCurrentJob();
-          if(j!=null)
-          {
-            response.getWriter().write("CurrentJobObjectsToIndex:"+j.getObjectsToIndex()+"\n");
+          if (j != null) {
+            response.getWriter().write("CurrentJobObjectsToIndex:"
+                + j.getObjectsToIndex() + "\n");
           }
         }
       }
     } else {
-      String nc = "&t="+System.currentTimeMillis();
-
+      String nc = "&t=" + System.currentTimeMillis();
+      String selectedIndex = request.getParameter("index");
       response.setContentType("text/html");
-      
-      Hashtable<String,IndexLocation> indexTable = indexer.getIndexes();
-      
+      Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
       this.vtl.put("indexes", indexTable.entrySet());
       this.vtl.put("nc", nc);
-      
-      for (Entry<String,IndexLocation> e:indexTable.entrySet()) {
-        
-    	IndexLocation loc = e.getValue();
+      this.vtl.put("selectedIndex", selectedIndex);
+      for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
+      IndexLocation loc = e.getValue();
         IndexJobQueue queue = loc.getQueue();
-        
-        Hashtable<String,CRConfigUtil> map = loc.getCRMap();
-        
-        if(e.getKey().equalsIgnoreCase(index))
-        {
-          if("stopWorker".equalsIgnoreCase(action))
+        Hashtable<String, CRConfigUtil> map = loc.getCRMap();
+        if (e.getKey().equalsIgnoreCase(index)) {
+          if ("stopWorker".equalsIgnoreCase(action)) {
             queue.stopWorker();
-          if("startWorker".equalsIgnoreCase(action))
+          }
+          if ("startWorker".equalsIgnoreCase(action)) {
             queue.startWorker();
-          if("addJob".equalsIgnoreCase(action))
-          {
+          }
+          if ("addJob".equalsIgnoreCase(action)) {
             String cr = request.getParameter("cr");
-            if("all".equalsIgnoreCase(cr))
+            if ("all".equalsIgnoreCase(cr)) {
               loc.createAllCRIndexJobs();
-            else
-            {
-              if(cr!=null)
-              {
-                CRConfigUtil crc=map.get(cr);
-                loc.createCRIndexJob(crc,map);
+            } else {
+              if (cr != null) {
+                CRConfigUtil crc = map.get(cr);
+                loc.createCRIndexJob(crc, map);
               }
             }
           }
         }
       }
     }
-    
-	try
-	{
-		String output = this.vtl.render(this.tpl.getKey(), this.tpl.getSource());
-		response.getWriter().write(output);
-	}
-	catch(Exception ex)
-	{
-		ex.printStackTrace();
-	}
-    
+  try {
+    String output = this.vtl.render(this.tpl.getKey(), this.tpl.getSource());
+    response.getWriter().write(output);
+  } catch (Exception ex) {
+   log.error("Error rendering template for IndexerJobServlet.", ex);
+  }
     response.getWriter().flush();
     response.getWriter().close();
     // endtime
     long e = new Date().getTime();
     this.log.info("Executiontime for getting Status " + (e - s));
-
   }
 
   public void doGet(final HttpServletRequest request,
