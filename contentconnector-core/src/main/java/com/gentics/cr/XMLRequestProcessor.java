@@ -40,8 +40,7 @@ public class XMLRequestProcessor extends RequestProcessor{
 		try {
 			cache = JCS.getInstance("gentics-cr-" + config.getName()+ "-content");
 		} catch (CacheException e) {
-			log.error("Cannot instanciate cache region.");
-			e.printStackTrace();
+			log.error("Cannot instanciate cache region.", e);
 		}
 	}
 

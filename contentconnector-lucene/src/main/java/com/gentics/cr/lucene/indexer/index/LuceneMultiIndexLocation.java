@@ -166,16 +166,13 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 						found=true;
 					}
 				}
-				if(found)
-				{
+				if (found) {
 					indexAccessor.reopen();
 					reopened = true;
 					log.debug("Reopened index.");
 				}
-			}catch(Exception ex)
-			{
-				log.error(ex.getMessage());
-				ex.printStackTrace();
+			} catch (Exception ex) {
+				log.error(ex.getMessage(), ex);
 			}
 		}
 		return reopened;

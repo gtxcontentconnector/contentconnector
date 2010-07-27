@@ -411,7 +411,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
         e.printStackTrace();
       }
     }
-    return(value);
+    return value;
   }
 
   /**
@@ -438,7 +438,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
     if (buf!=null) {
       os = new ByteArrayInputStream(getBinaryContent());
     }
-    return(os);
+    return os;
   }
 
   /**

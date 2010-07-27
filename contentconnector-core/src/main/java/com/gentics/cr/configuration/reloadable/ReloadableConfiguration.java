@@ -102,12 +102,9 @@ public abstract class ReloadableConfiguration{
 	 * This Method should be called right before the application stops.
 	 * It will stop the reload checker Thread.
 	 */
-	public void destroy()
-	{
-		if(this.reloadChecker!=null && this.reloadChecker.isAlive())
-		{
-			if(!this.reloadChecker.isInterrupted()) 
-			{
+	public void destroy() {
+		if (this.reloadChecker != null && this.reloadChecker.isAlive()) {
+			if (!this.reloadChecker.isInterrupted()) {
 				this.reloadChecker.interrupt();
 			}
 			try {

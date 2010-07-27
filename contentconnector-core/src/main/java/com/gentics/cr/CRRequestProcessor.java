@@ -87,18 +87,16 @@ public class CRRequestProcessor extends RequestProcessor {
                 fltr+="AND ("+request.getChildFilter()+")";
               //If object is a folder => retrieve the childs of the object
               CRRequest childReq = request.Clone();
-              
               childReq.setRequestFilter(fltr);
               crBean.fillChildRepository(this.getNavigation(childReq));
             }
-            
-            collection.add(this.replacePlinks(crBean,request));
+            collection.add(this.replacePlinks(crBean, request));
           }
         }
 
       } catch (ParserException e) {
         e.printStackTrace();
-        throw new CRException("ParserException",e.getMessage());
+        throw new CRException("ParserException", e.getMessage());
       } catch (ExpressionParserException e) {
         e.printStackTrace();
         throw new CRException("ExpressionParserException", e.getMessage());

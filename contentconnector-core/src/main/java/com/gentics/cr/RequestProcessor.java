@@ -342,8 +342,7 @@ public abstract class RequestProcessor {
 	
 					} catch (CacheException e) {
 						log.warn("Could not add crBean object "
-								+ crBean.getContentid() + " to cache");
-						e.printStackTrace();
+								+ crBean.getContentid() + " to cache", e);
 						throw new CRException(e);
 					}
 				}

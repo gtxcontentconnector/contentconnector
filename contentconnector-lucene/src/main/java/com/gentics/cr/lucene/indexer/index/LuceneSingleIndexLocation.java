@@ -176,10 +176,8 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 					reopened = true;
 					log.debug("Reopened index.");
 				}
-			}catch(Exception ex)
-			{
-				log.error(ex.getMessage());
-				ex.printStackTrace();
+			} catch (Exception ex) {
+				log.error(ex.getMessage(), ex);
 			}
 		}
 		return reopened;

@@ -43,20 +43,16 @@ public class EnvironmentConfiguration {
 	/**
 	 * Load Property file for Log4J
 	 */
-	public static void loadLoggerPropperties()
-	{
+	public static void loadLoggerPropperties() {
 		Properties logprops = new Properties();
 		try {
 			String confpath = CRUtil.resolveSystemProperties(LOGGER_FILE_PATH);
-			//System.out.println("TRYING TO LOAD NODELOGPROPS FROM: "+confpath);
 			logprops.load(new FileInputStream(confpath));
 			PropertyConfigurator.configure(logprops);
 		} catch (IOException e) {
 			log.error("Could not find nodelog.properties.");
-			//e.printStackTrace();
 		}catch (NullPointerException e) {
 			log.error("Could not find nodelog.properties.");
-			//e.printStackTrace();
 		}
 	}
 	

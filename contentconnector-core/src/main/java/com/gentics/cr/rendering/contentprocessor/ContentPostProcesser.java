@@ -102,8 +102,7 @@ public abstract class ContentPostProcesser {
 					}
 					catch(Exception ex)
 					{
-						logger.error("Invalid configuration found. Could not initiate the defined ContentPostProcessor Object ["+filterchainClass+"]");
-						ex.printStackTrace();
+						logger.error("Invalid configuration found. Could not initiate the defined ContentPostProcessor Object ["+filterchainClass+"]", ex);
 					}
 					
 				}

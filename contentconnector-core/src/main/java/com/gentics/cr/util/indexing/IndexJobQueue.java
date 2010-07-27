@@ -122,7 +122,6 @@ public class IndexJobQueue{
 					interrupted = true;
 			} catch (InterruptedException e) {
 				interrupted = true;
-				//e.printStackTrace();
 			}
 		}
 		this.stop=true;

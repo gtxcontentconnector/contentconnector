@@ -205,49 +205,44 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
         boolean create = true;
 
-        if(indexLocation.isContainingIndex())
-        {
-          create=false;
+        if (indexLocation.isContainingIndex()) {
+          create = false;
           log.debug("Index already exists.");
         }
-        
-        if(indexLocation instanceof LuceneIndexLocation){
+        if (indexLocation instanceof LuceneIndexLocation) {
           luceneIndexUpdateChecker = new LuceneIndexUpdateChecker((LuceneIndexLocation) indexLocation,CR_FIELD_KEY,crid,idAttribute);
-        }
-        else{
+        } else {
           log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Job by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
           throw new CRException(new CRError("Error","IndexLocation is not created for Lucene."));
         }
-        
-        Collection<CRResolvableBean> objectsToIndex=null;
+        Collection<CRResolvableBean> objectsToIndex = null;
         //Clear Index and remove stale Documents
-        if(!create)
-        {
+        if (!create) {
           log.debug("Will do differential index.");
           try {
             CRRequest req = new CRRequest();
             req.setRequestFilter(rule);
             req.set(CR_FIELD_KEY, crid);
-            status.setCurrentStatusString("Cleaning index from stale objects...");
-            objectsToIndex = getObjectsToUpdate(req,rp,false,luceneIndexUpdateChecker);
+            status
+              .setCurrentStatusString("Get objects to update in the index ...");
+            objectsToIndex = getObjectsToUpdate(req, rp, false,
+                luceneIndexUpdateChecker);
           } catch (Exception e) {
-            log.error("ERROR while cleaning index");
-            e.printStackTrace();
+            log.error("ERROR while cleaning index", e);
           }
-          
         }
-              
         //Obtain accessor and writer after clean
-        if(indexLocation instanceof LuceneIndexLocation){
-          indexAccessor = ((LuceneIndexLocation)indexLocation).getAccessor();
+        if (indexLocation instanceof LuceneIndexLocation) {
+          indexAccessor = ((LuceneIndexLocation) indexLocation).getAccessor();
           indexWriter = indexAccessor.getWriter();
+        } else {
+          log.error("IndexLocation is not created for Lucene. Using the "
+              + CRLuceneIndexJob.class.getName() + " requires that you use the "
+              + LuceneIndexLocation.class.getName()
+              + ". You can configure another Job by setting the "
+              + IndexLocation.UPDATEJOBCLASS_KEY + " key in your config.");
         }
-        else{
-          log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Job by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
-        }
-        log.debug("Using rule: "+rule);
-        
-        
+        log.debug("Using rule: " + rule);
         // prepare the map of indexed/stored attributes
         Map<String,Boolean> attributes = new HashMap<String,Boolean>();
         List<String> containedAttributes = IndexerUtil.getListFromString((String)config.get(CONTAINED_ATTRIBUTES_KEY), ",");
@@ -378,14 +373,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
       log.debug("LOCKED INDEX DETECTED. TRYING AGAIN IN NEXT JOB.");
       if(this.indexLocation!=null && !this.indexLocation.hasLockDetection())
       {
-        log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. TRYING TO REMOVE THE LOCK");
-        ex.printStackTrace();
+        log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. TRYING TO REMOVE THE LOCK", ex);
         ((LuceneIndexLocation)this.indexLocation).forceRemoveLock();
       }
     }
     catch(Exception ex)
     {
-      log.debug("ERROR WHILE CHECKING LOCK",ex);
+      log.debug("ERROR WHILE CHECKING LOCK", ex);
     }
   }
 

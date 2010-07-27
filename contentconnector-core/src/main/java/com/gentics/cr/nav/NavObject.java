@@ -125,16 +125,15 @@ public class NavObject{
 		if(this.path==null)this.path = new Vector<String>();
 		Vector<String> p = (Vector<String>) this.path.clone();
 		p.add(this.bean.getContentid());
-		for(CRResolvableBean child:this.bean.getChildRepository())
-		{
+		for (CRResolvableBean child:this.bean.getChildRepository()) {
 			NavObject no = new NavObject(conf, child, level+1, p,this.template, objects);
 			try {
-				ret+=no.render();
+				ret += no.render();
 			} catch (CRException e) {
 				e.printStackTrace();
 			}
 		}
-		return(ret);
+		return (ret);
 	}
 	
 	/**

@@ -64,8 +64,7 @@ public class VelocityTemplateManagerFactory {
 
 		} catch (CacheException e) {
 
-			log.warn("Could not initialize Cache for Velocity templates.");
-			e.printStackTrace();
+			log.warn("Could not initialize Cache for Velocity templates.", e);
 		}
 		
 		
@@ -84,18 +83,14 @@ public class VelocityTemplateManagerFactory {
 			try {
 				template = Velocity.getTemplate(name);
 			} catch (ResourceNotFoundException e1) {
-				log.warn("Could not create Velocity Template.");
-				e1.printStackTrace();
+				log.warn("Could not create Velocity Template.", e1);
 			} catch (ParseErrorException e1) {
-				log.warn("Could not create Velocity Template.");
-				e1.printStackTrace();
+				log.warn("Could not create Velocity Template.", e1);
 			} catch (Exception e1) {
-				log.warn("Could not create Velocity Template.");
-				e1.printStackTrace();
+				log.warn("Could not create Velocity Template.", e1);
 			}
 			rep.removeStringResource(name);
-			if(cache!=null)
-			{
+			if (cache != null) {
 				try {
 					cache.put(name+source, template);
 				} catch (CacheException e) {

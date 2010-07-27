@@ -80,8 +80,7 @@ public class JavaBinContentRepository extends ContentRepository {
 			oos.flush();
 			oos.close();
 		} catch (IOException e) {
-			JavaBinContentRepository.log.error("Unable to serialize object: "+o.getClass().getName());
-			e.printStackTrace();
+			JavaBinContentRepository.log.error("Unable to serialize object: "+o.getClass().getName(), e);
 		}
 	}
 	

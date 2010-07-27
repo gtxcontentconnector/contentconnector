@@ -258,8 +258,7 @@ public abstract class ContentRepository implements Serializable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				log.error("Cannot find Class for filer: " + filterClassName);
-				e.printStackTrace();
+				log.error("Cannot find Class for filer: " + filterClassName, e);
 			}
 		}
 		return false;

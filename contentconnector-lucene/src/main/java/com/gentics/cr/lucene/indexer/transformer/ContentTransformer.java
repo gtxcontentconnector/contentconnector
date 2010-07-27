@@ -54,8 +54,7 @@ public abstract class ContentTransformer {
 		try {
 			expr = ExpressionParser.getInstance().parse(rule);
 		} catch (ParserException e) {
-			log.error("Could not generate valid Expression from configured Rule: "+rule);
-			e.printStackTrace();
+			log.error("Could not generate valid Expression from configured Rule: "+rule, e);
 		}
 	}
 	
@@ -100,8 +99,7 @@ public abstract class ContentTransformer {
 			try {
 				return(evaluator.match(expr, object));
 			}catch (ExpressionParserException e) {
-				log.error("Could not evaluate Expression with gived object and rule: "+rule);
-				e.printStackTrace();
+				log.error("Could not evaluate Expression with gived object and rule: "+rule, e);
 			}
 		}
 		return(false);

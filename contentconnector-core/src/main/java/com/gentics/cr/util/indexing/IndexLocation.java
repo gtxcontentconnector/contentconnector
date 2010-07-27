@@ -402,31 +402,33 @@ public abstract class IndexLocation {
 
       for (Entry<String,GenericConfiguration> e:configs.entrySet()) {
         try {
-          map.put(crconfig.getName()+"."+e.getKey(), new CRConfigUtil(e.getValue(),crconfig.getName()+"."+e.getKey()));
-        } catch (Exception ex){
-          String name="<no config name>";
-          String key ="<no key>";
+          map.put(crconfig.getName() + "." + e.getKey(),
+              new CRConfigUtil(e.getValue(), crconfig.getName() + "."
+                  + e.getKey()));
+        } catch (Exception ex) {
+          String name = "<no config name>";
+          String key  = "<no key>";
           CRException cex = new CRException(ex);
-          if(e!=null && e.getKey()!=null)key=e.getKey();
-          if(crconfig!=null && crconfig.getName()!=null)name=crconfig.getName();
-          log.error("Error while creating cr map for "+name+"."+key+"  - "+cex.getMessage()+" - "+cex.getStringStackTrace());
-          cex.printStackTrace();
+          if (e != null && e.getKey() != null) {
+            key = e.getKey();
+          }
+          if (crconfig != null && crconfig.getName() != null) {
+            name = crconfig.getName();
+          }
+          log.error("Error while creating cr map for " + name + "." + key +
+              " - " + cex.getMessage(), cex);
         }
       }
-    }
-    else
-    {
+    } else {
       log.error("THERE ARE NO CRs CONFIGURED FOR INDEXING.");
     }
     return map;
   }
-  
   /**
    * Returns the IndexJobQueue
    * @return
    */
-  public IndexJobQueue getQueue()
-  {
+  public IndexJobQueue getQueue() {
     return this.queue;
   }
   
