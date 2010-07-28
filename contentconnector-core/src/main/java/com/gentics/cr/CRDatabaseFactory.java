@@ -32,8 +32,9 @@ public class CRDatabaseFactory {
    * @param ds
    */
   public static void releaseDatasource(Datasource ds) {
-    log.debug("Release Datasource " + ds.toString().replaceAll("([&?])password=[^&?]*", "$1password=*****"));
+    
     if (ds != null) {
+      log.debug("Release Datasource " + ds.toString().replaceAll("([&?])password=[^&?]*", "$1password=*****"));
       getInstance().releaseDS();
       ds = null;
     }
