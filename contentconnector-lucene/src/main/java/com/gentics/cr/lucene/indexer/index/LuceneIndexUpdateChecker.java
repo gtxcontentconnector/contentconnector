@@ -15,7 +15,6 @@ import org.apache.lucene.store.Directory;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
-import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
 /**
@@ -35,7 +34,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	LinkedHashMap<String,Integer> docs;
 	Iterator<String> docIT;
 	Vector<String> checkedDocuments;
-	Logger log = Logger.getLogger(LuceneIndexUpdateChecker.class);
+	private static final Logger log = Logger.getLogger(LuceneIndexUpdateChecker.class);
 	/**
 	 * Initializes the Lucene Implementation of {@link IndexUpdateChecker}.
 	 * @param indexLocation
@@ -64,7 +63,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	}
 	
 	@Override
-	protected boolean checkUpToDate(String identifyer, int timestamp, Resolvable object) {
+	protected boolean checkUpToDate(String identifyer, Object timestamp, String timestampattribute, Resolvable object) {
 		boolean readerWithWritePermissions = false;
 		if (docs.containsKey(identifyer)) {
 			Integer documentId = docs.get(identifyer);
@@ -72,12 +71,18 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 				IndexReader reader = indexAccessor.getReader(readerWithWritePermissions);
 				Document document = reader.document(documentId);
 				checkedDocuments.add(identifyer);
-				int documentUpdateTimestamp = -1;
+				Object documentUpdateTimestamp = new String("-1");
 				try {
-					documentUpdateTimestamp = Integer.parseInt(document.get(AbstractUpdateCheckerJob.TIMESTAMP_ATTR));
+					documentUpdateTimestamp = document.get(timestampattribute);
 				} catch (NumberFormatException e) { }
 				indexAccessor.release(reader, readerWithWritePermissions);
-				if(documentUpdateTimestamp == -1 || timestamp == -1 || documentUpdateTimestamp < timestamp){
+				//Use strings to compare the attributes
+				if(!(documentUpdateTimestamp instanceof String))
+					documentUpdateTimestamp = documentUpdateTimestamp.toString();
+				if(!(timestamp instanceof String))
+					timestamp = timestamp.toString();
+				
+				if(documentUpdateTimestamp==null || documentUpdateTimestamp.equals("-1") || timestamp == null || !documentUpdateTimestamp.equals(timestamp)){
 					return false;
 				}
 				return true;
