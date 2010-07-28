@@ -433,7 +433,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
             }
           }
           if(!create) {
-            indexWriter.updateDocument(new Term(idAttribute, (String)bean.get(idAttribute)), getDocument(bean, attributes,config,reverseattributes));
+            indexWriter.updateDocument(new Term(idAttribute, bean.get(idAttribute).toString()), getDocument(bean, attributes,config,reverseattributes));
           } else {
             indexWriter.addDocument(getDocument(bean, attributes, config,reverseattributes));
           }
@@ -485,7 +485,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
       Object value = resolvable.getProperty(attributeName);
 
       if (idAttribute.equalsIgnoreCase(attributeName)) {
-        doc.add(new Field(idAttribute, (String) value, Field.Store.YES,
+        doc.add(new Field(idAttribute, value.toString(), Field.Store.YES,
             Field.Index.NOT_ANALYZED));
       } else if (value != null) {
         Store storeFieldStore;
