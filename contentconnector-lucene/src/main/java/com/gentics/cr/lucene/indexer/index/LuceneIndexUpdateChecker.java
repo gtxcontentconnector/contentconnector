@@ -66,6 +66,9 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	protected boolean checkUpToDate(String identifyer, Object timestamp, String timestampattribute, Resolvable object) {
 		boolean readerWithWritePermissions = false;
 		if (docs.containsKey(identifyer)) {
+			
+			
+			
 			Integer documentId = docs.get(identifyer);
 			try {
 				IndexReader reader = indexAccessor.getReader(readerWithWritePermissions);
@@ -77,12 +80,11 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 				} catch (NumberFormatException e) { }
 				indexAccessor.release(reader, readerWithWritePermissions);
 				//Use strings to compare the attributes
-				if(!(documentUpdateTimestamp instanceof String))
+				if(documentUpdateTimestamp!=null && !(documentUpdateTimestamp instanceof String))
 					documentUpdateTimestamp = documentUpdateTimestamp.toString();
-				if(!(timestamp instanceof String))
+				if(timestamp != null && !(timestamp instanceof String))
 					timestamp = timestamp.toString();
-				
-				if(documentUpdateTimestamp==null || documentUpdateTimestamp.equals("-1") || timestamp == null || !documentUpdateTimestamp.equals(timestamp)){
+				if("".equals(timestampattribute) || documentUpdateTimestamp==null || documentUpdateTimestamp.equals("-1") || timestamp == null || !documentUpdateTimestamp.equals(timestamp)){
 					return false;
 				}
 				return true;

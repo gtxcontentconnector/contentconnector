@@ -144,6 +144,19 @@ public abstract class LuceneIndexLocation extends
 		log.debug("Creating RAM Directory for Index [" + name + "]");
 		return (dir);
 	}
+	
+	
+	/**
+	 * request the first directory from the location
+	 * @return
+	 */
+	public Directory getFirstDirectory()
+	{
+		Directory[] dirs = this.getDirectories();
+		if(dirs!=null && dirs.length>0)
+			return dirs[0];
+		return null;
+	}
 
 	protected Directory createFSDirectory(File indexLoc) throws IOException {
 		if (!indexLoc.exists()) {

@@ -3,13 +3,16 @@ package com.gentics.cr.lucene.search;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -24,6 +27,7 @@ import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.cr.lucene.didyoumean.DidYouMeanProvider;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
@@ -46,9 +50,18 @@ public class CRSearcher {
   protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
   private static final String COLLECTOR_CLASS_KEY = "collectorClass";
   private static final String COLLECTOR_CONFIG_KEY = "collector";
+  
+  private static final String DIDYOUMEAN_ENABLED_KEY="didyoumean";
+  private static final String DIDYOUMEAN_SUGGEST_COUNT_KEY="didyoumeansuggestions";
+  private static final String DIDYOUMEAN_MIN_SCORE="didyoumeanminscore";
 
   protected CRConfig config;
   private boolean computescores = true;
+  private boolean didyoumeanenabled=false;
+  private int didyoumeansuggestcount = 1;
+  private float didyoumeanminscore = 0.5f;
+  
+  private DidYouMeanProvider didyoumeanprovider = null;
   
   /**
    * Create new instance of CRSearcher
@@ -59,6 +72,30 @@ public class CRSearcher {
     String s_cs = config.getString(COMPUTE_SCORES_KEY);
     if(s_cs!=null && !"".equals(s_cs)) {
       computescores = Boolean.parseBoolean(s_cs);
+    }
+    
+    String s_didyoumeanenabled = config.getString(DIDYOUMEAN_ENABLED_KEY);
+    if(s_didyoumeanenabled!=null && !"".equals(s_didyoumeanenabled))
+    {
+    	didyoumeanenabled = Boolean.parseBoolean(s_didyoumeanenabled);
+    }
+    
+    String s_suggestcount = config.getString(DIDYOUMEAN_SUGGEST_COUNT_KEY);
+    if(s_suggestcount!=null && !"".equals(s_suggestcount))
+    {
+    	didyoumeansuggestcount = Integer.parseInt(s_suggestcount);
+    }
+    
+    String s_minscore = config.getString(DIDYOUMEAN_MIN_SCORE);
+    if(s_minscore!=null && !"".equals(s_minscore))
+    {
+    	didyoumeanminscore = Float.parseFloat(s_minscore);
+    }
+    
+    //if configured => initialize DIDYOUMEAN Provider
+    if(didyoumeanenabled)
+    {
+    	this.didyoumeanprovider = new DidYouMeanProvider(config);
     }
   }
 
@@ -266,6 +303,11 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
           runSearch(collector, searcher, parsedQuery, explain, count, start);
         result.put("result", coll);
         result.put("hits", collector.getTotalHits());
+        //PLUG IN DIDYOUMEAN
+        Set<Term> termset = new HashSet<Term>();
+        parsedQuery.extractTerms(termset);
+        
+        //PLUG IN DIDYOUMEAN END
         int size = 0;
         if (coll != null) {
           size = coll.size();

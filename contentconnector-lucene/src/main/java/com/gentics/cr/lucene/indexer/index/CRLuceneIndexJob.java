@@ -93,6 +93,10 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
     } catch (CRException e) {
       log.error("Could not create RequestProcessor instance.", e);
     }
+    
+    String s_timestampattribute = config.getString(TIMESTAMP_ATTR_KEY);
+    if(s_timestampattribute != null && !"".equals(s_timestampattribute))
+    	this.timestampattribute = s_timestampattribute;
   }
 
 
@@ -131,12 +135,16 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
   private static final String STORE_VECTORS_KEY = "storeVectors";
   private static final String BATCH_SIZE_KEY = "BATCHSIZE";
   private static final String CR_FIELD_KEY = "CRID";
+  
+  public static final String TIMESTAMP_ATTR_KEY = "updateattribute";
 
   /**
    * Default batch size is set to 1000 elements.
    */
   private int batchSize = 1000;
 
+  
+  private String timestampattribute = "";
   /**
    * Flag if TermVectors should be stored in the index or not.
    */
@@ -472,12 +480,17 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
       doc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES,
           Field.Index.NOT_ANALYZED));
     }
-    Integer upTS = (Integer) resolvable.get(TIMESTAMP_ATTR);
-    if (upTS != null) {
-      doc.add(new Field(TIMESTAMP_ATTR, upTS.toString(), Field.Store.YES,
-          Field.Index.NOT_ANALYZED));
+    
+    if(!"".equals(timestampattribute))
+    {
+	    Object o_upTS = resolvable.get(timestampattribute);
+	    String upTS = o_upTS.toString();
+	    
+	    if (upTS != null && !"".equals(upTS)) {
+	      doc.add(new Field(timestampattribute, upTS.toString(), Field.Store.YES,
+	          Field.Index.NOT_ANALYZED));
+	    }
     }
-
     for (Entry<String, Boolean> entry : attributes.entrySet()) {
       String attributeName = (String) entry.getKey();
       Boolean storeField = (Boolean) entry.getValue();
