@@ -327,6 +327,8 @@ public class CRConfigUtil extends CRConfig {
 		  // arguments.
 		  //
 		  ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectionURI,null);
+		  
+		  
 		  //
 		  // Now we'll create the PoolableConnectionFactory, which wraps
 		  // the "real" Connections created by the ConnectionFactory with
