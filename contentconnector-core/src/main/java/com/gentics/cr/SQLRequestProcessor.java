@@ -61,8 +61,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 		
 		requestFilter = buf.toString();
 		
-		return requestFilter.replaceAll("==", "=");
-		
+		return requestFilter.replaceAll("==", "=").replaceAll("\"", "'");
 		
 	}
 	
@@ -119,7 +118,8 @@ public class SQLRequestProcessor extends RequestProcessor {
 	            while(rset.next()) {
 	            	CRResolvableBean bean = new CRResolvableBean();
 	                for(int i=1;i<=numcols;i++) {
-	                	bean.set(colnames[i-1], rset.getObject(i));
+	                	if (rset.getObject(i) != null)
+	                		bean.set(colnames[i-1], rset.getObject(i));
 	                }
 	                result.add(bean);
 	            }
