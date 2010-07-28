@@ -42,7 +42,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
    * Timestamp attribute name
    */
   public static final String TIMESTAMP_ATTR = "";
-  public static final String TIMESTAMP_ATTR_KEY = "updatettribute";
+  public static final String TIMESTAMP_ATTR_KEY = "updateattribute";
   
   protected CRConfig config;
   protected String identifyer;
