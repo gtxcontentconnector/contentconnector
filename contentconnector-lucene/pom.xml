@@ -108,6 +108,11 @@
 	    <artifactId>lucene-analyzers</artifactId>
 	    <version>3.0.1</version>
 	</dependency>
+	<dependency>
+		   <groupId>org.apache.lucene</groupId>
+		   <artifactId>lucene-spellchecker</artifactId>
+		   <version>3.0.1</version>
+	</dependency>
     <dependency>
       <groupId>contentconnector</groupId>
       <artifactId>contentconnector-core</artifactId>

@@ -304,8 +304,11 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
         result.put("result", coll);
         result.put("hits", collector.getTotalHits());
         //PLUG IN DIDYOUMEAN
-        Set<Term> termset = new HashSet<Term>();
-        parsedQuery.extractTerms(termset);
+        if(didyoumeanenabled)
+        {
+        	Set<Term> termset = new HashSet<Term>();
+        	parsedQuery.extractTerms(termset);
+        }
         
         //PLUG IN DIDYOUMEAN END
         int size = 0;
