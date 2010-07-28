@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -29,6 +28,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.events.Event;
+import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
@@ -77,6 +77,7 @@ public class Autocompleter implements IEventReceiver{
 		{
 			log.error("Could not create autocomplete index.", e);
 		}
+		EventManager.getInstance().register(this);
 	}
 	
 	
@@ -186,6 +187,7 @@ public class Autocompleter implements IEventReceiver{
 	{
 		source.finalize();
 		autocompleteLocation.finalize();
+		EventManager.getInstance().unregister(this);
 	}
 
 }
