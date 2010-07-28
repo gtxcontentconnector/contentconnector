@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -41,12 +42,14 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
    * Timestamp attribute name
    */
   public static final String TIMESTAMP_ATTR = "updatetimestamp";
+  public static final String TIMESTAMP_ATTR_KEY = "timestampattribute";
   
   protected CRConfig config;
   protected String identifyer;
   protected IndexerStatus status;
   
   protected String idAttribute;
+  protected String timestampAttribute;
   
   private Hashtable<String,CRConfigUtil> configmap;
   protected IndexLocation indexLocation;
@@ -71,6 +74,10 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
     idAttribute = config.getString(ID_ATTRIBUTE_KEY);
     if(idAttribute == null)
       idAttribute = DEFAULT_IDATTRIBUTE;
+
+    timestampAttribute = config.getString(TIMESTAMP_ATTR_KEY);
+    if(timestampAttribute == null)
+       timestampAttribute = TIMESTAMP_ATTR;
     
   }
   
@@ -151,7 +158,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
    */
   protected Collection<CRResolvableBean> getObjectsToUpdate(CRRequest request, RequestProcessor rp, boolean forceFullUpdate, IndexUpdateChecker indexUpdateChecker){
     Collection<CRResolvableBean> updateObjects = new Vector<CRResolvableBean>();
-    
+        
     UseCase objectsToUpdateCase = MonitorFactory.startUseCase(
         "AbstractUpdateCheck.getObjectsToUpdate(" + request.get("CRID") + ")");
     try
@@ -164,7 +171,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
         } 
       }
       else{
-        //Sorted (by the idAttribute) list of Resolvables to check for Updates.´
+        //Sorted (by the idAttribute) list of Resolvables to check for Updates.
         Collection<CRResolvableBean> objectsToIndex;
         try{
           defaultizeRequest(request);
@@ -179,10 +186,12 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
         try {
           while (resolvableIterator.hasNext()) {
             CRResolvableBean crElement = resolvableIterator.next();
-            String crElementID = (String) crElement.get(idAttribute);
-            int crElementTimestamp = (Integer) crElement.get(TIMESTAMP_ATTR);
+            Object o_crElementID = crElement.get(idAttribute);
+            if(o_crElementID==null)log.error("IDAttribute is null!");
+            String crElementID = o_crElementID.toString();
+            Object crElementTimestamp =  crElement.get(timestampAttribute);
             if (!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp,
-                crElement)) {
+                timestampAttribute,crElement)) {
               updateObjects.add(crElement);
             }
           }
@@ -202,11 +211,12 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
   }
 
   private void defaultizeRequest(CRRequest request) {
-    String[] prefill = request.getAttributeArray();
-    if(Arrays.asList(prefill).contains(TIMESTAMP_ATTR))
+    String[] prefill = request.getAttributeArray(idAttribute);
+    List<String> prefillList = Arrays.asList(prefill);
+    if(!prefillList.contains(timestampAttribute))
     {
-      ArrayList<String> pf = new ArrayList<String>(Arrays.asList(prefill));
-      pf.add(TIMESTAMP_ATTR);
+      ArrayList<String> pf = new ArrayList<String>(prefillList);
+      pf.add(timestampAttribute);
       request.setAttributeArray(pf.toArray(prefill));
     }
     String[] sorting = request.getSortArray();
