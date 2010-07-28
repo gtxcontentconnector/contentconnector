@@ -41,16 +41,25 @@ public class RequestProcessorMerger {
 		for(CRResolvableBean crBean:col)
 		{
 			Object id = crBean.get(idAttribute);
-			if(first)
+			String key = "";
+			if(id instanceof String)
 			{
-				first=false;
-				mergefilter+="\""+id+"\"";
+				key = (String)id;
 			}
 			else
 			{
-				mergefilter+=","+"\""+id+"\"";
+				key = id.toString();
 			}
-			resultMap.put(id, crBean);
+			if(first)
+			{
+				first=false;
+				mergefilter+="\""+key+"\"";
+			}
+			else
+			{
+				mergefilter+=","+"\""+key+"\"";
+			}
+			resultMap.put(key, crBean);
 		}
 		
 		request.setRequestFilter("object."+idAttribute+" CONTAINSONEOF ["+mergefilter+"]");
@@ -61,7 +70,16 @@ public class RequestProcessorMerger {
 		for(Iterator<CRResolvableBean> resBean_it = res.iterator();resBean_it.hasNext();)
 		{
 			CRResolvableBean resBean = resBean_it.next();
-			String key = (String)resBean.get(idAttribute);
+			Object o_key = resBean.get(idAttribute);
+			String key = "";
+			if(o_key instanceof String)
+			{
+				key = (String)o_key;
+			}
+			else
+			{
+				key = o_key.toString();
+			}
 			CRResolvableBean finishedBean = resultMap.get(key);
 			if(finishedBean!=null)
 			{
