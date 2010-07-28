@@ -41,8 +41,8 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
   /**
    * Timestamp attribute name
    */
-  public static final String TIMESTAMP_ATTR = "updatetimestamp";
-  public static final String TIMESTAMP_ATTR_KEY = "timestampattribute";
+  public static final String TIMESTAMP_ATTR = "";
+  public static final String TIMESTAMP_ATTR_KEY = "updatettribute";
   
   protected CRConfig config;
   protected String identifyer;
@@ -213,7 +213,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
   private void defaultizeRequest(CRRequest request) {
     String[] prefill = request.getAttributeArray(idAttribute);
     List<String> prefillList = Arrays.asList(prefill);
-    if(!prefillList.contains(timestampAttribute))
+    if(!"".equals(timestampAttribute) && !prefillList.contains(timestampAttribute))
     {
       ArrayList<String> pf = new ArrayList<String>(prefillList);
       pf.add(timestampAttribute);
