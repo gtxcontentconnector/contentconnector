@@ -263,11 +263,17 @@ public class CRRequest implements Cloneable, Serializable {
    * @return 
    */
   public String[] getAttributeArray() {
-    String[] attributeArray = (String[])this.get("attributeArray");
-    if(attributeArray==null)
-      return new String[] { "contentid" };
-    return attributeArray;
+    return getAttributeArray("contentid");
   }
+  
+  public String[] getAttributeArray(String idAttribute) {
+	    String[] attributeArray = (String[])this.get("attributeArray");
+	    if(attributeArray==null)
+	      return new String[] { idAttribute };
+	    return attributeArray;
+  }
+	  
+  
 
   /**
    * Sets an array of attribute names wherein plinks are to be replaced
