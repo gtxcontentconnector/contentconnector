@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.search.highlight;
 
 import java.io.IOException;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Formatter;
@@ -11,7 +10,6 @@ import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
 import org.apache.lucene.search.vectorhighlight.FieldQuery;
 
 import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 /**
@@ -24,7 +22,6 @@ import com.gentics.cr.monitoring.UseCase;
 public class VectorBolder extends AdvancedContentHighlighter
     implements Formatter {
 
-  private Analyzer analyzer=null;
   private int numMaxFragments=3;
   private int fragmentSize=100;
 
@@ -43,8 +40,7 @@ public class VectorBolder extends AdvancedContentHighlighter
    */
   public VectorBolder(GenericConfiguration config) {
     super(config);
-    analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
-    
+        
     highlightPrefix = (String)config.get(PHRASE_PREFIX_KEY);
     if(highlightPrefix==null)highlightPrefix="<b>";
     highlightPostfix = (String)config.get(PHRASE_POSTFIX_KEY);
