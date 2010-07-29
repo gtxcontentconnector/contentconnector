@@ -82,6 +82,26 @@ public class LuceneRequestProcessor extends RequestProcessor {
    */
   public static final String META_QUERY_KEY = "query";
   
+  /**
+   * TODO
+   */
+  public static final String META_SUGGESTIONS_KEY = "suggestions";
+  
+  /**
+   * TODO
+   */
+  public static final String META_MAXSCORE_KEY = "maxscore";
+  
+  /**
+   * TODO
+   */
+  public static final String META_BESTQUERY_KEY = "bestquery";
+  
+  /**
+   * TODO
+   */
+  public static final String META_BESTQUERYHITS_KEY = "bestqueryhits";
+  
   
   /**
    * Key where to find the query used for highlighting the content. Usually this is the 
@@ -182,6 +202,19 @@ public class LuceneRequestProcessor extends RequestProcessor {
         metaBean.set(META_START_KEY, start);
         metaBean.set(META_COUNT_KEY, count);
         metaBean.set(META_QUERY_KEY, request.getRequestFilter());
+        Object suggestions = searchResult.get(META_SUGGESTIONS_KEY);
+        if(suggestions!=null)
+        {
+        	metaBean.set(META_SUGGESTIONS_KEY,suggestions);
+        }
+        metaBean.set(META_MAXSCORE_KEY,searchResult.get(META_MAXSCORE_KEY));
+        String rewrittenQuery = (String)searchResult.get(META_BESTQUERY_KEY);
+        if(rewrittenQuery!=null)
+        	metaBean.set(META_BESTQUERY_KEY,rewrittenQuery);
+        Integer bestqueryhits = (Integer)searchResult.get(META_BESTQUERYHITS_KEY);
+        if(bestqueryhits!=null)
+        	metaBean.set(META_BESTQUERYHITS_KEY,bestqueryhits);
+        
         result.add(metaBean);
       }
       ucProcessSearchMeta.stop();

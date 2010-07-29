@@ -1,11 +1,17 @@
 package com.gentics.cr.lucene.didyoumean;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spell.LuceneDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
+import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -14,7 +20,6 @@ import com.gentics.cr.events.Event;
 import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
-import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 
 /**
@@ -28,12 +33,10 @@ import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 public class DidYouMeanProvider implements IEventReceiver{
 
 	protected static final Logger log = Logger.getLogger(DidYouMeanProvider.class);
-	private LuceneIndexLocation source;
-	private LuceneIndexLocation didyoumeanLocation;
+	private Directory source;
+	private Directory didyoumeanLocation;
 	
-	private static final String GRAMMED_WORDS_FIELD ="grammedwords";
-	public static final String COUNT_FIELD="count";
-	public static final String SOURCE_WORD_FIELD ="word";
+	
 	
 	private static final String SOURCE_INDEX_KEY="srcindexlocation";
 	private static final String DIDYOUMEAN_INDEY_KEY="didyoumeanlocation";
@@ -48,15 +51,15 @@ public class DidYouMeanProvider implements IEventReceiver{
 	{
 		GenericConfiguration src_conf = (GenericConfiguration)config.get(SOURCE_INDEX_KEY);
 		GenericConfiguration auto_conf = (GenericConfiguration)config.get(DIDYOUMEAN_INDEY_KEY);
-		source = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
-		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(auto_conf,DIDYOUMEAN_INDEY_KEY));
+		source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
+		didyoumeanLocation = LuceneIndexLocation.createDirectory(new CRConfigUtil(auto_conf,DIDYOUMEAN_INDEY_KEY));
 		
 		String s_autofield = config.getString(DIDYOUMEAN_FIELD_KEY);
 		if(s_autofield!=null)this.didyoumeanfield=s_autofield;
 		
 		try
 		{
-			spellchecker = new SpellChecker(didyoumeanLocation.getFirstDirectory());
+			spellchecker = new SpellChecker(didyoumeanLocation);
 			reIndex();
 		}
 		catch(IOException e)
@@ -86,30 +89,59 @@ public class DidYouMeanProvider implements IEventReceiver{
 		return this.spellchecker;
 	}
 	
+		
+	public Map<String,String[]> getSuggestions(Set<Term> termlist,int count,IndexReader reader)
+	{
+		Map<String,String[]> result = new LinkedHashMap<String,String[]>();
+		Set<String> uniquetermset = new HashSet<String>();
+		
+		for(Term t:termlist)
+		{
+			uniquetermset.add(t.text());
+		}
+				
+		for(String term:uniquetermset)
+		{
+			try
+			{
+				if(!this.spellchecker.exist(term))
+				{
+					String[] ts = this.spellchecker.suggestSimilar(term, count, reader, didyoumeanfield, true);
+					if(ts!=null && ts.length>0)
+					{
+						result.put(term, ts);
+					}
+				}
+			}
+			catch(IOException ex)
+			{
+				log.error("Could not suggest terms",ex);
+			}
+		}
+		
+		return result;
+	}
+	
 	
 	private void reIndex() throws IOException
 	{
 		// build a dictionary (from the spell package) 
 		log.debug("Starting to reindex didyoumean index.");
-		IndexAccessor sia = this.source.getAccessor();
-        IndexReader sourceReader = sia.getReader(false);
+		
+        IndexReader sourceReader = IndexReader.open(source);
         LuceneDictionary dict = new LuceneDictionary(sourceReader, this.didyoumeanfield); 
         try{
         	spellchecker.indexDictionary(dict);
         }
-        finally{
-	                
-	        sia.release(sourceReader, false);
-	        // close writer 
+        finally{    
+	        sourceReader.close(); 
         }
-        didyoumeanLocation.createReopenFile();
+        
         log.debug("Finished reindexing didyoumean index.");
 	}
 	
 	public void finalize()
 	{
-		source.finalize();
-		didyoumeanLocation.finalize();
 		EventManager.getInstance().unregister(this);
 	}
 

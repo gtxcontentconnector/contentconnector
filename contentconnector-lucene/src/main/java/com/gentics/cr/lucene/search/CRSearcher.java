@@ -6,12 +6,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
@@ -19,6 +22,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopDocsCollector;
 import org.apache.lucene.search.TopFieldCollector;
 import org.apache.lucene.search.TopScoreDocCollector;
@@ -58,7 +62,7 @@ public class CRSearcher {
   protected CRConfig config;
   private boolean computescores = true;
   private boolean didyoumeanenabled=false;
-  private int didyoumeansuggestcount = 1;
+  private int didyoumeansuggestcount = 5;
   private float didyoumeanminscore = 0.5f;
   
   private DidYouMeanProvider didyoumeanprovider = null;
@@ -197,14 +201,16 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
    * @param start TODO javadoc
    * @return ArrayList of results
    */
-  private LinkedHashMap<Document, Float> runSearch(
+  private HashMap<String,Object> runSearch(
       final TopDocsCollector<?> collector, final Searcher searcher,
       final Query parsedQuery, final boolean explain, final int count,
       final int start) {
     try {
 
       searcher.search(parsedQuery, collector);
-      ScoreDoc[] hits = collector.topDocs().scoreDocs;
+      TopDocs tdocs = collector.topDocs();
+      Float maxScoreReturn = tdocs.getMaxScore();
+      ScoreDoc[] hits = tdocs.scoreDocs;
       
       LinkedHashMap<Document, Float> result =
         new LinkedHashMap<Document, Float>(hits.length);
@@ -226,7 +232,10 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
       log.debug("Fetched Document " + start + " to " + (start + num) + " of "
           + collector.getTotalHits() + " found Documents");
 
-      return result;
+      HashMap<String,Object> ret = new HashMap<String,Object>(2);
+      ret.put("result", result);
+      ret.put("maxscore",maxScoreReturn);
+      return ret;
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -261,7 +270,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
    * result documents.
    * @throws IOException TODO javadoc
    */
-  public final HashMap<String, Object> search(final String query,
+  @SuppressWarnings("unchecked")
+public final HashMap<String, Object> search(final String query,
       final String[] searchedAttributes, final int count, final int start,
       final boolean explain, final String[] sorting, final CRRequest request)
       throws IOException {
@@ -299,15 +309,44 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
         Query parsedQuery = parser.parse(query);
         result = new HashMap<String, Object>(3);
         result.put("query", parsedQuery);
-        LinkedHashMap<Document, Float> coll =
-          runSearch(collector, searcher, parsedQuery, explain, count, start);
+        
+        
+        Map<String,Object> ret = runSearch(collector, searcher, parsedQuery, explain, count, start);
+        LinkedHashMap<Document, Float> coll = (LinkedHashMap<Document, Float>)ret.get("result");
+        Float maxScore  = (Float)ret.get("maxscore");
         result.put("result", coll);
-        result.put("hits", collector.getTotalHits());
+        int totalhits = collector.getTotalHits();
+        
+        result.put("hits", totalhits);
+        result.put("maxscore",maxScore);
         //PLUG IN DIDYOUMEAN
-        if(didyoumeanenabled)
+        if(didyoumeanenabled && (totalhits < 1 || maxScore < this.didyoumeanminscore))
         {
         	Set<Term> termset = new HashSet<Term>();
         	parsedQuery.extractTerms(termset);
+        	
+        	IndexReader reader = indexAccessor.getReader(false);
+        	Map<String,String[]> suggestions = this.didyoumeanprovider.getSuggestions(termset, this.didyoumeansuggestcount, reader);
+        	result.put("suggestions", suggestions);
+        	parsedQuery.rewrite(reader);
+        	String rewrittenQuery = parsedQuery.toString();
+        	indexAccessor.release(reader, false);
+        	
+        	//SPECIAL SUGGESTION
+        	for(Entry<String,String[]> e:suggestions.entrySet())
+        	{
+        		String term = e.getKey();
+        		String[] term_suggestions = e.getValue();
+        		if(term_suggestions!=null && term_suggestions.length>0)
+        		{
+        			rewrittenQuery = rewrittenQuery.replaceAll(term, term_suggestions[0]);
+        		}
+        	}
+        	Query bestQuery = parser.parse(rewrittenQuery);
+        	TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
+        	runSearch(bestcollector, searcher, bestQuery, false, 1, 0);
+        	result.put("bestquery", rewrittenQuery);
+        	result.put("bestqueryhits", bestcollector.getTotalHits());
         }
         
         //PLUG IN DIDYOUMEAN END

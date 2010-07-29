@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -138,27 +139,87 @@ public abstract class LuceneIndexLocation extends
 			return null;
 		}
 	}
+	
+	protected Directory createRAMDirectory()
+	{
+		return createRAMDirectory(name);
+	}
 
-	protected Directory createRAMDirectory() {
+	protected static Directory createRAMDirectory(String name) {
 		Directory dir = new RAMDirectory();
 		log.debug("Creating RAM Directory for Index [" + name + "]");
 		return (dir);
 	}
 	
-	
-	/**
-	 * request the first directory from the location
-	 * @return
-	 */
-	public Directory getFirstDirectory()
+	private static String getFirstIndexLocation(CRConfig config)
 	{
-		Directory[] dirs = this.getDirectories();
-		if(dirs!=null && dirs.length>0)
-			return dirs[0];
+		String path="";
+		GenericConfiguration locs = (GenericConfiguration)config.get(INDEX_LOCATIONS_KEY);
+		if(locs!=null)
+		{
+			Map<String,GenericConfiguration> locationmap = locs.getSortedSubconfigs();
+			if(locationmap!=null)
+			{
+				for(GenericConfiguration locconf:locationmap.values())
+				{
+					String p = locconf.getString(INDEX_PATH_KEY);
+					if(p!=null && !"".equals(p))
+					{
+						path=p;
+						return path;
+					}
+				}
+			}
+		}
 		return null;
 	}
-
+	
+	/**
+	 * Create a Lucene directory from a config (index path must be configured)
+	 * @param config
+	 * @return
+	 */
+	public static Directory createDirectory(CRConfig config)
+	{
+		String loc = getFirstIndexLocation(config);
+		return createDirectory(loc);
+	}
+	
+	/**
+	 * Create a Lucene directory from a path
+	 * @param indexLocation
+	 * @return
+	 */
+	public static Directory createDirectory(String indexLocation)
+	{
+		Directory dir;
+		if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
+		{
+			dir = new RAMDirectory();
+			
+		}
+		else
+		{
+			File indexLoc = new File(indexLocation);
+			try
+			{
+				dir = createFSDirectory(indexLoc,indexLocation);
+				if(dir==null) dir = createRAMDirectory(indexLocation);
+			}
+			catch(IOException ioe)
+			{
+				dir = createRAMDirectory(indexLocation);
+			}
+		}
+		return dir;
+	}
+		
+		
 	protected Directory createFSDirectory(File indexLoc) throws IOException {
+		return createFSDirectory(indexLoc,name);
+	}
+
+	protected static Directory createFSDirectory(File indexLoc,String name) throws IOException {
 		if (!indexLoc.exists()) {
 			log.debug("Indexlocation did not exist. Creating directories...");
 			indexLoc.mkdirs();
