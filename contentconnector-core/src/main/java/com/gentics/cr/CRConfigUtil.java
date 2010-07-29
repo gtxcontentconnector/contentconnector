@@ -1,7 +1,6 @@
 package com.gentics.cr;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -9,12 +8,6 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.Map.Entry;
 
-import org.apache.commons.dbcp.ConnectionFactory;
-import org.apache.commons.dbcp.DriverManagerConnectionFactory;
-import org.apache.commons.dbcp.PoolableConnectionFactory;
-import org.apache.commons.dbcp.PoolingDriver;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
@@ -22,6 +15,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.rest.velocity.VelocityContentRepository;
+import com.gentics.cr.sql.ConnectionProvider;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.template.VelocityTemplateManagerFactory;
 import com.gentics.cr.util.CRUtil;
@@ -54,8 +48,8 @@ public class CRConfigUtil extends CRConfig {
 
   private String name = null;
   
-  private boolean jdbcconnectionsetup = false;
-
+   
+    
   /**
    * Variable holding opened {@link Datasource} by this configuration. So we can
    * release it when we got destroyed.
@@ -261,6 +255,8 @@ public class CRConfigUtil extends CRConfig {
     return CRDatabaseFactory.getDatasource(this);
   }
   
+  
+  
   /**
    * Get a pooled JDBCConnection and create a new pool if none exists.
    * Such a direct connection can be used for custom request processors that require a pooled connection
@@ -270,24 +266,9 @@ public class CRConfigUtil extends CRConfig {
    * @return
    * @throws Exception
    */
-  public Connection getPooledJDBCConnection() throws Exception
+  public synchronized Connection getPooledJDBCConnection() throws Exception
   {
-	  //CREATE CONNECTION POOL
-	  if(!jdbcconnectionsetup)
-	  {
-		  Properties props = this.getDatasourceHandleProperties();
-		  
-		  String connectionuri = props.getProperty("url");
-		  String driverclass = props.getProperty("driverClass");
-		  try {
-		      Class.forName(driverclass);
-		  } catch (ClassNotFoundException e) {
-			  log.error("Could not load driver class.", e);
-		  }
-		  setupPoolingDriver(connectionuri,this.getName());
-		  jdbcconnectionsetup=true;
-	  }
-	  return DriverManager.getConnection("jdbc:apache:commons:dbcp:"+this.getName());
+	  return ConnectionProvider.getPooledJDBCConnection(this);
   }
   
   /**
@@ -295,63 +276,12 @@ public class CRConfigUtil extends CRConfig {
    * getPooledJDBCConnection
    * @throws Exception
    */
-  public void releaseJDBCPool() throws Exception
+  public synchronized void releaseJDBCPool() throws Exception
   {
-	  try
-	  {
-		  PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
-		  driver.closePool(this.getName());
-	  }catch(Exception e)
-	  {
-		  log.error("Could not unload JDBCPool "+this.getName(),e);
-	  }
+	 ConnectionProvider.releaseJDBCPool(this);
   }
   
-  private void setupPoolingDriver(String connectionURI,String name) throws Exception
-  {
-	
-		  //
-		  // First, we'll need a ObjectPool that serves as the
-		  // actual pool of connections.
-		  //
-		  // We'll use a GenericObjectPool instance, although
-		  // any ObjectPool implementation will suffice.
-		  //
-		  ObjectPool connectionPool = new GenericObjectPool(null);
-		  
-		  //
-		  // Next, we'll create a ConnectionFactory that the
-		  // pool will use to create Connections.
-		  // We'll use the DriverManagerConnectionFactory,
-		  // using the connect string passed in the command line
-		  // arguments.
-		  //
-		  ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectionURI,null);
-		  
-		  
-		  //
-		  // Now we'll create the PoolableConnectionFactory, which wraps
-		  // the "real" Connections created by the ConnectionFactory with
-		  // the classes that implement the pooling functionality.
-		  //
-		  @SuppressWarnings("unused")
-		  PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,null,false,true);
-		  
-		  //
-		  // Finally, we create the PoolingDriver itself...
-		  //
-		  Class.forName("org.apache.commons.dbcp.PoolingDriver");
-		  PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
-		  
-		  //
-		  // ...and register our pool with it.
-		  //
-		  driver.registerPool(name,connectionPool);
-		  
-		  // Now we can just use the connect string "jdbc:apache:commons:dbcp:example"
-		  // to access our pool of Connections.
-		  //	    
-  }
+  
 
   /**
    * Gets the PathResolver of this config

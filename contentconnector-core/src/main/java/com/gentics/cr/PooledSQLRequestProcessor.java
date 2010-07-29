@@ -13,10 +13,16 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.exceptions.CRException;
+/**
+ * 
+ * Last changed: $Date: 2010-04-01 15:24:02 +0200 (Do, 01 Apr 2010) $
+ * @version $Revision: 541 $
+ * @author $Author: supnig@constantinopel.at $
+ *
+ */
+public class PooledSQLRequestProcessor extends RequestProcessor {
 
-public class SQLRequestProcessor extends RequestProcessor {
-
-	private static Logger log = Logger.getLogger(SQLRequestProcessor.class);
+	private static Logger log = Logger.getLogger(PooledSQLRequestProcessor.class);
 	private static final String TABLEATTRIBUTE = "table";
 	private static final String IDCOLUMNKEY = "idcolumn";
 	
@@ -24,7 +30,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 	private String idcolumn="";
 	
 	
-	public SQLRequestProcessor(CRConfig config) throws CRException {
+	public PooledSQLRequestProcessor(CRConfig config) throws CRException {
 		super(config);
 		Properties dsprops = ((CRConfigUtil)config).getDatasourceProperties();
 		table = dsprops.getProperty(TABLEATTRIBUTE);
@@ -40,7 +46,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 		{
 			log.error("Could not release connection pool.",s);
 		}
-
+		 
 	}
 	
 	private static final Pattern CONTAINSONEOFPATTERN = Pattern.compile("object\\.([a-zA-Z0-9_]*)[ ]*CONTAINSONEOF[ ]*\\[(.*)\\]");
