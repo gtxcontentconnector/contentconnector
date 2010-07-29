@@ -81,17 +81,22 @@
 	<dependency>
       <groupId>gentics-portalnode</groupId>
       <artifactId>gentics-portalnode</artifactId>
-      <version>4_build_9658</version>
+      <version>4_build_10113</version>
     </dependency>
     <dependency>
       <groupId>gentics-portalnode</groupId>
       <artifactId>gentics-portalnode-api</artifactId>
-      <version>4_build_9658</version>
+      <version>4_build_10113</version>
     </dependency>
     <dependency>
       <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
       <version>2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
     </dependency>
     
 	</dependencies>
