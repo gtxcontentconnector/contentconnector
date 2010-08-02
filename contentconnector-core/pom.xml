@@ -85,11 +85,6 @@
       <version>1.2.14</version>
     </dependency>
     <dependency>
-	    <groupId>commons-dbcp</groupId>
-	    <artifactId>commons-dbcp</artifactId>
-	    <version>1.4</version>
-	</dependency>
-    <dependency>
       <groupId>org.apache.velocity</groupId>
       <artifactId>velocity</artifactId>
       <version>1.6.3</version>
@@ -123,12 +118,12 @@
     <dependency>
     	<groupId>gentics-portalnode</groupId>
       <artifactId>gentics-portalnode-api</artifactId>
-      <version>4_build_10113</version>
+      <version>4_build_9658</version>
     </dependency>
     <dependency>
     	<groupId>gentics-portalnode</groupId>
       <artifactId>gentics-portalnode</artifactId>
-      <version>4_build_10113</version>
+      <version>4_build_9658</version>
     </dependency>
     <dependency>
       <groupId>contentconnector</groupId>
