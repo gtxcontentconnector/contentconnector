@@ -180,22 +180,10 @@ public class CachedCRRequestProcessor extends RequestProcessor {
       cachedResult = getCachedResult(cacheKey);
       getResultCacheCase.stop();
 
-      UseCase getResultVerifyCase = MonitorFactory
-      .startUseCase("CRRequestProcessor.getResult(" + config.getName()
-          + ")#verify");
-      int cachedResultUpdatetime = 0;
-      for (Resolvable cachedResolvable : cachedResult) {
-        cachedResultUpdatetime =
-          checkUpdatetime(cachedResolvable, cachedResultUpdatetime);
-      }
-      int checkCacheResultUpdatetime = 0;
-      for (Resolvable checkResolvable : checkCacheResult) {
-        checkCacheResultUpdatetime =
-          checkUpdatetime(checkResolvable, checkCacheResultUpdatetime);
-      }
-      getResultVerifyCase.stop();
+      boolean up2date = compare(cachedResult, checkCacheResult);
 
-      if (checkCacheResultUpdatetime <= cachedResultUpdatetime) {
+
+      if (up2date) {
         collection = cachedResult;
       } else {
         UseCase getResultUncachedCase = MonitorFactory
@@ -214,6 +202,31 @@ public class CachedCRRequestProcessor extends RequestProcessor {
     return collection;
   }
 
+  public static boolean compare(Collection<Resolvable> left,
+      Collection<Resolvable> right) {
+    UseCase getResultVerifyCase = MonitorFactory
+    .startUseCase("CRRequestProcessor.compare()#verify");
+    if (left.size() != right.size()) {
+      return false;
+    } else {
+      int leftUpdatetime = 0;
+      for (Resolvable leftResolvable : left) {
+        leftUpdatetime =
+          checkUpdatetime(leftResolvable, leftUpdatetime);
+      }
+      int rightUpdatetime = 0;
+      for (Resolvable rightResolvable : right) {
+        rightUpdatetime =
+          checkUpdatetime(rightResolvable, rightUpdatetime);
+      }
+      getResultVerifyCase.stop();
+      if (rightUpdatetime != leftUpdatetime) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * check if updatetime of resolvable is newer than given updatetime.
    * @param resolvable {@link Resolvable} to check the updatetime for.
@@ -221,7 +234,7 @@ public class CachedCRRequestProcessor extends RequestProcessor {
    * @return newest updatetime, can be the updatetime of the resolvable or the
    * given updatetime
    */
-  private int checkUpdatetime(final Resolvable resolvable,
+  private static int checkUpdatetime(final Resolvable resolvable,
       final int updatetime) {
     Object updatetimestampObject = resolvable.get(UPDATEATTRIBUTE);
     if (updatetimestampObject instanceof Integer) {
