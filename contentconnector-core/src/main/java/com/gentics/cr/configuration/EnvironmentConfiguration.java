@@ -32,7 +32,7 @@ public class EnvironmentConfiguration {
 	/**
 	 * Load Environment Properties
 	 * 		- load logger properties for log4j
-	 * 		- load chache properties for JCS
+	 * 		- load cache properties for JCS
 	 */
 	public static void loadEnvironmentProperties()
 	{
@@ -57,7 +57,7 @@ public class EnvironmentConfiguration {
 	}
 	
 	/**
-	 * Load Property file for JCS chache
+	 * Load Property file for JCS cache
 	 */
 	public static void loadCacheProperties()
 	{
