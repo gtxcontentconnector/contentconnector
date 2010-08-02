@@ -34,25 +34,47 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
   private String highlightPostfix="";
   private String fragmentSeperator="";
 
-  private static final String NUM_MAX_FRAGMENTS_KEY = "fragments";
-  private static final String NUM_FRAGMENT_SIZE_KEY = "fragmentsize";
-  private static final String PHRASE_PREFIX_KEY = "highlightprefix";
-  private static final String PHRASE_POSTFIX_KEY = "highlightpostfix";
-  private static final String FRAGMENT_SEPERATOR_KEY = "fragmentseperator";
   /**
-   * Create new Instance of PhraseBolder
+   * number of fragments we should return. (maximum)
+   */
+  private static final String NUM_MAX_FRAGMENTS_KEY = "fragments";
+
+  /**
+   * size of fragments in words.
+   */
+  private static final String NUM_FRAGMENT_SIZE_KEY = "fragmentsize";
+  /**
+   * prefix for highlighted text.
+   */
+  private static final String PHRASE_PREFIX_KEY = "highlightprefix";
+  /**
+   * postfix for highlighted text.
+   */
+  private static final String PHRASE_POSTFIX_KEY = "highlightpostfix";
+  /**
+   * Configuration Key for fragment seperator.
+   */
+  private static final String FRAGMENT_SEPERATOR_KEY = "fragmentseperator";
+
+  /**
+   * regex to remove text from fragments (e.g. leading commas and spaces)
+   */
+  private static final String REMOVE_TEXT_FROM_FRAGMENT_REGEX = "^[, ]*";
+
+  /**
+   * Create new Instance of PhraseBolder.
    * @param config
    */
   public PhraseBolder(GenericConfiguration config) {
     super(config);
     analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
-    
+
     highlightPrefix = (String)config.get(PHRASE_PREFIX_KEY);
     if(highlightPrefix==null)highlightPrefix="<b>";
     highlightPostfix = (String)config.get(PHRASE_POSTFIX_KEY);
     if(highlightPostfix==null)highlightPostfix="</b>";
     fragmentSeperator = (String)config.get(FRAGMENT_SEPERATOR_KEY);
-    if(fragmentSeperator==null)fragmentSeperator="...";
+    if(fragmentSeperator==null)fragmentSeperator=" ... ";
     
     String nmF = (String)config.get(NUM_MAX_FRAGMENTS_KEY);
     if(nmF!=null)
@@ -129,7 +151,9 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
           } else {
             first = false;
           }
-          result += frag.toString();
+          String fragment = frag.toString()
+              .replaceAll(REMOVE_TEXT_FROM_FRAGMENT_REGEX, "");
+          result += fragment;
         }
       } catch (IOException e) {
         // TODO Auto-generated catch block
