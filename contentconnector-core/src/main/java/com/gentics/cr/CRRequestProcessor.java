@@ -1,8 +1,10 @@
 package com.gentics.cr;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import com.gentics.api.lib.datasource.Datasource;
@@ -12,6 +14,7 @@ import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.util.ArrayHelper;
 
 /**
  * 
@@ -49,7 +52,7 @@ public class CRRequestProcessor extends RequestProcessor {
     DatasourceFilter dsFilter;
     Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
     if (request != null) {
-      
+
       // Parse the given expression and create a datasource filter
       try {
         ds = this.config.getDatasource();
@@ -57,8 +60,8 @@ public class CRRequestProcessor extends RequestProcessor {
           throw (new DatasourceException("No Datasource available."));
         }
 
-        dsFilter = request.getPreparedFilter(config,ds);
-        
+        dsFilter = request.getPreparedFilter(config, ds);
+
         // add base resolvables
         if (this.resolvables != null) {
           for (Iterator<String> it = this.resolvables.keySet().iterator(); it
@@ -69,9 +72,12 @@ public class CRRequestProcessor extends RequestProcessor {
           }
         }
 
+        String[] prefillAttributes =  request.getAttributeArray();
+        prefillAttributes = ArrayHelper.removeElements(prefillAttributes,
+            "contentid", "updatetimestamp");
         // do the query
         Collection<Resolvable> col = this.toResolvableCollection(ds.getResult(
-            dsFilter, request.getAttributeArray(), request.getStart().intValue(),
+            dsFilter, prefillAttributes, request.getStart().intValue(),
             request.getCount().intValue(), request.getSorting()));
 
         // convert all objects to serializeable beans
@@ -79,8 +85,8 @@ public class CRRequestProcessor extends RequestProcessor {
           for (Iterator<Resolvable> it = col.iterator(); it.hasNext();) {
             CRResolvableBean crBean = new CRResolvableBean(
                 it.next(), request.getAttributeArray());
-            if(this.config.getFolderType().equals(crBean.getObj_type())&& doNavigation)
-            {
+            if (this.config.getFolderType().equals(crBean.getObj_type())
+                && doNavigation) {
               //Process child elements
               String fltr="object.folder_id=='"+crBean.getContentid()+"'";
               if(request.getChildFilter()!=null)
