@@ -74,7 +74,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
     idAttribute = config.getString(ID_ATTRIBUTE_KEY);
     if(idAttribute == null)
       idAttribute = DEFAULT_IDATTRIBUTE;
-
+    
     timestampAttribute = config.getString(TIMESTAMP_ATTR_KEY);
     if(timestampAttribute == null)
        timestampAttribute = TIMESTAMP_ATTR;
@@ -158,7 +158,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
    */
   protected Collection<CRResolvableBean> getObjectsToUpdate(CRRequest request, RequestProcessor rp, boolean forceFullUpdate, IndexUpdateChecker indexUpdateChecker){
     Collection<CRResolvableBean> updateObjects = new Vector<CRResolvableBean>();
-        
+    
     UseCase objectsToUpdateCase = MonitorFactory.startUseCase(
         "AbstractUpdateCheck.getObjectsToUpdate(" + request.get("CRID") + ")");
     try
@@ -169,15 +169,13 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
         } catch (CRException e) {
           log.error("Error getting results for full index from requestprocessor",e);
         } 
-      }
-      else{
+      } else {
         //Sorted (by the idAttribute) list of Resolvables to check for Updates.
         Collection<CRResolvableBean> objectsToIndex;
-        try{
+        try {
           defaultizeRequest(request);
           objectsToIndex = (Collection<CRResolvableBean>) rp.getObjects(request);
-        }
-        catch (CRException e) {
+        } catch (CRException e) {
           log.error("Error getting results for full index from requestprocessor",e);
           return null;
         }
