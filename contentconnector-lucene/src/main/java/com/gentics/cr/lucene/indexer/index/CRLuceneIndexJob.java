@@ -68,7 +68,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
    * indicates if the lucene index should be optimized after indexing.
    */
   private boolean optimize = false;
-  private String max_segments = null;
+
+  /**
+   * indicates the maximum amount of segments (files) used storing the index.
+   */
+  private String maxSegmentsString = null;
 
   /**
    * Create new instance of IndexJob.
@@ -83,7 +87,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
     if (ignoreoptimizeString != null) {
       optimize = Boolean.parseBoolean(ignoreoptimizeString);
     }
-    max_segments = config.getString(MAXSEGMENTS_KEY);
+    maxSegmentsString = config.getString(MAXSEGMENTS_KEY);
     String storeVectorsString = config.getString(STORE_VECTORS_KEY);
     if (storeVectorsString != null) {
       storeVectors = Boolean.parseBoolean(storeVectorsString);
@@ -93,10 +97,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
     } catch (CRException e) {
       log.error("Could not create RequestProcessor instance.", e);
     }
-    
-    String s_timestampattribute = config.getString(TIMESTAMP_ATTR_KEY);
-    if(s_timestampattribute != null && !"".equals(s_timestampattribute))
-    	this.timestampattribute = s_timestampattribute;
+
+    String timestampattributeString = config.getString(TIMESTAMP_ATTR_KEY);
+    if (timestampattributeString != null
+        && !"".equals(timestampattributeString)) {
+      this.timestampattribute = timestampattributeString;
+    }
   }
 
 
@@ -125,17 +131,52 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
    * Key to be used for saving state to contentstatus.
    */
   public static final String PARAM_LASTINDEXRULE = "lastindexrule";
+
+  /**
+   * Configuration key for the rule of objects to index.
+   */
   private static final String RULE_KEY = "rule";
 
+  /**
+   * Configuration key for the attributes stored in the index.
+   */
   private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
+
+  /**
+   * Configuration key for the attributes which are indexed.
+   */
   private static final String INDEXED_ATTRIBUTES_KEY = "INDEXEDATTRIBUTES";
+
+  /**
+   * Configuration key defines if the index should be optimized.
+   */
   private static final String OPTIMIZE_KEY = "optimize";
+
+  /**
+   * Configuration key for {@link #maxSegmentsString}.
+   */
   private static final String MAXSEGMENTS_KEY = "maxsegments";
 
+  /**
+   * Configuration key to define if vectors are stored in the index or not.
+   */
   private static final String STORE_VECTORS_KEY = "storeVectors";
+
+  /**
+   * Configuration key to define the size of a single batch to index the files.
+   * e.g. 100 means 100 files are indexes at once.
+   */
   private static final String BATCH_SIZE_KEY = "BATCHSIZE";
+
+  /**
+   * TODO javadoc.
+   */
   private static final String CR_FIELD_KEY = "CRID";
-  
+
+  /**
+   * Configuration key to define which attribute is tested to decide if the
+   * element is newer than the one in the index.
+   */
   public static final String TIMESTAMP_ATTR_KEY = "updateattribute";
 
   /**
@@ -143,7 +184,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
    */
   private int batchSize = 1000;
 
-  
+
+  /**
+   * Attribute to check if the element is newer than the one in the index.
+   * @see #TIMESTAMP_ATTR_KEY
+   */
   private String timestampattribute = "";
   /**
    * Flag if TermVectors should be stored in the index or not.
@@ -151,54 +196,51 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
   private boolean storeVectors = true;
   /**
    * Index a single configured ContentRepository.
-   * @param indexLocation
-   * @param config
-   * @throws CRException
+   * @param indexLocation TODO javadoc
+   * @param config TODO javadoc
+   * @throws CRException TODO javadoc
    */
   @SuppressWarnings("unchecked")
-  protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
-      throws CRException{
+  protected void indexCR(final IndexLocation indexLocation,
+      final CRConfigUtil config) throws CRException {
 
     String crid = config.getName();
-    if(crid ==null)crid = this.identifyer;
+    if (crid == null) {
+      crid = this.identifyer;
+    }
 
 
     IndexAccessor indexAccessor = null;
     IndexWriter indexWriter = null;
     LuceneIndexUpdateChecker luceneIndexUpdateChecker = null;
-    boolean finished_index_job_successfull = false;
-    boolean finished_index_job_with_error = false;
+    boolean finishedIndexJobSuccessfull = false;
+    boolean finishedIndexJobWithError = false;
 
     try {
       indexLocation.checkLock();
       Collection<CRResolvableBean> slice = null;
-      try
-      { 
+      try {
         status.setCurrentStatusString("Writer accquired. Starting index job.");
 
-        if(rp==null)
-        {
-          throw new CRException("FATAL ERROR","Datasource not available");
+        if (rp == null) {
+          throw new CRException("FATAL ERROR", "Datasource not available");
         }
 
-        String bsString = (String)config.get(BATCH_SIZE_KEY);
+        String bsString = (String) config.get(BATCH_SIZE_KEY);
 
-        int CRBatchSize = batchSize;
+        int crBatchSize = batchSize;
 
-        if(bsString!=null)
-        {
-          try
-          {
-            CRBatchSize = Integer.parseInt(bsString);
-          }
-          catch(NumberFormatException e)
-          {
-            log.error("The configured "+BATCH_SIZE_KEY+" for the Current CR did not contain a parsable integer. "+e.getMessage());
+        if (bsString != null) {
+          try {
+            crBatchSize = Integer.parseInt(bsString);
+          } catch (NumberFormatException e) {
+            log.error("The configured " + BATCH_SIZE_KEY + " for the Current CR"
+                + " did not contain a parsable integer. " + e.getMessage());
           }
         }
 
         // and get the current rule
-        String rule = (String)config.get(RULE_KEY);
+        String rule = (String) config.get(RULE_KEY);
 
         if (rule == null) {
           rule = "";
@@ -209,7 +251,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
           rule = "(" + rule + ")";
         }
 
-        List<ContentTransformer> transformerlist = ContentTransformer.getTransformerList(config);
+        List<ContentTransformer> transformerlist =
+          ContentTransformer.getTransformerList(config);
 
         boolean create = true;
 
@@ -218,10 +261,17 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
           log.debug("Index already exists.");
         }
         if (indexLocation instanceof LuceneIndexLocation) {
-          luceneIndexUpdateChecker = new LuceneIndexUpdateChecker((LuceneIndexLocation) indexLocation,CR_FIELD_KEY,crid,idAttribute);
+          luceneIndexUpdateChecker = new LuceneIndexUpdateChecker(
+              (LuceneIndexLocation) indexLocation, CR_FIELD_KEY, crid,
+              idAttribute);
         } else {
-          log.error("IndexLocation is not created for Lucene. Using the "+CRLuceneIndexJob.class.getName()+" requires that you use the "+LuceneIndexLocation.class.getName()+". You can configure another Job by setting the "+IndexLocation.UPDATEJOBCLASS_KEY+" key in your config.");
-          throw new CRException(new CRError("Error","IndexLocation is not created for Lucene."));
+          log.error("IndexLocation is not created for Lucene. Using the "
+              + CRLuceneIndexJob.class.getName() + " requires that you use the "
+              + LuceneIndexLocation.class.getName() + ". You can configure "
+              + "another Job by setting the " + IndexLocation.UPDATEJOBCLASS_KEY
+              + " key in your config.");
+          throw new CRException(
+              new CRError("Error", "IndexLocation is not created for Lucene."));
         }
         Collection<CRResolvableBean> objectsToIndex = null;
         //Clear Index and remove stale Documents
@@ -252,60 +302,64 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
         }
         log.debug("Using rule: " + rule);
         // prepare the map of indexed/stored attributes
-        Map<String,Boolean> attributes = new HashMap<String,Boolean>();
-        List<String> containedAttributes = IndexerUtil.getListFromString((String)config.get(CONTAINED_ATTRIBUTES_KEY), ",");
-        List<String> indexedAttributes = IndexerUtil.getListFromString((String)config.get(INDEXED_ATTRIBUTES_KEY), ",");
-        List<String> reverseAttributes = ((LuceneIndexLocation)indexLocation).getReverseAttributes();
+        Map<String, Boolean> attributes = new HashMap<String, Boolean>();
+        List<String> containedAttributes = IndexerUtil.getListFromString(
+            (String) config.get(CONTAINED_ATTRIBUTES_KEY), ",");
+        List<String> indexedAttributes = IndexerUtil.getListFromString(
+            (String) config.get(INDEXED_ATTRIBUTES_KEY), ",");
+        List<String> reverseAttributes =
+          ((LuceneIndexLocation) indexLocation).getReverseAttributes();
         // first put all indexed attributes into the map
-        for (String name:indexedAttributes) {
+        for (String name : indexedAttributes) {
           attributes.put(name, Boolean.FALSE);
         }
-    
+
         // now put all contained attributes
-        for (String name:containedAttributes) {
+        for (String name : containedAttributes) {
           attributes.put(name, Boolean.TRUE);
         }
         // finally, put the "contentid" (always contained)
         attributes.put(idAttribute, Boolean.TRUE);
-    
+
         // get all objects to index
-        if(objectsToIndex==null)
-        {
+        if (objectsToIndex == null) {
           CRRequest req = new CRRequest();
           req.setRequestFilter(rule);
           req.set(CR_FIELD_KEY, crid);
-          objectsToIndex = getObjectsToUpdate(req,rp,true,luceneIndexUpdateChecker);
+          objectsToIndex =
+            getObjectsToUpdate(req, rp, true, luceneIndexUpdateChecker);
         }
-        if(objectsToIndex==null)
-        {
+        if (objectsToIndex == null) {
           log.debug("Rule returned no objects to index. Skipping run");
           return;
         }
-        
+
         status.setObjectCount(objectsToIndex.size());
-        log.debug(" index job with "+objectsToIndex.size()+" objects to index.");
+        log.debug(" index job with " + objectsToIndex.size()
+            + " objects to index.");
         // now get the first batch of objects from the collection
         // (remove them from the original collection) and index them
-        slice = new Vector(CRBatchSize);
+        slice = new Vector(crBatchSize);
         int sliceCounter = 0;
-        
+
         status.setCurrentStatusString("Starting to index slices.");
         boolean interrupted = Thread.currentThread().isInterrupted();
-        for (Iterator<CRResolvableBean> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
+        for (Iterator<CRResolvableBean> iterator = objectsToIndex.iterator();
+            iterator.hasNext();) {
           CRResolvableBean obj = iterator.next();
           slice.add(obj);
           iterator.remove();
           sliceCounter++;
-          if(Thread.currentThread().isInterrupted())
-          {
+          if (Thread.currentThread().isInterrupted()) {
             interrupted = true;
             break;
           }
-          if (sliceCounter == CRBatchSize) {
+          if (sliceCounter == crBatchSize) {
             // index the current slice
-            log.debug("Indexing slice with "+slice.size()+" objects.");
-            indexSlice(crid,indexWriter, slice, attributes, rp, create,config,transformerlist,reverseAttributes);
-            status.setObjectsDone(status.getObjectsDone()+slice.size());
+            log.debug("Indexing slice with " + slice.size() + " objects.");
+            indexSlice(crid, indexWriter, slice, attributes, rp, create, config,
+                transformerlist, reverseAttributes);
+            status.setObjectsDone(status.getObjectsDone() + slice.size());
             // clear the slice and reset the counter
             slice.clear();
             sliceCounter = 0;
@@ -314,145 +368,134 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
         if (!slice.isEmpty()) {
           // index the last slice
-          indexSlice(crid,indexWriter, slice, attributes, rp, create,config, transformerlist,reverseAttributes);
-          status.setObjectsDone(status.getObjectsDone()+slice.size());
+          indexSlice(crid, indexWriter, slice, attributes, rp, create, config,
+              transformerlist, reverseAttributes);
+          status.setObjectsDone(status.getObjectsDone() + slice.size());
         }
-        if(!interrupted)
-        {
+        if (!interrupted) {
           //Only Optimize the Index if the thread has not been interrupted
-          if(optimize)
-          {
+          if (optimize) {
             log.debug("Executing optimize command.");
-            UseCase uc = MonitorFactory.startUseCase("optimize("+crid+")");
-            try
-            {
+            UseCase uc = MonitorFactory.startUseCase("optimize(" + crid + ")");
+            try {
               indexWriter.optimize();
-            }
-            finally {
+            } finally {
               uc.stop();
             }
-          }
-          else if(max_segments!=null)
-          {
-            log.debug("Executing optimize command with max segments: "+max_segments);
-            int maxs = Integer.parseInt(max_segments);
-            UseCase uc = MonitorFactory.startUseCase("optimize("+crid+")");
-            try
-            {
+          } else if (maxSegmentsString != null) {
+            log.debug("Executing optimize command with max segments: "
+                + maxSegmentsString);
+            int maxs = Integer.parseInt(maxSegmentsString);
+            UseCase uc = MonitorFactory.startUseCase("optimize(" + crid + ")");
+            try {
               indexWriter.optimize(maxs);
-            }
-            finally {
+            } finally {
               uc.stop();
             }
           }
+        } else {
+          log.debug("Job has been interrupted and will now be closed. Objects "
+              + "will be reindexed next run.");
         }
-        else
-        {
-          log.debug("Job has been interrupted and will now be closed. Objects will be reindexed next run.");
-        }
-        
-        finished_index_job_successfull = true;
-      }catch(Exception ex)
-      {
-        log.error("Could not complete index run... indexed Objects: "+status.getObjectsDone()+", trying to close index and remove lock.",ex);
-        finished_index_job_with_error = true;
-      }finally{
-        if(!finished_index_job_successfull && !finished_index_job_with_error){
-          log.fatal("There seems to be a run time exception from this" +
-              " index job.\nLast slice was: "+slice);
+        finishedIndexJobSuccessfull = true;
+      } catch (Exception ex) {
+        log.error("Could not complete index run... indexed Objects: " + status
+            .getObjectsDone() + ", trying to close index and remove lock.", ex);
+        finishedIndexJobWithError = true;
+      } finally {
+        if (!finishedIndexJobSuccessfull && !finishedIndexJobWithError) {
+          log.fatal("There seems to be a run time exception from this"
+              + " index job.\nLast slice was: " + slice);
         }
         //Set status for job if it was not locked
         status.setCurrentStatusString("Finished job.");
         int objectCount = status.getObjectsDone();
-        log.debug("Indexed "+objectCount+" objects...");
+        log.debug("Indexed " + objectCount + " objects...");
 
-        if ( indexAccessor != null && indexWriter != null) {
+        if (indexAccessor != null && indexWriter != null) {
           indexAccessor.release(indexWriter);
         }
 
-        if(objectCount > 0){
+        if (objectCount > 0) {
           indexLocation.createReopenFile();
         }
-        EventManager.getInstance().fireEvent(new IndexingFinishedEvent(indexLocation));
+        EventManager.getInstance().fireEvent(
+            new IndexingFinishedEvent(indexLocation));
       }
-    }
-    catch(LockedIndexException ex)
-    {
+    } catch (LockedIndexException ex) {
       log.debug("LOCKED INDEX DETECTED. TRYING AGAIN IN NEXT JOB.");
-      if(this.indexLocation!=null && !this.indexLocation.hasLockDetection())
+      if (this.indexLocation != null && !this.indexLocation.hasLockDetection())
       {
-        log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. TRYING TO REMOVE THE LOCK", ex);
-        ((LuceneIndexLocation)this.indexLocation).forceRemoveLock();
+        log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN LOCKED. "
+            + "TRYING TO REMOVE THE LOCK", ex);
+        ((LuceneIndexLocation) this.indexLocation).forceRemoveLock();
       }
-    }
-    catch(Exception ex)
-    {
+    } catch (Exception ex) {
       log.debug("ERROR WHILE CHECKING LOCK", ex);
     }
   }
 
   /**
-   * Index a single slice
-   * @param indexWriter
-   * @param slice
-   * @param attributes
-   * @param ds
-   * @param create
-   * @param config
-   * @param transformerlist
-   * @throws NodeException
-   * @throws CorruptIndexException
-   * @throws IOException
+   * Index a single slice.
+   * @param indexWriter TODO javadoc
+   * @param slice TODO javadoc
+   * @param attributes TODO javadoc
+   * @param create TODO javadoc
+   * @param config TODO javadoc
+   * @param transformerlist TODO javadoc
+   * @throws CorruptIndexException TODO javadoc
+   * @throws IOException TODO javadoc
    */
   private void indexSlice(String crid,IndexWriter indexWriter, Collection<CRResolvableBean> slice, Map<String,Boolean> attributes, RequestProcessor rp, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist,List<String> reverseattributes) throws CRException,
       CorruptIndexException, IOException {
     // prefill all needed attributes
-    UseCase uc = MonitorFactory.startUseCase("indexSlice("+crid+")");
-    try
-    {
+    UseCase uc = MonitorFactory.startUseCase("indexSlice(" + crid + ")");
+    try {
       CRRequest req = new CRRequest();
       String[] prefillAttributes = attributes.keySet().toArray(new String[0]);
       req.setAttributeArray(prefillAttributes);
       rp.fillAttributes(slice, req, idAttribute);
-      
-      for (Resolvable objectToIndex:slice) {
-        
+      for (Resolvable objectToIndex : slice) {
         CRResolvableBean bean =
           new CRResolvableBean(objectToIndex, prefillAttributes);
         UseCase bcase = MonitorFactory.startUseCase("indexSlice.indexBean");
         try {
           //CALL PRE INDEX PROCESSORS/TRANSFORMERS
-          //TODO This could be optimized for multicore servers with a map/reduce algorithm
+          //TODO This could be optimized for multicore servers with a map/reduce
+          //algorithm
           if (transformerlist != null) {
-            for(ContentTransformer transformer : transformerlist) {
+            for (ContentTransformer transformer : transformerlist) {
               try {
                 status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "
                     + transformer.getTransformerKey() + "; BEAN: "
                     + bean.get(idAttribute));
-                if(transformer.match(bean)) {
+                if (transformer.match(bean)) {
                   transformer.processBeanWithMonitoring(bean);
                 }
-              } catch(Exception e) {
+              } catch (Exception e) {
                 //TODO Remember broken files
                 log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "
                     + bean.get(idAttribute), e);
               }
-              
             }
           }
-          if(!create) {
-            indexWriter.updateDocument(new Term(idAttribute, bean.get(idAttribute).toString()), getDocument(bean, attributes,config,reverseattributes));
+          if (!create) {
+            indexWriter.updateDocument(new Term(idAttribute,
+                bean.get(idAttribute).toString()),
+                getDocument(bean, attributes, config, reverseattributes));
           } else {
-            indexWriter.addDocument(getDocument(bean, attributes, config,reverseattributes));
+            indexWriter.addDocument(getDocument(bean, attributes, config,
+                reverseattributes));
           }
-        }
-        finally {
+        } finally {
           bcase.stop();
         }
         //Stop Indexing when thread has been interrupted
-        if(Thread.currentThread().isInterrupted())break;
+        if (Thread.currentThread().isInterrupted()) {
+          break;
+        }
       }
-    }finally{
+    } finally {
       uc.stop();
     }
   }
@@ -467,11 +510,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
    * @param config The name of this config will be used as CRID
    * (ContentRepository Identifyer). The ID-Attribute should also be configured
    * in this config (usually contentid).
+   * @param reverseattributes Attributes that should be indexed in reverse order
+   * . This can be used to search faster for words ending with *ing.
    * @return Returns a Lucene Document, ready to be added to the index.
    */
-  private Document getDocument(Resolvable resolvable,
-      Map<String,Boolean> attributes, CRConfigUtil config,
-      List<String> reverseattributes) {
+  private Document getDocument(final Resolvable resolvable,
+      final Map<String, Boolean> attributes, final CRConfigUtil config,
+      final List<String> reverseattributes) {
     Document doc = new Document();
 
     String crID = (String) config.getName();
@@ -480,16 +525,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
       doc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES,
           Field.Index.NOT_ANALYZED));
     }
-    
-    if(!"".equals(timestampattribute))
-    {
-	    Object o_upTS = resolvable.get(timestampattribute);
-	    String upTS = o_upTS.toString();
-	    
-	    if (upTS != null && !"".equals(upTS)) {
-	      doc.add(new Field(timestampattribute, upTS.toString(), Field.Store.YES,
-	          Field.Index.NOT_ANALYZED));
-	    }
+    if (!"".equals(timestampattribute)) {
+      Object updateTimestampObject = resolvable.get(timestampattribute);
+      String updateTimestamp = updateTimestampObject.toString();
+      if (updateTimestamp != null && !"".equals(updateTimestamp)) {
+        doc.add(new Field(timestampattribute, updateTimestamp.toString(),
+            Field.Store.YES, Field.Index.NOT_ANALYZED));
+      }
     }
     for (Entry<String, Boolean> entry : attributes.entrySet()) {
       String attributeName = (String) entry.getKey();
