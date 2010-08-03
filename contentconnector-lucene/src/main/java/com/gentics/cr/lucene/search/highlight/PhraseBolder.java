@@ -59,7 +59,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
   /**
    * regex to remove text from fragments (e.g. leading commas and spaces)
    */
-  private static final String REMOVE_TEXT_FROM_FRAGMENT_REGEX = "^[, ]*";
+  private static final String REMOVE_TEXT_FROM_FRAGMENT_REGEX = "^[\\r\\n),.: -]*";
 
   /**
    * Create new Instance of PhraseBolder.
