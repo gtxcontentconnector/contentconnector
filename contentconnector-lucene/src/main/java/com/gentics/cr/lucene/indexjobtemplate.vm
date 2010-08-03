@@ -21,10 +21,12 @@
 	
 		#foreach($index in $indexes)
 			#set($indexName = $index.getKey())
-			<h2><a href="?index=$indexName" name="$indexName">Index <em>$indexName</em></a></h2>
 			#set($loc = $index.getValue())
 			#set($queue = $loc.getQueue())
+			#set($job = "")
+			#set($job = $!queue.getCurrentJob())
 			#set($map = $loc.getCRMap())
+			<h2><a href="?index=$indexName" name="$indexName">Index <em>$indexName</em>#if("$!job" != "") (running $job.getObjectsDone()/$job.getObjectsToIndex())#end</a></h2>
 			#if($indexName == $selectedIndex)
 				<table>
 					<thead>
@@ -85,26 +87,25 @@
 				</table>
 				#end
 	
-				#set($j = $queue.getCurrentJob())
-				#if ($j)
+				#if ($job)
 					<table>
 						<thead>
 							<tr>
-								<th colspan="2">Current Job <em>$j.getIdentifyer()</em></th>
+								<th colspan="2">Current Job <em>$job.getIdentifyer()</em></th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr class="even">
 								<td class="key">Status</td>
-								<td class="value center">$j.getStatusString()</td>
+								<td class="value center">$job.getStatusString()</td>
 							</tr>
 							<tr class="odd">
 								<td class="key">Objects to index</td>
-								<td class="value center">$j.getObjectsToIndex()</td>
+								<td class="value center">$job.getObjectsToIndex()</td>
 							</tr>
 							<tr class="even">
 								<td class="key">Objects done</td>
-								<td class="value center">$j.getObjectsDone()</td>
+								<td class="value center">$job.getObjectsDone()</td>
 							</tr>
 						</tbody>
 					</table>
