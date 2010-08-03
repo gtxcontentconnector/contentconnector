@@ -436,17 +436,24 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
   /**
    * Index a single slice.
+   * @param crid TODO javadoc
    * @param indexWriter TODO javadoc
    * @param slice TODO javadoc
    * @param attributes TODO javadoc
+   * @param rp TODO javadoc
    * @param create TODO javadoc
    * @param config TODO javadoc
    * @param transformerlist TODO javadoc
-   * @throws CorruptIndexException TODO javadoc
+   * @param reverseattributes TODO javadoc
+   * @throws CRException TODO javadoc
    * @throws IOException TODO javadoc
    */
-  private void indexSlice(String crid,IndexWriter indexWriter, Collection<CRResolvableBean> slice, Map<String,Boolean> attributes, RequestProcessor rp, boolean create, CRConfigUtil config, List<ContentTransformer> transformerlist,List<String> reverseattributes) throws CRException,
-      CorruptIndexException, IOException {
+  private void indexSlice(final String crid, final IndexWriter indexWriter,
+      final Collection<CRResolvableBean> slice,
+      final Map<String, Boolean> attributes, final RequestProcessor rp,
+      final boolean create, final CRConfigUtil config,
+      final List<ContentTransformer> transformerlist,
+      final List<String> reverseattributes) throws CRException, IOException {
     // prefill all needed attributes
     UseCase uc = MonitorFactory.startUseCase("indexSlice(" + crid + ")");
     try {
