@@ -26,7 +26,7 @@
 			#set($job = "")
 			#set($job = $!queue.getCurrentJob())
 			#set($map = $loc.getCRMap())
-			<h2><a href="?index=$indexName" name="$indexName">Index <em>$indexName</em>#if("$!job" != "") (running $job.getObjectsDone()/$job.getObjectsToIndex())#end</a></h2>
+			<h2><a href="?index=$indexName" name="$indexName">Index <em>$indexName</em>#if("$!job" != "") ($job.getStatusString() #if($job.getObjectsToIndex() != 0)$job.getObjectsDone()/$job.getObjectsToIndex()#end)#end</a></h2>
 			#if($indexName == $selectedIndex)
 				<table>
 					<thead>
@@ -87,7 +87,7 @@
 				</table>
 				#end
 	
-				#if ($job)
+				#if ("$!job" != "")
 					<table>
 						<thead>
 							<tr>
