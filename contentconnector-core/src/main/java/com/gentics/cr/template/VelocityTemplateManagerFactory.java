@@ -1,5 +1,6 @@
 package com.gentics.cr.template;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.apache.jcs.JCS;
@@ -22,6 +23,8 @@ import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 public class VelocityTemplateManagerFactory {
 	
 	private static Logger log = Logger.getLogger(VelocityTemplateManagerFactory.class);
+	
+	private static final String VELOCITYMACRO_FILENAME = "velocitymacros.vm";
 	
 	private static boolean configured = false;
 	
@@ -116,8 +119,12 @@ public class VelocityTemplateManagerFactory {
 			props.setProperty("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.FileResourceLoader");
 			props.setProperty("file.resource.loader.path",macropath);
 			props.setProperty("resource.loader","string,file");
+			//CHECK IF VELICITYMACROS EXISTS AND CREATE EMPTY FILE IF IT DOES NOT
+			File macro_file = new File(macropath+VELOCITYMACRO_FILENAME);
+			macro_file.createNewFile();
+			
 			//TODO: autodetect velocimacro library using *.vm files in confpath
-			props.setProperty("velocimacro.library", "velocitymacros.vm");
+			props.setProperty("velocimacro.library", VELOCITYMACRO_FILENAME);
 		}
 		//Configure Log4J logging for velocity
 		props.put("runtime.log.logsystem.class","org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
