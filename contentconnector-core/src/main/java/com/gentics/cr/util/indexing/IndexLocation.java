@@ -38,6 +38,8 @@ public abstract class IndexLocation {
   private static final String PERIODICAL_KEY = "PERIODICAL";
   private static Hashtable<String,IndexLocation> indexmap;
   private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
+  private static final String PERIODICAL_INTERVAL_KEY = "INTERVAL";
+
   /**
    * The key in the configuration for specifying the update job implementation class
    */
@@ -74,6 +76,10 @@ public abstract class IndexLocation {
     queue = new IndexJobQueue(config);
     String per = (String)config.get(PERIODICAL_KEY);
     periodical = Boolean.parseBoolean(per);
+    
+    String i = (String)config.get(PERIODICAL_INTERVAL_KEY);
+    if(i!=null)this.periodical_interval = Integer.parseInt(i);
+    
     String s_reopen = (String)config.get(REOPEN_CHECK_KEY);
     if(s_reopen!=null)
     {
