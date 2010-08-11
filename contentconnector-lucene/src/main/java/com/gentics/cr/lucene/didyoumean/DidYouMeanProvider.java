@@ -1,6 +1,8 @@
 package com.gentics.cr.lucene.didyoumean;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 	
 	private static final String DIDYOUMEAN_FIELD_KEY="didyoumeanfield";
 	
-	private String didyoumeanfield = "content";
+	private String didyoumeanfield = "all";
 	
 	private SpellChecker spellchecker=null;
 	
@@ -106,7 +108,11 @@ public class DidYouMeanProvider implements IEventReceiver{
 			{
 				if(!this.spellchecker.exist(term))
 				{
-					String[] ts = this.spellchecker.suggestSimilar(term, count, reader, didyoumeanfield, true);
+					//IF FIELD IS SET TO ALL THEN LET IT BE NULL FOR THE SPELLCHECKER TO CHECK ALL FIELDS 
+					String dym_field = null;
+					if(!"ALL".equalsIgnoreCase(didyoumeanfield))
+						dym_field = didyoumeanfield;
+					String[] ts = this.spellchecker.suggestSimilar(term, count, reader, dym_field, true);
 					if(ts!=null && ts.length>0)
 					{
 						result.put(term, ts);
@@ -129,9 +135,23 @@ public class DidYouMeanProvider implements IEventReceiver{
 		log.debug("Starting to reindex didyoumean index.");
 		
         IndexReader sourceReader = IndexReader.open(source);
-        LuceneDictionary dict = new LuceneDictionary(sourceReader, this.didyoumeanfield); 
+        Collection<String> fields = null;
+        
+        if(this.didyoumeanfield.equalsIgnoreCase("ALL"))
+        	fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
+        else
+        {
+        	fields = new ArrayList<String>(1);
+        	fields.add(this.didyoumeanfield);
+        }
+        
+        
         try{
-        	spellchecker.indexDictionary(dict);
+        	for(String fieldname:fields)
+        	{
+        		LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname); 
+        		spellchecker.indexDictionary(dict);
+        	}
         }
         finally{    
 	        sourceReader.close(); 

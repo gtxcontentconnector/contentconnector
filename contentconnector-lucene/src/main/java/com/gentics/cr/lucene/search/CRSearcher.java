@@ -322,17 +322,22 @@ public final HashMap<String, Object> search(final String query,
         //PLUG IN DIDYOUMEAN
         if(didyoumeanenabled && (totalhits < 1 || maxScore < this.didyoumeanminscore))
         {
-        	Set<Term> termset = new HashSet<Term>();
-        	parsedQuery.extractTerms(termset);
+        	
         	
         	IndexReader reader = indexAccessor.getReader(false);
+        	
+        	Query rw_query = parsedQuery.rewrite(reader);
+        	Set<Term> termset = new HashSet<Term>();
+        	rw_query.extractTerms(termset);
+        	
         	Map<String,String[]> suggestions = this.didyoumeanprovider.getSuggestions(termset, this.didyoumeansuggestcount, reader);
         	result.put("suggestions", suggestions);
-        	parsedQuery.rewrite(reader);
+        	
         	String rewrittenQuery = parsedQuery.toString();
         	indexAccessor.release(reader, false);
         	
         	//SPECIAL SUGGESTION
+        	//TODO Test if the query will be altered and if any suggestions have been made... otherwise don't execute second query and don't include the bestquery
         	for(Entry<String,String[]> e:suggestions.entrySet())
         	{
         		String term = e.getKey();
