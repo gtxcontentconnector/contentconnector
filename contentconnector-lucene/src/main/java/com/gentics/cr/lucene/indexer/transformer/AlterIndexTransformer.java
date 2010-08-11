@@ -10,8 +10,6 @@ import com.gentics.cr.exceptions.CRException;
 
 
 /**
- * This class can be used to debug the output during filter and transformer configuration.
- * It writes the configured attribute as well as the bean itself (contentid) to the error logger.
  * 
  * Last changed: $Date: 2009-06-24 17:10:19 +0200 (Mi, 24 Jun 2009) $
  * @version $Revision: 99 $
