@@ -475,7 +475,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
                     + transformer.getTransformerKey() + "; BEAN: "
                     + bean.get(idAttribute));
                 if (transformer.match(bean)) {
-                  transformer.processBeanWithMonitoring(bean);
+                  transformer.processBeanWithMonitoring(bean,indexWriter);
                 }
               } catch (Exception e) {
                 //TODO Remember broken files

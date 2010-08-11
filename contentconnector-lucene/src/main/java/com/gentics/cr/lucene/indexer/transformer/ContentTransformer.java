@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.IndexWriter;
 
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
@@ -74,6 +75,27 @@ public abstract class ContentTransformer {
 		try
 		{
 			processBean(bean);
+		}
+		finally{
+			pcase.stop();
+		}
+	}
+	
+	/**
+	 * Process the specified bean with monitoring
+	 * @param bean
+	 * @throws CRException
+	 */
+	public void processBeanWithMonitoring(CRResolvableBean bean, IndexWriter writer) throws CRException
+	{
+		UseCase pcase = MonitorFactory.startUseCase("Transformer:"+this.getClass());
+		try
+		{
+			
+			if(this instanceof LuceneContentTransformer)
+				((LuceneContentTransformer)this).processBean(bean, writer);
+			else
+				processBean(bean);
 		}
 		finally{
 			pcase.stop();
