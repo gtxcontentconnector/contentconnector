@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.indexer.transformer.pdf;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
@@ -10,6 +11,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
 /**
@@ -40,7 +42,7 @@ public class PDFContentTransformer extends ContentTransformer{
 	 * @param obj
 	 * @return
 	 */
-	private String getStringContents(Object obj)
+	private String getStringContents(Object obj) throws CRException
 	{
 		ByteArrayInputStream is;
 		if(obj instanceof byte[])
@@ -85,14 +87,11 @@ public class PDFContentTransformer extends ContentTransformer{
 	
 	     
         } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+        	throw new CRException(e);
 		} catch (CryptographyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new CRException(e);
 		} catch (InvalidPasswordException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new CRException(e);
 		}
 		catch(Exception e)
 		{
@@ -115,17 +114,20 @@ public class PDFContentTransformer extends ContentTransformer{
 	}
 	
 	@Override
-	public void processBean(CRResolvableBean bean) {
+	public void processBean(CRResolvableBean bean) throws CRException {
 		if(this.attribute!=null)
 		{
 			Object obj = bean.get(this.attribute);
 			if(obj!=null)
 			{
+				long s = new Date().getTime();
 				String newString = getStringContents(obj);
 				if(newString!=null)
 				{
 					bean.set(this.attribute, newString);
 				}
+				long e = new Date().getTime();
+				log.debug("transforming object " + bean.getContentid() + " (" + bean.getMimetype() + ") took " + (e - s) + "ms");
 			}
 		}
 		else
