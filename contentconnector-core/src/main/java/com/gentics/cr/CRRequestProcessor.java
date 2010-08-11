@@ -1,10 +1,8 @@
 package com.gentics.cr;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import com.gentics.api.lib.datasource.Datasource;

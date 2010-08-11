@@ -18,8 +18,6 @@ import org.apache.log4j.Logger;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.monitoring.MonitorFactory;
-import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.plink.PlinkProcessor;
 import com.gentics.cr.plink.PlinkReplacer;
