@@ -134,6 +134,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
    * Configuration key for the rule of objects to index.
    */
   private static final String RULE_KEY = "rule";
+  
+  /**
+   * Configuration key for the attributes stored in the index.
+   */
+  private static final String BOOSTED_ATTRIBUTES_KEY = "BOOSTEDATTRIBUTES";
 
   /**
    * Configuration key for the attributes stored in the index.
@@ -192,6 +197,31 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
    * Flag if TermVectors should be stored in the index or not.
    */
   private boolean storeVectors = true;
+  
+  private HashMap<String,Float> boostvalue = new HashMap<String,Float>();
+  
+  /**
+   * Fills the boostvalue map with the according values from "boostedattributes"
+   * @param booststring
+   */
+  private void fillBoostValues(String booststring)
+  {
+	  if(booststring!=null)
+	  {
+		  try
+		  {
+			  String[] boostterms = booststring.split(",");
+			  for(String term:boostterms) {
+				  String[] t = term.split("\\^");
+				  boostvalue.put(t[0], Float.parseFloat(t[1]));
+			  }
+		  } catch(Exception e)
+		  {
+			  log.error("Could not create boostvalues. Check your config! ("+booststring+")",e);
+		  }
+	  }
+  }
+  
   /**
    * Index a single configured ContentRepository.
    * @param indexLocation TODO javadoc
@@ -206,7 +236,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
     if (crid == null) {
       crid = this.identifyer;
     }
-
+    fillBoostValues(config.getString(BOOSTED_ATTRIBUTES_KEY));
 
     IndexAccessor indexAccessor = null;
     IndexWriter indexWriter = null;
@@ -561,15 +591,22 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
           storeTermVector = TermVector.NO;
         }
         if (value instanceof String || value instanceof Number) {
-            doc.add(new Field(attributeName, value.toString(), storeFieldStore,
-                Field.Index.ANALYZED, storeTermVector));
+        	
+        	Field f = new Field(attributeName, value.toString(), storeFieldStore,
+                    Field.Index.ANALYZED, storeTermVector);
+        	Float boost_value = boostvalue.get(attributeName);
+            if(boost_value!=null)f.setBoost(boost_value);
+            doc.add(f);
           //ADD REVERSEATTRIBUTE IF NEEDED
           if (reverseattributes != null
               && reverseattributes.contains(attributeName)) {
             String reverseAttributeName = attributeName
               + LuceneAnalyzerFactory.REVERSE_ATTRIBUTE_SUFFIX;
-            doc.add(new Field(reverseAttributeName, value.toString(),
-                storeFieldStore, Field.Index.ANALYZED, storeTermVector));
+            Field revField = new Field(reverseAttributeName, value.toString(),
+                    storeFieldStore, Field.Index.ANALYZED, storeTermVector);
+            Float rev_boost_value = boostvalue.get(reverseAttributeName);
+            if(rev_boost_value!=null)revField.setBoost(rev_boost_value);
+            doc.add(revField);
           }
         }
       }
