@@ -166,7 +166,7 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 				    }
 				    else
 				    {
-				    	HTTPClientRequestProcessor.log.error("COULD NOT CAST RESULT. Perhaps remote agent does not work properly");
+				    	log.error("COULD NOT CAST RESULT. Perhaps remote agent does not work properly");
 				    }
 			    
 				} catch (ClassNotFoundException e) {
