@@ -62,7 +62,15 @@ public abstract class IndexLocation {
   private boolean lockdetection = false;
   protected boolean reopencheck = false;
   
-    
+  
+  /**
+   * Get the IndexLocation's interval that is used to create new jobs
+   * @return interval as int
+   */
+  public int getInterval() {
+	  return this.periodical_interval;
+  }
+  
   /**
    * Creates the reopen file to make portlet reload the index.
    */

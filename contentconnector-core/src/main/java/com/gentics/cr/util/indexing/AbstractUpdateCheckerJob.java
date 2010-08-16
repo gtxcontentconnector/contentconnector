@@ -55,6 +55,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
   protected IndexLocation indexLocation;
   
   private long duration = 0;
+  private long start = 0;
   
   
   /**
@@ -100,6 +101,14 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
   }
   
   /**
+   * Get the job's start time as timestamp
+   * @return
+   */
+  public long getStart() {
+	  return this.start;
+  }
+  
+  /**
    * Get total count of objects to index
    * @return
    */
@@ -115,6 +124,31 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
   public int getObjectsDone()
   {
     return status.getObjectsDone();
+  }
+  
+  /**
+   * Calculates ETA of the current job
+   * @return ETA in ms
+   */
+  public long getETA()
+  {
+	  long eta = 0;
+	  
+	  long obj_done = this.getObjectsDone();
+	  long obj_objToIndex = this.getObjectsToIndex();
+	  long obj_todo = obj_objToIndex - obj_done;
+	  
+	  long timetaken = System.currentTimeMillis() - this.getStart();
+	  
+	  long timePerObj = 0;
+	  if(obj_done != 0)
+	  {
+		  timePerObj = timetaken / obj_done;
+	  }
+	  
+	  eta = obj_todo * timePerObj;
+	  
+	  return eta;
   }
   
   /**
@@ -231,14 +265,13 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
    * Executes the index process.
    */
   public void run() {
-    long start = System.currentTimeMillis();
+    this.start = System.currentTimeMillis();
     try {
       indexCR(this.indexLocation, (CRConfigUtil) this.config);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
-    long end = System.currentTimeMillis();
-    this.duration = end - start;
+    this.duration = System.currentTimeMillis() - start;
   }
 
 }

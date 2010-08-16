@@ -387,7 +387,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
             log.debug("Indexing slice with " + slice.size() + " objects.");
             indexSlice(crid, indexWriter, slice, attributes, rp, create, config,
                 transformerlist, reverseAttributes);
-            status.setObjectsDone(status.getObjectsDone() + slice.size());
+            //status.setObjectsDone(status.getObjectsDone() + slice.size());
             // clear the slice and reset the counter
             slice.clear();
             sliceCounter = 0;
@@ -398,7 +398,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
           // index the last slice
           indexSlice(crid, indexWriter, slice, attributes, rp, create, config,
               transformerlist, reverseAttributes);
-          status.setObjectsDone(status.getObjectsDone() + slice.size());
+          //status.setObjectsDone(status.getObjectsDone() + slice.size());
         }
         if (!interrupted) {
           //Only Optimize the Index if the thread has not been interrupted
@@ -529,6 +529,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
         if (Thread.currentThread().isInterrupted()) {
           break;
         }
+        this.status.setObjectsDone(this.status.getObjectsDone()+1);
       }
     } finally {
       uc.stop();

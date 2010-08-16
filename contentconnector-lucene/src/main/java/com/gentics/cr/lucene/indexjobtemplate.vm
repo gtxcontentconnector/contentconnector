@@ -6,6 +6,7 @@
 			body { font-family: arial,helvetica,sans-serif; font-size: 10pt; }
 			h1 { text-transform: uppercase; font-weight: bold; font-size: 20pt; color: #A0A0A0; margin: 15px 0 10px 0; }
 			a { text-decoration: none; }
+			a.dellink { color:red; }
 			h2 { background-color:#C6E7FF; border-color:#576C7F; border-style:solid; border-width:0 0 2px; font-size:16px; padding:2px; }
 			img { border: none; }
 			
@@ -81,7 +82,7 @@
 						<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=all$nc">add</a></div>
 						<div class="clear"></div>
 						<div class="key">clear Index</div>
-						<div class="value right"><a href="?action=clear&idx=$e.getKey()$nc">add</a></div>
+						<div class="value right"><a class="dellink" href="?action=clear&idx=$e.getKey()$nc">add</a></div>
 						<div class="clear"></div>
 					</div>
 				</div>
@@ -96,7 +97,8 @@
 							$j.getIdentifyer()<br/>
 							status: $j.getStatusString()<br/>
 							&nbsp;&nbsp;&nbsp; $j.getObjectsToIndex() objects to index<br/>
-							&nbsp;&nbsp;&nbsp; $j.getObjectsDone() objects done
+							&nbsp;&nbsp;&nbsp; $j.getObjectsDone() objects done<br/>
+							&nbsp;&nbsp;&nbsp; $j.getETA() ms ETA
 						</div>
 					</div>
 				</div>
