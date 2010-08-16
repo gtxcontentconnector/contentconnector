@@ -1,5 +1,8 @@
 package com.gentics.cr.lucene;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Hashtable;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
@@ -24,8 +28,7 @@ import com.gentics.cr.util.indexing.IndexLocation;
 
 
 /**
- * @author haymo
- * Used to render the Rest xml.
+ * @author Christopher Supnig
  */
 public class IndexJobServlet extends HttpServlet {
 
@@ -37,6 +40,8 @@ public class IndexJobServlet extends HttpServlet {
   private CRConfigUtil crConf;
   private ITemplateManager vtl;
   private ITemplate tpl;
+  
+  private static final String VELOCITY_TEMPLATE_KEY = "velocitytemplate";
 
 
   public final void init(final ServletConfig config) throws ServletException {
@@ -45,16 +50,34 @@ public class IndexJobServlet extends HttpServlet {
     this.log = Logger.getLogger("com.gentics.cr.lucene");
     this.indexer = new IndexController(config.getServletName());
 
-    this.crConf = new CRConfigUtil();
+    this.crConf = this.indexer.getConfig();
     this.vtl = crConf.getTemplateManager();
     
-	try{
-		this.tpl = new FileTemplate(IndexJobServlet.class.getResourceAsStream("indexjobtemplate.vm"));
-	}
-	catch(Exception ex)
-	{
-		log.error("FAILED TO LOAD VELOCITY TEMPLATE FROM indexjobtemplate.vm");
-	}
+    String templatepath = this.crConf.getString(VELOCITY_TEMPLATE_KEY);
+    if(templatepath!=null)
+    {
+	   File f = new File(templatepath);
+	   if(f.exists())
+	   {
+		   try {
+			this.tpl = new FileTemplate(new FileInputStream(f));
+		} catch (FileNotFoundException e) {
+			log.error("Could not load template from "+templatepath,e);
+		} catch (CRException e) {
+			log.error("Could not load template from "+templatepath,e);
+		}
+	   }
+    }
+    if(this.tpl==null)
+    {
+		try{
+			this.tpl = new FileTemplate(IndexJobServlet.class.getResourceAsStream("indexjobtemplate.vm"));
+		}
+		catch(Exception ex)
+		{
+			log.error("FAILED TO LOAD VELOCITY TEMPLATE FROM indexjobtemplate.vm");
+		}
+    }
   }
 
   @Override
