@@ -170,8 +170,8 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 				    }
 			    
 				} catch (ClassNotFoundException e) {
-					HTTPClientRequestProcessor.log.error("Coult not load object from http response: "+e.getMessage());
-					e.printStackTrace();
+					log.error("Coult not load object from http response",e);
+					throw new CRException(e);
 				}
 		      
 				if(result!=null)
@@ -183,11 +183,11 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 				}
 
 		    } catch (HttpException e) {
-		      System.err.println("Fatal protocol violation: " + e.getMessage());
-		      e.printStackTrace();
+		      log.error("Fatal protocol violation",e);
+		      throw new CRException(e);
 		    } catch (IOException e) {
-		      System.err.println("Fatal transport error: " + e.getMessage());
-		      e.printStackTrace();
+		      log.error("Fatal transport error",e);
+		      throw new CRException(e);
 		    } finally {
 		      // Release the connection.
 		      method.releaseConnection();
