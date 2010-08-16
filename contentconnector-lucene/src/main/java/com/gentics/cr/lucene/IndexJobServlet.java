@@ -125,6 +125,9 @@ public class IndexJobServlet extends HttpServlet {
           if ("startWorker".equalsIgnoreCase(action)) {
             queue.startWorker();
           }
+          if ("clear".equalsIgnoreCase(action))	{
+        	  loc.createClearJob();
+          }
           if ("addJob".equalsIgnoreCase(action)) {
             String cr = request.getParameter("cr");
             if ("all".equalsIgnoreCase(cr)) {

@@ -45,6 +45,12 @@ public abstract class IndexLocation {
    */
   public static final String UPDATEJOBCLASS_KEY = "updatejobclass";
   private static final String DEFAULT_UPDATEJOBCLASS = "com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob";
+  
+  /**
+   * The key in the configuration for specifying the update job implementation class
+   */
+  public static final String DELETEJOBCLASS_KEY = "deletejobclass";
+  private static final String DEFAULT_DELETEJOBCLASS = "com.gentics.cr.lucene.indexer.index.CRLuceneDeleteJob";
 
 
   //Instance Members
@@ -291,6 +297,30 @@ public abstract class IndexLocation {
       return indexLocationClass;
     }
   }
+  
+  
+  /**
+   * Helper method to get Class of UpdateJobImplementation.
+   * @param config {@link CRConfig} to 
+   * @return
+   */
+  private static Class<? extends AbstractUpdateCheckerJob> getDeleteJobImplementationClass(CRConfig config){
+    Class<?> deletejobImplementationClassGeneric;
+    Class<? extends AbstractUpdateCheckerJob> deletejobImplementationClass;
+    String deletejobimplementationClassName = config.getString(DELETEJOBCLASS_KEY);
+    if(deletejobimplementationClassName == null){
+    	deletejobimplementationClassName = DEFAULT_DELETEJOBCLASS;
+    }
+    
+    try {
+    	deletejobImplementationClassGeneric = Class.forName(deletejobimplementationClassName);
+      deletejobImplementationClass = deletejobImplementationClassGeneric.asSubclass(AbstractUpdateCheckerJob.class);
+      return deletejobImplementationClass;
+    } catch (ClassNotFoundException e) {
+      log.error("Cannot load class for creating a new IndexJob",e);
+    }
+    return null;
+  }
 
   /**
    * Helper method to get Class of UpdateJobImplementation.
@@ -390,6 +420,36 @@ public abstract class IndexLocation {
     }
     
 
+  }
+  
+  /**
+   * Creates a job that clears the index.
+   * @return true if job was added to the queue
+   */
+  public boolean createClearJob() {
+	  Class<? extends AbstractUpdateCheckerJob> deletejobImplementationClass = getDeleteJobImplementationClass(config);
+	    AbstractUpdateCheckerJob indexJob = null;
+	    try {
+	      Constructor<? extends AbstractUpdateCheckerJob> deletejobImplementationClassConstructor = deletejobImplementationClass.getConstructor(new Class[]{CRConfig.class, IndexLocation.class, Hashtable.class});
+	      Object indexJobObject = deletejobImplementationClassConstructor.newInstance(config,this,null);
+	      indexJob = (AbstractUpdateCheckerJob) indexJobObject;
+	      return this.queue.addJob(indexJob);
+	    } catch (ClassCastException e){
+	      log.error("Please configure an implementation of "+AbstractUpdateCheckerJob.class+" ",e);
+	    } catch (SecurityException e) {
+	      log.error("Cannot load class for creating a new IndexJob",e);
+	    } catch (NoSuchMethodException e) {
+	      log.error("Cannot find constructor for creating a new IndexJob",e);
+	    } catch (IllegalArgumentException e) {
+	      log.error("Error creating a new IndexJob",e);
+	    } catch (InstantiationException e) {
+	      log.error("Error creating a new IndexJob",e);
+	    } catch (IllegalAccessException e) {
+	      log.error("Error creating a new IndexJob",e);
+	    } catch (InvocationTargetException e) {
+	      log.error("Error creating a new IndexJob",e);
+	    }
+	    return false;
   }
   
   /**

@@ -1,137 +1,116 @@
-#set($refreshLink = "?action=show$nc&index=$!selectedIndex")
 <html>
 	<head>
 		<title>IndexerServlet for Lucene by Gentics</title>
-		<meta http-equiv="refresh" content="5; URL=$refreshLink" />
+		<meta http-equiv="refresh" content="5; URL=?action=show$nc" />
 		<style>
-			body { font-family: verdana,geneva,arial,helvetica,sans-serif; font-size: 11px; }
+			body { font-family: arial,helvetica,sans-serif; font-size: 10pt; }
+			h1 { text-transform: uppercase; font-weight: bold; font-size: 20pt; color: #A0A0A0; margin: 0 0 10px 0; }
+			a { text-decoration: none; }
 			h2 { background-color:#C6E7FF; border-color:#576C7F; border-style:solid; border-width:0 0 2px; font-size:16px; padding:2px; }
-			table { border: 1px solid #c0c0c0; width: 500px; margin-bottom: 10px; }
-			table th { text-align: left; font-weight: normal; background: #D8D8DA; font-size: 13px; }
-			table td { font-size: 12px; }
-			table tr.even { background: #EDF5FF; }
-			table tr.odd { }
-			table td.key { width: 70% }
-			table td.value { width: 30%; }
+			
 			.center { text-align: center; }
+			.right { text-align: right; }
+			.clear { clear: both; }
+			
+			.captioncontainer { width: 150px; float: left; font-style: italic; }
+			.indexcontainer { float: left; }
+			.indexblock { float: left; min-width: 200px; width: 200px; border: 1px solid #C0C0C0; border-top: 0px; margin-left: 4px; }
+			
+			.row { line-height: 18px; padding: 0px 4px; } 
+			.row.small, .row.small a { font-size: 8pt; }
+			.row.header { font-weight: bold; padding: 0px 10px; text-align: center; background: #C0C0C0; }
+			.row.even { background: #EFEFEF; }
+			
+			.key { float: left; }
+			.value { float: right; margin-left: 4px; }
+			
+			.smallheader { font-weight: bold; }
+			.smallbox { margin-left: 4px; }
 		</style>
 	</head>
 	<body>
 		<h1>Lucene Indexes</h1>
-	
-		#foreach($index in $indexes)
-			#set($indexName = $index.getKey())
-			#set($loc = $index.getValue())
+		
+		<div class="captioncontainer">
+			<div class="row odd">Index</div>
+			<div class="row even">Objects in Index</div>
+			<div class="row odd">Periodical indexing</div>
+			<div class="row even">Current checkinterval</div>
+			<div class="row odd">Elements in queue</div>
+			<div class="row even">Workerstatus</div>
+			<div class="row odd">Jobs</div>
+		</div>
+		
+		<div class="indexcontainer">
+		#foreach($e in $indexes)
+			#set($loc = $e.getValue())
 			#set($queue = $loc.getQueue())
-			#set($job = "")
-			#set($job = $!queue.getCurrentJob())
 			#set($map = $loc.getCRMap())
-			<h2><a href="?index=$indexName" name="$indexName">Index <em>$indexName</em>#if("$!job" != "") ($job.getStatusString() #if($job.getObjectsToIndex() != 0)$job.getObjectsDone()/$job.getObjectsToIndex()#end)#end</a></h2>
-			#if($indexName == $selectedIndex)
-				<table>
-					<thead>
-						<tr>
-							<th colspan="2">Index and Queue</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="even">
-							<td class="key">Objects in index</td>
-							<td class="value center">$loc.getDocCount()</td>
-						</tr>
-						<tr class="odd">
-							<td class="key">Periodical indexing</td>
-							<td class="value center">
-								#if($loc.isPeriodical()) yes #else no #end
-							</td>
-						</tr>
-						<tr class="even">
-							<td class="key">Current checkinterval</td>
-							<td class="value center">$queue.getInterval() s</td>
-						</tr>
-						<tr class="odd">
-							<td class="key">Elements in queue</td>
-							<td class="value center">$queue.getSize()</td>
-						</tr>
-						<tr class="even">
-							#if($queue.isRunning())
-								<td class="key">Worker is processing</td>
-								<td class="value center"><a href="?action=stopWorker&idx=$indexName()$nc">stop</a></td>
-							#else
-								<td class="key">Worker not running</td>
-								<td class="value center"><a href="?action=startWorker&idx=$indexName()$nc">start</a></td>
-							#end
-						</tr>
-					</tbody>
-				</table>
-	
+			<div class="indexblock">
+				<div class="row odd small header">$e.getKey()</div>
+				<div class="row even small center">$loc.getDocCount()</div>
+				<div class="row odd small center">#if($loc.isPeriodical()) true #else false #end</div>
+				<div class="row even small center">$queue.getInterval() s</div>
+				<div class="row odd small center">$queue.getSize()</div>
+				<div class="row even small">
+					#if($queue.isRunning())
+						<div class="key">processing</div>
+						<div class="value right"><a href="?action=stopWorker&idx=$e.getKey()$nc">stop</a></div>
+					#else
+						<div class="key">not running</div>
+						<div class="value right"><a href="?action=startWorker&idx=$e.getKey()$nc">start</a></div>
+					#end
+					<div class="clear"></div>
+				</div>
+				<div class="row odd small">
+					<div class="smallheader">index parts</div>
+					<div class="smallbox">
+					#foreach($crc in $map.entrySet())
+						<div class="key">$crc.getKey()</div>
+						<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=$crc.getKey()$nc">add</a></div>
+						<div class="clear"></div>
+					#end
+						<div class="key">all Parts</div>
+						<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=all$nc">add</a></div>
+						<div class="clear"></div>
+						<div class="key">clear Index</div>
+						<div class="value right"><a href="?action=clear&idx=$e.getKey()$nc">add</a></div>
+						<div class="clear"></div>
+					</div>
+				</div>
+				
+				#set($j = "")
+				#set($j = $queue.getCurrentJob())
+				#if ("$!j" != "")
+				<div class="row even small">
+					<div class="smallheader">current job</div>
+					<div class="smallbox">
+						<div>
+							$j.getIdentifyer()<br/>
+							status: $j.getStatusString()<br/>
+							&nbsp;&nbsp;&nbsp; $j.getObjectsToIndex() objects to index<br/>
+							&nbsp;&nbsp;&nbsp; $j.getObjectsDone() objects done
+						</div>
+					</div>
+				</div>
+				#end
+
 				#set($lastJobs = $queue.getLastJobs())
 				#if($lastJobs)
-				<table>
-					<thead>
-						<tr>
-							<th>Last 3 Jobs</th>
-							<th class="center">Duration</th>
-							<th class="center">Objects done</th>
-						</tr>
-					</thead>
-					<tbody>
+				<div class="row even small">
+					<div class="smallheader">last 3 jobs</div>
+					<div class="smallbox">
 						#foreach($lj in $lastJobs)
-						<tr>
-							<td><em>$lj.getIdentifyer()</em></td>
-							<td class="center">$lj.getDuration() ms</td>
-							<td class="center">$lj.getObjectsDone()</td>
-						</tr>
+							<div>$lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getDuration() ms for $lj.getObjectsDone() Objects</div>
 						#end
-					</tbody>
-				</table>
+					</div>
+				</div>
 				#end
-	
-				#if ("$!job" != "")
-					<table>
-						<thead>
-							<tr>
-								<th colspan="2">Current Job <em>$job.getIdentifyer()</em></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr class="even">
-								<td class="key">Status</td>
-								<td class="value center">$job.getStatusString()</td>
-							</tr>
-							<tr class="odd">
-								<td class="key">Objects to index</td>
-								<td class="value center">$job.getObjectsToIndex()</td>
-							</tr>
-							<tr class="even">
-								<td class="key">Objects done</td>
-								<td class="value center">$job.getObjectsDone()</td>
-							</tr>
-						</tbody>
-					</table>
-				#end
-	
-				<table>
-					<thead>
-						<tr>
-							<th colspan="2">Indexpart Operations </th>
-						</tr>
-					</thead>
-					<tbody>
-						#foreach($crc in $map.entrySet())
-						<tr>
-							<td class="key"><em>$crc.getKey()</em></td>
-							<td class="value center"><a href="?action=addJob&idx=$indexName()&cr=$crc.getKey()$nc">add job</a></td>
-						</tr>
-						#end
-						<tr>
-							<td class="key">All Parts</td>
-							<td class="value center"><a href="?action=addJob&idx=$indexName()&cr=all$nc">add job</a></td>
-						</tr>
-					</tbody>
-				</table>
-			#end
+
+			</div>
 		#end
-		<a href="$refreshLink">Refresh</a><br/>
+		</div>
+		<div style="clear: both;"></div>
+		<a href="?action=show$nc">Refresh</a><br/>
 	</body>
 </html>

@@ -143,6 +143,7 @@ public class IndexJobQueue{
 			}
 		}
 		
+		
 		//END CURRENT JOB
 		synchronized(IndexJobQueue.this)
 		{
@@ -162,6 +163,8 @@ public class IndexJobQueue{
 						e.printStackTrace();
 					}
 			}
+			//TODO Clear queue and stop each queued job
+			this.queue.clear();
 			//END WORKER THREAD
 			if(d!=null)
 			{ 
