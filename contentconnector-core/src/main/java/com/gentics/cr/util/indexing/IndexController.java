@@ -40,6 +40,15 @@ public class IndexController {
 	}
 	
 	/**
+	 * Returns the current config of the indexController
+	 * @return
+	 */
+	public CRConfigUtil getConfig()
+	{
+		return this.crconfig;
+	}
+	
+	/**
 	 * Create new instance of IndexController
 	 * @param config
 	 */
