@@ -11,8 +11,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spell.CustomSpellChecker;
 import org.apache.lucene.search.spell.LuceneDictionary;
-import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
@@ -47,7 +47,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 	
 	private String didyoumeanfield = "all";
 	
-	private SpellChecker spellchecker=null;
+	private CustomSpellChecker spellchecker=null;
 	
 	public DidYouMeanProvider(CRConfig config)
 	{
@@ -61,7 +61,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 		
 		try
 		{
-			spellchecker = new SpellChecker(didyoumeanLocation);
+			spellchecker = new CustomSpellChecker(didyoumeanLocation);
 			reIndex();
 		}
 		catch(IOException e)
@@ -86,7 +86,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 		}
 	}
 	
-	public SpellChecker getInitializedSpellchecker()
+	public CustomSpellChecker getInitializedSpellchecker()
 	{
 		return this.spellchecker;
 	}
@@ -108,10 +108,8 @@ public class DidYouMeanProvider implements IEventReceiver{
 			{
 				if(!this.spellchecker.exist(term))
 				{
-					//IF FIELD IS SET TO ALL THEN LET IT BE NULL FOR THE SPELLCHECKER TO CHECK ALL FIELDS 
-					String dym_field = null;
-					if(!"ALL".equalsIgnoreCase(didyoumeanfield))
-						dym_field = didyoumeanfield;
+					 
+					String dym_field = didyoumeanfield;
 					String[] ts = this.spellchecker.suggestSimilar(term, count, reader, dym_field, true);
 					if(ts!=null && ts.length>0)
 					{

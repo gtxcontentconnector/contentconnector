@@ -156,6 +156,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
    * properties is [property][:asc|:desc] where the postfix determines the
    * sortorder. If neither :asc nor :desc is given, the sorting will be done
    * ascending for this property.
+   * 
+   * NOTE: using "score:asc" or "score:desc" will both result in an ascating relevance sorting
    * @param sorting
    * @return
    */
@@ -174,7 +176,10 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
         } else {
           reverse = false;
         }
-        sf.add(new SortField(sort[0], Locale.getDefault(), reverse));
+        if("score".equalsIgnoreCase(sort[0]))
+        	sf.add(SortField.FIELD_SCORE);
+        else
+        	sf.add(new SortField(sort[0], Locale.getDefault(), reverse));
       }
 
     }
