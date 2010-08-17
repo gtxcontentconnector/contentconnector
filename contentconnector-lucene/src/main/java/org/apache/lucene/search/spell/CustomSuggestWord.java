@@ -41,8 +41,7 @@ final class CustomSuggestWord{
 
   public final int compareTo(CustomSuggestWord a) {
     // first criteria: the edit distance
-	System.out.println("COMPARE: "+string+":"+score+"-"+freq+" vs. "+a.string+":"+a.score+"-"+a.freq);
-	// first criteria: the edit distance
+	
     if (score > a.score) {
       return 1;
     }
