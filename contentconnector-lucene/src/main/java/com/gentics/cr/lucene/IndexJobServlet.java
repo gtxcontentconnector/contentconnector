@@ -134,6 +134,8 @@ public class IndexJobServlet extends HttpServlet {
       String selectedIndex = request.getParameter("index");
       response.setContentType("text/html");
       Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
+      
+           
       this.vtl.put("indexes", indexTable.entrySet());
       this.vtl.put("nc", nc);
       this.vtl.put("selectedIndex", selectedIndex);
