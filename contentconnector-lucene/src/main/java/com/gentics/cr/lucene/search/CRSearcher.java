@@ -338,7 +338,7 @@ public final HashMap<String, Object> search(final String query,
         	Map<String,String[]> suggestions = this.didyoumeanprovider.getSuggestions(termset, this.didyoumeansuggestcount, reader);
         	result.put("suggestions", suggestions);
         	
-        	log.debug("DYM Suggestions took "+(dym_start - System.currentTimeMillis())+"ms");
+        	log.debug("DYM Suggestions took "+(System.currentTimeMillis() - dym_start)+"ms");
         	String rewrittenQuery = parsedQuery.toString();
         	indexAccessor.release(reader, false);
         	
@@ -359,7 +359,7 @@ public final HashMap<String, Object> search(final String query,
         	result.put("bestquery", rewrittenQuery);
         	result.put("bestqueryhits", bestcollector.getTotalHits());
         	
-        	log.debug("DYM took "+(dym_start - System.currentTimeMillis())+"ms");
+        	log.debug("DYM took "+(System.currentTimeMillis() - dym_start)+"ms");
         }
         
         //PLUG IN DIDYOUMEAN END
