@@ -56,12 +56,14 @@ public class CRSearcher {
   private static final String COLLECTOR_CONFIG_KEY = "collector";
   
   private static final String DIDYOUMEAN_ENABLED_KEY="didyoumean";
+  private static final String DIDYOUMEAN_BESTQUERY_KEY="didyoumeanbestquery";
   private static final String DIDYOUMEAN_SUGGEST_COUNT_KEY="didyoumeansuggestions";
   private static final String DIDYOUMEAN_MIN_SCORE="didyoumeanminscore";
 
   protected CRConfig config;
   private boolean computescores = true;
   private boolean didyoumeanenabled=false;
+  private boolean didyoumeanbestquery=true;
   private int didyoumeansuggestcount = 5;
   private float didyoumeanminscore = 0.5f;
   
@@ -100,7 +102,12 @@ public class CRSearcher {
     if(didyoumeanenabled)
     {
     	this.didyoumeanprovider = new DidYouMeanProvider(config);
+    	String s_bestquery = config.getString(DIDYOUMEAN_BESTQUERY_KEY);
+    	if(s_bestquery!=null)didyoumeanbestquery = Boolean.parseBoolean(s_bestquery);
+    	
     }
+    
+    
   }
 
   /**
@@ -192,7 +199,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
     LuceneIndexLocation idsLocation =
       LuceneIndexLocation.getIndexLocation(this.config);
     if (idsLocation != null) {
-      idsLocation.finalize();
+      idsLocation.stop();
     }
   }
 
@@ -342,23 +349,25 @@ public final HashMap<String, Object> search(final String query,
         	String rewrittenQuery = parsedQuery.toString();
         	indexAccessor.release(reader, false);
         	
-        	//SPECIAL SUGGESTION
-        	//TODO Test if the query will be altered and if any suggestions have been made... otherwise don't execute second query and don't include the bestquery
-        	for(Entry<String,String[]> e:suggestions.entrySet())
+        	if(this.didyoumeanbestquery)
         	{
-        		String term = e.getKey();
-        		String[] term_suggestions = e.getValue();
-        		if(term_suggestions!=null && term_suggestions.length>0)
-        		{
-        			rewrittenQuery = rewrittenQuery.replaceAll(term, term_suggestions[0]);
-        		}
+	        	//SPECIAL SUGGESTION
+	        	//TODO Test if the query will be altered and if any suggestions have been made... otherwise don't execute second query and don't include the bestquery
+	        	for(Entry<String,String[]> e:suggestions.entrySet())
+	        	{
+	        		String term = e.getKey();
+	        		String[] term_suggestions = e.getValue();
+	        		if(term_suggestions!=null && term_suggestions.length>0)
+	        		{
+	        			rewrittenQuery = rewrittenQuery.replaceAll(term, term_suggestions[0]);
+	        		}
+	        	}
+	        	Query bestQuery = parser.parse(rewrittenQuery);
+	        	TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
+	        	runSearch(bestcollector, searcher, bestQuery, false, 1, 0);
+	        	result.put("bestquery", rewrittenQuery);
+	        	result.put("bestqueryhits", bestcollector.getTotalHits());
         	}
-        	Query bestQuery = parser.parse(rewrittenQuery);
-        	TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
-        	runSearch(bestcollector, searcher, bestQuery, false, 1, 0);
-        	result.put("bestquery", rewrittenQuery);
-        	result.put("bestqueryhits", bestcollector.getTotalHits());
-        	
         	log.debug("DYM took "+(System.currentTimeMillis() - dym_start)+"ms");
         }
         

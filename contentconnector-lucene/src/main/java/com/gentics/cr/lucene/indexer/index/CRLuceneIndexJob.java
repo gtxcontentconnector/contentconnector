@@ -422,7 +422,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
             }
           }
         } else {
-          log.debug("Job has been interrupted and will now be closed. Objects "
+          log.debug("Job has been interrupted and will now be closed. Missing objects "
               + "will be reindexed next run.");
         }
         finishedIndexJobSuccessfull = true;

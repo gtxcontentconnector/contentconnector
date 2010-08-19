@@ -15,6 +15,8 @@ import org.apache.lucene.store.RAMDirectory;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessorToken;
 import com.gentics.cr.util.indexing.IndexLocation;
 
 /**
@@ -34,6 +36,8 @@ public abstract class LuceneIndexLocation extends
 	protected static final String RAM_IDENTIFICATION_KEY = "RAM";
 
 	protected String name = null;
+	
+	private IndexAccessorToken accessorToken = null;
 
 	protected Analyzer getConfiguredAnalyzer() {
 		return LuceneAnalyzerFactory
@@ -119,7 +123,7 @@ public abstract class LuceneIndexLocation extends
 	 */
 	public LuceneIndexLocation(CRConfig config) {
 		super(config);
-
+		accessorToken = IndexAccessorFactory.getInstance().registerConsumer();
 		name = config.getName();
 	}
 
@@ -274,6 +278,12 @@ public abstract class LuceneIndexLocation extends
 	public boolean isContainingIndex() {
 
 		return getDocCount() > 0;
+	}
+	
+
+	@Override
+	public void finalize() {
+		IndexAccessorFactory.getInstance().releaseConsumer(accessorToken);
 	}
 
 }

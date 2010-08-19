@@ -24,8 +24,6 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
  */
 public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 	
-	
-	
 	Hashtable<String,Directory> dirs = new Hashtable<String,Directory>();
 	
 	/**
@@ -51,6 +49,7 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 				}
 			}
 		}
+		
 	}
 	
 	
@@ -178,10 +177,5 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 		return reopened;
 	}
 	
-	@Override
-	public void finalize() {
-		IndexAccessorFactory.getInstance().close();
-		
-	}
 
 }

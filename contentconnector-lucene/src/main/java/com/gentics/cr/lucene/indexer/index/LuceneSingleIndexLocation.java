@@ -183,10 +183,5 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 		return reopened;
 	}
 
-	@Override
-	public void finalize() {
-		IndexAccessorFactory.getInstance().close();
-		
-	}
-
+	
 }

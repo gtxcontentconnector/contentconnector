@@ -19,6 +19,7 @@ package com.gentics.cr.lucene.indexaccessor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.LogManager;
 
@@ -56,6 +57,8 @@ public class IndexAccessorFactory {
 
   private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors =
     new ConcurrentHashMap<Directory, IndexAccessor>();
+  
+  private Vector<IndexAccessorToken> consumer = new Vector<IndexAccessorToken>();
 
   /**
    * boolean mark for indicating {@link IndexAccessorFactory} was closed before.
@@ -88,11 +91,27 @@ public class IndexAccessorFactory {
   private IndexAccessorFactory() {
     // prevent instantiation.
   }
+  
+  public synchronized IndexAccessorToken registerConsumer()
+  {
+	  IndexAccessorToken token = new IndexAccessorToken();
+	  this.consumer.add(token);
+	  return token;
+  }
+  
+  public synchronized void releaseConsumer(IndexAccessorToken token)
+  {
+	  this.consumer.remove(token);
+	  if(this.consumer.size()==0)
+	  {
+		  close();
+	  }
+  }
 
   /**
    * Closes all of the open IndexAccessors and releases any open resources.
    */
-  public synchronized void close() {
+  private synchronized void close() {
     if (!wasClosed) {
       synchronized (indexAccessors) {
         for (IndexAccessor accessor : indexAccessors.values()) {
