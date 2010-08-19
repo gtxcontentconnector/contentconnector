@@ -39,6 +39,7 @@ public class IndexJobQueue{
 			}
 		});
 		this.d.setName("IndexJobQueueWorker-" + config.getName());
+		this.d.setDaemon(true);
 	}
 	
 	/**
@@ -105,6 +106,7 @@ public class IndexJobQueue{
 						currentJI = j;
 						currentJob = new Thread(j);
 						currentJob.setName("Current Index Job");
+						currentJob.setDaemon(true);
 						currentJob.start();
 						if(currentJob.isAlive())
 						{

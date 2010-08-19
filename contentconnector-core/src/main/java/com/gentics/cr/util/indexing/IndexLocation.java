@@ -133,6 +133,7 @@ public abstract class IndexLocation {
         }
       });
       periodical_thread.setName("PeriodicIndexJobCreator");
+      periodical_thread.setDaemon(true);
       periodical_thread.start();
       
     }
@@ -524,17 +525,18 @@ public abstract class IndexLocation {
     {
       this.periodical_thread.interrupt();
       try {
-        this.periodical_thread.join();
+        this.periodical_thread.join(1000);
       } catch (Exception e) {
-        e.printStackTrace();
+        log.error("Error while stopping periodical thread");
       }
     }
     if(this.queue!=null)
     {
       this.queue.stop();
     }
+    finalize();
   }
   
-  public abstract void finalize();
+  protected abstract void finalize();
   
 }
