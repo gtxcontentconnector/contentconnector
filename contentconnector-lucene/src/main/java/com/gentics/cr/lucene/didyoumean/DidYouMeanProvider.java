@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.didyoumean;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -43,8 +44,9 @@ public class DidYouMeanProvider implements IEventReceiver{
 	private static final String SOURCE_INDEX_KEY="srcindexlocation";
 	private static final String DIDYOUMEAN_INDEY_KEY="didyoumeanlocation";
 	
-	private static final String DIDYOUMEAN_FIELD_KEY="didyoumeanfield";
+	private static final String DIDYOUMEAN_FIELD_KEY="didyoumeanfields";
 	
+
 	private String didyoumeanfield = "all";
 	
 	private CustomSpellChecker spellchecker=null;
@@ -56,6 +58,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 		source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
 		didyoumeanLocation = LuceneIndexLocation.createDirectory(new CRConfigUtil(auto_conf,DIDYOUMEAN_INDEY_KEY));
 		
+				
 		String s_autofield = config.getString(DIDYOUMEAN_FIELD_KEY);
 		if(s_autofield!=null)this.didyoumeanfield=s_autofield;
 		
@@ -108,9 +111,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 			{
 				if(!this.spellchecker.exist(term))
 				{
-					 
-					String dym_field = didyoumeanfield;
-					String[] ts = this.spellchecker.suggestSimilar(term, count, reader, dym_field, true);
+					String[] ts = this.spellchecker.suggestSimilar(term, count, reader, didyoumeanfield, true);
 					if(ts!=null && ts.length>0)
 					{
 						result.put(term, ts);
@@ -139,8 +140,17 @@ public class DidYouMeanProvider implements IEventReceiver{
         	fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
         else
         {
-        	fields = new ArrayList<String>(1);
-        	fields.add(this.didyoumeanfield);
+        	if(this.didyoumeanfield.contains(","))
+        	{
+        		String[] arr = this.didyoumeanfield.split(",");
+        		fields = new ArrayList<String>(Arrays.asList(arr));
+        		
+        	}
+        	else
+        	{
+        		fields = new ArrayList<String>(1);
+        		fields.add(this.didyoumeanfield);
+        	}
         }
         
         

@@ -18,6 +18,7 @@ package org.apache.lucene.search.spell;
  */
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -236,9 +237,14 @@ public class CustomSpellChecker implements java.io.Closeable {
       {
     	  if(field!=null)
     	  {
-    		  if("all".equalsIgnoreCase(field))
+    		  if("all".equalsIgnoreCase(field) || (field!=null && field.contains(",")))
     		  {
-			      fieldnames = ir.getFieldNames(FieldOption.ALL);
+			      if("all".equalsIgnoreCase(field))fieldnames = ir.getFieldNames(FieldOption.ALL);
+			      else
+			      {
+			    	  String[] arr = field.split(",");
+			    	  fieldnames = Arrays.asList(arr);
+			      }
 			      
 			      for(String fieldname:fieldnames) {
 			    	  int_freq+=ir.docFreq(new Term(fieldname, word));
@@ -314,7 +320,7 @@ public class CustomSpellChecker implements java.io.Closeable {
         	
           String sug_term = sugWord.string;
           int sug_freq = 0;
-          if("all".equalsIgnoreCase(field))
+          if(fieldnames!=null)
           {
         	  for(String fieldname:fieldnames) {
         		  sug_freq+=ir.docFreq(new Term(fieldname, sug_term));

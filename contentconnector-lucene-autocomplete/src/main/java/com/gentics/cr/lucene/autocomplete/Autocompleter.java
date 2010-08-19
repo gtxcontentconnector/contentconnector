@@ -185,8 +185,8 @@ public class Autocompleter implements IEventReceiver{
 	
 	public void finalize()
 	{
-		source.finalize();
-		autocompleteLocation.finalize();
+		source.stop();
+		autocompleteLocation.stop();
 		EventManager.getInstance().unregister(this);
 	}
 
