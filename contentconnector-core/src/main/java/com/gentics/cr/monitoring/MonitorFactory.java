@@ -31,44 +31,51 @@ public class MonitorFactory {
 	public static String getSimpleReport()
 	{
 		String ret = "<table class=\"report_table\">";
-		int max_field = 7;
-		
-		String[] header = com.jamonapi.MonitorFactory.getHeader();
-		ret+="<tr>";
-		for(int i=0;i<=max_field;i++)
+		if(monitorenabled)
 		{
-			ret+="<th>"+header[i]+"</th>";
-		}
-		ret+="</tr>";
-		
-		Object[][] data = com.jamonapi.MonitorFactory.getData();
-		
-		DecimalFormat output = new DecimalFormat("#0.00");
-		
-		for(int j=0;j<data.length;j++)
-		{
-			if((j%2) == 0)
-				ret+="<tr class=\"even\">";
-			else
-				ret+="<tr class=\"odd\">";
-			for(int i=0;i<=max_field;i++)
+			int max_field = 7;
+			
+			String[] header = com.jamonapi.MonitorFactory.getHeader();
+			if(header!=null)
 			{
-				Object obj = data[j][i];
-				
-				if(obj instanceof Double)
+				ret+="<tr>";
+				for(int i=0;i<=max_field;i++)
 				{
-					obj = output.format(((Double)obj));
+					ret+="<th>"+header[i]+"</th>";
 				}
-				if(i>0)
+				ret+="</tr>";
+			}
+			Object[][] data = com.jamonapi.MonitorFactory.getData();
+			
+			DecimalFormat output = new DecimalFormat("#0.00");
+			if(data!=null)
+			{
+				for(int j=0;j<data.length;j++)
 				{
-					ret+="<td class=\"value\">"+obj.toString()+"</td>";
-				}
-				else
-				{
-					ret+="<td>"+obj.toString()+"</td>";
+					if((j%2) == 0)
+						ret+="<tr class=\"even\">";
+					else
+						ret+="<tr class=\"odd\">";
+					for(int i=0;i<=max_field;i++)
+					{
+						Object obj = data[j][i];
+						
+						if(obj instanceof Double)
+						{
+							obj = output.format(((Double)obj));
+						}
+						if(i>0)
+						{
+							ret+="<td class=\"value\">"+obj.toString()+"</td>";
+						}
+						else
+						{
+							ret+="<td>"+obj.toString()+"</td>";
+						}
+					}
+					ret+="</tr>";
 				}
 			}
-			ret+="</tr>";
 		}
 		ret+="</table>";
 		return ret;
