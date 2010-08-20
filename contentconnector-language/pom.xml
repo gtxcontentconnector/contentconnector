@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>contentconnector</groupId>
   <artifactId>contentconnector-language</artifactId>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.1</version>
   <packaging>jar</packaging>
   <name>Gentics Content.Connector - LANGUAGE</name>
   <description>This is the LANGUAGE-Extension to the Gentics Content.Connector Suite</description>
@@ -86,7 +86,7 @@
     <dependency>
       <groupId>contentconnector</groupId>
       <artifactId>contentconnector-lucene</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.1</version>
     </dependency>
 	</dependencies>
 	<distributionManagement>
