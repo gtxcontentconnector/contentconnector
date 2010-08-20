@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>contentconnector</groupId>
   <artifactId>contentconnector-apihelper</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.1.1</version>
   <packaging>jar</packaging>
   <name>Gentics Content.Connector - API HELPER</name>
   <description>This is the APIHELPER-Extension to the Gentics Content.Connector Suite</description>
