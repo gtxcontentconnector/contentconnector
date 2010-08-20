@@ -332,7 +332,7 @@ public final HashMap<String, Object> search(final String query,
         result.put("hits", totalhits);
         result.put("maxscore",maxScore);
         //PLUG IN DIDYOUMEAN
-        if(didyoumeanenabled && (totalhits < 1 || maxScore < this.didyoumeanminscore))
+        if(start == 0 && didyoumeanenabled && (totalhits < 1 || maxScore < this.didyoumeanminscore))
         {
         	long dym_start = System.currentTimeMillis();
         	

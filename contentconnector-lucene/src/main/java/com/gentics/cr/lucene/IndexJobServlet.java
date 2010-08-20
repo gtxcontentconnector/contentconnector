@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
@@ -25,6 +26,8 @@ import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
 import com.gentics.cr.util.indexing.IndexJobQueue;
 import com.gentics.cr.util.indexing.IndexLocation;
+
+
 
 
 /**
@@ -139,6 +142,8 @@ public class IndexJobServlet extends HttpServlet {
       this.vtl.put("indexes", indexTable.entrySet());
       this.vtl.put("nc", nc);
       this.vtl.put("selectedIndex", selectedIndex);
+      this.vtl.put("report", MonitorFactory.getSimpleReport());
+      this.vtl.put("action",action);
       for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
       IndexLocation loc = e.getValue();
         IndexJobQueue queue = loc.getQueue();
