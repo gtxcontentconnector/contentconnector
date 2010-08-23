@@ -46,6 +46,10 @@ public class DidYouMeanProvider implements IEventReceiver{
 	
 	private static final String DIDYOUMEAN_FIELD_KEY="didyoumeanfields";
 	
+	private static final String DIDYOUMEAN_MIN_DISTANCESCORE="didyoumeanmindistancescore";
+	
+	private static final String DIDYOUMEAN_MIN_DOCFREQ="didyoumeanmindocfreq";
+	
 
 	private String didyoumeanfield = "all";
 	
@@ -62,9 +66,19 @@ public class DidYouMeanProvider implements IEventReceiver{
 		String s_autofield = config.getString(DIDYOUMEAN_FIELD_KEY);
 		if(s_autofield!=null)this.didyoumeanfield=s_autofield;
 		
+		String s_didyoumeanmindistancescore = config.getString(DIDYOUMEAN_MIN_DISTANCESCORE);
+		Float minDScore = null;
+		if(s_didyoumeanmindistancescore!=null)
+			minDScore = Float.parseFloat(s_didyoumeanmindistancescore);
+		
+		String s_didyoumeanmindocfreq = config.getString(DIDYOUMEAN_MIN_DOCFREQ);
+		Integer minDFreq = null;
+		if(s_didyoumeanmindocfreq!=null)
+			minDFreq = Integer.parseInt(s_didyoumeanmindocfreq);
+		
 		try
 		{
-			spellchecker = new CustomSpellChecker(didyoumeanLocation);
+			spellchecker = new CustomSpellChecker(didyoumeanLocation,minDScore,minDFreq);
 			reIndex();
 		}
 		catch(IOException e)

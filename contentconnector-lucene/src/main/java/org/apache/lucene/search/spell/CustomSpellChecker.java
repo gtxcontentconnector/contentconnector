@@ -102,6 +102,8 @@ public class CustomSpellChecker implements java.io.Closeable {
   
   private StringDistance sd;
 
+  private int minDFreq = 1;
+  
   /**
    * Use the given directory as a spell checker index. The directory
    * is created if it doesn't exist yet.
@@ -123,8 +125,12 @@ public class CustomSpellChecker implements java.io.Closeable {
    * @throws IOException
    *           if spellchecker can not open the directory
    */
-  public CustomSpellChecker(Directory spellIndex) throws IOException {
+  public CustomSpellChecker(Directory spellIndex, Float minScore, Integer minDfreq) throws IOException {
     this(spellIndex, new LevensteinDistance());
+    if(minScore!=null)
+    	this.minScore = minScore;
+    if(minDfreq!=null)
+    	this.minDFreq = minDfreq;
   }
   
   /**
@@ -228,6 +234,7 @@ public class CustomSpellChecker implements java.io.Closeable {
     final IndexSearcher indexSearcher = obtainSearcher();
     try{
       float min = this.minScore;
+      int minfrq = this.minDFreq;
       final int lengthWord = word.length();
   
       Collection<String> fieldnames = null;
@@ -332,7 +339,7 @@ public class CustomSpellChecker implements java.io.Closeable {
           }
           sugWord.freq = sug_freq; // freq in the index
           // don't suggest a word that is not present in the field
-          if ((morePopular && goalFreq > sugWord.freq) || sugWord.freq < 1) {
+          if ((morePopular && goalFreq > sugWord.freq) || sugWord.freq < minfrq) {
             continue;
           }
         }
