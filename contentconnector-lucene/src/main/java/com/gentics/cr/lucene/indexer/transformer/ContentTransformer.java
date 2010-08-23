@@ -33,6 +33,8 @@ public abstract class ContentTransformer {
 	private String rule;
 	
 	private static final String TRANSFORMER_RULE_KEY="rule";
+	private static final String DEFAULT_TRANSFORMER_RULE="1==1";
+	
 	private String transformerkey="";
 	
 	/**
@@ -52,6 +54,7 @@ public abstract class ContentTransformer {
 	protected ContentTransformer(GenericConfiguration config)
 	{
 		rule = (String)config.get(TRANSFORMER_RULE_KEY);
+		if(rule==null || "".equals(rule))rule = DEFAULT_TRANSFORMER_RULE;
 		try {
 			expr = ExpressionParser.getInstance().parse(rule);
 		} catch (ParserException e) {
