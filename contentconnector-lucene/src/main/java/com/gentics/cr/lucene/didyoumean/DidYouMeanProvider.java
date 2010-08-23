@@ -55,6 +55,10 @@ public class DidYouMeanProvider implements IEventReceiver{
 	
 	private CustomSpellChecker spellchecker=null;
 	
+	private boolean all = false;
+	
+	private Collection<String> dym_fields = null;
+	
 	public DidYouMeanProvider(CRConfig config)
 	{
 		GenericConfiguration src_conf = (GenericConfiguration)config.get(SOURCE_INDEX_KEY);
@@ -75,6 +79,26 @@ public class DidYouMeanProvider implements IEventReceiver{
 		Integer minDFreq = null;
 		if(s_didyoumeanmindocfreq!=null)
 			minDFreq = Integer.parseInt(s_didyoumeanmindocfreq);
+		
+		
+		//FETCH DYM FIELDS
+		if(this.didyoumeanfield.equalsIgnoreCase("ALL"))
+			all=true;
+        else
+        {
+        	if(this.didyoumeanfield.contains(","))
+        	{
+        		String[] arr = this.didyoumeanfield.split(",");
+        		dym_fields = new ArrayList<String>(Arrays.asList(arr));
+        		
+        	}
+        	else
+        	{
+        		dym_fields = new ArrayList<String>(1);
+        		dym_fields.add(this.didyoumeanfield);
+        	}
+        }
+		
 		
 		try
 		{
@@ -116,7 +140,16 @@ public class DidYouMeanProvider implements IEventReceiver{
 		
 		for(Term t:termlist)
 		{
-			uniquetermset.add(t.text());
+			if(all)
+			{
+				uniquetermset.add(t.text());
+			}
+			else
+			{
+				//ONLY ADD TERM IF IT COMES FROM A DYM FIELD
+				if(dym_fields.contains(t.field()));
+					uniquetermset.add(t.text());
+			}
 		}
 				
 		for(String term:uniquetermset)
@@ -150,21 +183,11 @@ public class DidYouMeanProvider implements IEventReceiver{
         IndexReader sourceReader = IndexReader.open(source);
         Collection<String> fields = null;
         
-        if(this.didyoumeanfield.equalsIgnoreCase("ALL"))
+        if(all)
         	fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
         else
         {
-        	if(this.didyoumeanfield.contains(","))
-        	{
-        		String[] arr = this.didyoumeanfield.split(",");
-        		fields = new ArrayList<String>(Arrays.asList(arr));
-        		
-        	}
-        	else
-        	{
-        		fields = new ArrayList<String>(1);
-        		fields.add(this.didyoumeanfield);
-        	}
+        	fields = dym_fields;
         }
         
         
