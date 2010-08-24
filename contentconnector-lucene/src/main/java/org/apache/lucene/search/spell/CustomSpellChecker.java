@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -60,6 +61,7 @@ import org.apache.lucene.store.Directory;
  */
 public class CustomSpellChecker implements java.io.Closeable {
 
+  protected static Logger log = Logger.getLogger(CustomSpellChecker.class);
   /**
    * Field name for each word in the ngram index.
    */
@@ -311,15 +313,20 @@ public class CustomSpellChecker implements java.io.Closeable {
       for (int i = 0; i < stop; i++) {
   
         sugWord.string = indexSearcher.doc(hits[i].doc).get(F_WORD); // get orig word
-  
+        
+        log.debug("DYM found term: "+sugWord.string);
+        
         // don't suggest a word for itself, that would be silly
         if (sugWord.string.equals(word)) {
+          log.debug("  Found word is the same as input word ("+word+") -> next");
           continue;
         }
   
         // edit distance
         sugWord.score = sd.getDistance(word,sugWord.string);
+        log.debug("  Distance score: "+sugWord.score);
         if (sugWord.score < min) {
+          log.debug("  Found word does not match min score ("+min+") -> next");
           continue;
         }
   
@@ -338,8 +345,10 @@ public class CustomSpellChecker implements java.io.Closeable {
         	  sug_freq = ir.docFreq(new Term(field, sug_term));
           }
           sugWord.freq = sug_freq; // freq in the index
+          log.debug("  DocFreq: "+sugWord.freq);
           // don't suggest a word that is not present in the field
           if ((morePopular && goalFreq > sugWord.freq) || sugWord.freq < minfrq) {
+        	log.debug("  Found word doese not match min frequency ("+minfrq+") -> next");
             continue;
           }
         }
