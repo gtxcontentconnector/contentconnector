@@ -33,6 +33,12 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
   private String highlightPrefix="";
   private String highlightPostfix="";
   private String fragmentSeperator="";
+  
+  /**
+   * if there should be a seperator at the beginning and at the and of the
+   * highlighted text.
+   */
+  private boolean addSeperatorArroundAllFragments = true;
 
   /**
    * number of fragments we should return. (maximum)
@@ -55,6 +61,15 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
    * Configuration Key for fragment seperator.
    */
   private static final String FRAGMENT_SEPERATOR_KEY = "fragmentseperator";
+  
+  /**
+   * Configuration key to define if fragments seperator should be added at the 
+   * beginning and end of all fragments. They are only added if the first
+   * fragment is not from the start and the last fragment is not from the end of
+   * the attribute.
+   */
+  private static final String SURROUNDING_SEPERATOR_KEY =
+    "surroundingseperator";
 
   /**
    * Unicode Punctuation Characters.<br />
@@ -81,6 +96,11 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
     if(highlightPostfix==null)highlightPostfix="</b>";
     fragmentSeperator = (String)config.get(FRAGMENT_SEPERATOR_KEY);
     if(fragmentSeperator==null)fragmentSeperator=" ... ";
+    Object surroundingSeperatorObject = config.get(SURROUNDING_SEPERATOR_KEY);
+    if(surroundingSeperatorObject != null){
+      addSeperatorArroundAllFragments =
+        Boolean.parseBoolean((String) surroundingSeperatorObject);
+    }
     
     String nmF = (String)config.get(NUM_MAX_FRAGMENTS_KEY);
     if(nmF!=null)
@@ -151,15 +171,21 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
             attribute, true, numMaxFragments);
         ucFragments.stop();
         boolean first = true;
+        int startPosition = -1;
+        int endPosition = -1;
         for (TextFragment frag : frags) {
-          if (!first) {
+          String fragment = frag.toString();
+          fragment = fragment.replaceAll(REMOVE_TEXT_FROM_FRAGMENT_REGEX, "");
+          startPosition = attribute.indexOf(fragment);
+          endPosition = startPosition + fragment.length();
+          if (!first || (addSeperatorArroundAllFragments && startPosition != 0)) {
             result += fragmentSeperator;
-          } else {
-            first = false;
           }
-          String fragment = frag.toString()
-              .replaceAll(REMOVE_TEXT_FROM_FRAGMENT_REGEX, "");
           result += fragment;
+        }
+        if (addSeperatorArroundAllFragments && endPosition != attribute.length()
+            && result.length() != 0) {
+          result += fragmentSeperator;
         }
       } catch (IOException e) {
         // TODO Auto-generated catch block
