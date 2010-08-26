@@ -147,7 +147,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 			else
 			{
 				//ONLY ADD TERM IF IT COMES FROM A DYM FIELD
-				if(dym_fields.contains(t.field()));
+				if(dym_fields.contains(t.field()))
 					uniquetermset.add(t.text());
 			}
 		}
