@@ -151,7 +151,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 					uniquetermset.add(t.text());
 			}
 		}
-				
+		log.debug("Will use the following fields for dym: "+dym_fields.toString());		
 		for(String term:uniquetermset)
 		{
 			try
