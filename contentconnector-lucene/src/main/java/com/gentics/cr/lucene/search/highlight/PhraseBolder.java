@@ -71,17 +71,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
   private static final String SURROUNDING_SEPERATOR_KEY =
     "surroundingseperator";
 
-  /**
-   * Unicode Punctuation Characters.<br />
-   * \\u2013 == &ndash;
-   */
-  private static final String UNICODE_PUNCT_CHARS = "\\u2013";
   
-  /**
-   * regex to remove text from fragments (e.g. leading commas and spaces). Remove all punctuations and whitespaces at the beginning except opening brackets
-   */
-  private static final String REMOVE_TEXT_FROM_FRAGMENT_REGEX = "^[\\p{Punct}\\p{Space}" + UNICODE_PUNCT_CHARS + "&&[^(<]]*";
-
   /**
    * Create new Instance of PhraseBolder.
    * @param config

@@ -32,6 +32,18 @@ public abstract class ContentHighlighter {
 	private static final String HIGHLIGHTER_ATTRIBUTE_KEY="attribute";
 	private static final String HIGHLIGHTER_RULE_KEY="rule";
 	
+	 /**
+	   * Unicode Punctuation Characters.<br />
+	   * \\u2013 == &ndash;
+	   */
+	  protected static final String UNICODE_PUNCT_CHARS = "\\u2013";
+	  
+	  /**
+	   * regex to remove text from fragments (e.g. leading commas and spaces). Remove all punctuations and whitespaces at the beginning except opening brackets
+	   */
+	  protected static final String REMOVE_TEXT_FROM_FRAGMENT_REGEX = "^[\\p{Punct}\\p{Space}" + UNICODE_PUNCT_CHARS + "&&[^(<]]*";
+
+	
 	/**
 	 * Returns the hightlight attribute that is highlighted by this contentHighlighter
 	 * @return
