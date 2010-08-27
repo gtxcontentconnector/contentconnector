@@ -17,6 +17,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Explanation;
+import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
@@ -317,8 +318,12 @@ public final HashMap<String, Object> search(final String query,
           new CRQueryParser(LuceneVersion.getVersion(), searchedAttributes,
               analyzer, request);
         parser.setAllowLeadingWildcard(true);
-
+        parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
         Query parsedQuery = parser.parse(query);
+        //GENERATE A NATIVE QUERY
+        
+        parsedQuery = searcher.rewrite(parsedQuery);
+        
         result = new HashMap<String, Object>(3);
         result.put("query", parsedQuery);
         
@@ -338,7 +343,7 @@ public final HashMap<String, Object> search(final String query,
         	
         	IndexReader reader = indexAccessor.getReader(false);
         	
-        	Query rw_query = parsedQuery.rewrite(reader);
+        	Query rw_query = parsedQuery;
         	Set<Term> termset = new HashSet<Term>();
         	rw_query.extractTerms(termset);
         	

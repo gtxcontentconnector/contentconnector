@@ -39,7 +39,8 @@ public class CRQueryParser extends QueryParser {
     super(version, searchedAttributes[0], analyzer);
     attributesToSearchIn = searchedAttributes;
   }
-
+  
+ 
   /**
    * initialize a CRQeryParser with multiple search attributes.
    * @param version version of lucene

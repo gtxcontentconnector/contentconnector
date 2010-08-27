@@ -16,6 +16,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 
 import com.gentics.cr.CRConfig;
@@ -223,88 +224,69 @@ public class LuceneRequestProcessor extends RequestProcessor {
           + ".Resolvables");
       LinkedHashMap<Document, Float> docs =
         objectToLinkedHashMapDocuments(searchResult.get("result"));
-      //PARSE HIGHLIGHT QUERY
-      Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
-      if (highlightQuery != null) {
-        Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(
-            (GenericConfiguration) this.config);
-        QueryParser parser = new QueryParser(LuceneVersion.getVersion(),
-            getSearchedAttributes()[0], analyzer);
-        try {
-          parsedQuery = parser.parse((String) highlightQuery);
-        } catch (ParseException e) {
-          log.error(e.getMessage());
-          e.printStackTrace();
-        }
+      
+      LuceneIndexLocation idsLocation =
+      LuceneIndexLocation.getIndexLocation(this.config);
+	  IndexAccessor indexAccessor = idsLocation.getAccessor();
+	  IndexReader reader = null;
+	  try {
+		  reader = indexAccessor.getReader(false);
+		  
+	      //PARSE HIGHLIGHT QUERY
+	      Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
+	      if (highlightQuery != null) {
+	        Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(
+	            (GenericConfiguration) this.config);
+	        QueryParser parser = new QueryParser(LuceneVersion.getVersion(),
+	            getSearchedAttributes()[0], analyzer);
+	        parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
+	        try {
+	          parsedQuery = parser.parse((String) highlightQuery);
+	          parsedQuery.rewrite(reader);
+	          
+	        } catch (ParseException e) {
+	          log.error(e.getMessage());
+	          e.printStackTrace();
+	        }
+	      }
+	      
+	      //PROCESS RESULT
+	      
+	      if (docs != null) {
+		        String idAttribute = (String) this.config.get(ID_ATTRIBUTE_KEY);
+		        for (Entry<Document, Float> e : docs.entrySet()) {
+			  		  Document doc = e.getKey();
+			  		  Float score = e.getValue();
+			  		  CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
+			  		  if (getStoredAttributes) {
+			  		    for (Field f : toFieldList(doc.getFields())) {
+			  		      if (f.isStored()) {
+			  		        if (f.isBinary()) {
+			  		          crBean.set(f.name(), f.getBinaryValue());
+			  		        } else {
+			  		          crBean.set(f.name(), f.stringValue());
+			  		        }
+			  		      }
+			  		    }
+			  		  }
+			  		  if (scoreAttribute != null && !"".equals(scoreAttribute)) {
+			  		    crBean.set(scoreAttribute, score);
+			  		  }
+			  		  //DO HIGHLIGHTING
+			  		  doHighlighting( crBean, doc, parsedQuery, reader);
+			  		  
+			  		  ext_log.debug("Found " + crBean.getContentid() + " with score "
+			  		      + score.toString());
+			  		  result.add(crBean);
+		  		}
+	      }
+      
+	  } catch (IOException ioException) {
+          log.error("Cannot get Index reader for highlighting");
+      } finally {
+          indexAccessor.release(reader, false);
       }
-      if (docs != null) {
-        String idAttribute = (String) this.config.get(ID_ATTRIBUTE_KEY);
-        for (Entry<Document, Float> e : docs.entrySet()) {
-          Document doc = e.getKey();
-          Float score = e.getValue();
-          CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
-          if (getStoredAttributes) {
-            for (Field f : toFieldList(doc.getFields())) {
-              if (f.isStored()) {
-                if (f.isBinary()) {
-                  crBean.set(f.name(), f.getBinaryValue());
-                } else {
-                  crBean.set(f.name(), f.stringValue());
-                }
-              }
-            }
-          }
-          if (scoreAttribute != null && !"".equals(scoreAttribute)) {
-            crBean.set(scoreAttribute, score);
-          }
-          //IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
-          if (highlighters != null) {
-            UseCase ucProcessSearchHighlight = MonitorFactory.startUseCase(
-                "LuceneRequestProcessor." + "getObjects(" + name
-                + ")#processSearch.Highlight");
-            long s2 = System.currentTimeMillis();
-            for (Entry<String, ContentHighlighter> ch
-                : highlighters.entrySet()) {
-              ContentHighlighter h = ch.getValue();
-              String att = ch.getKey();
-              //IF crBean matches the highlighters rule => highlight
-              if (h.match(crBean)) {
-                String ret = null;
-                if (h instanceof AdvancedContentHighlighter) {
-                  AdvancedContentHighlighter advancedHighlighter =
-                    (AdvancedContentHighlighter) h;
-                  int documentId = Integer.parseInt(doc.get("id"));
-                  LuceneIndexLocation idsLocation =
-                    LuceneIndexLocation.getIndexLocation(this.config);
-                  IndexAccessor indexAccessor = idsLocation.getAccessor();
-                  IndexReader reader = null;
-                  try {
-                    reader = indexAccessor.getReader(false);
-                    ret = advancedHighlighter.highlight(parsedQuery, reader,
-                        documentId, att);
-                  } catch (IOException ioException) {
-                    log.error("Cannot get Index reader for "
-                        + "AdvancedContentHighlighter");
-                  } finally {
-                    indexAccessor.release(reader, false);
-                  }
-                } else {
-                  ret = h.highlight((String) crBean.get(att), parsedQuery);
-                }
-                if (ret != null && !"".equals(ret)) {
-                  crBean.set(att, ret);
-                }
-              }
-            }
-            long e2 = System.currentTimeMillis();
-            log.debug("Highlighters took " + (e2 - s2) + "ms");
-            ucProcessSearchHighlight.stop();
-          }
-          ext_log.debug("Found " + crBean.getContentid() + " with score "
-              + score.toString());
-          result.add(crBean);
-        }
-      }
+      
       ucProcessSearchResolvables.stop();
       /*if(doNavigation)
       {
@@ -317,6 +299,51 @@ public class LuceneRequestProcessor extends RequestProcessor {
     return result;
   }
 
+  /**
+   * Perform highlighting for one document
+   * @param crBean
+   * @param doc
+   * @param parsedQuery rewritten Query
+   * @param reader prepared index Reader
+   */
+  private void doHighlighting(CRResolvableBean crBean, Document doc, Query parsedQuery, IndexReader reader) {
+	
+	  
+		  //IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
+		  if (highlighters != null) {
+		    UseCase ucProcessSearchHighlight = MonitorFactory.startUseCase(
+		        "LuceneRequestProcessor." + "getObjects(" + name
+		        + ")#processSearch.Highlight");
+		    long s2 = System.currentTimeMillis();
+		    for (Entry<String, ContentHighlighter> ch
+		        : highlighters.entrySet()) {
+		      ContentHighlighter h = ch.getValue();
+		      String att = ch.getKey();
+		      //IF crBean matches the highlighters rule => highlight
+		      if (h.match(crBean)) {
+		        String ret = null;
+		        if (h instanceof AdvancedContentHighlighter) {
+		          AdvancedContentHighlighter advancedHighlighter =
+		            (AdvancedContentHighlighter) h;
+		          int documentId = Integer.parseInt(doc.get("id"));
+		          
+		            ret = advancedHighlighter.highlight(parsedQuery, reader,
+		                documentId, att);
+		          
+		        } else {
+		          ret = h.highlight((String) crBean.get(att), parsedQuery);
+		        }
+		        if (ret != null && !"".equals(ret)) {
+		          crBean.set(att, ret);
+		        }
+		      }
+	    }
+	    log.debug("Highlighters took " + (System.currentTimeMillis() - s2) + "ms");
+	    ucProcessSearchHighlight.stop();
+	  }
+  }
+
+  
 
   /**
    * TODO javadoc.
