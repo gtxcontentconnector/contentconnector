@@ -28,6 +28,11 @@
 			.indexcontainer { float: left; }
 			.indexblock { float: left; min-width: 200px; width: 200px; border: 1px solid #C0C0C0; border-top: 0px; margin-left: 4px; }
 			
+			.indexblock.active { border: 1px solid #FFDC87;}
+			.indexblock.active .row.header { background: #FFBD1F; }
+			.indexblock.active .row.even { background: #FFECBF; }
+			
+			
 			.row ,.report_table tr{ line-height: 18px; padding: 0px 4px; } 
 			.row.small, .row.small a { font-size: 8pt; }
 			.row.header, .report_table th{ font-weight: bold; padding: 0px 10px; text-align: center; background: #C0C0C0; }
@@ -62,7 +67,9 @@
 				#set($loc = $e.getValue())
 				#set($queue = $loc.getQueue())
 				#set($map = $loc.getCRMap())
-				<div class="indexblock">
+				#set($j = "")
+				#set($j = $queue.getCurrentJob())
+				<div class="indexblock#if($j!="") active#end">
 					<div class="row odd small header">$e.getKey()</div>
 					<div class="row even small center">$loc.getDocCount()</div>
 					<div class="row odd small center">#if($loc.isPeriodical()) true #else false #end</div>
@@ -95,8 +102,6 @@
 						</div>
 					</div>
 					
-					#set($j = "")
-					#set($j = $queue.getCurrentJob())
 					#if ("$!j" != "")
 					<div class="row even small">
 						<div class="smallheader">current job</div>
