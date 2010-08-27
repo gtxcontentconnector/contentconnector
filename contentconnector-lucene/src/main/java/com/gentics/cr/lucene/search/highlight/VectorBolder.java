@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.highlight.Formatter;
-import org.apache.lucene.search.highlight.TokenGroup;
 import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
 import org.apache.lucene.search.vectorhighlight.FieldQuery;
+import org.apache.lucene.search.vectorhighlight.ScoreOrderFragmentsBuilder;
+import org.apache.lucene.search.vectorhighlight.SimpleFragListBuilder;
 
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
@@ -19,8 +19,7 @@ import com.gentics.cr.monitoring.UseCase;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class VectorBolder extends AdvancedContentHighlighter
-    implements Formatter {
+public class VectorBolder extends AdvancedContentHighlighter{
 
   private int numMaxFragments=3;
   private int fragmentSize=100;
@@ -76,25 +75,7 @@ public class VectorBolder extends AdvancedContentHighlighter
     }
   }
 
-  /**
-   * Highlights Terms by enclosing them with &lt;b&gt;term&lt;/b&gt;
-   * @param originalTermText 
-   * @param tokenGroup 
-   * @return 
-   */
-  public String highlightTerm(String originalTermText, TokenGroup tokenGroup) {
-    UseCase uc = MonitorFactory.startUseCase(
-    "Highlight.VectorBolder.highlightTerm()");
-    if (tokenGroup.getTotalScore() <= 0) {
-      uc.stop();
-      return originalTermText;
-    }
-    uc.stop();
-    return highlightPrefix + originalTermText + highlightPostfix;
-
-  }
-
-
+  
   /**
    * @param attribute 
    * @param parsedQuery 
@@ -108,7 +89,7 @@ public class VectorBolder extends AdvancedContentHighlighter
     String result = "";
     if (fieldName != null && parsedQuery != null) {
       FastVectorHighlighter highlighter =
-        new FastVectorHighlighter(true, true);
+        new FastVectorHighlighter(true, true, new SimpleFragListBuilder(), new ScoreOrderFragmentsBuilder(new String[]{this.highlightPrefix},new String[]{this.highlightPostfix}));
       FieldQuery fieldQuery = highlighter.getFieldQuery(parsedQuery);
       //highlighter.setTextFragmenter(new WordCountFragmenter(fragmentSize));
 
@@ -142,5 +123,7 @@ public class VectorBolder extends AdvancedContentHighlighter
     uc.stop();
     return result;
   }
+
+
 
 }

@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.search.highlight;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.highlight.TokenGroup;
 
 import com.gentics.cr.configuration.GenericConfiguration;
 
@@ -29,7 +28,5 @@ public abstract class AdvancedContentHighlighter extends ContentHighlighter {
 
   public abstract String highlight(Query query, final IndexReader reader,
       final int docId, final String fieldName);
-
-  public abstract String highlightTerm(String arg0, TokenGroup arg1);
 
 }
