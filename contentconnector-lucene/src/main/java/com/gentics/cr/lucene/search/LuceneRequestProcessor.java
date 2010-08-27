@@ -203,18 +203,18 @@ public class LuceneRequestProcessor extends RequestProcessor {
         metaBean.set(META_COUNT_KEY, count);
         metaBean.set(META_QUERY_KEY, request.getRequestFilter());
         Object suggestions = searchResult.get(META_SUGGESTIONS_KEY);
-        if(suggestions!=null)
-        {
-        	metaBean.set(META_SUGGESTIONS_KEY,suggestions);
+        if (suggestions != null) {
+          metaBean.set(META_SUGGESTIONS_KEY,suggestions);
         }
         metaBean.set(META_MAXSCORE_KEY,searchResult.get(META_MAXSCORE_KEY));
         String rewrittenQuery = (String)searchResult.get(META_BESTQUERY_KEY);
-        if(rewrittenQuery!=null)
-        	metaBean.set(META_BESTQUERY_KEY,rewrittenQuery);
+        if(rewrittenQuery != null) {
+          metaBean.set(META_BESTQUERY_KEY,rewrittenQuery);
+        }
         Integer bestqueryhits = (Integer)searchResult.get(META_BESTQUERYHITS_KEY);
-        if(bestqueryhits!=null)
-        	metaBean.set(META_BESTQUERYHITS_KEY,bestqueryhits);
-        
+        if (bestqueryhits != null) {
+          metaBean.set(META_BESTQUERYHITS_KEY,bestqueryhits);
+        }
         result.add(metaBean);
       }
       ucProcessSearchMeta.stop();
