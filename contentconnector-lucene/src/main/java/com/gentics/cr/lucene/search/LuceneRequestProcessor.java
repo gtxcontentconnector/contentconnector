@@ -194,12 +194,12 @@ public class LuceneRequestProcessor extends RequestProcessor {
       UseCase ucProcessSearchMeta = MonitorFactory.startUseCase(
           "LuceneRequestProcessor." + "getObjects(" + name + ")#processSearch"
           + ".Metaresolvables");
-      Query parsedQuery = (Query) searchResult.get("query");
+      Query parsedQuery = (Query) searchResult.get(CRSearcher.RESULT_QUERY_KEY);
 
       Object metaKey = request.get(META_RESOLVABLE_KEY);
       if (metaKey != null && (Boolean) metaKey) {
         CRResolvableBean metaBean = new CRResolvableBean();
-        metaBean.set(META_HITS_KEY, searchResult.get("hits"));
+        metaBean.set(META_HITS_KEY, searchResult.get(CRSearcher.RESULT_HITS_KEY));
         metaBean.set(META_START_KEY, start);
         metaBean.set(META_COUNT_KEY, count);
         metaBean.set(META_QUERY_KEY, request.getRequestFilter());
@@ -222,8 +222,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
       UseCase ucProcessSearchResolvables = MonitorFactory.startUseCase(
           "LuceneRequestProcessor." + "getObjects(" + name + ")#processSearch"
           + ".Resolvables");
-      LinkedHashMap<Document, Float> docs =
-        objectToLinkedHashMapDocuments(searchResult.get("result"));
+      LinkedHashMap<Document, Float> docs = objectToLinkedHashMapDocuments(
+          searchResult.get(CRSearcher.RESULT_RESULT_KEY));
       
       LuceneIndexLocation idsLocation =
       LuceneIndexLocation.getIndexLocation(this.config);

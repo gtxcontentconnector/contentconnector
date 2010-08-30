@@ -55,6 +55,27 @@ public class CRSearcher {
   protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
   private static final String COLLECTOR_CLASS_KEY = "collectorClass";
   private static final String COLLECTOR_CONFIG_KEY = "collector";
+
+  /**
+   * Key to store the searchquery in the result.
+   */
+  public static final String RESULT_QUERY_KEY = "query";
+  /**
+   * Key to store the hitcount in the result.
+   */
+  public static final String RESULT_HITS_KEY = "hits";
+  /**
+   * Key to store the result in the result.
+   */
+  public static final String RESULT_RESULT_KEY = "result";
+  
+  /**
+   * Key to store the maximum score of the result in the result.
+   */
+  public static final String RESULT_MAXSCORE_KEY = "maxscore";
+  
+  
+  
   
   private static final String DIDYOUMEAN_ENABLED_KEY="didyoumean";
   private static final String DIDYOUMEAN_BESTQUERY_KEY="didyoumeanbestquery";
@@ -246,8 +267,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
           + collector.getTotalHits() + " found Documents");
 
       HashMap<String,Object> ret = new HashMap<String,Object>(2);
-      ret.put("result", result);
-      ret.put("maxscore",maxScoreReturn);
+      ret.put(RESULT_RESULT_KEY, result);
+      ret.put(RESULT_MAXSCORE_KEY, maxScoreReturn);
       return ret;
 
     } catch (Exception e) {
@@ -325,17 +346,17 @@ public final HashMap<String, Object> search(final String query,
         parsedQuery = searcher.rewrite(parsedQuery);
         
         result = new HashMap<String, Object>(3);
-        result.put("query", parsedQuery);
+        result.put(RESULT_QUERY_KEY, parsedQuery);
         
         
         Map<String,Object> ret = runSearch(collector, searcher, parsedQuery, explain, count, start);
-        LinkedHashMap<Document, Float> coll = (LinkedHashMap<Document, Float>)ret.get("result");
-        Float maxScore  = (Float)ret.get("maxscore");
-        result.put("result", coll);
+        LinkedHashMap<Document, Float> coll = (LinkedHashMap<Document, Float>)ret.get(RESULT_RESULT_KEY);
+        Float maxScore  = (Float)ret.get(RESULT_MAXSCORE_KEY);
+        result.put(RESULT_RESULT_KEY, coll);
         int totalhits = collector.getTotalHits();
         
-        result.put("hits", totalhits);
-        result.put("maxscore",maxScore);
+        result.put(RESULT_HITS_KEY, totalhits);
+        result.put(RESULT_MAXSCORE_KEY, maxScore);
         //PLUG IN DIDYOUMEAN
         if(start == 0 && didyoumeanenabled && (totalhits < 1 || maxScore < this.didyoumeanminscore))
         {
