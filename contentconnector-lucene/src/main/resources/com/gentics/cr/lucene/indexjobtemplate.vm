@@ -1,3 +1,13 @@
+#macro(getnextrow)##
+#if(!$previousRow)#set($previousRow="even")#end##
+#if($previousRow=="even")##
+#set($output="odd")##
+#else##
+#set($output="even")##
+#end##
+#set($previousRow=$output)##
+$output##
+#end##
 <html>
 	<head>
 		<title>IndexerServlet for Lucene by Gentics</title>
@@ -52,13 +62,13 @@
 		</div>
 		
 		<div class="captioncontainer">
-			<div class="row odd">Index</div>
-			<div class="row even">Objects in Index</div>
-			<div class="row odd">Periodical indexing</div>
-			<div class="row even">Current checkinterval</div>
-			<div class="row odd">Elements in queue</div>
-			<div class="row even">Workerstatus</div>
-			<div class="row odd">Jobs</div>
+			<div class="row #getnextrow()">Index</div>
+			<div class="row #getnextrow()">Objects in Index</div>
+			<div class="row #getnextrow()">Periodical indexing</div>
+			<div class="row #getnextrow()">Current checkinterval</div>
+			<div class="row #getnextrow()">Elements in queue</div>
+			<div class="row #getnextrow()">Workerstatus</div>
+			<div class="row #getnextrow()">Jobs</div>
 		</div>
 		
 		<div class="indexcontainer">
@@ -69,13 +79,14 @@
 				#set($map = $loc.getCRMap())
 				#set($j = "")
 				#set($j = $queue.getCurrentJob())
+				#set($previousRow="even")
 				<div class="indexblock#if($j!="") active#end">
-					<div class="row odd small header">$e.getKey()</div>
-					<div class="row even small center">$loc.getDocCount()</div>
-					<div class="row odd small center">#if($loc.isPeriodical()) true #else false #end</div>
-					<div class="row even small center">$queue.getInterval() s</div>
-					<div class="row odd small center">$queue.getSize()</div>
-					<div class="row even small">
+					<div class="row #getnextrow() small header">$e.getKey()</div>
+					<div class="row #getnextrow() small center">$loc.getDocCount()</div>
+					<div class="row #getnextrow() small center">#if($loc.isPeriodical()) true #else false #end</div>
+					<div class="row #getnextrow() small center">$queue.getInterval() s</div>
+					<div class="row #getnextrow() small center">$queue.getSize()</div>
+					<div class="row #getnextrow() small">
 						#if($queue.isRunning())
 							<div class="key">processing</div>
 							<div class="value right"><a href="?action=stopWorker&idx=$e.getKey()$nc">stop</a></div>
@@ -85,7 +96,7 @@
 						#end
 						<div class="clear"></div>
 					</div>
-					<div class="row odd small">
+					<div class="row #getnextrow() small">
 						<div class="smallheader">index parts</div>
 						<div class="smallbox">
 						#foreach($crc in $map.entrySet())
@@ -103,7 +114,7 @@
 					</div>
 					
 					#if ("$!j" != "")
-					<div class="row even small">
+					<div class="row #getnextrow() small">
 						<div class="smallheader">current job</div>
 						<div class="smallbox">
 							<div>
@@ -119,7 +130,7 @@
 	
 					#set($lastJobs = $queue.getLastJobs())
 					#if($lastJobs)
-					<div class="row even small">
+					<div class="row #getnextrow() small">
 						<div class="smallheader">last 3 jobs</div>
 						<div class="smallbox">
 							#foreach($lj in $lastJobs)
@@ -135,7 +146,7 @@
 		</div>
 		<div style="clear: both;"></div>
 		#set($reportaction="report")
-		#if($action=="report")
+		#if("$!action"=="report")
 			<div class="report margintop_50">
 			<h2>Performance information</h2>
 			$report
