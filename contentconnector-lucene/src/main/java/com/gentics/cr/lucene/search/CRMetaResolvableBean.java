@@ -27,7 +27,10 @@ public class CRMetaResolvableBean extends CRResolvableBean {
    */
   public CRMetaResolvableBean(final HashMap<String, Object> searchResult,
       final CRRequest request,final int start, final int count) {
-    set(CRSearcher.RESULT_HITS_KEY, searchResult.get(CRSearcher.RESULT_HITS_KEY));
+    set(LuceneRequestProcessor.META_HITS_KEY,
+        searchResult.get(CRSearcher.RESULT_HITS_KEY));
+    set(CRSearcher.RESULT_HITS_KEY,
+        searchResult.get(CRSearcher.RESULT_HITS_KEY));
     set(LuceneRequestProcessor.META_START_KEY, start);
     set(LuceneRequestProcessor.META_COUNT_KEY, count);
     set(LuceneRequestProcessor.META_QUERY_KEY, request.getRequestFilter());
