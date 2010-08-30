@@ -105,7 +105,7 @@ public class IndexJobQueue{
 					{
 						currentJI = j;
 						currentJob = new Thread(j);
-						currentJob.setName("Current Index Job");
+						currentJob.setName("Current Index Job - " + j.getIdentifyer());
 						currentJob.setDaemon(true);
 						currentJob.start();
 						if(currentJob.isAlive())
