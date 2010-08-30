@@ -74,6 +74,21 @@ public class CRSearcher {
    */
   public static final String RESULT_MAXSCORE_KEY = "maxscore";
   
+  /**
+   * Key to store the bestquery in the result
+   */
+  public static final String RESULT_BESTQUERY_KEY = "bestquery";
+  
+  /**
+   * Key to store the hitcount of the bestquery in the result
+   */
+  public static final String RESULT_BESTQUERYHITS_KEY = "bestqueryhits";
+  
+  /**
+   * Key to store the hitcount of the bestquery in the result
+   */
+  public static final String RESULT_SUGGESTIONS_KEY = "suggestions";
+  
   
   
   
@@ -105,28 +120,28 @@ public class CRSearcher {
     String s_didyoumeanenabled = config.getString(DIDYOUMEAN_ENABLED_KEY);
     if(s_didyoumeanenabled!=null && !"".equals(s_didyoumeanenabled))
     {
-    	didyoumeanenabled = Boolean.parseBoolean(s_didyoumeanenabled);
+      didyoumeanenabled = Boolean.parseBoolean(s_didyoumeanenabled);
     }
     
     String s_suggestcount = config.getString(DIDYOUMEAN_SUGGEST_COUNT_KEY);
     if(s_suggestcount!=null && !"".equals(s_suggestcount))
     {
-    	didyoumeansuggestcount = Integer.parseInt(s_suggestcount);
+      didyoumeansuggestcount = Integer.parseInt(s_suggestcount);
     }
     
     String s_minscore = config.getString(DIDYOUMEAN_MIN_SCORE);
     if(s_minscore!=null && !"".equals(s_minscore))
     {
-    	didyoumeanminscore = Float.parseFloat(s_minscore);
+      didyoumeanminscore = Float.parseFloat(s_minscore);
     }
     
     //if configured => initialize DIDYOUMEAN Provider
     if(didyoumeanenabled)
     {
-    	this.didyoumeanprovider = new DidYouMeanProvider(config);
-    	String s_bestquery = config.getString(DIDYOUMEAN_BESTQUERY_KEY);
-    	if(s_bestquery!=null)didyoumeanbestquery = Boolean.parseBoolean(s_bestquery);
-    	
+      this.didyoumeanprovider = new DidYouMeanProvider(config);
+      String s_bestquery = config.getString(DIDYOUMEAN_BESTQUERY_KEY);
+      if(s_bestquery!=null)didyoumeanbestquery = Boolean.parseBoolean(s_bestquery);
+      
     }
     
     
@@ -206,9 +221,9 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
           reverse = false;
         }
         if("score".equalsIgnoreCase(sort[0]))
-        	sf.add(SortField.FIELD_SCORE);
+          sf.add(SortField.FIELD_SCORE);
         else
-        	sf.add(new SortField(sort[0], Locale.getDefault(), reverse));
+          sf.add(new SortField(sort[0], Locale.getDefault(), reverse));
       }
 
     }
@@ -358,43 +373,44 @@ public final HashMap<String, Object> search(final String query,
         result.put(RESULT_HITS_KEY, totalhits);
         result.put(RESULT_MAXSCORE_KEY, maxScore);
         //PLUG IN DIDYOUMEAN
-        if(start == 0 && didyoumeanenabled && (totalhits < 1 || maxScore < this.didyoumeanminscore))
-        {
-        	long dym_start = System.currentTimeMillis();
-        	
-        	IndexReader reader = indexAccessor.getReader(false);
-        	
-        	Query rw_query = parsedQuery;
-        	Set<Term> termset = new HashSet<Term>();
-        	rw_query.extractTerms(termset);
-        	
-        	Map<String,String[]> suggestions = this.didyoumeanprovider.getSuggestions(termset, this.didyoumeansuggestcount, reader);
-        	result.put("suggestions", suggestions);
-        	
-        	log.debug("DYM Suggestions took "+(System.currentTimeMillis() - dym_start)+"ms");
-        	String rewrittenQuery = parsedQuery.toString();
-        	indexAccessor.release(reader, false);
-        	
-        	if(this.didyoumeanbestquery)
-        	{
-	        	//SPECIAL SUGGESTION
-	        	//TODO Test if the query will be altered and if any suggestions have been made... otherwise don't execute second query and don't include the bestquery
-	        	for(Entry<String,String[]> e:suggestions.entrySet())
-	        	{
-	        		String term = e.getKey();
-	        		String[] term_suggestions = e.getValue();
-	        		if(term_suggestions!=null && term_suggestions.length>0)
-	        		{
-	        			rewrittenQuery = rewrittenQuery.replaceAll(term, term_suggestions[0]);
-	        		}
-	        	}
-	        	Query bestQuery = parser.parse(rewrittenQuery);
-	        	TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
-	        	runSearch(bestcollector, searcher, bestQuery, false, 1, 0);
-	        	result.put("bestquery", rewrittenQuery);
-	        	result.put("bestqueryhits", bestcollector.getTotalHits());
-        	}
-        	log.debug("DYM took "+(System.currentTimeMillis() - dym_start)+"ms");
+        if (start == 0 && didyoumeanenabled
+            && (totalhits < 1 || maxScore < this.didyoumeanminscore)) {
+          long dym_start = System.currentTimeMillis();
+          
+          IndexReader reader = indexAccessor.getReader(false);
+          
+          Query rw_query = parsedQuery;
+          Set<Term> termset = new HashSet<Term>();
+          rw_query.extractTerms(termset);
+          
+          Map<String,String[]> suggestions = this.didyoumeanprovider
+              .getSuggestions(termset, this.didyoumeansuggestcount, reader);
+          result.put(RESULT_SUGGESTIONS_KEY, suggestions);
+          
+          log.debug("DYM Suggestions took "+(System.currentTimeMillis() - dym_start)+"ms");
+          String rewrittenQuery = parsedQuery.toString();
+          indexAccessor.release(reader, false);
+          
+          if(this.didyoumeanbestquery)
+          {
+            //SPECIAL SUGGESTION
+            //TODO Test if the query will be altered and if any suggestions have been made... otherwise don't execute second query and don't include the bestquery
+            for(Entry<String,String[]> e:suggestions.entrySet())
+            {
+              String term = e.getKey();
+              String[] term_suggestions = e.getValue();
+              if(term_suggestions!=null && term_suggestions.length>0)
+              {
+                rewrittenQuery = rewrittenQuery.replaceAll(term, term_suggestions[0]);
+              }
+            }
+            Query bestQuery = parser.parse(rewrittenQuery);
+            TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
+            runSearch(bestcollector, searcher, bestQuery, false, 1, 0);
+            result.put(RESULT_BESTQUERY_KEY, rewrittenQuery);
+            result.put(RESULT_BESTQUERYHITS_KEY, bestcollector.getTotalHits());
+          }
+          log.debug("DYM took "+(System.currentTimeMillis() - dym_start)+"ms");
         }
         
         //PLUG IN DIDYOUMEAN END
