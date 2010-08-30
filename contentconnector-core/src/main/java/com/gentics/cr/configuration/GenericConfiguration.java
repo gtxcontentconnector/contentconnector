@@ -272,6 +272,39 @@ public class GenericConfiguration implements Serializable{
     }
   }
   
+  /**
+   * Get configuration key as integer.
+   * @param key configuration key to get
+   * @param defaultValue value to return if we cannot parse the integer
+   * @return configuration key as integer, if it cannot be parsed the default
+   * value is returned.
+   */
+  public int getInteger(String key,
+      int defaultValue) {
+    String stringValue = getString(key);
+    if(stringValue != null) {
+      return Integer.parseInt(stringValue);
+    } else {
+      return defaultValue;
+    }
+  }
+  
+  /**
+   * Get configuration key as float.
+   * @param key configuration key to get
+   * @param defaultValue value to return if we cannot parse the float
+   * @return configuration key as float, if it cannot be parsed the default
+   * value is returned.
+   */
+  public float getFloat(String key,
+      float defaultValue) {
+    String stringValue = getString(key);
+    if(stringValue != null) {
+      return Float.parseFloat(stringValue);
+    } else {
+      return defaultValue;
+    }
+  }
   
   /**
    * Sets the property value to the given key<br />
