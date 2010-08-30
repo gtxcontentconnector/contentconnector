@@ -489,11 +489,15 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
       CRRequest req = new CRRequest();
       String[] prefillAttributes = attributes.keySet().toArray(new String[0]);
       req.setAttributeArray(prefillAttributes);
+      UseCase prefillCase = MonitorFactory.startUseCase("indexSlice(" + crid
+          + ").prefillAttributes");
       rp.fillAttributes(slice, req, idAttribute);
+      prefillCase.stop();
       for (Resolvable objectToIndex : slice) {
         CRResolvableBean bean =
           new CRResolvableBean(objectToIndex, prefillAttributes);
-        UseCase bcase = MonitorFactory.startUseCase("indexSlice.indexBean");
+        UseCase bcase = MonitorFactory.startUseCase("indexSlice(" + crid
+            + ").indexBean");
         try {
           //CALL PRE INDEX PROCESSORS/TRANSFORMERS
           //TODO This could be optimized for multicore servers with a map/reduce
