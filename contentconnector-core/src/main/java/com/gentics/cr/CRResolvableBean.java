@@ -471,7 +471,7 @@ public class CRResolvableBean implements Serializable, Resolvable{
   public void set(final String attribute, final Object obj) {
     if ("contentid".equals(attribute)) {
       this.setContentid((String) obj);
-    } else {
+    } else if (obj != null && attribute != null){
       if (this.attrMap == null) {
         this.attrMap = new Hashtable<String, Object>();
       }
