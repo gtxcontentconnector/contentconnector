@@ -50,6 +50,7 @@ $output##
 			
 			.key { float: left; }
 			.value { float: right; margin-left: 4px; }
+			td.value { float:none; }
 			
 			.smallheader { font-weight: bold; }
 			.smallbox { margin-left: 4px; }
