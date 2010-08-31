@@ -92,7 +92,15 @@ public class CRSearcher {
    */
   public static final String RESULT_SUGGESTIONS_KEY = "suggestions";
   
-  
+  /**
+   * Key to put the suggested term for the bestresult into the result.
+   */
+  public static final String RESULT_SUGGESTEDTERM_KEY = "suggestedTerm";
+
+  /**
+   * Key to configure the limit of results we activate the didyoumean code. 
+   */
+  private static final String DIDYOUMEAN_ACTIVATE_KEY = "didyoumean_activatelimit";
   
   
   private static final String DIDYOUMEAN_ENABLED_KEY = "didyoumean";
@@ -100,7 +108,7 @@ public class CRSearcher {
   private static final String ADVANCED_DIDYOUMEAN_BESTQUERY_KEY = "didyoumeanbestqueryadvanced";
   private static final String DIDYOUMEAN_SUGGEST_COUNT_KEY = "didyoumeansuggestions";
   private static final String DIDYOUMEAN_MIN_SCORE = "didyoumeanminscore";
-
+  
   protected CRConfig config;
   private boolean computescores = true;
   private boolean didyoumeanenabled=false;
@@ -108,6 +116,10 @@ public class CRSearcher {
   private boolean advanceddidyoumeanbestquery=true;
   private int didyoumeansuggestcount = 5;
   private float didyoumeanminscore = 0.5f;
+  /**
+   * resultsizelimit to activate the didyoumeanfunctionality
+   */
+  private int didyoumeanactivatelimit = 0;
   
   private DidYouMeanProvider didyoumeanprovider = null;
   
@@ -131,6 +143,8 @@ public class CRSearcher {
         config.getBoolean(DIDYOUMEAN_BESTQUERY_KEY, didyoumeanbestquery);
       advanceddidyoumeanbestquery = config.getBoolean(
           ADVANCED_DIDYOUMEAN_BESTQUERY_KEY, advanceddidyoumeanbestquery);
+      didyoumeanactivatelimit =
+        config.getInteger(DIDYOUMEAN_ACTIVATE_KEY, didyoumeanactivatelimit);
     }
     
     
@@ -309,7 +323,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
    * @throws IOException TODO javadoc
    */
   @SuppressWarnings("unchecked")
-public final HashMap<String, Object> search(final String query,
+  public final HashMap<String, Object> search(final String query,
       final String[] searchedAttributes, final int count, final int start,
       final boolean explain, final String[] sorting, final CRRequest request)
       throws IOException {
@@ -363,7 +377,7 @@ public final HashMap<String, Object> search(final String query,
         result.put(RESULT_MAXSCORE_KEY, maxScore);
         //PLUG IN DIDYOUMEAN
         if (start == 0 && didyoumeanenabled
-            && (totalhits < 1 || maxScore < this.didyoumeanminscore)) {
+            && (totalhits <= didyoumeanactivatelimit || maxScore < this.didyoumeanminscore)) {
           HashMap<String, Object> didyoumeanResult = didyoumean(parsedQuery, indexAccessor, parser, searcher,
               sorting, userPermissions);
           result.putAll(didyoumeanResult);
@@ -421,7 +435,7 @@ public final HashMap<String, Object> search(final String query,
               String newquery = rewrittenQuery.replaceAll(term, suggestedTerm);
               HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
                   newquery, parser, searcher, sorting, userPermissions);
-              resultOfNewQuery.put("suggestedTerm",suggestedTerm);
+              resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY, suggestedTerm);
               Integer resultCount =
                 (Integer) resultOfNewQuery.get(RESULT_BESTQUERYHITS_KEY);
               suggestionsResults.put(resultCount, resultOfNewQuery);
