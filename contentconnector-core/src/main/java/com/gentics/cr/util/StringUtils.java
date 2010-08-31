@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.DefaultValueLoaderDecorator;
+
 /**
  * Utility class with static methods for Strings.
  * @author bigbear3001
@@ -72,5 +74,26 @@ public final class StringUtils {
       hexCode.append(new char[]{hexCodes[y], hexCodes[x]});
     }
     return hexCode.toString();
+  }
+
+  /**
+   * Get a {@link Boolean} out of an {@link Object}
+   * @param parameter {@link Object} to convert into a {@link Boolean}
+   * @param defaultValue value to return if we cannot parse the object into a
+   * boolean
+   * @return {@link Boolean} representing the {@link Object}, defaultValue if
+   * the object cannot be parsed.
+   */
+  public static Boolean getBoolean(Object parameter, boolean defaultValue) {
+    if (parameter == null) {
+      return defaultValue;
+    } else if (parameter instanceof Boolean) {
+      return (Boolean) parameter;
+    } else if (parameter instanceof String) {
+      return Boolean.parseBoolean((String) parameter);
+    } else {
+      return Boolean.parseBoolean(parameter.toString());
+    }
+
   }
 }
