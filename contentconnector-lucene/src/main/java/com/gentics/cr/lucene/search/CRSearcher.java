@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.search;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -435,7 +436,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
           String[] suggestionsForTerm = e.getValue();
           if(advanceddidyoumeanbestquery){
             TreeMap<Integer, HashMap<String,Object>> suggestionsResults =
-              new TreeMap<Integer, HashMap<String,Object>>();
+              new TreeMap<Integer, HashMap<String,Object>>(
+                  Collections.reverseOrder());
             for (String suggestedTerm : suggestionsForTerm) {
               String newquery = rewrittenQuery.replaceAll(term, suggestedTerm);
               HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
@@ -443,7 +445,9 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
               resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY, suggestedTerm);
               Integer resultCount =
                 (Integer) resultOfNewQuery.get(RESULT_BESTQUERYHITS_KEY);
-              suggestionsResults.put(resultCount, resultOfNewQuery);
+              if (resultCount > 0) {
+                suggestionsResults.put(resultCount, resultOfNewQuery);
+              }
             }
             result.put(RESULT_BESTQUERY_KEY, suggestionsResults);
           } else {
