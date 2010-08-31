@@ -39,6 +39,7 @@ import com.gentics.cr.lucene.didyoumean.DidYouMeanProvider;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.util.StringUtils;
 import com.gentics.cr.util.generics.Instanciator;
 /**
  * 
@@ -103,7 +104,7 @@ public class CRSearcher {
   private static final String DIDYOUMEAN_ACTIVATE_KEY = "didyoumean_activatelimit";
   
   
-  private static final String DIDYOUMEAN_ENABLED_KEY = "didyoumean";
+  public static final String DIDYOUMEAN_ENABLED_KEY = "didyoumean";
   private static final String DIDYOUMEAN_BESTQUERY_KEY = "didyoumeanbestquery";
   private static final String ADVANCED_DIDYOUMEAN_BESTQUERY_KEY = "didyoumeanbestqueryadvanced";
   private static final String DIDYOUMEAN_SUGGEST_COUNT_KEY = "didyoumeansuggestions";
@@ -375,8 +376,12 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
         
         result.put(RESULT_HITS_KEY, totalhits);
         result.put(RESULT_MAXSCORE_KEY, maxScore);
+        
         //PLUG IN DIDYOUMEAN
-        if (start == 0 && didyoumeanenabled
+        boolean didyoumeanEnabledForRequest =
+          StringUtils.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY), true);
+
+        if (start == 0 && didyoumeanenabled && didyoumeanEnabledForRequest
             && (totalhits <= didyoumeanactivatelimit || maxScore < this.didyoumeanminscore)) {
           HashMap<String, Object> didyoumeanResult = didyoumean(parsedQuery, indexAccessor, parser, searcher,
               sorting, userPermissions);
