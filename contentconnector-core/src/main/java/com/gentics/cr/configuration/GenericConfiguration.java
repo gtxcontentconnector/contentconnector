@@ -237,12 +237,24 @@ public class GenericConfiguration implements Serializable{
    */
   
   public String getString(String key) {
+    return getString(key, null);
+  }
+  
+  /**
+   * Get configuration key as {@link String}.
+   * @param key configuration key to get
+   * @param defaultValue value to return if configuration key is not set.
+   * @return configruation key as string, if configuration key is not set
+   * returns defaultValue.
+   */
+  public String getString(String key, String defaultValue) {
     Object result = get(key);
-    if(result!=null)
+    if(result != null)
       return (String) result;
     else
-      return null;
+      return defaultValue;
   }
+  
   
   /**
    * Get configuration key as boolean value.
