@@ -5,8 +5,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.DefaultValueLoaderDecorator;
-
 /**
  * Utility class with static methods for Strings.
  * @author bigbear3001
