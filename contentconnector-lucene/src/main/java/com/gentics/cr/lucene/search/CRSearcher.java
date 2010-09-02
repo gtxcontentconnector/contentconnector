@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -115,7 +114,7 @@ public class CRSearcher {
   private boolean computescores = true;
   private boolean didyoumeanenabled=false;
   private boolean didyoumeanbestquery=true;
-  private boolean advanceddidyoumeanbestquery=true;
+  private boolean advanceddidyoumeanbestquery=false;
   private int didyoumeansuggestcount = 5;
   private float didyoumeanminscore = 0.5f;
   /**
