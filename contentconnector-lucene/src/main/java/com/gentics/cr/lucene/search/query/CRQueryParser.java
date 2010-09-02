@@ -1,4 +1,4 @@
-package com.gentics.cr.lucene.search;
+package com.gentics.cr.lucene.search.query;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

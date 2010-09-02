@@ -19,8 +19,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
@@ -34,11 +34,11 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.didyoumean.DidYouMeanProvider;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.search.query.CRQueryParserFactory;
 import com.gentics.cr.util.StringUtils;
 import com.gentics.cr.util.generics.Instanciator;
 /**
@@ -354,12 +354,9 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
           .createAnalyzer((GenericConfiguration) this.config);
 
       if (searchedAttributes != null && searchedAttributes.length > 0) {
-        CRQueryParser parser =
-          new CRQueryParser(LuceneVersion.getVersion(), searchedAttributes,
-              analyzer, request);
-        parser.setAllowLeadingWildcard(true);
-        parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
-        Query parsedQuery = parser.parse(query);
+        QueryParser parser = CRQueryParserFactory.getConfiguredParser(searchedAttributes,analyzer, request,config);
+        
+        Query parsedQuery = parser.parse(query);        
         //GENERATE A NATIVE QUERY
         
         parsedQuery = searcher.rewrite(parsedQuery);
@@ -405,7 +402,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
   }
 
   private HashMap<String, Object> didyoumean(Query parsedQuery, IndexAccessor indexAccessor,
-      CRQueryParser parser, Searcher searcher,
+      QueryParser parser, Searcher searcher,
       String[] sorting, String[] userPermissions) {
     long dym_start = System.currentTimeMillis();
     HashMap<String, Object> result = new HashMap<String,Object>(3);
@@ -466,7 +463,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
   }
   
   private HashMap<String, Object> getResultsForQuery(final String query,
-      final CRQueryParser parser, final Searcher searcher,
+      final QueryParser parser, final Searcher searcher,
       final String[] sorting, final String[] userPermissions){
     HashMap<String, Object> result = new HashMap<String, Object>(3);
     try {

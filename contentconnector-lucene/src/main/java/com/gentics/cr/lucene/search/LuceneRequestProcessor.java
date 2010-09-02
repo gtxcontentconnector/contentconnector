@@ -16,7 +16,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.Query;
 
 import com.gentics.cr.CRConfig;
@@ -26,12 +25,12 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.search.highlight.AdvancedContentHighlighter;
 import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
+import com.gentics.cr.lucene.search.query.CRQueryParserFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 /**
@@ -206,9 +205,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
         if (highlightQuery != null) {
           Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(
               (GenericConfiguration) this.config);
-          QueryParser parser = new QueryParser(LuceneVersion.getVersion(),
-              getSearchedAttributes()[0], analyzer);
-          parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
+          QueryParser parser = CRQueryParserFactory.getConfiguredParser(getSearchedAttributes(), analyzer, request, config);
           try {
             parsedQuery = parser.parse((String) highlightQuery);
             parsedQuery.rewrite(reader);
