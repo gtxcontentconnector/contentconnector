@@ -28,7 +28,7 @@ public class SimpleMVString extends ContentTransformer {
 	public SimpleMVString(GenericConfiguration config) {
 		super(config);
 		//Define Value for NULLS
-		String NULLValue = (String)config.get(NULL_VALUE_KEY);
+		NULLValue = (String)config.get(NULL_VALUE_KEY);
 		if(NULLValue==null)NULLValue=DEFAULT_NULL_VALUE;
 		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
