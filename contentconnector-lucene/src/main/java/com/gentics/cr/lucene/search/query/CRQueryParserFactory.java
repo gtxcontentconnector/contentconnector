@@ -5,12 +5,12 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.MultiTermQuery;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.cr.util.generics.Instanciator;
 
 public class CRQueryParserFactory {
 
@@ -43,11 +43,7 @@ public class CRQueryParserFactory {
 			  String parserClass = pconfig.getString(QUERY_PARSER_CLASS);
 			  if(parserClass!=null)
 			  {
-				try {
-					parser = (QueryParser) Class.forName(parserClass).getConstructor(new Class[] {Version.class, String[].class, Analyzer.class, CRRequest.class}).newInstance(LuceneVersion.getVersion(), searchedAttributes, analyzer, request);
-				} catch (Exception e) {
-					log.error("Could not create QueryParser from class "+parserClass+", will use default QueryParser", e);
-				} 
+				parser = (QueryParser) Instanciator.getInstance(parserClass, new Object[][]{new Object[]{LuceneVersion.getVersion(), searchedAttributes, analyzer, request}});	
 			  }
 		  }
 		  
