@@ -1,9 +1,11 @@
 package com.gentics.cr.lucene.search.query;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.MultiTermQuery;
+import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
@@ -12,9 +14,11 @@ import com.gentics.cr.lucene.LuceneVersion;
 
 public class CRQueryParserFactory {
 
+	protected static Logger log = Logger.getLogger(CRQueryParserFactory.class);
+	
 	private static String MAX_CLAUSES_KEY="maxqueryclauses";
 	
-	private static String USE_CRQUERYPARSER_KEY="usecrqueryparser";
+	private static String QUERY_PARSER_CLASS="class";
 	
 	private static String QUERY_PARSER_CONFIG="queryparser";
 	
@@ -36,25 +40,25 @@ public class CRQueryParserFactory {
 		  {
 			  GenericConfiguration pconfig = (GenericConfiguration)subconfig;
 			  
-			  
-			  //TODO CONTINUE HERE
+			  String parserClass = pconfig.getString(QUERY_PARSER_CLASS);
+			  if(parserClass!=null)
+			  {
+				try {
+					parser = (QueryParser) Class.forName(parserClass).getConstructor(new Class[] {Version.class, String[].class, Analyzer.class, CRRequest.class}).newInstance(LuceneVersion.getVersion(), searchedAttributes, analyzer, request);
+				} catch (Exception e) {
+					log.error("Could not create QueryParser from class "+parserClass+", will use default QueryParser", e);
+				} 
+			  }
 		  }
 		  
-		  
-		  
-		  String useCRQUeryParser = config.getString(USE_CRQUERYPARSER_KEY);
-		  if(useCRQUeryParser!=null && Boolean.parseBoolean(useCRQUeryParser))
-		  {
-			  parser = new CRQueryParser(LuceneVersion.getVersion(), searchedAttributes, analyzer, request);  
-		  }
-		  else
+		  if(parser == null)
 		  {
 			  //USE DEFAULT QUERY PARSER
 			  parser = new QueryParser(LuceneVersion.getVersion(),searchedAttributes[0],analyzer);
 		  }
 		  
 		  //CONFIGURE MAX CLAUSES
-	      String maxQueryClausesString = config.getString(MAX_CLAUSES_KEY);
+	      String maxQueryClausesString = config.getString(QUERY_PARSER_CONFIG+"."+MAX_CLAUSES_KEY);
 	      if(maxQueryClausesString!=null && !"".equals(maxQueryClausesString))
 	      {
 	    	  BooleanQuery.setMaxClauseCount(Integer.parseInt(maxQueryClausesString));
