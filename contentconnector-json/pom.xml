@@ -85,9 +85,9 @@
 			</snapshots>
 		</repository>
 		<repository>
-	      <id>public</id>
+	      <id>com.gentics.public</id>
 	      <name>Archiva Managed Public Repository</name>
-	      <url>http://archiva.gentics.com:8081/archiva/repository/public/</url>
+	      <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public/</url>
 	      <releases>
 	        <enabled>true</enabled>
 	      </releases>
@@ -96,9 +96,9 @@
 	      </snapshots>
 	    </repository>
 	    <repository>
-	      <id>snapshots_public</id>
+	      <id>com.gentics.public_snapshots</id>
 	      <name>Archiva Managed Public Repository</name>
-	      <url>http://archiva.gentics.com:8081/archiva/repository/snapshots_public/</url>
+	      <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
 	      <snapshots>
 	        <enabled>true</enabled>
 	      </snapshots>
@@ -107,14 +107,14 @@
 	
 	<distributionManagement>
 		<repository>
-			<id>archiva.public</id>
+			<id>archiva.com.gentics.public</id>
 			<name>Internal Release Repository</name>
-			<url>dav:http://archiva.gentics.com:8081/archiva/repository/public</url>
+			<url>dav:http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
 		</repository>
 		<snapshotRepository>
-			<id>archiva.snapshots</id>
+			<id>archiva.com.gentics.public_snapshots</id>
 			<name>Internal Snapshot Repository</name>
-			<url>dav:http://archiva.gentics.com:8081/archiva/repository/snapshots_public</url>
+			<url>dav:http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
