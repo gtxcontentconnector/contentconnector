@@ -64,6 +64,7 @@ public final class Instanciator {
           if (constructor != null) {
             object = constructor.newInstance(parameters);
           }
+          break;
         }
       } catch (SecurityException e) {
         logger.debug("Cannot instanciate object for class " + clazz + " with"
