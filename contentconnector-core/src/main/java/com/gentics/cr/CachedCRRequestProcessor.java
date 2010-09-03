@@ -202,8 +202,14 @@ public class CachedCRRequestProcessor extends RequestProcessor {
     return collection;
   }
 
-  public static boolean compare(Collection<Resolvable> left,
-      Collection<Resolvable> right) {
+  /**
+   * Compares two resultsets for their updateTime.
+   * @param left first Resolvable
+   * @param right second Resolvable
+   * @return returns false if they are not equal
+   */
+  public static boolean compare(final Collection<Resolvable> left,
+      final Collection<Resolvable> right) {
     UseCase getResultVerifyCase = MonitorFactory
     .startUseCase("CRRequestProcessor.compare()#verify");
     if (left.size() != right.size()) {
