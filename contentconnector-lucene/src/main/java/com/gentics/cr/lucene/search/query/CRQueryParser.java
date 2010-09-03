@@ -172,9 +172,9 @@ public class CRQueryParser extends QueryParser {
    */
   private String replaceBooleanMnoGoSearchQuery(final String mnoGoSearchQuery) {
     String luceneQuery = mnoGoSearchQuery
-        .replace("|", "OR")
-        .replace("&", "AND")
-        .replace('\'', '"');
+      .replace(" ?| ?", "OR")
+      .replace(" ?& ?", "AND")
+      .replace('\'', '"');
     luceneQuery = luceneQuery.replaceAll(" ~([a-zA-Z0-9üöäÜÖÄß]+)", " NOT $1");
     return luceneQuery;
   }
