@@ -62,23 +62,17 @@ public class GenericConfiguration implements Serializable{
     }
     if(this.subconfigs!=null)
     {
-      for(Entry<Object,Object> e:this.properties.entrySet())
-      {
-        String subConfKey = (String)e.getKey();
-        Object subVal = e.getValue();
-        if(subVal!=null && subVal instanceof GenericConfiguration)
+			for(Entry<String,GenericConfiguration> e:this.subconfigs.entrySet())
         {
-          for(Entry<Object,Object> se:((GenericConfiguration)subVal).getRebuiltPropertyTree().entrySet())
+				String subConfKey = e.getKey();
+				GenericConfiguration subVal = e.getValue();
+				
+				for(Entry<Object,Object> se:subVal.getRebuiltPropertyTree().entrySet())
           {
             String K = subConfKey+"."+se.getKey();
             ret.put(K, se.getValue());
           }
         }
-        else
-        {
-          ret.put(subConfKey, subVal);
-        }
-      }
     }
     return(ret);
   }
