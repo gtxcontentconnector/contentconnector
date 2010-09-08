@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 
 import com.gentics.cr.CRConfig;
@@ -14,9 +15,11 @@ import com.gentics.cr.util.indexing.IndexLocation;
 
 public class CRLuceneDeleteJob extends AbstractUpdateCheckerJob {
 
+  
 	public CRLuceneDeleteJob(CRConfig config, IndexLocation indexLoc,
 			Hashtable<String, CRConfigUtil> configmap) {
 		super(config, indexLoc, configmap);
+		log = Logger.getLogger(CRLuceneDeleteJob.class);
 		// TODO Auto-generated constructor stub
 	}
 
