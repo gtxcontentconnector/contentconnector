@@ -111,7 +111,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 			count = reader.numDocs();
 		}catch(IOException ex)
 		{
-			log.error("IOX happened during test of index. "+ex.getMessage());
+			log.error("IOException happened during test of index. ", ex);
 		}
 		finally{
 			indexAccessor.release(reader, false);
