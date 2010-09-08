@@ -23,159 +23,169 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
  *
  */
 public class LuceneMultiIndexLocation extends LuceneIndexLocation {
-	
-	Hashtable<String,Directory> dirs = new Hashtable<String,Directory>();
-	
-	/**
-	 * Create a new Instance of LuceneMultiIndexLocation this IndexLocation can search over multiple index directories.
-	 * It is not able to write to the index.
-	 * @param config
-	 */
-	public LuceneMultiIndexLocation(CRConfig config) {
-		super(config);
-		GenericConfiguration locs = (GenericConfiguration)config.get(INDEX_LOCATIONS_KEY);
-		if(locs!=null)
-		{
-			Map<String,GenericConfiguration> locationmap = locs.getSortedSubconfigs();
-			if(locationmap!=null)
-			{
-				for(GenericConfiguration locconf:locationmap.values())
-				{
-					String path = locconf.getString(INDEX_PATH_KEY);
-					if(path!=null && !"".equals(path))
-					{
-						dirs.put(path,loadDirectory(path));
-					}
-				}
-			}
-		}
-		
-	}
-	
-	
-	private Directory loadDirectory(String indexLocation)
-	{
-		Directory dir;
-		if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
-		{
-			dir = new RAMDirectory();
-			
-		}
-		else
-		{
-			File indexLoc = new File(indexLocation);
-			try
-			{
-				dir = createFSDirectory(indexLoc);
-				if(dir==null) dir = createRAMDirectory();
-			}
-			catch(IOException ioe)
-			{
-				dir = createRAMDirectory();
-			}
-		}
-		//Create index accessor
-		IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
-		if(!IAFactory.hasAccessor(dir)){
-			try
-			{
-				IAFactory.createAccessor(dir, getConfiguredAnalyzer());
-			}
-			catch(IOException ex)
-			{
-				log.fatal("COULD NOT CREATE INDEX ACCESSOR"+ex.getMessage());
-			}
-		}
-		else{
-			log.debug("Accessor already present. we will not create a new one.");
-		}
-		return dir;
-	}
 
-	@Override
-	protected IndexAccessor getAccessorInstance() {
-		IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
-		return IAFactory.getMultiIndexAccessor(this.dirs.values().toArray(new Directory[]{}));
-	}
+  Hashtable<String,Directory> dirs = new Hashtable<String,Directory>();
 
-	@Override
-	protected Directory[] getDirectories() {
-		return this.dirs.values().toArray(new Directory[]{});
-	}
+  /**
+   * Timestamp to store the lastmodified value of the reopen file.
+   */
+  private long lastmodifiedStored = 0;
 
-	@Override
-	public int getDocCount() {
-		IndexAccessor indexAccessor = this.getAccessor();
-		IndexReader reader  = null;
-		int count = 0;
-		try
-		{
-			reader = indexAccessor.getReader(false);
-			count = reader.numDocs();
-		}catch(IOException ex)
-		{
-			log.error("IOX happened during test of index. "+ex.getMessage());
-		}
-		finally{
-			indexAccessor.release(reader, false);
-		}
-		
-		return count;
-	}
+  /**
+   * Create a new Instance of LuceneMultiIndexLocation this IndexLocation can search over multiple index directories.
+   * It is not able to write to the index.
+   * @param config
+   */
+  public LuceneMultiIndexLocation(CRConfig config) {
+    super(config);
+    GenericConfiguration locs = (GenericConfiguration)config.get(INDEX_LOCATIONS_KEY);
+    if(locs!=null)
+    {
+      Map<String,GenericConfiguration> locationmap = locs.getSortedSubconfigs();
+      if(locationmap!=null)
+      {
+        for(GenericConfiguration locconf:locationmap.values())
+        {
+          String path = locconf.getString(INDEX_PATH_KEY);
+          if(path!=null && !"".equals(path))
+          {
+            dirs.put(path,loadDirectory(path));
+          }
+        }
+      }
+    }
+    
+  }
+  
+  
+  private Directory loadDirectory(String indexLocation)
+  {
+    Directory dir;
+    if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
+    {
+      dir = new RAMDirectory();
+      
+    }
+    else
+    {
+      File indexLoc = new File(indexLocation);
+      try
+      {
+        dir = createFSDirectory(indexLoc);
+        if(dir==null) dir = createRAMDirectory();
+      }
+      catch(IOException ioe)
+      {
+        dir = createRAMDirectory();
+      }
+    }
+    //Create index accessor
+    IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
+    if(!IAFactory.hasAccessor(dir)){
+      try
+      {
+        IAFactory.createAccessor(dir, getConfiguredAnalyzer());
+      }
+      catch(IOException ex)
+      {
+        log.fatal("COULD NOT CREATE INDEX ACCESSOR"+ex.getMessage());
+      }
+    }
+    else{
+      log.debug("Accessor already present. we will not create a new one.");
+    }
+    return dir;
+  }
 
-	
-	private String getReopenFilename(String dir)
-	{
-		return dir+"/"+REOPEN_FILENAME;
-	}
+  @Override
+  protected IndexAccessor getAccessorInstance() {
+    IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
+    return IAFactory.getMultiIndexAccessor(this.dirs.values().toArray(new Directory[]{}));
+  }
 
-	@Override
-	public void createReopenFile() {
-		boolean write_reopen_file = Boolean.parseBoolean((String)config.get("writereopenfile"));
-		
-		if(write_reopen_file == true){
-			for(String dir:this.dirs.keySet())
-			{
-				log.debug("Writing reopen to " + this.getReopenFilename(dir));
-				try {
-					new File(this.getReopenFilename(dir)).createNewFile();
-				} catch (IOException e) {
-					log.warn("Cannot create reopen file! " + e);
-				}
-			}
-		}
-	}
+  @Override
+  protected Directory[] getDirectories() {
+    return this.dirs.values().toArray(new Directory[]{});
+  }
+
+  @Override
+  public int getDocCount() {
+    IndexAccessor indexAccessor = this.getAccessor();
+    IndexReader reader  = null;
+    int count = 0;
+    try
+    {
+      reader = indexAccessor.getReader(false);
+      count = reader.numDocs();
+    }catch(IOException ex)
+    {
+      log.error("IOX happened during test of index. "+ex.getMessage());
+    }
+    finally{
+      indexAccessor.release(reader, false);
+    }
+    
+    return count;
+  }
+
+  
+  private String getReopenFilename(String dir)
+  {
+    return dir+"/"+REOPEN_FILENAME;
+  }
+
+  @Override
+  public void createReopenFile() {
+    boolean write_reopen_file = Boolean.parseBoolean((String)config.get("writereopenfile"));
+    
+    if(write_reopen_file == true){
+      for(String dir:this.dirs.keySet())
+      {
+        log.debug("Writing reopen to " + this.getReopenFilename(dir));
+        try {
+          new File(this.getReopenFilename(dir)).createNewFile();
+        } catch (IOException e) {
+          log.warn("Cannot create reopen file! " + e);
+        }
+      }
+    }
+  }
 
 
-	@Override
-	public boolean reopenCheck(IndexAccessor indexAccessor) {
-		boolean reopened = false;
-		if(this.reopencheck)
-		{
-			try
-			{
-				boolean found = false;
-				for(String dir:this.dirs.keySet())
-				{
-					log.debug("Check for reopen file at "+this.getReopenFilename(dir));
-					File reopenFile = new File(this.getReopenFilename(dir));
-					if(reopenFile.exists())
-					{
-						reopenFile.delete();
-						found=true;
-					}
-				}
-				if (found) {
-					indexAccessor.reopen();
-					reopened = true;
-					log.debug("Reopened index.");
-				}
-			} catch (Exception ex) {
-				log.error(ex.getMessage(), ex);
-			}
-		}
-		return reopened;
-	}
-	
-
+  @Override
+  public boolean reopenCheck(IndexAccessor indexAccessor) {
+    boolean reopened = false;
+    if (reopencheck) {
+      try {
+        boolean reopen = false;
+        for (String dir : dirs.keySet()) {
+          log.debug("Check for reopen file at " + this.getReopenFilename(dir));
+          File reopenFile = new File(this.getReopenFilename(dir));
+          if (reopenFile.exists()) {
+            if (reopencheckTimestamp) {
+              long lastmodified = reopenFile.lastModified();
+              if (lastmodified != lastmodifiedStored) {
+                lastmodifiedStored  = lastmodified;
+                indexAccessor.reopen();
+                reopened = true;
+                log.debug("Reopen index because reopen file has changed");
+              }
+            } else {
+              reopenFile.delete();
+              reopen = true;
+              log.debug("Reopen index because of simple reopen check");
+            }
+          }
+        }
+        if (reopen) {
+          indexAccessor.reopen();
+          reopened = true;
+          log.debug("Reopened index.");
+        }
+      } catch (Exception ex) {
+        log.error(ex.getMessage(), ex);
+      }
+    }
+    return reopened;
+  }
 }

@@ -26,7 +26,17 @@ import com.gentics.cr.exceptions.CRException;
 public abstract class IndexLocation {
   //STATIC MEMBERS
   protected static final Logger log = Logger.getLogger(IndexLocation.class);
+
+  /**
+   * Configuration key for reopen check.
+   */
   private static final String REOPEN_CHECK_KEY = "reopencheck";
+
+  /**
+   * Value of reopen check configuration key for checking timestamp.
+   */
+  private static final String REOPEN_CHECK_TIMESTAMP = "timestamp";
+
   protected static final String REOPEN_FILENAME = "reopen";
   protected static final String INDEX_LOCATIONS_KEY = "indexLocations";
   protected static final String INDEX_PATH_KEY = "path";
@@ -45,7 +55,7 @@ public abstract class IndexLocation {
    */
   public static final String UPDATEJOBCLASS_KEY = "updatejobclass";
   private static final String DEFAULT_UPDATEJOBCLASS = "com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob";
-  
+
   /**
    * The key in the configuration for specifying the update job implementation class
    */
@@ -60,53 +70,62 @@ public abstract class IndexLocation {
   private int periodical_interval = 60; //60 seconds
   private Thread periodical_thread;
   private boolean lockdetection = false;
-  protected boolean reopencheck = false;
-  
-  
+
   /**
-   * Get the IndexLocation's interval that is used to create new jobs
+   * mark if we should make a reopencheck for this index location.
+   */
+  protected boolean reopencheck = false;
+
+  /**
+   * mark if we only should check the timestamp of the file and not remove it
+   * afterwards.
+   */
+  protected boolean reopencheckTimestamp = false;
+
+  /**
+   * Get the IndexLocation's interval that is used to create new jobs.
    * @return interval as int
    */
   public int getInterval() {
-	  return this.periodical_interval;
+    return this.periodical_interval;
   }
-  
+
   /**
    * Creates the reopen file to make portlet reload the index.
    */
   public abstract void createReopenFile();
-  
+
   /**
    * Checks Lock and throws Exception if Lock exists
-   * @throws LockedIndexException 
-   * @throws IOException 
+   * @throws LockedIndexException TODO javadoc
+   * @throws IOException TODO javadoc
    */
   public abstract void checkLock() throws Exception;
-  
-  
-  protected IndexLocation(CRConfig config)
-  {
-    this.config = config;
+
+
+  /**
+   * Constructor for index location mainly reads the configuration for all sort
+   * of IndexLocations.
+   * @param givenConfig configuration of the index location
+   */
+  protected IndexLocation(final CRConfig givenConfig) {
+    config = givenConfig;
     queue = new IndexJobQueue(config);
-    String per = (String)config.get(PERIODICAL_KEY);
-    periodical = Boolean.parseBoolean(per);
-    
-    String i = (String)config.get(PERIODICAL_INTERVAL_KEY);
-    if(i!=null)this.periodical_interval = Integer.parseInt(i);
-    
-    String s_reopen = (String)config.get(REOPEN_CHECK_KEY);
-    if(s_reopen!=null)
-    {
-      reopencheck = Boolean.parseBoolean(s_reopen);
+
+    periodical = config.getBoolean(PERIODICAL_KEY, periodical);
+
+    periodical_interval =
+      config.getInteger(PERIODICAL_INTERVAL_KEY, periodical_interval);
+    String reopenString = config.getString(REOPEN_CHECK_KEY);
+    if (REOPEN_CHECK_TIMESTAMP.equals(reopenString)) {
+      reopencheck = true;
+      reopencheckTimestamp = true;
+    } else {
+      reopencheck = config.getBoolean(REOPEN_CHECK_KEY, reopencheck);
     }
-    String s_lockdetect = (String)config.get(LOCK_DETECTION_KEY);
-    if(s_lockdetect!=null)
-    {
-      lockdetection = Boolean.parseBoolean(s_lockdetect);
-    }
-    
+    lockdetection = config.getBoolean(LOCK_DETECTION_KEY, lockdetection);
   }
-  
+
   /**
    * 
    */
