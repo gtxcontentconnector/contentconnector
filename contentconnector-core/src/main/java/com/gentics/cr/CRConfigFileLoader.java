@@ -74,43 +74,51 @@ public class CRConfigFileLoader extends CRConfigUtil {
     initDS();
 
   }
-  
-  private void loadConfigFile(String path) {
-    
+
+  /**
+   * Load the config file(s) for this instance.
+   * @param path file system path to the configuration
+   */
+  private void loadConfigFile(final String path) {
+    String errorMessage = "Could not load configuration file at: "
+      + CRUtil.resolveSystemProperties("${" + CRUtil.PORTALNODE_CONFPATH
+          + "}/rest/" + this.getName() + ".properties") + "!";
     try {
       //LOAD SERVLET CONFIGURATION
       String confpath = CRUtil.resolveSystemProperties(path);
-      java.io.File default_configfile = new java.io.File(confpath);
-      String basename = default_configfile.getName();
-      String dirname = default_configfile.getParent();
+      java.io.File defaultConfigfile = new java.io.File(confpath);
+      String basename = defaultConfigfile.getName();
+      String dirname = defaultConfigfile.getParent();
       Vector<String> configfiles = new Vector<String>(1);
-      if ( default_configfile.canRead() ) configfiles.add(confpath);
-      
+      if (defaultConfigfile.canRead()) {
+        configfiles.add(confpath);
+      }
+
       //add all files matching the regex "name.*.properties"
       java.io.File directory = new java.io.File(dirname);
-      FileFilter regexFilter = new RegexFileFilter(basename.replaceAll("\\..*", "")+".[^\\.]+.properties");
-      for(java.io.File file:directory.listFiles(regexFilter)){
+      FileFilter regexFilter = new RegexFileFilter(
+          basename.replaceAll("\\..*", "") + ".[^\\.]+.properties");
+      for (java.io.File file : directory.listFiles(regexFilter)) {
         configfiles.add(file.getPath());
       }
-      
+
       //load all found files into config
-      for(String file:configfiles){
-        loadConfiguration(this,file,webapproot);
+      for (String file : configfiles) {
+        loadConfiguration(this, file, webapproot);
       }
-      if(configfiles.size() == 0){
+      if (configfiles.size() == 0) {
         throw new FileNotFoundException("Cannot find any valid configfile.");
       }
-      
+
     } catch (FileNotFoundException e) {
-      log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!",e);
+      log.error(errorMessage, e);
     } catch (IOException e) {
-      log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!",e);
-    }catch(NullPointerException e){
-      log.error("Could not load configuration file at: "+CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/"+this.getName()+".properties")+"!\r\n",e);
+      log.error(errorMessage, e);
+    } catch (NullPointerException e) {
+      log.error(errorMessage, e);
     }
   }
-  
-  
+
   /**
    * Loads a configuration file into a GenericConfig instance and resolves system variables
    * @param emptyConfig
@@ -128,21 +136,19 @@ public class CRConfigFileLoader extends CRConfigUtil {
       setProperty(emptyConfig,(String)key, (String)value, webapproot);
     }
   }
-  
-  private static void setProperty(GenericConfiguration config,String key, String value, String webapproot)
-  {
+
+  private static void setProperty(GenericConfiguration config,String key, String value, String webapproot) {
     //Resolve system properties, so that they can be used in config values
-    value = CRUtil.resolveSystemProperties((String)value);
-    
-    //Replace webapproot in the properties values, so that this variable can be used
-    if(webapproot!=null)
-    {
-      value = resolveProperty("\\$\\{webapproot\\}", webapproot.replace('\\', '/'), value);
+    value = CRUtil.resolveSystemProperties((String) value);
+    //Replace webapproot in the properties values, so that this variable can be
+    //used
+    if (webapproot != null) {
+      value = resolveProperty("\\$\\{webapproot\\}",
+          webapproot.replace('\\', '/'), value);
     }
-    
     //Set the property
-    config.set(key,value);
-    log.debug("CONFIG: "+key+" has been set to "+value);
+    config.set(key, value);
+    log.debug("CONFIG: " + key + " has been set to " + value);
   }
 
   protected static final String resolveProperty(final String pattern,
