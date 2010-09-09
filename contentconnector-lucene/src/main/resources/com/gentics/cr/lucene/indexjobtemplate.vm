@@ -8,6 +8,11 @@
 #set($previousRow=$output)##
 $output##
 #end##
+
+#macro(round $number $round)
+#set($numberString = "$!number")
+$numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")
+#end
 <html>
 	<head>
 		<title>IndexerServlet for Lucene by Gentics</title>
@@ -65,6 +70,7 @@ $output##
 		<div class="captioncontainer">
 			<div class="row #getnextrow()">Index</div>
 			<div class="row #getnextrow()">Objects in Index</div>
+			<div class="row #getnextrow()">Index was modified</div>
 			<div class="row #getnextrow()">Periodical indexing</div>
 			<div class="row #getnextrow()">Current checkinterval</div>
 			<div class="row #getnextrow()">Elements in queue</div>
@@ -84,6 +90,9 @@ $output##
 				<div class="indexblock#if($j!="") active#end">
 					<div class="row #getnextrow() small header">$e.getKey()</div>
 					<div class="row #getnextrow() small center">$loc.getDocCount()</div>
+					#set($indexSize = "$loc.indexSizeMB()")
+					<div class="row #getnextrow() small center">#round($indexSize 2) MB</div>
+					<div class="row #getnextrow() small center">$loc.lastModified()</div>
 					<div class="row #getnextrow() small center">#if($loc.isPeriodical()) true #else false #end</div>
 					<div class="row #getnextrow() small center">$queue.getInterval() s</div>
 					<div class="row #getnextrow() small center">$queue.getSize()</div>

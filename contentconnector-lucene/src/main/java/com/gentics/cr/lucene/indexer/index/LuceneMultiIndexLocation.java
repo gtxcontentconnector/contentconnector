@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -189,5 +190,40 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
       }
     }
     return reopened;
+  }
+
+
+  @Override
+  public final long indexSize() {
+    long directorySize = 0;
+    //TODO add caching
+    for (String dir : dirs.keySet()) {
+      directorySize += FileUtils.sizeOfDirectory(new File(dir));
+    }
+    return directorySize;
+  }
+
+
+  @Override
+  public final Date lastModified() {
+    long lastModified = 0;
+    for (String dir : dirs.keySet()) {
+      File reopenFile = new File(this.getReopenFilename(dir));
+      if (reopenFile.exists()) {
+        long reopenLastModified = reopenFile.lastModified();
+        if (reopenLastModified > lastModified) {
+          lastModified = reopenLastModified;
+        }
+      } else {
+        File directory = new File(dir);
+        if (directory.exists()) {
+          long directoryLastModified = directory.lastModified();
+          if (directoryLastModified > lastModified) {
+            lastModified = directoryLastModified;
+          }
+        }
+      }
+    }
+    return new Date(lastModified);
   }
 }

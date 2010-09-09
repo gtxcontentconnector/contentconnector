@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -188,5 +189,28 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
       }
     }
     return reopened;
+  }
+
+  @Override
+  public final long indexSize() {
+    File indexLocationFile = new File(indexLocation);
+    long directorySize = FileUtils.sizeOfDirectory(indexLocationFile);
+    //TODO add caching
+    return directorySize;
+  }
+
+  @Override
+  public final Date lastModified() {
+    File reopenfile = new File(getReopenFilename());
+    if (reopenfile.exists()) {
+      return new Date(reopenfile.lastModified());
+    } else {
+      File directory = reopenfile.getParentFile();
+      if (directory.exists()) {
+        return new Date(directory.lastModified());
+      } else {
+        return new Date(0);
+      }
+    }
   }
 }
