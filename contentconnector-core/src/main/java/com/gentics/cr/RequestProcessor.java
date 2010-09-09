@@ -57,8 +57,9 @@ public abstract class RequestProcessor {
   
   /**
    * Create new instance of RequestProcessor
-   * @param config
-   * @throws CRException
+   * @param config Configuration of the RequestProcessor
+   * @throws CRException if no config is given, or the PlinkProcessor could not
+   * be initialized.
    */
   public RequestProcessor(CRConfig config) throws CRException {
 
