@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
@@ -135,15 +136,16 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
   }
 
   @Override
-  public void createReopenFile() {
-    boolean write_reopen_file = Boolean.parseBoolean((String)config.get("writereopenfile"));
-    
-    if(write_reopen_file == true){
-      for(String dir:this.dirs.keySet())
-      {
-        log.debug("Writing reopen to " + this.getReopenFilename(dir));
+  public final void createReopenFile() {
+    boolean writeReopenFile = config.getBoolean("writereopenfile");
+
+    if (writeReopenFile) {
+      for (String dir : this.dirs.keySet()) {
         try {
-          new File(this.getReopenFilename(dir)).createNewFile();
+          String filename = this.getReopenFilename(dir);
+          log.debug("Writing reopen to " + filename);
+          File reopenFile = new File(filename);
+          FileUtils.touch(reopenFile);
         } catch (IOException e) {
           log.warn("Cannot create reopen file! " + e);
         }

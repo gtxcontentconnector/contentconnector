@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
@@ -146,13 +147,13 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
    * Creates the reopen file to make portlet reload the index.
    */
   public void createReopenFile(){
-    boolean write_reopen_file = Boolean.parseBoolean((String)config.get("writereopenfile"));
-    
-    if(write_reopen_file == true){
-    
-      log.debug("Writing reopen to " + this.getReopenFilename());
+    boolean writeReopenFile = config.getBoolean("writereopenfile");
+    if (writeReopenFile) {
+      String filename = this.getReopenFilename();
+      log.debug("Writing reopen to " + filename);
       try {
-        new File(this.getReopenFilename()).createNewFile();
+        File reopenFile = new File(filename);
+        FileUtils.touch(reopenFile);
       } catch (IOException e) {
         log.warn("Cannot create reopen file! " + e);
       }
