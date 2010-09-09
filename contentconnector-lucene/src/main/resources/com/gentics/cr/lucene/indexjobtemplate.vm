@@ -70,6 +70,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")
 		<div class="captioncontainer">
 			<div class="row #getnextrow()">Index</div>
 			<div class="row #getnextrow()">Objects in Index</div>
+			<div class="row #getnextrow()">Size of Index Directory</div>
 			<div class="row #getnextrow()">Index was modified</div>
 			<div class="row #getnextrow()">Periodical indexing</div>
 			<div class="row #getnextrow()">Current checkinterval</div>
