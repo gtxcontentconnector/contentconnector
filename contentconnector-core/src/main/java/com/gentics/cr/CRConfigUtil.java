@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.ConfigurationException;
 import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.rest.velocity.VelocityContentRepository;
 import com.gentics.cr.sql.ConnectionProvider;
@@ -525,6 +526,13 @@ public class CRConfigUtil extends CRConfig {
       final String requestProcessorName) throws CRException {
     CRConfigUtil requestProcessorConfig =
       this.getRequestProcessorConfig(requestProcessorName);
+    if (requestProcessorConfig == null) {
+      log.error("Cannot initialize RequestProcessor "
+          + requestProcessorName);
+      throw new ConfigurationException("config", "We cannot get the "
+          + "configuration for the RequestProcessor",
+          CRException.ERRORTYPE.FATAL_ERROR);
+    }
     String requestProcessorClass =
       requestProcessorConfig.getRequestProcessorClass();
     log.debug("Instanciate RequestProcessor" + requestProcessorName
