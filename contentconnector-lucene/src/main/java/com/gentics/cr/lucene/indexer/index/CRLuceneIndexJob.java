@@ -103,24 +103,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
     }
   }
 
-
-
-  /**
-   * Tests if a CRIndexJob has the same identifier as the given object being an
-   * instance of CRIndexJob.
-   * @param obj Object to test if it equals the CRIndexJob.
-   */
-  @Override
-  public final boolean equals(final Object obj) {
-    if (obj instanceof CRLuceneIndexJob) {
-      if (this.identifyer.equalsIgnoreCase(
-          ((CRLuceneIndexJob) obj).getIdentifyer())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /**
    * Key to be used for saving state to contentstatus.
    */
