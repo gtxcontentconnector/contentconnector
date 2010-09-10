@@ -202,7 +202,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * @return <code>true</code> if is equal to obj, otherwise false.
 	 */
 	@Override
-	public final boolean equals(final Object obj) {
+	public boolean equals(final Object obj) {
 		if (obj instanceof AbstractUpdateCheckerJob) {
 			if (this.identifyer.equalsIgnoreCase(
 					((AbstractUpdateCheckerJob) obj).getIdentifyer())) {
