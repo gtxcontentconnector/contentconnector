@@ -63,7 +63,19 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	}
 	
 	@Override
-	protected boolean checkUpToDate(String identifyer, Object timestamp, String timestampattribute, Resolvable object) {
+	protected final boolean checkUpToDate(final String identifyer,
+			final Object timestamp, final String timestampattribute,
+			final Resolvable object) {
+		String timestampString;
+		if (timestamp == null) {
+			return false;
+		} else {
+			timestampString = timestamp.toString();
+		}
+		if ("".equals(timestampString)) {
+			return false;
+		}
+		
 		boolean readerWithWritePermissions = false;
 		if (docs.containsKey(identifyer)) {
 			
@@ -71,20 +83,26 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 			
 			Integer documentId = docs.get(identifyer);
 			try {
-				IndexReader reader = indexAccessor.getReader(readerWithWritePermissions);
+				IndexReader reader =
+					indexAccessor.getReader(readerWithWritePermissions);
 				Document document = reader.document(documentId);
 				checkedDocuments.add(identifyer);
-				Object documentUpdateTimestamp = new String("-1");
+				Object documentUpdateTimestamp = null;
 				try {
 					documentUpdateTimestamp = document.get(timestampattribute);
-				} catch (NumberFormatException e) { }
+				} catch (NumberFormatException e) {
+					log.debug("Got an error getting the document for "
+							+ identifyer + " from index", e);
+				}
 				indexAccessor.release(reader, readerWithWritePermissions);
 				//Use strings to compare the attributes
-				if(documentUpdateTimestamp!=null && !(documentUpdateTimestamp instanceof String))
-					documentUpdateTimestamp = documentUpdateTimestamp.toString();
-				if(timestamp != null && !(timestamp instanceof String))
-					timestamp = timestamp.toString();
-				if("".equals(timestampattribute) || documentUpdateTimestamp==null || documentUpdateTimestamp.equals("-1") || timestamp == null || !documentUpdateTimestamp.equals(timestamp)){
+				if (documentUpdateTimestamp != null
+						&& !(documentUpdateTimestamp instanceof String)) {
+					documentUpdateTimestamp =
+						documentUpdateTimestamp.toString();
+				}
+				if (documentUpdateTimestamp == null
+						|| !documentUpdateTimestamp.equals(timestampString)) {
 					return false;
 				}
 				return true;
@@ -92,11 +110,11 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 				//TODO specify witch index is not readable
 				String directories = "";
 				Directory[] dirs = indexLocation.getDirectories();
-				for(Directory dir:dirs)
-				{
-					directories+=dir.toString()+'\n';
+				for (Directory dir : dirs) {
+					directories += dir.toString() + '\n';
 				}
-				log.error("Cannot open index for reading. (Directory: " + directories+ ")",e);
+				log.error("Cannot open index for reading. (Directory: "
+						+ directories + ")", e);
 				return true;
 			}
 		} else {
