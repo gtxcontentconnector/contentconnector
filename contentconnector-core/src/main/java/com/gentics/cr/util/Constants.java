@@ -13,6 +13,17 @@ public final class Constants {
 	public static final int MILLISECONDS_IN_A_SECOND = 1000;
 	
 	/**
+	 * defines how many bytes a kilobyte has.
+	 */
+	public static final int KILOBYTE = 1024;
+	
+	/**
+	 * megabytes per byte.
+	 */
+	public static final double MEGABYTES_PER_BYTE =
+		(1.0 / (((float) KILOBYTE) * ((float) KILOBYTE)));
+	
+	/**
 	 * Prevents from instantiation.
 	 */
 	private Constants() { }
