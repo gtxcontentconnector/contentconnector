@@ -72,8 +72,8 @@ public class CRConfigUtil extends CRConfig {
    */
   public CRConfigUtil(final GenericConfiguration conf, final String name) {
     this.name = name;
-    this.properties = conf.getProperties();
-    this.subconfigs = conf.getSubConfigs();
+    setProperties(conf.getProperties());
+    setSubConfigs(conf.getSubConfigs());
   }
 
   /**
@@ -451,9 +451,9 @@ public class CRConfigUtil extends CRConfig {
    * @return Collection with the names of the {@link RequestProcessor}s
    */
   public final Collection<String> getRequestProcessorNames() {
-    if (this.subconfigs != null && !this.subconfigs.isEmpty()) {
+    if (getSubConfigSize() > 0) {
       GenericConfiguration requestProcessorsConfigs =
-        this.subconfigs.get(REQUEST_PROCESSOR_KEY);
+        (GenericConfiguration) get(REQUEST_PROCESSOR_KEY);
       if (requestProcessorsConfigs != null) {
         Hashtable<String, GenericConfiguration> requestProcessorTable =
           requestProcessorsConfigs.getSubConfigs();
