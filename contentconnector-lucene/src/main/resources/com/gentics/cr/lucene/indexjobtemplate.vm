@@ -131,6 +131,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")
 							<div>
 								$j.getIdentifyer()<br/>
 								status: $j.getStatusString()<br/>
+								&nbsp;&nbsp;&nbsp; started: $j.getStartDate()<br/>
 								&nbsp;&nbsp;&nbsp; $j.getObjectsToIndex() objects to index<br/>
 								&nbsp;&nbsp;&nbsp; $j.getObjectsDone() objects done<br/>
 								&nbsp;&nbsp;&nbsp; $j.getETA() ms ETA
@@ -138,17 +139,17 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")
 						</div>
 					</div>
 					#end
-	
+					$queue.class.name
 					#set($lastJobs = $queue.getLastJobs())
 					#if($lastJobs)
-					<div class="row #getnextrow() small">
-						<div class="smallheader">last 3 jobs</div>
-						<div class="smallbox">
-							#foreach($lj in $lastJobs)
-								<div>$lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getDuration() ms for $lj.getObjectsDone() Objects</div>
-							#end
+						<div class="row #getnextrow() small">
+							<div class="smallheader">last 3 jobs</div>
+							<div class="smallbox">
+								#foreach($lj in $lastJobs)
+									<div>$lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getStartDate()<br />&nbsp;&nbsp;&nbsp; $lj.getDuration() ms for $lj.getObjectsDone() Objects</div>
+								#end
+							</div>
 						</div>
-					</div>
 					#end
 	
 				</div>

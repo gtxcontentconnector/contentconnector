@@ -3,6 +3,7 @@ package com.gentics.cr.util.indexing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -146,6 +147,14 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 */
 	public final long getStart() {
 		return this.start;
+	}
+	
+	/**
+	 * Get the job's start time as date.
+	 * @return start time of the job as date
+	 */
+	public final Date getStartDate() {
+		return new Date(getStart());
 	}
 	
 	/**
