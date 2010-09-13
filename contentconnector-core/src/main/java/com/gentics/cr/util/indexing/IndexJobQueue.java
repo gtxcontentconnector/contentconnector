@@ -11,73 +11,95 @@ import com.gentics.cr.CRConfig;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class IndexJobQueue{
+public class IndexJobQueue {
 	
+	/**
+	 * Confiuration key to set if only empty jobs should be hidden in lastjobs
+	 * array.
+	 */
+	private static final String HIDE_EMPTY_JOBS_KEY = "HIDEEMPTYJOBS";
+
+	/**
+	 * Configuration key to set check interval of job queue.
+	 */
 	private static final String INTERVAL_KEY = "CHECKINTERVAL";
-	
+
+	/**
+	 * Configuration key to set size of lastjobs array.
+	 */
+	private static final String SIZE_KEY = "LASTJOBS_SIZE";
+
+
 	private LinkedBlockingQueue<AbstractUpdateCheckerJob> queue;
-	private Thread d;
-	private boolean stop=false;
+	private Thread indexJobQueueWorkerDaemon;
+	private boolean stop = false;
 	private int interval = 5; // Default 5 sec interval for checking
 	private Thread currentJob;
 	private AbstractUpdateCheckerJob currentJI;
 	private ArrayList<AbstractUpdateCheckerJob> lastJobs;
 	
 	/**
-	 * Create new instance of JobQueue
-	 * @param config
+	 * sets if we only save jobs that actually did something. (not only
+	 * performing an update check)
 	 */
-	public IndexJobQueue(CRConfig config) {
-		String i = (String)config.get(INTERVAL_KEY);
-		if(i!=null)this.interval = new Integer(i);
+	private boolean hideEmptyJobs = false;
+	
+	/**
+	 * size of lastjobs array.
+	 */
+	private int lastJobsSize = 3;
+	
+	/**
+	 * Create new instance of JobQueue.
+	 * @param config configuration of the job queue
+	 */
+	public IndexJobQueue(final CRConfig config) {
+		interval = config.getInteger(INTERVAL_KEY, interval);
+		lastJobsSize = config.getInteger(SIZE_KEY, lastJobsSize);
+		hideEmptyJobs = config.getBoolean(HIDE_EMPTY_JOBS_KEY, hideEmptyJobs);
+		
 		queue = new LinkedBlockingQueue<AbstractUpdateCheckerJob>();
-		lastJobs = new ArrayList<AbstractUpdateCheckerJob>(3);
-		this.d = new Thread(new Runnable(){
-			public void run()
-			{
+		lastJobs = new ArrayList<AbstractUpdateCheckerJob>(lastJobsSize);
+		indexJobQueueWorkerDaemon = new Thread(new Runnable() {
+			public void run() {
 				workQueue();
 			}
 		});
-		this.d.setName("IndexJobQueueWorker-" + config.getName());
-		this.d.setDaemon(true);
+		indexJobQueueWorkerDaemon.setName("IndexJobQueueWorker-"
+				+ config.getName());
+		indexJobQueueWorkerDaemon.setDaemon(true);
 	}
 	
 	/**
-	 * Returns true if the worker is running and processing the queue
-	 * @return
+	 * Returns true if the worker is running and processing the queue.
+	 * @return <code>true</code> if the worker is running.
 	 */
-	public boolean isRunning()
-	{
-		return (!this.stop && this.d.isAlive());
+	public final boolean isRunning() {
+		return (!this.stop && this.indexJobQueueWorkerDaemon.isAlive());
 	}
 	
 	/**
-	 * Get an ArrayList with the three last jobs. If there where no jobs the list is going to be empty.
-	 * @return
+	 * Get an ArrayList with the three last jobs. If there where no jobs the
+	 * list is going to be empty.
+	 * @return array of last jobs
 	 */
-	public ArrayList<AbstractUpdateCheckerJob> getLastJobs()
-	{
+	public final ArrayList<AbstractUpdateCheckerJob> getLastJobs() {
 		return this.lastJobs;
 	}
 	
 	/**
-	 * Add a Job to the list of finished jobs
-	 * Always keeps 3 jobs
-	 * Only for display in the indexer servlet
-	 * @param j
+	 * Add a Job to the list of finished jobs. Always keeps as much jobs as
+	 * configured in {@link #lastJobsSize}. Default is 3.
+	 * Only for display in the indexer servlet.
+	 * @param job job to add to the last jobs array.
 	 */
-	private void addToLastJobs(AbstractUpdateCheckerJob j)
-	{
-		ArrayList<AbstractUpdateCheckerJob> l = new ArrayList<AbstractUpdateCheckerJob>(3);
-		l.add(j);
-		int i=0;
-		for(AbstractUpdateCheckerJob e:lastJobs)
-		{
-			if(e!=null)l.add(e);
-			i++;
-			if(i>=2)break;
+	private void addToLastJobs(final AbstractUpdateCheckerJob job) {
+		if (!hideEmptyJobs || job.getObjectsDone() > 0) {
+			lastJobs.add(0, job);
+			if (lastJobs.size() > lastJobsSize) {
+				lastJobs.remove(lastJobsSize);
+			}
 		}
-		lastJobs = l;
 	}
 	
 	/**
@@ -168,13 +190,13 @@ public class IndexJobQueue{
 			//TODO Clear queue and stop each queued job
 			this.queue.clear();
 			//END WORKER THREAD
-			if(d!=null)
+			if(indexJobQueueWorkerDaemon!=null)
 			{ 
-				if(d.isAlive())
+				if(indexJobQueueWorkerDaemon.isAlive())
 				{
-					d.interrupt();
+					indexJobQueueWorkerDaemon.interrupt();
 					try {
-						d.join();
+						indexJobQueueWorkerDaemon.join();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -188,7 +210,7 @@ public class IndexJobQueue{
 	 */
 	public void startWorker()
 	{
-		this.d.start();
+		this.indexJobQueueWorkerDaemon.start();
 		this.stop=false;
 	}
 	
@@ -199,7 +221,7 @@ public class IndexJobQueue{
 	{
 		this.stop=true;
 		try {
-			this.d.join(5000);
+			this.indexJobQueueWorkerDaemon.join(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
