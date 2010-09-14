@@ -17,7 +17,7 @@ $output##
 #set($number = $number / $unitsize)##
 #end##
 #if("$!nextUnitOutput" != "" && "$!nextUnitOutput" != "0")##
- $nextUnitOutput$oldunit##
+$nextUnitOutput$oldunit ##
 #end##
 #end
 
@@ -28,13 +28,13 @@ $output##
 #set($numberOutput="#nextunit($humanReadableCounter 'ms' 1000 's')")##
 #end##
 #if($unit == "s")##
-#set($numberOutput="$numberOutput#nextunit($humanReadableCounter 's' 60 'm')")##
+#set($numberOutput="#nextunit($humanReadableCounter 's' 60 'm')$numberOutput")##
 #end##
 #if($unit == "m")##
-#set($numberOutput="$numberOutput#nextunit($humanReadableCounter 'm' 60 'h')")##
+#set($numberOutput="#nextunit($humanReadableCounter 'm' 60 'h')$numberOutput")##
 #end##
 #if($unit == "h")##
-#set($numberOutput="$numberOutput#nextunit($humanReadableCounter 'h' 24 'd')")##
+#set($numberOutput="#nextunit($humanReadableCounter 'h' 24 'd')$numberOutput")##
 #end##
 $humanReadableCounter$unit $numberOutput##
 #end##
