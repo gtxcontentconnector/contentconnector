@@ -30,12 +30,23 @@ public class IndexJobQueue {
 	private static final String SIZE_KEY = "LASTJOBS_SIZE";
 
 
+	/**
+	 * Queue containing the jobs to do. 
+	 */
 	private LinkedBlockingQueue<AbstractUpdateCheckerJob> queue;
+	
+	/**
+	 * Daemon that run one job at a time from {@link #queue}.
+	 */
 	private Thread indexJobQueueWorkerDaemon;
 	private boolean stop = false;
 	private int interval = 5; // Default 5 sec interval for checking
 	private Thread currentJob;
 	private AbstractUpdateCheckerJob currentJI;
+	
+	/**
+	 * Array containing the last jobs for statistics.
+	 */
 	private ArrayList<AbstractUpdateCheckerJob> lastJobs;
 	
 	/**
@@ -229,14 +240,13 @@ public class IndexJobQueue {
 	
 	
 	/**
-	 * Adds a CRIndexJob to the Job Queue
-	 * @param job
-	 * @return
+	 * Adds a CRIndexJob to the Job Queue.
+	 * @param job job to add to teh queue
+	 * @return <code>true</code> if job was added, otherwhise it returns
+	 * <code>false</code>
 	 */
-	public synchronized boolean addJob(AbstractUpdateCheckerJob job)
-	{
-		if(!queue.contains(job))
-		{
+	public final synchronized boolean addJob(final AbstractUpdateCheckerJob job) {
+		if (!queue.contains(job)) {
 			return queue.offer(job);
 		}
 		return false;
@@ -246,8 +256,7 @@ public class IndexJobQueue {
 	 * Get Number of Jobs in the Queue
 	 * @return
 	 */
-	public int getSize()
-	{
+	public int getSize() {
 		return this.queue.size();
 	}
 	
