@@ -8,7 +8,7 @@ import java.util.List;
  */
 public final class Lists {
 	/**
-	 * private constructor to prevent instanciation.
+	 * private constructor to prevent instantiation.
 	 */
 	private Lists() { }
 	
