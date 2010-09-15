@@ -18,6 +18,7 @@ import java.util.Vector;
 import com.gentics.api.lib.exception.UnknownPropertyException;
 import com.gentics.api.lib.resolving.PropertyResolver;
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.util.AccessibleBean;
 
 
 /**
@@ -33,7 +34,7 @@ import com.gentics.api.lib.resolving.Resolvable;
  * @author $Author: supnig@constantinopel.at $
  * 
  */
-public class CRResolvableBean implements Serializable, Resolvable{
+public class CRResolvableBean extends AccessibleBean implements Serializable, Resolvable{
 
     
   private static final long serialVersionUID = -8743515908056719834L;
