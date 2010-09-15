@@ -10,6 +10,8 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import com.gentics.cr.util.AccessibleBean;
+
 /**
  * Stores a Configuration tree.
  *     - Keys are stored in Upper Case

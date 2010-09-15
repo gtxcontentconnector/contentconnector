@@ -1,4 +1,4 @@
-package com.gentics.cr.configuration;
+package com.gentics.cr.util;
 
 /**
  * 
