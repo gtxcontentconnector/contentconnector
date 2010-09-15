@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -33,6 +35,7 @@ import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
 import com.gentics.cr.lucene.search.query.CRQueryParserFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+import com.gentics.cr.util.generics.Lists;
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -112,9 +115,20 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				(GenericConfiguration) config);
 	}
 
-	@SuppressWarnings("unchecked")
-	private static List<Field> toFieldList(final List l) {
-		return (List<Field>) l;
+	/**
+	 * Converts a generic List to a List of Field.
+	 * @param l - generic list
+	 * @return list of vectors, null in case l was null, Vector<Field> with size
+	 * null if l.size() was 0
+	 */
+	private static List<Field> toFieldList(final List<Fieldable> l) {
+		if (l == null) {
+			return null;
+		} else if (l.size() > 0) {
+			return Lists.toSpecialList(l, Field.class);
+		} else {
+			return new Vector<Field>(0);
+		}
 	}
 
 	/**
