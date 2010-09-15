@@ -18,11 +18,6 @@ public final class StringUtils {
 	private static Logger logger = Logger.getLogger(StringUtils.class);
 
 	/**
-	 * Base of hex system as int.
-	 */
-	private static final int HEX_BASE = 16;
-
-	/**
 	 * private constructor as all methods of this class are static.
 	 */
 	private StringUtils() { }
@@ -59,16 +54,19 @@ public final class StringUtils {
 	 * @return hex code for bytes
 	 */
 	public static String toHex(final byte[] bytes) {
-		char[] hexCodes = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8',
-				'9', 'A', 'B', 'C', 'D', 'E', 'F'};
+		char[] hexCodes = new char[]{'0', '1', '2', '3', '4', '5', '6', '7',
+				'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 		StringBuffer hexCode = new StringBuffer(bytes.length * 2);
+		//Somehow byte to int conversion creates signed ints
+		//all values below 0 have to be corrected by +256
+		final int signedIntFromByteToUnsignedIntCorrection = 256;
 		for (byte b : bytes) {
 			int i = (int) b;
 			if (i < 0) {
-				i += 256;
+				i += signedIntFromByteToUnsignedIntCorrection;
 			}
-			int x = i % HEX_BASE;
-			int y = (i - x) / HEX_BASE;
+			int x = i % Constants.HEX_BASE;
+			int y = (i - x) / Constants.HEX_BASE;
 			hexCode.append(new char[]{hexCodes[y], hexCodes[x]});
 		}
 		return hexCode.toString();
@@ -89,14 +87,15 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Get a {@link Boolean} out of an {@link Object}
+	 * Get a {@link Boolean} out of an {@link Object}.
 	 * @param parameter {@link Object} to convert into a {@link Boolean}
 	 * @param defaultValue value to return if we cannot parse the object into a
 	 * boolean
 	 * @return {@link Boolean} representing the {@link Object}, defaultValue if
 	 * the object cannot be parsed.
 	 */
-	public static Boolean getBoolean(Object parameter, boolean defaultValue) {
+	public static Boolean getBoolean(final Object parameter,
+			final boolean defaultValue) {
 		if (parameter == null) {
 			return defaultValue;
 		} else if (parameter instanceof Boolean) {

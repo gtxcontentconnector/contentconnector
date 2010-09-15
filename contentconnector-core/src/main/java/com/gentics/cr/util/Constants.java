@@ -7,6 +7,12 @@ package com.gentics.cr.util;
  */
 public final class Constants {
 	
+	
+	/**
+	 * Base of hex system as int.
+	 */
+	public static final int HEX_BASE = 16;
+	
 	/**
 	 * Milliseconds in a second.
 	 */
