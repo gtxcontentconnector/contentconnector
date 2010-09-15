@@ -19,7 +19,7 @@ import java.util.Map.Entry;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class GenericConfiguration extends AccessibleConfiguration 
+public class GenericConfiguration extends AccessibleBean 
 	implements Serializable {
   
   /**
