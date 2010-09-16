@@ -72,22 +72,16 @@ public class RequestProcessorMerger {
 			CRResolvableBean resBean = resBean_it.next();
 			Object o_key = resBean.get(idAttribute);
 			String key = "";
-			if(o_key instanceof String)
-			{
-				key = (String)o_key;
-			}
-			else
-			{
+			if (o_key instanceof String) {
+				key = (String) o_key;
+			} else {
 				key = o_key.toString();
 			}
 			CRResolvableBean finishedBean = resultMap.get(key);
-			if(finishedBean!=null)
-			{
-				for(String att:attributes)
-				{
+			if (finishedBean != null) {
+				for (String att : attributes) {
 					Object val = resBean.get(att);
-					if(val!=null)
-					{
+					if (val != null) {
 						finishedBean.set(att, val);
 					}
 				}
@@ -118,52 +112,44 @@ public class RequestProcessorMerger {
 		LinkedHashMap<Object,CRResolvableBean> resultMap = new LinkedHashMap<Object,CRResolvableBean>();
 		LinkedHashMap<Object,CRResolvableBean> resultMap2 = new LinkedHashMap<Object,CRResolvableBean>();
 		
-		String mergefilter="";
+		String mergefilter = "";
 		
-		boolean first=true;
+		boolean first = true;
 		
-		for(CRResolvableBean crBean:rp1res)
-		{
+		for (CRResolvableBean crBean : rp1res) {
 			Object id = crBean.get(uniquemergeattribute);
-			if(first)
-			{
-				first=false;
-				mergefilter+="\""+id+"\"";
-			}
-			else
-			{
-				mergefilter+=","+"\""+id+"\"";
+			if (first) {
+				first = false;
+				mergefilter += "\"" + id + "\"";
+			} else {
+				mergefilter += "," + "\"" + id + "\"";
 			}
 			resultMap.put(id, crBean);
 		}
-		rp1res=null;
+		rp1res = null;
 		CRRequest request2 = new CRRequest();
 		request2.setAttributeArray(request.getAttributeArray());
 		request2.setDoReplacePlinks(request.getDoReplacePlinks());
 		request2.setDoVelocity(request.getDoVelocity());
-		request2.setRequestFilter("object."+uniquemergeattribute+" CONTAINSONEOF ["+mergefilter+"]");
+		request2.setRequestFilter("object." + uniquemergeattribute
+				+ " CONTAINSONEOF [" + mergefilter + "]");
 		Collection<CRResolvableBean> rp2res = secondaryRP.getObjects(request2);
 		String[] attributes = request.getAttributeArray();
 		
-		for(CRResolvableBean crBean:rp2res)
-		{
+		for (CRResolvableBean crBean : rp2res) {
 			Object id = crBean.get(uniquemergeattribute);
 			resultMap2.put(id, crBean);
 		}
 		
-		String SecMerge = (String)request.get("secondary");
-		if(Boolean.parseBoolean(SecMerge))
-		{
+		String secMerge = (String) request.get("secondary");
+		if (Boolean.parseBoolean(secMerge)) {
 			//Resolvable from second RP will be used
 			useSecondaryMerge(result, resultMap, resultMap2, attributes);
-		}
-		else
-		{
+		} else {
 			//Resolvable from first RP will be used
 			useFirstMerge(result, resultMap, resultMap2, attributes);
 		}
-		
-		return(result);
+		return result;
 	}
 
 	/**
