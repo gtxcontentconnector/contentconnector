@@ -99,8 +99,7 @@ public abstract class ContentTransformer {
 				((LuceneContentTransformer)this).processBean(bean, writer);
 			else
 				processBean(bean);
-		}
-		finally{
+		} finally {
 			pcase.stop();
 		}
 	}
