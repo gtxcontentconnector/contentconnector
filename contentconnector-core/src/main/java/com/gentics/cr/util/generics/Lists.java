@@ -24,7 +24,14 @@ public final class Lists {
 	public static <T> List<T> toSpecialList(final Object list,
 			final Class<T> clazz) {
 		if (list instanceof List) {
-			return toSpecialList((List<?>) list, clazz);
+			List<?> givenList = (List<?>) list;
+			List<T> result = new ArrayList<T>(givenList.size());
+			for (Object listElement : givenList) {
+				if (clazz.isInstance(listElement)) {
+					result.add(clazz.cast(listElement));
+				}
+			}
+			return result;
 		} else {
 			return null;
 		}
