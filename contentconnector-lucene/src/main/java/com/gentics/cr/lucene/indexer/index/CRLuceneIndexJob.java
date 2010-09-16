@@ -314,9 +314,9 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
         // prepare the map of indexed/stored attributes
         Map<String, Boolean> attributes = new HashMap<String, Boolean>();
         List<String> containedAttributes = IndexerUtil.getListFromString(
-            (String) config.get(CONTAINED_ATTRIBUTES_KEY), ",");
+            config.getString(CONTAINED_ATTRIBUTES_KEY), ",");
         List<String> indexedAttributes = IndexerUtil.getListFromString(
-            (String) config.get(INDEXED_ATTRIBUTES_KEY), ",");
+            config.getString(INDEXED_ATTRIBUTES_KEY), ",");
         List<String> reverseAttributes =
           ((LuceneIndexLocation) indexLocation).getReverseAttributes();
         // first put all indexed attributes into the map
@@ -491,7 +491,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
                     + transformer.getTransformerKey() + "; BEAN: "
                     + bean.get(idAttribute));
                 if (transformer.match(bean)) {
-                  transformer.processBeanWithMonitoring(bean,indexWriter);
+                  transformer.processBeanWithMonitoring(bean, indexWriter);
                 }
               } catch (Exception e) {
                 //TODO Remember broken files
