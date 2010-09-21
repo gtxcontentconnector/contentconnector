@@ -97,7 +97,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
       //add all files matching the regex "name.*.properties"
       java.io.File directory = new java.io.File(dirname);
       FileFilter regexFilter = new RegexFileFilter(
-          basename.replaceAll("\\..*", "") + ".[^\\.]+.properties");
+          basename.replaceAll("\\..*", "") + "\\.[^\\.]+\\.properties");
       for (java.io.File file : directory.listFiles(regexFilter)) {
         configfiles.add(file.getPath());
       }
