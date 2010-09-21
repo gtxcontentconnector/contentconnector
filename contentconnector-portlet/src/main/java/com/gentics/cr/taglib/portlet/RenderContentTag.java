@@ -149,7 +149,7 @@ public class RenderContentTag extends TagSupport {
 						}
 					}
 					
-					if (urlencode) {
+					if (urlencode && content!=null) {
 						content = URLEncoder.encode(content, "UTF-8");
 					}
 					
