@@ -24,28 +24,27 @@ public class CRLuceneDeleteJob extends AbstractUpdateCheckerJob {
 	}
 
 	@Override
-	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
-			throws CRException {
-		if(indexLocation instanceof LuceneIndexLocation)
-		{
+	protected final void indexCR(final IndexLocation indexLocation,
+			final CRConfigUtil config) throws CRException {
+		if (indexLocation instanceof LuceneIndexLocation) {
 			log.debug("Starting to clear index.");
-			LuceneIndexLocation lindexloc = (LuceneIndexLocation)indexLocation;
-			IndexAccessor ia = lindexloc.getAccessor();
-			IndexWriter writer=null;
+			LuceneIndexLocation luceneIndexLoccation =
+				(LuceneIndexLocation) indexLocation;
+			IndexAccessor ia = luceneIndexLoccation.getAccessor();
+			IndexWriter writer = null;
 			try {
 				writer = ia.getWriter();
 				writer.deleteAll();
+				luceneIndexLoccation.resetIndexJobCreationTimes();
 			} catch (IOException e) {
-				log.error("Could not clear index",e);
-			}
-			finally{
+				log.error("Could not clear index", e);
+			} finally {
 				ia.release(writer);
 			}
 			log.debug("Finished clearing index.");
-		}
-		else
-		{
-			log.error("Index does not seem to be a Lucene index. Therfore no clearing will be done.");
+		} else {
+			log.error("Index does not seem to be a Lucene index. Therfore no "
+					+ "clearing will be done.");
 		}
 	}
 

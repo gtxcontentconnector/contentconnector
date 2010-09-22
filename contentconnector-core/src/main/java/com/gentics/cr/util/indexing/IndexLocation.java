@@ -500,10 +500,17 @@ public abstract class IndexLocation {
 	 */
 	private void updateIndexJobCreationTime(final CRConfig indexJobConfig) {
 		if (indexJobCreationTimes == null) {
-			indexJobCreationTimes = new HashMap<String, Date>();
+			resetIndexJobCreationTimes();
 		}
 		indexJobCreationTimes.put(indexJobConfig.getName(), new Date());
 		
+	}
+	
+	/**
+	 * resets all creation times for index jobs.
+	 */
+	public final void resetIndexJobCreationTimes() {
+		indexJobCreationTimes = new HashMap<String, Date>();
 	}
 
 	private static final String CR_KEY = "CR";
