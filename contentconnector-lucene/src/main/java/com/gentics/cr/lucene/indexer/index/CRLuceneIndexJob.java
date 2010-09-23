@@ -495,8 +495,10 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
                 }
               } catch (Exception e) {
                 //TODO Remember broken files
-                log.error("ERROR WHILE TRANSFORMING CONTENTBEAN. ID: "
-                    + bean.get(idAttribute), e);
+                log.error("Error while Transforming Contentbean with id: "
+                    + bean.get(idAttribute) + " Transformer: "
+                    + transformer.getTransformerKey() + " "
+                    + transformer.getClass().getName(), e);
               }
             }
           }
