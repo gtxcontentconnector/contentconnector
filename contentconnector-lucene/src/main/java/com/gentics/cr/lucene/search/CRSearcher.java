@@ -254,7 +254,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 	 * @param start TODO javadoc
 	 * @return ArrayList of results
 	 */
-	private HashMap<String,Object> runSearch(
+	private HashMap<String, Object> runSearch(
 			final TopDocsCollector<?> collector, final Searcher searcher,
 			final Query parsedQuery, final boolean explain, final int count,
 			final int start) {
@@ -291,7 +291,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 			return ret;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error running search for query " + parsedQuery, e);
 		}
 		return null;
 	}
@@ -345,8 +345,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 		if (userPermissionsObject instanceof String[]) {
 			userPermissions = (String[]) userPermissionsObject;
 		}
-		TopDocsCollector<?> collector =
-			createCollector(searcher, hits, sorting, computescores, userPermissions);
+		TopDocsCollector<?> collector = createCollector(searcher, hits, sorting,
+				computescores, userPermissions);
 		HashMap<String, Object> result = null;
 		try {
 
