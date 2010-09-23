@@ -166,31 +166,23 @@ public class IndexJobQueue {
 	 * Stops all working Jobs and ends the worker queue
 	 * This method has to be called before program can exit
 	 */
-	public void stop()
-	{
-		
-		
-		if(currentJob!=null)
-		{
-			if(currentJob.isAlive())
-			{
+	public void stop() {
+		if (currentJob != null) {
+			if (currentJob.isAlive()) {
 				currentJob.interrupt();
 			}
 		}
 		
-		
 		//END CURRENT JOB
-		synchronized(IndexJobQueue.this)
-		{
+		synchronized (IndexJobQueue.this) {
 			//WAIT FOR CURRENT JOB TO END
-			if(currentJob!=null)
-			{
+			if (currentJob != null) {
 				try {
-						if(currentJob.isAlive())
-						{
+						if (currentJob.isAlive()) {
 							//INTERRUPT IF A NEW JOB HAS BEEN CREATED
-							if(!currentJob.isInterrupted())
+							if (!currentJob.isInterrupted()) {
 								currentJob.interrupt();
+							}
 							currentJob.join();
 						}
 						
@@ -201,10 +193,8 @@ public class IndexJobQueue {
 			//TODO Clear queue and stop each queued job
 			this.queue.clear();
 			//END WORKER THREAD
-			if(indexJobQueueWorkerDaemon!=null)
-			{ 
-				if(indexJobQueueWorkerDaemon.isAlive())
-				{
+			if (indexJobQueueWorkerDaemon != null) { 
+				if (indexJobQueueWorkerDaemon.isAlive()) {
 					indexJobQueueWorkerDaemon.interrupt();
 					try {
 						indexJobQueueWorkerDaemon.join();
@@ -217,22 +207,21 @@ public class IndexJobQueue {
 	}
 	
 	/**
-	 * Starts the worker that is processing the Indexer Queue
+	 * Starts the worker that is processing the Indexer Queue.
 	 */
-	public void startWorker()
-	{
+	public final void startWorker() {
 		this.indexJobQueueWorkerDaemon.start();
-		this.stop=false;
+		this.stop = false;
 	}
 	
 	/**
-	 * Stops the queue worker
+	 * Stops the queue worker.
 	 */
-	public void stopWorker()
-	{
-		this.stop=true;
+	public final void stopWorker() {
+		this.stop = true;
 		try {
-			this.indexJobQueueWorkerDaemon.join(5000);
+			final int waitTime = 5000;
+			this.indexJobQueueWorkerDaemon.join(waitTime);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
