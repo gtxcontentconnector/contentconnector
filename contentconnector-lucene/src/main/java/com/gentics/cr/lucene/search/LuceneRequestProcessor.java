@@ -140,8 +140,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * @return search result as Collection of CRResolvableBean
 	 * @throws CRException 
 	 */
-	public Collection<CRResolvableBean> getObjects(CRRequest request,
-			boolean doNavigation) throws CRException {
+	public final Collection<CRResolvableBean> getObjects(
+	final CRRequest request, final boolean doNavigation) throws CRException {
 		UseCase uc = MonitorFactory.startUseCase("LuceneRequestProcessor."
 				+ "getObjects(" + name + ")");
 		UseCase ucPrepareSearch = MonitorFactory.startUseCase(
@@ -193,22 +193,24 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		log.debug("Search in Index took " + (e1 - s1) + "ms");
 		if (searchResult != null) {
 			UseCase ucProcessSearchMeta = MonitorFactory.startUseCase(
-					"LuceneRequestProcessor." + "getObjects(" + name + ")#processSearch"
-					+ ".Metaresolvables");
-			Query parsedQuery = (Query) searchResult.get(CRSearcher.RESULT_QUERY_KEY);
+					"LuceneRequestProcessor.getObjects(" + name
+					+ ")#processSearch.Metaresolvables");
+			Query parsedQuery =
+				(Query) searchResult.get(CRSearcher.RESULT_QUERY_KEY);
 
 			Object metaKey = request.get(META_RESOLVABLE_KEY);
 			if (metaKey != null && (Boolean) metaKey) {
-				CRResolvableBean metaBean =
-					new CRMetaResolvableBean(searchResult, request, start, count);
+				CRResolvableBean metaBean = new CRMetaResolvableBean(
+						searchResult, request, start, count);
 				result.add(metaBean);
 			}
 			ucProcessSearchMeta.stop();
 			UseCase ucProcessSearchResolvables = MonitorFactory.startUseCase(
-					"LuceneRequestProcessor." + "getObjects(" + name + ")#processSearch"
-					+ ".Resolvables");
-			LinkedHashMap<Document, Float> docs = objectToLinkedHashMapDocuments(
-					searchResult.get(CRSearcher.RESULT_RESULT_KEY));
+					"LuceneRequestProcessor.getObjects(" + name
+					+ ")#processSearch.Resolvables");
+			LinkedHashMap<Document, Float> docs =
+				objectToLinkedHashMapDocuments(searchResult.get(
+						CRSearcher.RESULT_RESULT_KEY));
 			
 			LuceneIndexLocation idsLocation =
 			LuceneIndexLocation.getIndexLocation(this.config);
@@ -222,7 +224,9 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				if (highlightQuery != null) {
 					Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(
 							(GenericConfiguration) this.config);
-					QueryParser parser = CRQueryParserFactory.getConfiguredParser(getSearchedAttributes(), analyzer, request, config);
+					QueryParser parser = CRQueryParserFactory
+							.getConfiguredParser(getSearchedAttributes(),
+									analyzer, request, config);
 					try {
 						parsedQuery = parser.parse((String) highlightQuery);
 						parsedQuery.rewrite(reader);
