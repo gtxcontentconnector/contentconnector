@@ -233,4 +233,14 @@ public class CRUtil {
     }
     return out.toString();
   }
+
+	public static boolean isEmpty(String s) {
+		boolean isempty = false;
+	
+		if (s == null || s.length() == 0 || s.equals("")) {
+			isempty = true;
+		}
+		
+		return isempty;
+	}
 }
