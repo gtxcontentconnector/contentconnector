@@ -1,6 +1,8 @@
 package com.gentics.cr.template;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Properties;
 
 import org.apache.jcs.JCS;
@@ -12,6 +14,8 @@ import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
+
+import com.gentics.cr.util.CRUtil;
 
 /**
  * 
@@ -39,10 +43,24 @@ public class VelocityTemplateManagerFactory {
 	 */
 	public static synchronized VelocityTemplateManager getConfiguredVelocityTemplateManagerInstance(String encoding, String macropath) throws Exception
 	{
+		return VelocityTemplateManagerFactory.getConfiguredVelocityTemplateManagerInstance(encoding, macropath, "");
+		
+	}
+	
+	/**
+	 * Get a configured VelocityTemplateManager and 
+	 * @param encoding if null defaults to utf-8
+	 * @param macropath
+	 * @param propFile
+	 * @return
+	 * @throws Exception
+	 */
+	public static synchronized VelocityTemplateManager getConfiguredVelocityTemplateManagerInstance(String encoding, String macropath, String propFile) throws Exception
+	{
 		if(encoding==null)encoding="utf-8";
 		if(!configured)
 		{
-			configure(encoding, macropath);
+			configure(encoding, macropath, propFile);
 			configured=true;
 		}
 		return( new VelocityTemplateManager(encoding));
@@ -105,33 +123,66 @@ public class VelocityTemplateManagerFactory {
 		return(template);
 	}
 	
-	private static void configure(String encoding, String macropath) throws Exception
-	{
+	private static void configure(String encoding, String macropath) throws Exception {
+		configure(encoding, macropath, "");
+	}
+	
+	private static void configure(String encoding, String macropath, String propFile) throws Exception {
 		Properties props = new Properties();
-		props.setProperty("string.loader.description","String Resource Loader");
-		props.setProperty("string.resource.loader.class","org.apache.velocity.runtime.resource.loader.StringResourceLoader");
-		props.setProperty("resource.loader","string");
-		
+
+		// no file with properties given, set default properties
+		if (CRUtil.isEmpty(propFile)) {
+			props.setProperty("string.loader.description","String Resource Loader");
+			props.setProperty("string.resource.loader.class","org.apache.velocity.runtime.resource.loader.StringResourceLoader");
+			props.setProperty("resource.loader","file,string");
+			
+			if (macropath != null) {
+			}
+
+		// if a properties file is given, use this one to set the vtl-properties
+		}else{
+			try {
+				FileInputStream fis = new FileInputStream(CRUtil.resolveSystemProperties(propFile));
+				props.load(fis);
+				fis.close();
+			}catch (FileNotFoundException e) {
+				log.error("The velocity-properties file \"" + propFile + "\" does not exist!");
+			}
+		}
+
 		if(macropath!=null){
 			//Configure file resource loader when we have to load velocimacro library
 			//TODO: load file resource loader when no confpath is given to allow the users to include their templates in runtime
-			props.setProperty("file.loader.description", "File Resource Loader");
-			props.setProperty("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.FileResourceLoader");
-			props.setProperty("file.resource.loader.path",macropath);
-			props.setProperty("resource.loader","string,file");
-			//CHECK IF VELICITYMACROS EXISTS AND CREATE EMPTY FILE IF IT DOES NOT
-			File macro_file = new File(macropath+VELOCITYMACRO_FILENAME);
-			macro_file.createNewFile();
+			if (!props.containsKey("file.loader.description")) {
+				props.setProperty("file.loader.description", "File Resource Loader");
+			}
+			if (!props.containsKey("file.resource.loader.class")) {
+				props.setProperty("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.FileResourceLoader");
+			}
+			if (!props.containsKey("file.resource.loader.path")) {
+				props.setProperty("file.resource.loader.path", macropath);
+			}
+			if (!props.containsKey("resource.loader")) {
+				props.setProperty("resource.loader", "string,file");
+			}
 			
-			//TODO: autodetect velocimacro library using *.vm files in confpath
-			props.setProperty("velocimacro.library", VELOCITYMACRO_FILENAME);
+			if (!props.containsKey("velocimacro.library")) {
+				//CHECK IF VELICITYMACROS EXISTS AND CREATE EMPTY FILE IF IT DOES NOT
+				File macro_file = new File(macropath + VELOCITYMACRO_FILENAME);
+				macro_file.createNewFile();
+	
+				//TODO: autodetect velocimacro library using *.vm files in confpath
+				props.setProperty("velocimacro.library", VELOCITYMACRO_FILENAME);
+			}
 		}
+
 		//Configure Log4J logging for velocity
 		props.put("runtime.log.logsystem.class","org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
 		props.put("runtime.log.logsystem.log4j.category","org.apache.velocity");
-		
+
 		props.put("input.encoding", encoding);
 		props.put("output.encoding", encoding);
+
 		Velocity.init(props);
 	}
 }
