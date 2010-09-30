@@ -79,7 +79,7 @@ public class IndexController {
 
 			for (Entry<String,GenericConfiguration> e:configs.entrySet()) {
 				String indexLocationName = e.getKey();
-				IndexLocation indexLocation = IndexLocation.getIndexLocation(new CRConfigUtil(e.getValue(),INDEX_KEY+"."+e.getKey()));
+				IndexLocation indexLocation = IndexLocation.getIndexLocation(new CRConfigUtil(e.getValue(),INDEX_KEY+"."+indexLocationName));
 				if(indexLocation == null){
 					logger.error("Cannot get index location for "+indexLocationName);
 				}
