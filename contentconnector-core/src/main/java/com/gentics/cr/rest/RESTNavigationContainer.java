@@ -2,9 +2,7 @@ package com.gentics.cr.rest;
 
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -17,80 +15,99 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 /**
- * 
+ * TODO javadoc.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 545 $
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class RESTNavigationContainer{
+public class RESTNavigationContainer {
 
+	/**
+	 * {@link RequestProcessor} to get the objects from.
+	 */
 	private RequestProcessor rp;
-	private String response_encoding;
-	private String contenttype="";
+	
+	/**
+	 * Encoding of the reponse.
+	 */
+	private String responseEncoding;
+	/**
+	 * TODO javadoc.
+	 */
+	private String contenttype = "";
+	/**
+	 * Log4j logger for error and debug messages.
+	 */
 	private static Logger log = Logger.getLogger(RESTNavigationContainer.class);
+	/**
+	 * TODO javadoc.
+	 */
 	private CRConfigUtil conf;
 	/**
-	 * Create new instance
-	 * @param crConf
+	 * Create new instance.
+	 * @param crConf TODO javadoc
 	 */
-	public RESTNavigationContainer(CRConfigUtil crConf)
-	{
-		this.response_encoding = crConf.getEncoding();
-		this.conf = crConf;
+	public RESTNavigationContainer(final CRConfigUtil crConf) {
+		responseEncoding = crConf.getEncoding();
+		conf = crConf;
 		try {
-			this.rp = crConf.getNewRequestProcessorInstance(1);
+			rp = crConf.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
 			CRException ex = new CRException(e);
-			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "+ex.getStringStackTrace());
+			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... ", ex);
 		}
 	}
 	
 	/**
-	 * Get the content type to set for the stream
-	 * @return
+	 * Get the content type to set for the stream.
+	 * @return TODO javadoc
 	 */
-	public String getContentType()
-	{
-		return(this.contenttype+"; charset="+this.response_encoding);
+	public final String getContentType() {
+		return this.contenttype + "; charset=" + this.responseEncoding;
 	}
 	
 	/**
-	 * Finalize the Container
+	 * Finalize the Container.
 	 */
-	public void finalize()
-	{
-		if(this.rp!=null)this.rp.finalize();
+	public final void finalize() {
+		if (this.rp != null) {
+			this.rp.finalize();
+		}
 	}
 
 	/**
-	 * Process the whole service
-	 * @param reqBuilder
-	 * @param wrappedObjectsToDeploy
-	 * @param stream
-	 * @param responsetypesetter
+	 * Process the whole service.
+	 * @param reqBuilder TODO javadoc
+	 * @param wrappedObjectsToDeploy TODO javadoc
+	 * @param stream TODO javadoc
+	 * @param responsetypesetter TODO javadoc
 	 */
-	public void processService(CRNavigationRequestBuilder reqBuilder,Map<String, Resolvable> wrappedObjectsToDeploy, OutputStream stream, IResponseTypeSetter responsetypesetter) {
+	public final void processService(
+			final CRNavigationRequestBuilder reqBuilder,
+			final Map<String, Resolvable> wrappedObjectsToDeploy,
+			final OutputStream stream,
+			final IResponseTypeSetter responsetypesetter) {
 		Collection<CRResolvableBean> coll;
 		CRNavigationRequestBuilder myReqBuilder = reqBuilder;
 		ContentRepository cr = null;
 		try {
-			cr = myReqBuilder.getContentRepository(this.response_encoding,this.conf);
-			this.contenttype = cr.getContentType();
-			responsetypesetter.setContentType(this.getContentType());
+			cr = myReqBuilder.getContentRepository(responseEncoding, conf);
+			contenttype = cr.getContentType();
+			responsetypesetter.setContentType(getContentType());
 			CRRequest req = myReqBuilder.getNavigationRequest();
 			//DEPLOY OBJECTS TO REQUEST
-			for (Iterator<Map.Entry<String, Resolvable>> i = wrappedObjectsToDeploy.entrySet().iterator() ; i.hasNext() ; ) {
-				Map.Entry<String,Resolvable> entry = (Entry<String,Resolvable>) i.next();
-				req.addObjectForFilterDeployment((String)entry.getKey(), entry.getValue());
+			for (Map.Entry<String, Resolvable> entry
+					: wrappedObjectsToDeploy.entrySet()) {
+				req.addObjectForFilterDeployment(entry.getKey(),
+						entry.getValue());
 			}
 			// Query the Objects from RequestProcessor
 			coll = rp.getNavigation(req);
-			
 			// add the objects to repository as serializeable beans
 			if (coll != null) {
-				for (Iterator<CRResolvableBean> it = coll.iterator(); it.hasNext();) {
-					cr.addObject(it.next());
+				for (CRResolvableBean bean : coll) {
+					cr.addObject(bean);
 				}
 			}
 			cr.toStream(stream);
@@ -98,14 +115,19 @@ public class RESTNavigationContainer{
 			//CR Error Handling
 			//CRException is passed down from methods that want to post 
 			//the occured error to the client
-			cr.respondWithError((OutputStream) stream,e1,myReqBuilder.isDebug());
-			log.debug(e1.getMessage()+" : "+e1.getStringStackTrace());
-		}
-		catch(Exception ex)
-		{
+			cr.respondWithError((OutputStream) stream, e1,
+			    myReqBuilder.isDebug());
+			log.debug(e1.getMessage(), e1);
+		} catch (Exception ex) {
 			CRException crex = new CRException(ex);
-			cr.respondWithError((OutputStream) stream,crex,myReqBuilder.isDebug());
-			log.debug(ex.getMessage()+" : "+crex.getStringStackTrace());
+			if (cr != null) {
+				cr.respondWithError((OutputStream) stream, crex,
+						myReqBuilder.isDebug());
+				log.debug(ex.getMessage(), ex);
+			} else {
+				log.error("Cannot initialize ContentRepository", ex);
+			}
+			
 		}
 		
 	}
