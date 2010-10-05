@@ -108,7 +108,6 @@ public class RESTSimpleContainer{
       log.error(ex.getMessage(), ex);
     } catch (Exception ex) {
       CRException crex = new CRException(ex);
-      ex.printStackTrace();
       log.error("" + myReqBuilder + stream, crex);
       cr.respondWithError((OutputStream) stream, crex, myReqBuilder.isDebug());
       log.error(ex.getMessage(), crex);
