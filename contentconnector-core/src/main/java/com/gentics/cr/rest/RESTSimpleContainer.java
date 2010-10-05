@@ -76,7 +76,7 @@ public class RESTSimpleContainer{
     CRRequestBuilder myReqBuilder = reqBuilder;
     ContentRepository cr = null;
     try {
-      cr = myReqBuilder.getContentRepository(this.response_encoding,this.config);
+      cr = myReqBuilder.getContentRepository(this.response_encoding, this.config);
       this.contenttype = cr.getContentType();
       if (responsetypesetter != null) {
         responsetypesetter.setContentType(this.getContentType());
@@ -109,7 +109,7 @@ public class RESTSimpleContainer{
     } catch (Exception ex) {
       CRException crex = new CRException(ex);
       ex.printStackTrace();
-      System.out.println("" + myReqBuilder + stream + crex);
+      log.error("" + myReqBuilder + stream, crex);
       cr.respondWithError((OutputStream) stream, crex, myReqBuilder.isDebug());
       log.error(ex.getMessage(), crex);
     } finally {
