@@ -62,28 +62,7 @@ public class XmlContentRepository extends ContentRepository {
 	 * @param encoding TODO javadoc
 	 */
 	public XmlContentRepository(final String[] attr, final String encoding) {
-		
-		super(attr);
-
-		// Create XML Document
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder;
-		this.setResponseEncoding(encoding);
-		try {
-			
-			builder = factory.newDocumentBuilder();
-			this.doc = builder.newDocument();
-		
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		
-		this.src = new DOMSource(doc);
-		
-		// Create Root Element
-		this.rootElement = doc.createElement("Contentrepository");
-		doc.appendChild(rootElement);
-
+		this(attr, encoding, null);
 	}
 	/**
 	 * 
@@ -93,7 +72,7 @@ public class XmlContentRepository extends ContentRepository {
 	 */
 	public XmlContentRepository(String[] attr, String encoding, String[] options) {
 		
-		super(attr,encoding,options);
+		super(attr, encoding, options);
 
 		// Create XML Document
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
