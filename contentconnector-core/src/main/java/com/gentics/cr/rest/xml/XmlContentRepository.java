@@ -71,7 +71,6 @@ public class XmlContentRepository extends ContentRepository {
 	 * @param options
 	 */
 	public XmlContentRepository(String[] attr, String encoding, String[] options) {
-		
 		super(attr, encoding, options);
 
 		// Create XML Document

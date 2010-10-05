@@ -143,7 +143,7 @@ public class CRRequestBuilder {
 		this.query_not = requestWrapper.getParameter("q_not");
 		this.query_group = requestWrapper.getParameter("q_group");
 		this.wordmatch = requestWrapper.getParameter("wm");
-		if(config != null) {
+		if (config != null) {
 			String addPermissionsToRuleConfig = config.getString(ADD_PERMISSIONS_TO_RULE_KEY);
 			if (addPermissionsToRuleConfig != null) {
 				this.addPermissionsToRule = Boolean.parseBoolean(
@@ -246,7 +246,7 @@ public class CRRequestBuilder {
 			if (props != null) {
 				String v = props.getProperty("DEFAULT");
 				if (v != null) {
-					this.repotype =	v;
+					this.repotype = v;
 				}
 			}
 			if (this.repotype == null) {
@@ -410,27 +410,27 @@ public class CRRequestBuilder {
 
 
 
-	private Hashtable<String,String> getRepositoryClassMap()
-	{
-		Hashtable<String,String> classmap = new Hashtable<String,String>();
+	/**
+	 * gets a class map containing the names of
+	 * @return
+	 */
+	private Hashtable<String, String> getRepositoryClassMap() {
 		
-		//ADD DEFAULT ENTRIES
+		
+		Hashtable<String, String> classmap =
+			RepositoryFactory.getStringClassMap();
+		
+		//values from other projects
+		//TODO this should be moved to the packages adding additional
+		//ContentRepositories
 		classmap.put("JSON", "com.gentics.cr.rest.json.JSONContentRepository");
-		classmap.put("PHP", "com.gentics.cr.rest.php.PHPContentRepository");
-		classmap.put("JAVAXML", "com.gentics.cr.rest.javaxml.JavaXmlContentRepository");
-		classmap.put("JAVABIN", "com.gentics.cr.rest.javabin.JavaBinContentRepository");
-		classmap.put("VELOCITY", "com.gentics.cr.rest.velocity.VelocityContentRepository");
-		classmap.put("XML", "com.gentics.cr.rest.xml.XmlContentRepository");
 		
 		Properties confs = getConfiguredContentRepositories();
-		if(confs!=null)
-		{
-			for(Entry<Object,Object> e:confs.entrySet())
-			{
-				String key = (String)e.getKey();
-				if(!"default".equalsIgnoreCase(key))
-				{
-					classmap.put(key.toUpperCase(), (String)e.getValue());
+		if (confs != null) {
+			for (Entry<Object, Object> e : confs.entrySet()) {
+				String key = (String) e.getKey();
+				if (!"default".equalsIgnoreCase(key)) {
+					classmap.put(key.toUpperCase(), (String) e.getValue());
 				}
 			}
 		}
@@ -448,13 +448,12 @@ public class CRRequestBuilder {
 	
 	public ContentRepository getContentRepository(String encoding, CRConfigUtil configUtil)
 	{
-		ContentRepository cr=null;
+		ContentRepository cr = null;
 		
-		Hashtable<String,String> classmap = getRepositoryClassMap();
+		Hashtable<String, String> classmap = getRepositoryClassMap();
 		
 		String cls = classmap.get(this.getRepositoryType().toUpperCase());
-		if(cls!=null)
-		{
+		if (cls != null) {
 			//XmlContentRepository(String[] attr, String encoding)
 			try {
 				cr = (ContentRepository) Class.forName(cls).getConstructor(new Class[] {String[].class,String.class}).newInstance(this.getAttributeArray(),encoding);
