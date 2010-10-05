@@ -116,7 +116,7 @@ public class RESTNavigationContainer {
 			//CRException is passed down from methods that want to post 
 			//the occured error to the client
 			cr.respondWithError((OutputStream) stream, e1,
-			    myReqBuilder.isDebug());
+					myReqBuilder.isDebug());
 			log.debug(e1.getMessage(), e1);
 		} catch (Exception ex) {
 			CRException crex = new CRException(ex);

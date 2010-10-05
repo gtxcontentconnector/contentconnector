@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRServletConfig;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
@@ -34,15 +36,22 @@ public class RESTNavigation extends HttpServlet{
 	 */
 	private static final long serialVersionUID = 557189789791823626L;
 
-	private Logger log;
+	/**
+	 * Log4j logger for debug and error messages;
+	 */
+	private Logger log = Logger.getLogger(RESTNavigation.class);
+
+	/**
+	 * Configuration for the Servlet.
+	 */
+	private CRServletConfig crConf;
 	
 	private RESTNavigationContainer container;
 
 	public void init(ServletConfig config) throws ServletException {
 
 		super.init(config);
-		this.log = Logger.getLogger("com.gentics.cr");
-		CRServletConfig crConf = new CRServletConfig(config);
+		crConf = new CRServletConfig(config);
 		container = new RESTNavigationContainer(crConf);
 	}
 	
@@ -54,7 +63,7 @@ public class RESTNavigation extends HttpServlet{
 	
 	public void doService(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
+		UseCase uc = MonitorFactory.startUseCase("RESTServlet(" + request.getServletPath() + ")");
 		this.log.debug("Request:" + request.getQueryString());
 
 		// starttime
@@ -62,15 +71,17 @@ public class RESTNavigation extends HttpServlet{
 		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		container.processService(new CRNavigationRequestBuilder(request), objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
+		CRNavigationRequestBuilder requestBuilder = new CRNavigationRequestBuilder(request, crConf);
+		container.processService(requestBuilder, objects,
+				response.getOutputStream(),
+				new ServletResponseTypeSetter(response));
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
 		// endtime
 		long e = new Date().getTime();
 		this.log.info("Executiontime for " + request.getQueryString() + ":"
 				+ (e - s));
-
-		
+		uc.stop();
 	}
 	
 	
