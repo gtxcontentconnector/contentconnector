@@ -44,12 +44,12 @@ public class CRRequestProcessor extends RequestProcessor {
 	 * 
 	 * Fetch the matching objects using the given CRRequest. 
 	 * @param request CRRequest
-	 * @param doNavigation defines if to fetch child elements
+	 * @param doNavigation defines if to fetch children
 	 * @return resulting objects
-	 * @throws CRException 
+	 * @throws CRException TODO javadocs
 	 */
-	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException
-	{
+	public Collection<CRResolvableBean> getObjects(final CRRequest request,
+			final boolean doNavigation) throws CRException {
 		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
@@ -87,10 +87,11 @@ public class CRRequestProcessor extends RequestProcessor {
 
 				// convert all objects to serializeable beans
 				if (col != null) {
-					for (Iterator<Resolvable> it = col.iterator(); it.hasNext();) {
+					for (Iterator<Resolvable> it = col.iterator(); it.hasNext();
+							) {
 						CRResolvableBean crBean = new CRResolvableBean(
 								it.next(), request.getAttributeArray());
-						if (this.config.getFolderType().equals(crBean.getObj_type())
+						if (config.getFolderType().equals(crBean.getObj_type())
 								&& doNavigation) {
 							//Process child elements
 							String fltr = "object.folder_id=='"
@@ -104,7 +105,7 @@ public class CRRequestProcessor extends RequestProcessor {
 							CRRequest childReq = request.Clone();
 							childReq.setRequestFilter(fltr);
 							crBean.fillChildRepository(
-									this.getNavigation(childReq));
+									getNavigation(childReq));
 						}
 						collection.add(this.replacePlinks(crBean, request));
 					}
