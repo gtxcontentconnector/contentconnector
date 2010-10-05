@@ -48,39 +48,20 @@ public class XmlContentRepository extends ContentRepository {
 	private DOMSource src;
 
 	/**
-	 * Create new instance
-	 * @param attr
+	 * Create new instance of the {@link XmlContentRepository} with UTF-8 as
+	 * encoding.
+	 * @param attr TODO javadoc
 	 */
-	public XmlContentRepository(String[] attr) {
-		
-		super(attr);
-
-		// Create XML Document
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder;
-		this.setResponseEncoding("UTF-8");
-		try {
-			
-			builder = factory.newDocumentBuilder();
-			this.doc = builder.newDocument();
-		
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		
-		this.src = new DOMSource(doc);
-		
-		// Create Root Element
-		this.rootElement = doc.createElement("Contentrepository");
-		doc.appendChild(rootElement);
-
+	public XmlContentRepository(final String[] attr) {
+		this(attr, "UTF-8");
 	}
+	
 	/**
-	 * 
-	 * @param attr
-	 * @param encoding
+	 * TODO javadoc.
+	 * @param attr TODO javadoc
+	 * @param encoding TODO javadoc
 	 */
-	public XmlContentRepository(String[] attr, String encoding) {
+	public XmlContentRepository(final String[] attr, final String encoding) {
 		
 		super(attr);
 
