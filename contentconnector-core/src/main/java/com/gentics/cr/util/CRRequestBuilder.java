@@ -209,6 +209,10 @@ public class CRRequestBuilder {
 					this.node_id = defaultNode.split("^");
 				}
 			}
+			if (this.contentid == null) {
+				contentid = (String) defaultparameters
+						.getString("contentid", contentid);
+			}
 			if (this.attributes == null || this.attributes.length == 0) {
 				String defaultAttributes =
 					(String) defaultparameters.get("attributes");
