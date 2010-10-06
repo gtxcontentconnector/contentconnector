@@ -142,6 +142,9 @@ public class CSSitemapContentRepository extends ContentRepository {
 	@Override
 	public final void respondWithError(final OutputStream stream,
 			final CRException ex, final boolean isDebug) {
+		// Create Root Element
+		this.rootElement = doc.createElement("Contentrepository");
+		doc.appendChild(rootElement);
 		clearElement(this.rootElement);
 		Element errElement = doc.createElement("Error");
 		errElement.setAttribute("type", ex.getType());
