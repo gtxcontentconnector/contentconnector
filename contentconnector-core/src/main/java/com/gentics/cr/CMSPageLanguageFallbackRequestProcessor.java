@@ -52,10 +52,11 @@ public class CMSPageLanguageFallbackRequestProcessor extends RequestProcessor {
 			request.get(LANGUAGE_KEY);
 		//GENERATE PREFILLATTRIBS FOR LANG REQUEST
 		ArrayList<String> langPrefills = new ArrayList<String>();
-		for (String lang : langs) {
-			langPrefills.add("contentid_" + lang);
+		if (langs != null) {
+			for (String lang : langs) {
+				langPrefills.add("contentid_" + lang);
+			}
 		}
-		
 		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
@@ -102,16 +103,20 @@ public class CMSPageLanguageFallbackRequestProcessor extends RequestProcessor {
 				int objectsToProcess = start + count;
 				for (Resolvable reso : col) {
 					boolean found = false;
-					for (String lang : langs) {
-						Resolvable langVersion = (Resolvable) 
-							reso.get("contentid_" + lang);
-						if (langVersion != null) {
-							found = true;
-							if (!fallbackedColl.contains(langVersion)) {
-								fallbackedColl.add(langVersion);
+					if (langs != null) {
+					
+						for (String lang : langs) {
+							Resolvable langVersion = (Resolvable) 
+								reso.get("contentid_" + lang);
+							if (langVersion != null) {
+								found = true;
+								if (!fallbackedColl.contains(langVersion)) {
+									fallbackedColl.add(langVersion);
+								}
+								break;
 							}
-							break;
 						}
+						
 					}
 					if (!found) {
 						fallbackedColl.add(reso);
