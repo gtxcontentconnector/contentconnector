@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -76,19 +77,20 @@ public abstract class VelocityServlet extends HttpServlet {
 		if (this.tpl == null) {
 			String templateName = this.getClass().getSimpleName() + ".vm";
 			try {
-				
-				this.tpl = new FileTemplate(VelocityServlet.class
-						.getResourceAsStream(templateName));
-			} catch (Exception ex) {
+				InputStream stream = 
+					this.getClass().getResourceAsStream(templateName);
+				this.tpl = new FileTemplate(stream);
+			} catch (Exception e) {
 				log.error("failed to load velocity template from "
-						+ templateName);
+						+ templateName, e);
 			}
 		}
 	}
 	
 	/**
-	 * Wrapper Method for the doGet and doPost Methods.
-	 * call render() at the end of your code to render the velocitytemplate
+	 * Wrapper Method for the doGet and doPost Methods. Prepares the data for
+	 * the render method. Don't forget to put your variables into the velocity
+	 * template before rendering.
 	 * @param request {@link HttpServletRequest} to process the servlet for.
 	 * @param response {@link HttpServletResponse} to write the output into.
 	 * @throws IOException in case something went wrong processing the service.
@@ -121,6 +123,7 @@ public abstract class VelocityServlet extends HttpServlet {
 			final HttpServletResponse response) throws ServletException,
 			IOException {
 		doService(request, response);
+		render(response);
 	}
 
 	@Override
@@ -128,6 +131,7 @@ public abstract class VelocityServlet extends HttpServlet {
 			final HttpServletResponse response) throws ServletException,
 			IOException {
 		doService(request, response);
+		render(response);
 	}
 
 }
