@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -40,7 +41,7 @@ public abstract class VelocityServlet extends HttpServlet {
 	/**
 	 * Template Manager to get store the environments for the velocity template.
 	 */
-	protected ITemplateManager vtl;
+	private ITemplateManager vtl;
 	/**
 	 * velocity Template to render.
 	 */
@@ -108,6 +109,8 @@ public abstract class VelocityServlet extends HttpServlet {
 	public final void render(final HttpServletResponse response)
 			throws IOException {
 		try {
+			String timestamp = new Long(System.currentTimeMillis()).toString();
+			vtl.put("timestamp", timestamp);
 			String output = vtl.render(tpl.getKey(), tpl.getSource());
 			response.getWriter().write(output);
 		} catch (Exception ex) {
@@ -116,6 +119,16 @@ public abstract class VelocityServlet extends HttpServlet {
 		}
 		response.getWriter().flush();
 		response.getWriter().close();
+	}
+	
+	/**
+	 * Set a variable in the velocity context.
+	 * @param name - name of the variable to set
+	 * @param value - value to set the variable to
+	 */
+	protected final void setTemplateVariable(final String name,
+			final Object value) {
+		vtl.put(name, value);
 	}
 
 	@Override
