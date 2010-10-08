@@ -94,6 +94,11 @@
       <artifactId>contentconnector-core</artifactId>
       <version>1.1.2</version>
     </dependency>
+     <dependency>
+      <groupId>contentconnector</groupId>
+      <artifactId>contentconnector-servlet</artifactId>
+      <version>1.1.2</version>
+    </dependency>
     <dependency>
     	<artifactId>servlet-api</artifactId>
       	<groupId>javax.servlet</groupId>
