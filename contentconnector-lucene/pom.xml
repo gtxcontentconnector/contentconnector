@@ -2,10 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>contentconnector</groupId>
   <artifactId>contentconnector-lucene</artifactId>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.2</version>
   <packaging>jar</packaging>
   <name>Gentics Content.Connector - LUCENE</name>
   <description>This is the LUCENE-Extension to the Gentics Content.Connector Suite</description>
+  
   <build>
   	<plugins>
   		<plugin>
@@ -91,12 +92,7 @@
     <dependency>
       <groupId>contentconnector</groupId>
       <artifactId>contentconnector-core</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>contentconnector</groupId>
-      <artifactId>contentconnector-servlet</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
     	<artifactId>servlet-api</artifactId>
