@@ -137,7 +137,8 @@ public abstract class VelocityServlet extends HttpServlet {
 	}
 	
 	/**
-	 * skip velocity rendering for this request.
+	 * skip velocity rendering for this request. this can be used if you want to
+	 * put binaries direct to the render response.
 	 */
 	protected final void skipRenderingVelocity() {
 		renderVelocity = false;
