@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.servlet.VelocityServlet;
 import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
@@ -33,54 +34,18 @@ import com.gentics.cr.util.indexing.IndexLocation;
 /**
  * @author Christopher Supnig
  */
-public class IndexJobServlet extends HttpServlet {
+public class IndexJobServlet extends VelocityServlet {
 
 	private static final String NAGIOS_PARAM = "nagios";
 	private static final long serialVersionUID = 0002L;
-	private Logger log;
+	private Logger log = Logger.getLogger(IndexJobServlet.class);
 	private IndexController indexer;
-
-	private CRConfigUtil crConf;
-	private ITemplateManager vtl;
-	private ITemplate tpl;
 	
-	private static final String VELOCITY_TEMPLATE_KEY = "velocitytemplate";
-
-
 	public final void init(final ServletConfig config) throws ServletException {
 
 		super.init(config);
-		this.log = Logger.getLogger("com.gentics.cr.lucene");
 		this.indexer = new IndexController(config.getServletName());
 
-		this.crConf = this.indexer.getConfig();
-		this.vtl = crConf.getTemplateManager();
-		
-		String templatepath = this.crConf.getString(VELOCITY_TEMPLATE_KEY);
-		if (templatepath != null) {
-			File f = new File(templatepath);
-			if (f.exists()) {
-				try {
-					this.tpl = new FileTemplate(new FileInputStream(f));
-				} catch (FileNotFoundException e) {
-					log.error("Could not load template from " + templatepath,
-							e);
-				} catch (CRException e) {
-					log.error("Could not load template from " + templatepath,
-							e);
-				}
-			}
-		}
-		if(this.tpl==null)
-		{
-		try{
-			this.tpl = new FileTemplate(IndexJobServlet.class.getResourceAsStream("indexjobtemplate.vm"));
-		}
-		catch(Exception ex)
-		{
-			log.error("FAILED TO LOAD VELOCITY TEMPLATE FROM indexjobtemplate.vm");
-		}
-		}
 	}
 
 	@Override
@@ -90,16 +55,9 @@ public class IndexJobServlet extends HttpServlet {
 		}
 	}
 
-	/**
-	 * Wrapper Method for the doGet and doPost Methods
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
-	 */
+
 	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+			HttpServletResponse response) throws IOException {
 
 		this.log.debug("Request:" + request.getQueryString());
 		String nagString = request.getParameter(NAGIOS_PARAM);
@@ -132,6 +90,7 @@ public class IndexJobServlet extends HttpServlet {
 					}
 				}
 			}
+			skipRenderingVelocity();
 		} else {
 			String nc = "&t=" + System.currentTimeMillis();
 			String selectedIndex = request.getParameter("index");
@@ -142,15 +101,15 @@ public class IndexJobServlet extends HttpServlet {
 			Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
 			
 					 
-			this.vtl.put("indexes", indexTable.entrySet());
-			this.vtl.put("nc", nc);
-			this.vtl.put("selectedIndex", selectedIndex);
-			this.vtl.put("report", MonitorFactory.getSimpleReport());
-			this.vtl.put("action", action);
-			this.vtl.put("maxmemory", maxMemory);
-			this.vtl.put("totalmemory", totalMemory);
-			this.vtl.put("freememory", freeMemory);
-			this.vtl.put("usedmemory", totalMemory - freeMemory);
+			setTemplateVariable("indexes", indexTable.entrySet());
+			setTemplateVariable("nc", nc);
+			setTemplateVariable("selectedIndex", selectedIndex);
+			setTemplateVariable("report", MonitorFactory.getSimpleReport());
+			setTemplateVariable("action", action);
+			setTemplateVariable("maxmemory", maxMemory);
+			setTemplateVariable("totalmemory", totalMemory);
+			setTemplateVariable("freememory", freeMemory);
+			setTemplateVariable("usedmemory", totalMemory - freeMemory);
 			
 			for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
 			IndexLocation loc = e.getValue();
@@ -180,27 +139,10 @@ public class IndexJobServlet extends HttpServlet {
 				}
 			}
 		}
-	try {
-		String output = this.vtl.render(this.tpl.getKey(), this.tpl.getSource());
-		response.getWriter().write(output);
-	} catch (Exception ex) {
-	 log.error("Error rendering template for IndexerJobServlet.", ex);
-	}
-		response.getWriter().flush();
-		response.getWriter().close();
+		render(response);
 		// endtime
 		long e = new Date().getTime();
 		this.log.info("Executiontime for getting Status " + (e - s));
-	}
-
-	public void doGet(final HttpServletRequest request,
-			final HttpServletResponse response) throws ServletException, IOException {
-		doService(request, response);
-	}
-
-	public void doPost(final HttpServletRequest request,
-			final HttpServletResponse response) throws ServletException, IOException {
-		doService(request, response);
 	}
 
 }
