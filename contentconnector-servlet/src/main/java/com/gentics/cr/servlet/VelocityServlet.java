@@ -51,6 +51,11 @@ public abstract class VelocityServlet extends HttpServlet {
 	 * Configuration key to specify a template in the configuration.
 	 */
 	private static final String VELOCITY_TEMPLATE_KEY = "velocitytemplate";
+	
+	/**
+	 * Mark if we should render the velocity template.
+	 */
+	private boolean renderVelocity = true;
 
 	@Override
 	public void init(final ServletConfig config) throws ServletException {
@@ -130,21 +135,30 @@ public abstract class VelocityServlet extends HttpServlet {
 			final Object value) {
 		vtl.put(name, value);
 	}
-
-	@Override
-	protected void doGet(final HttpServletRequest request,
-			final HttpServletResponse response) throws ServletException,
-			IOException {
-		doService(request, response);
-		render(response);
+	
+	/**
+	 * skip velocity rendering for this request.
+	 */
+	protected final void skipRenderingVelocity() {
+		renderVelocity = false;
 	}
 
 	@Override
-	protected void doPost(final HttpServletRequest request,
+	protected final void doGet(final HttpServletRequest request,
 			final HttpServletResponse response) throws ServletException,
 			IOException {
+		renderVelocity = true;
 		doService(request, response);
-		render(response);
+		if (renderVelocity) {
+			render(response);
+		}
+	}
+
+	@Override
+	protected final void doPost(final HttpServletRequest request,
+			final HttpServletResponse response) throws ServletException,
+			IOException {
+		doGet(request, response);
 	}
 
 }
