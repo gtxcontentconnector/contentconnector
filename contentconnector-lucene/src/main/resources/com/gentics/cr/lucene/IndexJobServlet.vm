@@ -11,6 +11,9 @@ $output##
 #end##
 
 #macro(nextunit $number $oldunit $unitsize $unitname)##
+#if(!$number)
+#set($number=0)
+#end
 #set($unitsize = $unitsize * 1)##
 #set($nextUnitOutput="")##
 #if($number > $unitsize)##
