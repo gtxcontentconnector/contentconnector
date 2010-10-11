@@ -10,83 +10,87 @@ import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.template.ITemplateManager;
 
 /**
- * 
+ * Configuration for a ContentConnector ContenRepository.
  * Last changed: $Date: 2010-04-01 15:39:36 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 547 $
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public abstract class CRConfig extends GenericConfiguration{
-
+public abstract class CRConfig extends GenericConfiguration {
 	
 	/**
-	 * Reserved Attributes for Advanced Plinkreplacing without Velocity
-	 * See com.gentics.cr.plink.PathResolver and com.gentics.cr.plink.PlinkProcessor
-	 */
-	
-	/**
-	 * 
+	 * Generated unique serial version id.
 	 */
 	private static final long serialVersionUID = -5020784946538085838L;
 
+	/*
+	 * Reserved Attributes for Advanced Plinkreplacing without Velocity
+	 * @see com.gentics.cr.plink.PathResolver and
+	 * com.gentics.cr.plink.PlinkProcessor
+	 */
+	
 	/**
-	 * configuration property name for advanced plinkreplacing
+	 * configuration property name for advanced plinkreplacing.
 	 */
 	public static final String ADVPLR_KEY = "ADVPLR";
 	
 	/**
-	 * configuration property name for advanced plinkreplacing
+	 * configuration property name for advanced plinkreplacing.
 	 */
 	public static final String ADVPLR_HOST = "ADVPLR_HOST";
 	
 	/**
-	 * configuration property name for advanced plinkreplacing
+	 * configuration property name for advanced plinkreplacing.
 	 */
 	public static final String ADVPLR_HOST_FORCE = "ADVPLR_HOST_FORCE";
 	
 	/**
-	 * configuration property name for filename attribute used by advanced plinkreplacing to generate beautiful URLs
+	 * configuration property name for filename attribute used by advanced´
+	 * plinkreplacing to generate beautiful URLs.
 	 */
 	public static final String ADVPLR_FN_KEY = "ADVPLR_FILENAME_ATTRIBUTE";
 	/**
-	 * configuration property name for pub_dir attribute used by advanced plinkreplacing to generate beautiful URLs
+	 * configuration property name for pub_dir attribute used by advanced
+	 * plinkreplacing to generate beautiful URLs.
 	 */
 	public static final String ADVPLR_PB_KEY = "ADVPLR_PUB_DIR_ATTRIBUTE";
 	
 	/**
 	 * property key to configure multiple indexes.
-	 * @see com.gentics.cr.lucene.indexer.CRIndexer.BackgroundJob#recreateIndex()
-	 * @see com.gentics.cr.util.indexing.IndexLocation#getIndexLocationClass(CRConfig)
+	 * @see com.gentics.cr.lucene.indexer.CRIndexer.BackgroundJob
+	 * #recreateIndex()
+	 * @see com.gentics.cr.util.indexing.IndexLocation
+	 * #getIndexLocationClass(CRConfig)
 	 */
 	public static final String CR_KEY = "CR";
 	
 	
 	/**
-	 * Creates Datasource from Config
-	 * @return Datasource
+	 * Creates Datasource from configuration.
+	 * @return Datasource from this configuration
 	 */
 	public abstract Datasource getDatasource();
 
 	/**
-	 * Returns a PathResolver to resolve Paths of a ContentObject
+	 * Returns a PathResolver to resolve Paths of a ContentObject.
 	 * @return PathResolver
 	 */
 	public abstract PathResolver getPathResolver();
 
 	/**
-	 * Returns The configured PlinkTemplate
+	 * Returns The configured PlinkTemplate.
 	 * @return String PlinkTemplate
 	 */
 	public abstract String getPlinkTemplate();
 	
 	/**
-	 * Returns the Name of the current Config (ServletName, PortletName, ApplicationName,...)
+	 * Returns the Name of the configuration.
 	 * @return String Name
 	 */
 	public abstract String getName();
 	
 	/**
-	 * Returns the configured Response Encoding
+	 * Returns the configured Response Encoding.
 	 * @return String Encoding
 	 */
 	public abstract String getEncoding();
@@ -110,89 +114,97 @@ public abstract class CRConfig extends GenericConfiguration{
 	public abstract String getPageType();
 	
 	/**
-	 * Returns the configured ApplicationRule. This Rule is intended to be added to each query, in order to provide a server side filtering method (personalization)
+	 * Returns the configured ApplicationRule. This Rule is intended to be added
+	 * to each query, in order to provide a server side filtering method
+	 * (personalization).
 	 * @return String Application Rule
 	 */
 	public abstract String getApplicationRule();
 	
 	/**
-	 * Returns the Properties Map
+	 * Returns the Properties Map.
 	 * @return Properties
 	 */
 	public abstract Properties getProps();
 	
 	/**
-	 * Returns if the Application is running in portal.node compatibility mode => Velocity turned off
+	 * Returns if the Application is running in portal.node compatibility mode
+	 * => Velocity turned off.
 	 * @return boolean Portal.Node Compatibility Mode
 	 */
 	public abstract boolean getPortalNodeCompMode();
 	
 	/**
-	 * Returns an instance of the configured Template Manager to render Velocity
+	 * Returns an instance of the configured TemplateManager to render Velocity.
 	 * @return ITemplateManager
 	 */
 	public abstract ITemplateManager getTemplateManager();
 
 	/**
-	 * XML Url for XMLRequest Processor
+	 * XML Url for XMLRequest Processor.
 	 * @return String 
 	 */
 	public abstract String getXmlUrl();
 	
 	/**
-	 * XSLT Url for XMLRequest Processor
+	 * XSLT Url for XMLRequest Processor.
 	 * @return String 
 	 */
 	public abstract String getXsltUrl();
 	
 	/**
-	 * Contentid Regex for XMLRequest Processor
+	 * Contentid Regex for XMLRequest Processor.
 	 * @return String 
 	 */
 	public abstract String getContentidRegex();
 	
 	/**
-	 * Chain of filter classes that is performed on the result
+	 * Chain of filter classes that is performed on the result.
 	 * @return String 
 	 */
 	public abstract ArrayList<String> getFilterChain();
 	
 	/**
-	 * Custom Permission for XMLRequest Processor
+	 * Custom Permission for XMLRequest Processor.
 	 * @return String 
 	 */
 	public abstract String getObjectPermissionAttribute();
 	
 	/**
-	 * Custom Permission for XMLRequest Processor
+	 * Custom Permission for XMLRequest Processor.
 	 * @return String 
 	 */
 	public abstract String getUserPermissionAttribute();
 	
 	/**
-	 * Defines if RequestProcessor is to use shared caches with Portal.Node
+	 * Defines if RequestProcessor is to use shared caches with Portal.Node.
 	 * @return boolean
 	 */
 	public abstract boolean useSharedCache();
 	
 	/**
-	 * Defines if the BinaryContainer translates contentidurls eg: /ContentRepository/pcr_bin/90033.305/Quicklinks.png to /ContentRepository/pcr_bin?contentid=90033.305&contentdisposition=Quicklinks.png
-	 * @return
+	 * Defines if the BinaryContainer translates contentidurls eg:
+	 * /ContentRepository/pcr_bin/90033.305/Quicklinks.png to
+	 * "/ContentRepository/pcr_bin?contentid=90033.305&contentdisposition=
+	 * Quicklinks.png".
+	 * @return <code>true</code> if contentidurls are translated.
 	 */
 	public abstract boolean usesContentidUrl();
 	
 	/**
-	 * Sets response encoding
-	 * @param encoding
+	 * Sets response encoding.
+	 * @param encoding - encoding to use
 	 */
 	public abstract void setEncoding(String encoding);
 	
 	/**
-	 * Returns a new instance of the RequestProcessor configured in the config with the given requestProcessorId
-	 * @param requestProcessorId
-	 * @return RequestProcessor
-	 * @throws CRException
+	 * Returns a new instance of the RequestProcessor configured in the
+	 * configuration with the given requestProcessorId.
+	 * @param requestProcessorId id of the {@link RequestProcessor}
+	 * @return RequestProcessor - RequestProcessor for the id. 
+	 * @throws CRException in case no {@link RequestProcessor}s are configured
 	 */
-	public abstract RequestProcessor getNewRequestProcessorInstance(int requestProcessorId) throws CRException;
+	public abstract RequestProcessor getNewRequestProcessorInstance(
+			int requestProcessorId) throws CRException;
 	
 }
