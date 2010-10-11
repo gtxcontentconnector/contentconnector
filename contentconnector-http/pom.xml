@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>contentconnector</groupId>
   <artifactId>contentconnector-http</artifactId>
-  <version>1.1.3</version>
+  <version>1.2.0</version>
   <packaging>jar</packaging>
   <name>Gentics Content.Connector - HTTP</name>
   <description>This is the HTTP-Extension to the Gentics Content.Connector Suite</description>
@@ -64,7 +64,7 @@
 	    <dependency>
 	      <groupId>contentconnector</groupId>
 	      <artifactId>contentconnector-core</artifactId>
-	      <version>1.1.3</version>
+	      <version>1.2.0</version>
 	    </dependency>
 	    <dependency>
 		    <groupId>commons-httpclient</groupId>
