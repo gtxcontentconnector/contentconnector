@@ -229,7 +229,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 									analyzer, request, config);
 					try {
 						parsedQuery = parser.parse((String) highlightQuery);
-						parsedQuery.rewrite(reader);
+						parsedQuery = parsedQuery.rewrite(reader);
 						
 					} catch (ParseException e) {
 						log.error(e.getMessage());
