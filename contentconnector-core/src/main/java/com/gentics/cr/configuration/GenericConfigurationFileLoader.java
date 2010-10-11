@@ -19,7 +19,7 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class GenericConfigurationFileLoader {
+public final class GenericConfigurationFileLoader {
 	/**
 	 * Logger.
 	 */
@@ -39,7 +39,7 @@ public class GenericConfigurationFileLoader {
 	 * 						e.g.: ${com.gentics.portalnode.confpath}
 	 * /rest/<servletname>.properties
 	 */
-	public static void loadPerServletname(GenericConfiguration config, 
+	public static void loadPerServletname(final GenericConfiguration config, 
 			final String servletname) {
 		String path = CRUtil.resolveSystemProperties(
 				"${com.gentics.portalnode.confpath}/rest/"
@@ -59,9 +59,9 @@ public class GenericConfigurationFileLoader {
 	 * @param config - configuration to load Files to
 	 * @param path - Path to the configuration File. 
 	 * Can contain environment variables.
-	 * @throws IOException 
+	 * @throws IOException - if an error occurred reading the file.
 	 */
-	public static void load(GenericConfiguration config, 
+	public static void load(final GenericConfiguration config, 
 			final String path) throws IOException {
 		Properties props = new Properties();
 		props.load(new FileInputStream(CRUtil.resolveSystemProperties(path)));
@@ -78,7 +78,7 @@ public class GenericConfigurationFileLoader {
 	 * @param key resolving key
 	 * @param value value
 	 */
-	private static void setProperty(GenericConfiguration config,
+	private static void setProperty(final GenericConfiguration config,
 			final String key, final String value) {
 		//Resolve system properties, so that they can be used in config values
 		String val = CRUtil.resolveSystemProperties((String) value);
