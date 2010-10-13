@@ -94,6 +94,13 @@ public abstract class VelocityServlet extends HttpServlet {
 	}
 	
 	/**
+	 * Get the content connetcor configuration of the servlet.
+	 */
+	protected final CRConfigUtil getCRConfig(){
+		return crConf;
+	}
+	
+	/**
 	 * Wrapper Method for the doGet and doPost Methods. Prepares the data for
 	 * the render method. Don't forget to put your variables into the velocity
 	 * template before rendering.
