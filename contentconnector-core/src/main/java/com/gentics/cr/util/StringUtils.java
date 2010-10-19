@@ -1,7 +1,12 @@
 package com.gentics.cr.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
@@ -12,6 +17,11 @@ import org.apache.log4j.Logger;
  */
 public final class StringUtils {
 
+	/**
+	 * Variable for the average word length to calculate the size of the
+	 * StringBuilder based on how many items we have.
+	 */
+	private static final int AVERAGE_WORD_LENGTH = 7;
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
@@ -105,6 +115,42 @@ public final class StringUtils {
 		} else {
 			return Boolean.parseBoolean(parameter.toString());
 		}
+	}
 
+	/**
+	 * Create a summary of a collection of objects.
+	 * e.g. ["a", "b"] is transformed to the String "a, b".
+	 * @param collection - Collection containing the objects
+	 * @return String of comma seperated values of the Collection.
+	 */
+	public static String getCollectionSummary(final Collection<?> collection) {
+		StringBuilder result =
+			new StringBuilder(collection.size() * AVERAGE_WORD_LENGTH);
+		for (Object object : collection) {
+			if (result.length() != 0) {
+				result.append(",");
+			}
+			result.append(' ');
+			result.append(object);
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Serialize the given object into a String.
+	 * @param object - object to serialize into the String.
+	 * @return serializedObject as String.
+	 */
+	public static String serialize(final Serializable object) {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(object);
+			return baos.toString();
+		} catch (IOException e) {
+			logger.error("Error while serializing object.", e);
+			return null;
+		}
+		
 	}
 }
