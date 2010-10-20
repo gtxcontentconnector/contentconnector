@@ -222,7 +222,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	public void release(IndexReader reader, boolean write) {
 		IndexReader[] readers = ((MultiReader) reader).getSequentialSubReaders();
 	    for (IndexReader r : readers) {
-	      multiSearcherAccessors.remove(r).release(r,write);
+	      multiReaderAccessors.remove(r).release(r,write);
 	    }
 	}
 	
