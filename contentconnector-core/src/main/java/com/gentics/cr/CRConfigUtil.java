@@ -660,6 +660,8 @@ public class CRConfigUtil extends CRConfig {
         String key = ((String)e.getKey()).toLowerCase();
         //Driver class has to be spelled "driverClass"
         if("driverclass".equals(key))key="driverClass";
+        if("pooling.testonborrow".equals(key))key="pooling.testOnBorrow";
+        if("pooling.validationquery".equals(key))key="pooling.validationQuery";
         ret.put(key, e.getValue());
       }
       return ret;
