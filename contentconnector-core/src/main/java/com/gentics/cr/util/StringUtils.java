@@ -1,7 +1,9 @@
 package com.gentics.cr.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
@@ -151,6 +153,28 @@ public final class StringUtils {
 			logger.error("Error while serializing object.", e);
 			return null;
 		}
+		
+	}
+	/**
+	 * Deserialize an object from a given string.
+	 * @param objectString - string containing a serialized object
+	 * @return object contained in the string
+	 * @see #serialize(Serializable)
+	 */
+	public static Object deserialize(final String objectString) {
+		try {
+			ByteArrayInputStream bais =
+				new ByteArrayInputStream(objectString.getBytes());
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			return ois.readObject();
+		} catch (IOException e) {
+			logger.error("Error while deserializing object.", e);
+		} catch (ClassNotFoundException e) {
+			logger.error("Cannot deserialize object because the class of the "
+					+ "object or one of its dependencies is not known on this "
+					+ "system.", e);
+		}
+		return null;
 		
 	}
 }
