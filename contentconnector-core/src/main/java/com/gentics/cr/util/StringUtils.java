@@ -201,4 +201,21 @@ public final class StringUtils {
 		}
 		return null;
 	}
+	/**
+	 * Converts a folder name into a Gentics Content.Node compatible folder
+	 * name.
+	 * @param folderPubDir - folder name to convert.
+	 * @return CMS compatible folder name.
+	 * <ul>
+	 * <li>"&" is converted into "und"</li>
+	 * <li>"ß" is converted into "ss"</li>
+	 * <li>All characters except a-z, A-Z, 0-9, ., _, / and - are replaces with
+	 * _</li>
+	 * </ul>
+	 */
+	public static String toCMSFolder(final String folderPubDir) {
+		return folderPubDir.replaceAll("&", "und")
+			.replaceAll("ß", "ss")
+			.replaceAll("[^a-zA-Z0-9._/-]", "_");
+	}
 }
