@@ -249,13 +249,16 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 					log.error("Error getting results for full index from requestprocessor",e);
 				} 
 			} else {
-				//Sorted (by the idAttribute) list of Resolvables to check for Updates.
+				//Sorted (by the idAttribute) list of Resolvables to check for
+				//Updates.
 				Collection<CRResolvableBean> objectsToIndex;
 				try {
 					defaultizeRequest(request);
-					objectsToIndex = (Collection<CRResolvableBean>) rp.getObjects(request);
+					objectsToIndex = (Collection<CRResolvableBean>)
+						rp.getObjects(request);
 				} catch (CRException e) {
-					log.error("Error getting results for full index from requestprocessor",e);
+					log.error("Error getting results for full index from "
+							+ "requestprocessor", e);
 					return null;
 				}
 				Iterator<CRResolvableBean> resolvableIterator =
@@ -263,22 +266,32 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 				try {
 					while (resolvableIterator.hasNext()) {
 						CRResolvableBean crElement = resolvableIterator.next();
-						Object o_crElementID = crElement.get(idAttribute);
-						if(o_crElementID==null)log.error("IDAttribute is null!");
-						String crElementID = o_crElementID.toString();
-						Object crElementTimestamp =	crElement.get(timestampAttribute);
-						if (!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp,
-								timestampAttribute,crElement)) {
+						Object crElementIDObject = crElement.get(idAttribute);
+						if (crElementIDObject == null) {
+							log.error("IDAttribute is null!");
+						}
+						String crElementID = crElementIDObject.toString();
+						if (!"".equals(timestampAttribute)) {
+							Object crElementTimestamp =
+								crElement.get(timestampAttribute);
+							if (!indexUpdateChecker.isUpToDate(crElementID,
+									crElementTimestamp, timestampAttribute,
+									crElement)) {
+								updateObjects.add(crElement);
+							}
+						} else {
 							updateObjects.add(crElement);
 						}
+						
 					}
 				} catch (WrongOrderException e) {
-					log.error("Got the objects from the datasource in the wrong order.",
-							e);
+					log.error("Got the objects from the datasource in the wrong"
+							+ "order.", e);
 					return null;
 				}
 			}
-			//Finally delete all Objects from Index that are not checked for an Update
+			//Finally delete all Objects from Index that are not checked for an
+			//Update
 			indexUpdateChecker.deleteStaleObjects();
 		}
 		finally {
