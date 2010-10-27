@@ -209,6 +209,12 @@ public final class StringUtils {
 	 * <ul>
 	 * <li>"&" is converted into "und"</li>
 	 * <li>"ß" is converted into "ss"</li>
+	 * <li>"ä" is converted into "ae"</li>
+	 * <li>"Ä" is converted into "Ae"</li>
+	 * <li>"ö" is converted into "oe"</li>
+	 * <li>"Ö" is converted into "Oe"</li>
+	 * <li>"ü" is converted into "ue"</li>
+	 * <li>"Ü" is converted into "Ue"</li>
 	 * <li>All characters except a-z, A-Z, 0-9, ., _, / and - are replaces with
 	 * _</li>
 	 * </ul>
@@ -216,6 +222,12 @@ public final class StringUtils {
 	public static String toCMSFolder(final String folderPubDir) {
 		return folderPubDir.replaceAll("&", "und")
 			.replaceAll("ß", "ss")
+			.replace("ü", "ue")
+			.replace("Ü", "Ue")
+			.replace("ö", "oe")
+			.replace("Ö", "Oe")
+			.replace("ä", "ae")
+			.replace("Ä", "Ae")
 			.replaceAll("[^a-zA-Z0-9._/-]", "_");
 	}
 }
