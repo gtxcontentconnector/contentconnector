@@ -247,7 +247,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 				"AbstractUpdateCheck.getObjectsToUpdate(" + request.get("CRID")
 				+ ")");
 		try {
-			if (forceFullUpdate || !"".equals(timestampAttribute)) {
+			if (forceFullUpdate || "".equals(timestampAttribute)) {
 				try {
 					updateObjects = (Collection<CRResolvableBean>)
 						rp.getObjects(request);
