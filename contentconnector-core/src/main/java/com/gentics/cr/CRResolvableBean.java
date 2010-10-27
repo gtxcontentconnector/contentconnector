@@ -36,7 +36,24 @@ import com.gentics.cr.util.AccessibleBean;
  */
 public class CRResolvableBean extends AccessibleBean implements Serializable, Resolvable{
 
-		
+	/**
+	 * object type of gentics content repository for file objects.
+	 */
+	public static final String DEFAULT_FILE_TYPE = "10008";
+	
+	/**
+	 * object type of gentics content repository for page objects.
+	 */
+	public static final String DEFAULT_PAGE_TYPE = "10007";
+	
+	/**
+	 * object type of gentics content repository for folder objects.
+	 */
+	public static final String DEFAULT_DIR_TYPE = "10002";
+
+	/**
+	 * generated unique serial version id.
+	 */
 	private static final long serialVersionUID = -8743515908056719834L;
 
 	private Collection<CRResolvableBean> childRepository;
@@ -101,7 +118,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public CRResolvableBean()
 	{
-		this.contentid="10001";
+		this.contentid = "10001";
 	}
 	
 	/**
@@ -111,7 +128,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public CRResolvableBean(String contentid)
 	{
-		this.contentid=contentid;
+		this.contentid = contentid;
 	}
 	
 	/**
@@ -123,7 +140,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public CRResolvableBean(Resolvable resolvable) {
 		//TODO This is ugly => make more beautiful
-		if ("10008".equals(resolvable.get("obj_type").toString())) {
+		if (DEFAULT_FILE_TYPE.equals(resolvable.get("obj_type").toString())) {
 			init(resolvable, new String[] { "binarycontent", "mimetype" });
 		} else {
 			init(resolvable, new String[] { "binarycontent", "mimetype" });
@@ -348,7 +365,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 		{
 			return(true);
 		}
-		else if ("10008".equals(this.getObj_type())) {
+		else if (DEFAULT_FILE_TYPE.equals(this.getObj_type())) {
 			return true;
 		} else {
 			return false;
@@ -395,20 +412,16 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public String getContent(String encoding) {
 		Object bValue = this.get("content");
-		String value="";
-		if(bValue!=null && bValue.getClass()==String.class)
-		{
-			value=(String)bValue;
-		}
-		else
-		{
+		String value = "";
+		if (bValue != null && bValue.getClass() == String.class) {
+			value = (String) bValue;
+		} else {
 			try {
-				value = new String(getBytes(bValue),encoding);
+				value = new String(getBytes(bValue), encoding);
 				
-			}
-			catch (UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
-			}catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -432,11 +445,10 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * Gets the binary content as InputStream if it is set otherwise returns null
 	 * @return
 	 */
-	public InputStream getBinaryContentAsStream()
-	{
+	public InputStream getBinaryContentAsStream() {
 		byte[] buf = getBinaryContent();
-		InputStream os=null;
-		if (buf!=null) {
+		InputStream os = null;
+		if (buf != null) {
 			os = new ByteArrayInputStream(getBinaryContent());
 		}
 		return os;

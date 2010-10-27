@@ -58,12 +58,12 @@ public class ResolvableFileBean extends CRResolvableBean {
   /**
    * Object type for files.
    */
-  private static final String FILEOBJTYPE = "10008";
+  private static final String FILEOBJTYPE = CRResolvableBean.DEFAULT_FILE_TYPE;
 
   /**
    * Object type for directory.
    */
-  private static final String DIROBJTYPE = "10002";
+  private static final String DIROBJTYPE = CRResolvableBean.DEFAULT_DIR_TYPE;
 
   /**
    * Generate a new {@link ResolvableFileBean} for the specified {@link File}.
