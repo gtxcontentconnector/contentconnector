@@ -23,7 +23,7 @@ public final class StringUtils {
 	 * Variable for the average word length to calculate the size of the
 	 * StringBuilder based on how many items we have.
 	 */
-	private static final int AVERAGE_WORD_LENGTH = 7;
+	public static final int AVERAGE_WORD_LENGTH = 7;
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
@@ -137,6 +137,23 @@ public final class StringUtils {
 		}
 		return result.toString();
 	}
+	
+	/**
+	 * Serialize the given object into a byte array.
+	 * @param object - object to serialize into the byte array.
+	 * @return serializedObject as byte array.
+	 */
+	public static byte[] serializeToByteArray(final Serializable object) {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(object);
+			return baos.toByteArray();
+		} catch (IOException e) {
+			logger.error("Error while serializing object.", e);
+			return null;
+		}
+	}
 
 	/**
 	 * Serialize the given object into a String.
@@ -144,17 +161,9 @@ public final class StringUtils {
 	 * @return serializedObject as String.
 	 */
 	public static String serialize(final Serializable object) {
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(object);
-			return baos.toString();
-		} catch (IOException e) {
-			logger.error("Error while serializing object.", e);
-			return null;
-		}
-		
+		return new String(serializeToByteArray(object));
 	}
+	
 	/**
 	 * Deserialize an object from a given string.
 	 * @param objectString - string containing a serialized object
@@ -162,19 +171,34 @@ public final class StringUtils {
 	 * @see #serialize(Serializable)
 	 */
 	public static Object deserialize(final String objectString) {
-		try {
-			ByteArrayInputStream bais =
-				new ByteArrayInputStream(objectString.getBytes());
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			return ois.readObject();
-		} catch (IOException e) {
-			logger.error("Error while deserializing object.", e);
-		} catch (ClassNotFoundException e) {
-			logger.error("Cannot deserialize object because the class of the "
-					+ "object or one of its dependencies is not known on this "
-					+ "system.", e);
+		if (objectString != null && objectString.length() > 0) {
+			return deserialize(objectString.getBytes());
 		}
 		return null;
 		
+	}
+
+	/**
+	 * Deserialize an object from a given byteArray.
+	 * @param objectBytes - byte array containing a serialized object
+	 * @return object contained in the byte array
+	 * @see #serializeToByteArray(Serializable)
+	 */
+	public static Object deserialize(final byte[] objectBytes) {
+		if (objectBytes != null && objectBytes.length > 0) {
+			try {
+				ByteArrayInputStream bais =
+					new ByteArrayInputStream(objectBytes);
+				ObjectInputStream ois = new ObjectInputStream(bais);
+				return ois.readObject();
+			} catch (IOException e) {
+				logger.error("Error while deserializing object.", e);
+			} catch (ClassNotFoundException e) {
+				logger.error("Cannot deserialize object because the class of "
+						+ "the object or one of its dependencies is not known "
+						+ "on this system.", e);
+			}
+		}
+		return null;
 	}
 }
