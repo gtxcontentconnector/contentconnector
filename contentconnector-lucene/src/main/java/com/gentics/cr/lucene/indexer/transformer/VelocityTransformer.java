@@ -53,15 +53,20 @@ public class VelocityTransformer extends ContentTransformer {
 	 */
 	public VelocityTransformer(final GenericConfiguration config) {
 		super(config);
-		
+		CRConfigUtil crConfigUtil;
+		if(config instanceof CRConfigUtil) {
+			crConfigUtil = (CRConfigUtil) config;
+		} else {
+			crConfigUtil = new CRConfigUtil(config,
+					"VelocityTransformerConfig");
+		}
 		String template = (String) config.get(TRANSFORMER_TEMPLATE_KEY);
 		targetAttribute = (String) config.get(TRANSFORMER_TARGETATTRIBUTE_KEY);
 		
 		if (template == null) {
 			logger.error("Please configure " + TRANSFORMER_TEMPLATE_KEY
 					+ " for my config.");
-		} else if(config instanceof CRConfigUtil) {
-				CRConfigUtil crConfigUtil = (CRConfigUtil) config;
+		} else {
 				vtm = crConfigUtil.getTemplateManager();
 				try {
 					tpl = new StringTemplate(template);
