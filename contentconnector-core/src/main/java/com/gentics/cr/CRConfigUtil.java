@@ -570,14 +570,11 @@ public class CRConfigUtil extends CRConfig {
    * @return template manager or null if it is not set
    */
   public ITemplateManager getTemplateManager() {
-    if(!this.getPortalNodeCompMode())
-    {
+    if(!this.getPortalNodeCompMode()) {
       ITemplateManager tmplManager=null;
-      try
-      {
+      try {
         tmplManager = VelocityTemplateManagerFactory.getConfiguredVelocityTemplateManagerInstance(this.getEncoding(),DEFAULT_TEMPLATE_PATH);
-      }catch(Exception e)
-      {
+      } catch(Exception e) {
         CRException ex = new CRException(e);
         log.error(ex.getMessage(),ex);
       }
