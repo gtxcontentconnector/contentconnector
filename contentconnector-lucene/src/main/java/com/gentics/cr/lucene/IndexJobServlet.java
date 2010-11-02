@@ -117,10 +117,10 @@ public class IndexJobServlet extends VelocityServlet {
 				Hashtable<String, CRConfigUtil> map = loc.getCRMap();
 				if (e.getKey().equalsIgnoreCase(index)) {
 					if ("stopWorker".equalsIgnoreCase(action)) {
-						queue.stopWorker();
+						queue.pauseWorker();
 					}
 					if ("startWorker".equalsIgnoreCase(action)) {
-						queue.startWorker();
+						queue.resumeWorker();
 					}
 					if ("clear".equalsIgnoreCase(action))	{
 						loc.createClearJob();
