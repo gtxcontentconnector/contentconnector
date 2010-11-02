@@ -1,8 +1,5 @@
 package com.gentics.cr.lucene;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Hashtable;
@@ -10,19 +7,14 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.servlet.VelocityServlet;
-import com.gentics.cr.template.FileTemplate;
-import com.gentics.cr.template.ITemplate;
-import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
 import com.gentics.cr.util.indexing.IndexJobQueue;
