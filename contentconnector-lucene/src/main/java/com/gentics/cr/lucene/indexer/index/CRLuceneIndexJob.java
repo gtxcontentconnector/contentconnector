@@ -285,7 +285,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
         }
         Collection<CRResolvableBean> objectsToIndex = null;
         //Clear Index and remove stale Documents
-        if (!create) {
+        //if (!create) {
           log.debug("Will do differential index.");
           try {
             CRRequest req = new CRRequest();
@@ -298,7 +298,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
           } catch (Exception e) {
             log.error("ERROR while cleaning index", e);
           }
-        }
+        //}
         //Obtain accessor and writer after clean
         if (indexLocation instanceof LuceneIndexLocation) {
           indexAccessor = ((LuceneIndexLocation) indexLocation).getAccessor();
@@ -332,13 +332,16 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
         attributes.put(idAttribute, Boolean.TRUE);
 
         // get all objects to index
-        if (objectsToIndex == null) {
+        /*
+         * THIS SNIPPED HAS BEEN REMOVED BECAUSE IT CAUSED A DEADLOCK IF 
+         * THE DB CONNECTION IS BROKEN
+         * if (objectsToIndex == null) {
           CRRequest req = new CRRequest();
           req.setRequestFilter(rule);
           req.set(CR_FIELD_KEY, crid);
           objectsToIndex =
             getObjectsToUpdate(req, rp, true, luceneIndexUpdateChecker);
-        }
+        }*/
         if (objectsToIndex == null) {
           log.debug("Rule returned no objects to index. Skipping run");
           return;
