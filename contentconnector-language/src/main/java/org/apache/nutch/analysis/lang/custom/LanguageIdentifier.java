@@ -100,8 +100,7 @@ public class LanguageIdentifier {
       while (alllanguages.hasMoreElements()) {
         String lang = (String) (alllanguages.nextElement());
 
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream(
-                "org/apache/nutch/analysis/lang/" + lang + "." + NGramProfile.FILE_EXTENSION);
+        InputStream is = LanguageIdentifier.class.getResourceAsStream(lang + "." + NGramProfile.FILE_EXTENSION);
 
         if (is != null) {
           NGramProfile profile = new NGramProfile(lang, minLength, maxLength);
