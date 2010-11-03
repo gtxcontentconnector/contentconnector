@@ -140,10 +140,17 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public CRResolvableBean(Resolvable resolvable) {
 		//TODO This is ugly => make more beautiful
-		if (DEFAULT_FILE_TYPE.equals(resolvable.get("obj_type").toString())) {
+		Object objTypeObject = resolvable.get("obj_type");
+		String objType = null;
+		if(objTypeObject instanceof String) {
+			objType = (String) objTypeObject;
+		} else if (objTypeObject != null) {
+			objType = objTypeObject.toString();
+		}
+		if (DEFAULT_FILE_TYPE.equals(objType)) {
 			init(resolvable, new String[] { "binarycontent", "mimetype" });
 		} else {
-			init(resolvable, new String[] { "binarycontent", "mimetype" });
+			init(resolvable, new String[] { "content", "mimetype" });
 		}
 	}
 
