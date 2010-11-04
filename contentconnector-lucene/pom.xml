@@ -89,6 +89,11 @@
 		<artifactId>lucene-spellchecker</artifactId>
 		<version>3.0.2</version>
 	</dependency>
+	<dependency>
+		<groupId>org.apache.lucene</groupId> 
+  		<artifactId>lucene-misc</artifactId>
+  		<version>3.0.2</version>
+  	</dependency> 
     <dependency>
       <groupId>contentconnector</groupId>
       <artifactId>contentconnector-core</artifactId>
