@@ -8,22 +8,40 @@ import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.portalnode.PortalNodeInteractor;
 /**
- * 
+ * The datasource factory manages the gentics content repository datasources.
  * Last changed: $Date: 2010-04-01 15:24:02 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 541 $
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class CRDatabaseFactory {
-  //Static Members
+public final class CRDatabaseFactory {
+	/**
+	 * Private constructor to prevent instantiation.
+	 */
+	private CRDatabaseFactory() { }
+	
+  /**
+   * Logger.
+   */
   private static Logger log = Logger.getLogger(CRDatabaseFactory.class);
+  /**
+   * Static instance.
+   */
   private static CRDatabaseFactory instance;
   
-  //Instance Members
+  /**
+   * Count of active datasources.
+   */
   private long dbcount = 0;
   
+  /**
+   * Singleton get Instance.
+   * @return returns singleton instance.
+   */
   private static CRDatabaseFactory getInstance() {
-    if(instance==null)instance=new CRDatabaseFactory();
+    if (instance == null) {
+    	instance = new CRDatabaseFactory();
+    }
     return instance;
   }
 
@@ -34,22 +52,33 @@ public class CRDatabaseFactory {
   public static void releaseDatasource(Datasource ds) {
     
     if (ds != null) {
-      log.debug("Release Datasource " + ds.toString().replaceAll("([&?])password=[^&?]*", "$1password=*****"));
+      log.debug("Release Datasource " + ds.toString()
+    		  .replaceAll("([&?])password=[^&?]*", "$1password=*****"));
       getInstance().releaseDS();
       ds = null;
     }
   }
 
+  /**
+   * Release one datasource instance.
+   */
   private synchronized void releaseDS() {
     dbcount--;
     log.debug("Released DB, DBCount now: " + dbcount);
   }
 
+  /**
+   * Increase the active datasources.
+   */
   private synchronized void accquireDS() {
     dbcount++;
     log.debug("Added DB, DBCount now: " + dbcount);
   }
 
+  /**
+   * Destroys the factory if all datasources have been released.
+   * @return true if the process was successful, otherwise false.
+   */
   private synchronized boolean destroyFactory() {
     if (dbcount <= 0) {
       PortalConnectorFactory.destroy();
