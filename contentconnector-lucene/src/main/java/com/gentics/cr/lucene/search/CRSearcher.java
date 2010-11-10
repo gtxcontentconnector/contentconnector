@@ -50,8 +50,8 @@ import com.gentics.cr.util.generics.Instanciator;
  */
 public class CRSearcher {
 
-	protected static Logger log = Logger.getLogger(CRSearcher.class);
-	protected static Logger log_explain = Logger.getLogger(CRSearcher.class);
+	private static Logger log = Logger.getLogger(CRSearcher.class);
+	private static Logger log_explain = Logger.getLogger(CRSearcher.class);
 
 	protected static final String INDEX_LOCATION_KEY = "indexLocation";
 	protected static final String COMPUTE_SCORES_KEY = "computescores";
@@ -79,17 +79,17 @@ public class CRSearcher {
 	public static final String RESULT_MAXSCORE_KEY = "maxscore";
 	
 	/**
-	 * Key to store the bestquery in the result
+	 * Key to store the bestquery in the result.
 	 */
 	public static final String RESULT_BESTQUERY_KEY = "bestquery";
 	
 	/**
-	 * Key to store the hitcount of the bestquery in the result
+	 * Key to store the hitcount of the bestquery in the result.
 	 */
 	public static final String RESULT_BESTQUERYHITS_KEY = "bestqueryhits";
 	
 	/**
-	 * Key to store the hitcount of the bestquery in the result
+	 * Key to store the hitcount of the bestquery in the result.
 	 */
 	public static final String RESULT_SUGGESTIONS_KEY = "suggestions";
 	
@@ -101,7 +101,8 @@ public class CRSearcher {
 	/**
 	 * Key to configure the limit of results we activate the didyoumean code. 
 	 */
-	private static final String DIDYOUMEAN_ACTIVATE_KEY = "didyoumean_activatelimit";
+	private static final String DIDYOUMEAN_ACTIVATE_KEY =
+		"didyoumean_activatelimit";
 	
 	
 	public static final String DIDYOUMEAN_ENABLED_KEY = "didyoumean";
@@ -419,31 +420,39 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 			
 			log.debug("DYM Suggestions took "
 					+ (System.currentTimeMillis() - dym_start) + "ms");
-			String rewrittenQuery = parsedQuery.toString();
+			String rewrittenQuery =
+				parsedQuery.toString().replaceAll("\\(\\)","");
 			indexAccessor.release(reader, false);
 			
-			if(didyoumeanbestquery || advanceddidyoumeanbestquery) {
+			if (didyoumeanbestquery || advanceddidyoumeanbestquery) {
 				//SPECIAL SUGGESTION
 				//TODO Test if the query will be altered and if any suggestions have
 				//been made... otherwise don't execute second query and don't include
 				//the bestquery
-				for(Entry<String,String[]> e:suggestions.entrySet()) {
+				for (Entry<String, String[]> e : suggestions.entrySet()) {
 					String term = e.getKey();
 					String[] suggestionsForTerm = e.getValue();
-					if(advanceddidyoumeanbestquery){
-						TreeMap<Integer, HashMap<String,Object>> suggestionsResults =
-							new TreeMap<Integer, HashMap<String,Object>>(
-									Collections.reverseOrder());
+					if (advanceddidyoumeanbestquery) {
+						TreeMap<Integer, HashMap<String, Object>>
+							suggestionsResults = new TreeMap<Integer,
+								HashMap<String, Object>>(
+										Collections.reverseOrder());
 						for (String suggestedTerm : suggestionsForTerm) {
 							String newquery = rewrittenQuery.replaceAll(term, suggestedTerm);
 							HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
 									newquery, parser, searcher, sorting, userPermissions);
-							resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY, suggestedTerm);
-							Integer resultCount =
-								(Integer) resultOfNewQuery.get(RESULT_BESTQUERYHITS_KEY);
-							if (resultCount > 0) {
-								suggestionsResults.put(resultCount, resultOfNewQuery);
+							if (resultOfNewQuery != null) {
+								resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY,
+										suggestedTerm);
+								Integer resultCount =
+									(Integer) resultOfNewQuery
+											.get(RESULT_BESTQUERYHITS_KEY);
+								if (resultCount > 0) {
+									suggestionsResults.put(resultCount,
+											resultOfNewQuery);
+								}
 							}
+							
 						}
 						result.put(RESULT_BESTQUERY_KEY, suggestionsResults);
 					} else {
@@ -468,15 +477,16 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 		HashMap<String, Object> result = new HashMap<String, Object>(3);
 		try {
 			Query bestQuery = parser.parse(query);
-			TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
+			TopDocsCollector<?> bestcollector = createCollector(searcher, 1,
+					sorting, computescores, userPermissions);
 			runSearch(bestcollector, searcher, bestQuery, false, 1, 0);
 			result.put(RESULT_BESTQUERY_KEY, bestQuery);
 			result.put(RESULT_BESTQUERYHITS_KEY, bestcollector.getTotalHits());
 			return result;
 		} catch (ParseException e) {
-			log.error("Cannot parse query to get results for.",e);
+			log.error("Cannot parse query to get results for.", e);
 		} catch (IOException e) {
-			log.error("Cannot create collector to get results for query.",e);
+			log.error("Cannot create collector to get results for query.", e);
 		}
 		return null;
 	}
