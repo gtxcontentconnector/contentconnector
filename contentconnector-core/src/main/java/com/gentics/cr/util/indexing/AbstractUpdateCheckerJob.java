@@ -126,6 +126,15 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	}
 	
 	/**
+	 * Gets the config for this UpdateCheckerJob.
+	 * 
+	 * @return configuration as CRConfig-object
+	 */
+	public final CRConfig getConfig() {
+		return config;
+	}
+	
+	/**
 	 * Gets the Job Identifyer. In most cases this is the CR id.
 	 * @return identifyer as string
 	 */
@@ -164,7 +173,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final int getObjectsToIndex() {
 		return status.getObjectCount();
 	}
-	
+
 	/**
 	 * Get the number ob objects already indexed.
 	 * @return objects already indexed in the current job
@@ -172,30 +181,30 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final int getObjectsDone() {
 		return status.getObjectsDone();
 	}
-	
+
 	/**
 	 * Calculates ETA of the current job.
 	 * @return ETA in ms
 	 */
 	public final long getETA() {
 		long eta = 0;
-		
+
 		long objDone = this.getObjectsDone();
 		long objToIndex = this.getObjectsToIndex();
 		long objTodo = objToIndex - objDone;
-		
+
 		long timetaken = System.currentTimeMillis() - this.getStart();
-		
+
 		long timePerObj = 0;
 		if (objDone != 0) {
 			timePerObj = timetaken / objDone;
 		}
-		
+
 		eta = objTodo * timePerObj;
-		
+
 		return eta;
 	}
-	
+
 	/**
 	 * Get Current Status as String.
 	 * @return current status string
