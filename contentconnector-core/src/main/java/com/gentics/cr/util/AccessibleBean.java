@@ -35,10 +35,10 @@ public abstract class AccessibleBean {
 				final String defaultValue) {
 			Object result = get(key);
 			if (result != null) {
-			return (String) result;
-		} else {
-			return defaultValue;
-		}
+				return result.toString();
+			} else {
+				return defaultValue;
+			}
 		}
 		
 		
