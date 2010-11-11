@@ -60,11 +60,15 @@ public class MergeTransformer extends ContentTransformer {
 	@Override
 	public final void processBean(final CRResolvableBean bean) {
 		StringBuffer target;
+		String quot = "\"";
 				
 		if (sourceAttributes != null && targetAttribute != null) {
 			target = new StringBuffer();
 			for (String attribute : sourceAttributes) {
-				if (bean.get(attribute) != null) {
+				if (attribute.startsWith(quot) && attribute.endsWith(quot)) {
+					target.append(attribute.substring(quot.length(),
+							(attribute.length() - (2 * quot.length()))));
+				} else if (bean.get(attribute) != null) {
 					target.append(bean.get(attribute)).append(" ");
 				}
 			}
