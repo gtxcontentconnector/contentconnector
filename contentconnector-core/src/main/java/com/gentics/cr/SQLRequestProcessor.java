@@ -18,7 +18,11 @@ import org.apache.log4j.Logger;
 
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.generics.Lists;
-
+/**
+ * {@link SQLRequestProcessor} fetches data from a mysql table
+ * @author bigbear3001
+ *
+ */
 public class SQLRequestProcessor extends RequestProcessor {
 	private static Logger logger = Logger.getLogger(SQLRequestProcessor.class);
 
@@ -202,7 +206,8 @@ public class SQLRequestProcessor extends RequestProcessor {
 		return colnames;
 	}
 	/**
-	 * Get merged objects as resolvables from ResultSet. If we got more than one row from 
+	 * Get merged objects as {@link CRResolvableBean}s from ResultSet. If we got more
+	 * than one row from.
 	 * @param rset {@link ResultSet} to get the objects from.
 	 * @return list of {@link CRResolvableBean}s, <code>null</code> in case of
 	 * an error.
