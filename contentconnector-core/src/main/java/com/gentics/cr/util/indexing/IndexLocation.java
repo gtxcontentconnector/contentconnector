@@ -526,9 +526,15 @@ public abstract class IndexLocation {
 			
 				CRConfigUtil indexJobConfiguration = e.getValue();
 				String partName = indexJobConfiguration.getName();
+				AbstractUpdateCheckerJob currentJob = queue.getCurrentJob();
 				int partInterval = getInterval(partName);
 				boolean createJob = true;
-				if (partInterval != -1) {
+				if (currentJob != null
+						&& currentJob.identifyer.equals(partName)) {
+					log.debug("skipping creation of " + partName
+							+ " because its already running.");
+					createJob = false;
+				} else if (partInterval != -1) {
 					long now = new Date().getTime();
 					if (indexJobCreationTimes.containsKey(partName)) {
 						long lastRun =
@@ -569,13 +575,13 @@ public abstract class IndexLocation {
 			} catch (NoSuchMethodException e) {
 				log.error("Cannot find constructor for creating a new IndexJob",e);
 			} catch (IllegalArgumentException e) {
-				log.error("Error creating a new IndexJob",e);
+				log.error("Error creating a new IndexJob", e);
 			} catch (InstantiationException e) {
-				log.error("Error creating a new IndexJob",e);
+				log.error("Error creating a new IndexJob", e);
 			} catch (IllegalAccessException e) {
-				log.error("Error creating a new IndexJob",e);
+				log.error("Error creating a new IndexJob", e);
 			} catch (InvocationTargetException e) {
-				log.error("Error creating a new IndexJob",e);
+				log.error("Error creating a new IndexJob", e);
 			}
 			return false;
 	}
@@ -591,9 +597,9 @@ public abstract class IndexLocation {
 
 		GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
 		if (CRc != null) {
-			Hashtable<String,GenericConfiguration> configs = CRc.getSubConfigs();
+			Hashtable<String, GenericConfiguration> configs = CRc.getSubConfigs();
 
-			for (Entry<String,GenericConfiguration> e:configs.entrySet()) {
+			for (Entry<String, GenericConfiguration> e:configs.entrySet()) {
 				try {
 					map.put(crconfig.getName() + "." + e.getKey(),
 							new CRConfigUtil(e.getValue(), crconfig.getName()
@@ -629,18 +635,15 @@ public abstract class IndexLocation {
 	 * Tests if this IndexLocation has turned on periodical indexing
 	 * @return
 	 */
-	public boolean isPeriodical()
-	{
+	public boolean isPeriodical() {
 		return this.periodical;
 	}
 	
 	/**
 	 * Stops all Index workers
 	 */
-	public void stop()
-	{
-		if(this.periodical_thread!=null && this.periodical_thread.isAlive())
-		{
+	public void stop() {
+		if (this.periodical_thread != null && this.periodical_thread.isAlive()) {
 			this.periodical_thread.interrupt();
 			try {
 				this.periodical_thread.join(1000);
@@ -648,8 +651,7 @@ public abstract class IndexLocation {
 				log.error("Error while stopping periodical thread");
 			}
 		}
-		if(this.queue!=null)
-		{
+		if (this.queue != null) {
 			this.queue.stop();
 		}
 		finalize();
