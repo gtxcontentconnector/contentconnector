@@ -559,9 +559,9 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	return null;
 }
 
-/**
+	/**
 	 * Convert a resolvable to a Lucene Document.
- * @param doc 
+	 * @param newDoc 
 	 * @param resolvable Contains the resolvable to be indexed
 	 * @param attributes A map of attribute names, which values are true if the
 	 * attribute should be stored or fales if the attribute should only be
@@ -573,36 +573,45 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * . This can be used to search faster for words ending with *ing.
 	 * @return Returns a Lucene Document, ready to be added to the index.
 	 */
-	private Document getDocument(Document doc, final Resolvable resolvable,
+	private Document getDocument(final Document doc, final Resolvable resolvable,
 			final Map<String, Boolean> attributes, final CRConfigUtil config,
 			final List<String> reverseattributes) {
+		Document newDoc;
 		if (doc == null) {
-			doc = new Document();
+			newDoc = new Document();
+		} else {
+			newDoc = doc;
 		}
 		String crID = (String) config.getName();
 		if (crID != null) {
 			//Add content repository identification
-			doc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES,
+			newDoc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES,
 					Field.Index.NOT_ANALYZED));
 		}
 		if (!"".equals(timestampattribute)) {
 			Object updateTimestampObject = resolvable.get(timestampattribute);
 			String updateTimestamp = updateTimestampObject.toString();
 			if (updateTimestamp != null && !"".equals(updateTimestamp)) {
-				doc.add(new Field(timestampattribute, updateTimestamp.toString(),
-						Field.Store.YES, Field.Index.NOT_ANALYZED));
+				newDoc.removeField(timestampAttribute);
+				newDoc.add(new Field(timestampattribute,
+						updateTimestamp.toString(), Field.Store.YES,
+						Field.Index.NOT_ANALYZED));
 			}
 		}
 		for (Entry<String, Boolean> entry : attributes.entrySet()) {
 			String attributeName = (String) entry.getKey();
+			boolean filled = (newDoc.get(attributeName) != null);
 			Boolean storeField = (Boolean) entry.getValue();
 
 			Object value = resolvable.getProperty(attributeName);
 
-			if (idAttribute.equalsIgnoreCase(attributeName)) {
-				doc.add(new Field(idAttribute, value.toString(), Field.Store.YES,
-						Field.Index.NOT_ANALYZED));
+			if (idAttribute.equalsIgnoreCase(attributeName) && !filled) {
+				newDoc.add(new Field(idAttribute, value.toString(),
+						Field.Store.YES, Field.Index.NOT_ANALYZED));
 			} else if (value != null) {
+				if (filled) {
+					newDoc.removeField(attributeName);
+				}
 				Store storeFieldStore;
 				if (storeField) {
 					storeFieldStore = Store.YES;
@@ -616,12 +625,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					storeTermVector = TermVector.NO;
 				}
 				if (value instanceof String || value instanceof Number) {
-					
 					Field f = new Field(attributeName, value.toString(), storeFieldStore,
 										Field.Index.ANALYZED, storeTermVector);
 					Float boost_value = boostvalue.get(attributeName);
-						if(boost_value!=null)f.setBoost(boost_value);
-						doc.add(f);
+						if (boost_value!=null) {
+							f.setBoost(boost_value);
+						}
+						newDoc.add(f);
 					//ADD REVERSEATTRIBUTE IF NEEDED
 					if (reverseattributes != null
 							&& reverseattributes.contains(attributeName)) {
@@ -631,12 +641,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 										storeFieldStore, Field.Index.ANALYZED, storeTermVector);
 						Float rev_boost_value = boostvalue.get(reverseAttributeName);
 						if(rev_boost_value!=null)revField.setBoost(rev_boost_value);
-						doc.add(revField);
+						newDoc.add(revField);
 					}
 				}
 			}
 		}
-		return doc;
+		return newDoc;
 	}
 }
 
