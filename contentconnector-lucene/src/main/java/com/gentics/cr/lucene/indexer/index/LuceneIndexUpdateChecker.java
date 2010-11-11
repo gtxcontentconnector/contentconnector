@@ -152,14 +152,11 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 	private LinkedHashMap<String,Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute) throws IOException
 	{
 		LinkedHashMap<String,Integer> tmp = new LinkedHashMap<String,Integer>();
-		boolean finish=!termDocs.next();
 		
-		while(!finish)
-		{
+		while (termDocs.next()) {
 			Document doc = reader.document(termDocs.doc());
 			String docID = doc.get(idAttribute);
 			tmp.put(docID, termDocs.doc());
-			finish=!termDocs.next();
 		}
 		
 		LinkedHashMap<String,Integer> ret = new LinkedHashMap<String,Integer>(tmp.size());
