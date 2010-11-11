@@ -27,7 +27,7 @@ import com.gentics.cr.util.indexing.IndexUpdateChecker;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
+public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 
 	LuceneIndexLocation indexLocation;
 	IndexAccessor indexAccessor;
@@ -49,7 +49,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker{
 		indexAccessor = indexLocation.getAccessor();
 		IndexReader reader = indexAccessor.getReader(true);
 		
-		TermDocs termDocs = reader.termDocs(new Term(termKey,termValue));
+		TermDocs termDocs = reader.termDocs(new Term(termKey, termValue));
 		
 		docs = fetchSortedDocs(termDocs, reader, idAttribute);
 		docIT = docs.keySet().iterator();
