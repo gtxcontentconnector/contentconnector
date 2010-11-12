@@ -355,9 +355,10 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 					.createAnalyzer((GenericConfiguration) this.config);
 
 			if (searchedAttributes != null && searchedAttributes.length > 0) {
-				QueryParser parser = CRQueryParserFactory.getConfiguredParser(searchedAttributes,analyzer, request,config);
+				QueryParser parser = CRQueryParserFactory.getConfiguredParser(
+						searchedAttributes, analyzer, request, config);
 				
-				Query parsedQuery = parser.parse(query);				
+				Query parsedQuery = parser.parse(query);
 				//GENERATE A NATIVE QUERY
 				
 				parsedQuery = searcher.rewrite(parsedQuery);
@@ -366,9 +367,11 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 				result.put(RESULT_QUERY_KEY, parsedQuery);
 				
 				
-				Map<String,Object> ret = runSearch(collector, searcher, parsedQuery, explain, count, start);
-				LinkedHashMap<Document, Float> coll = (LinkedHashMap<Document, Float>)ret.get(RESULT_RESULT_KEY);
-				Float maxScore	= (Float)ret.get(RESULT_MAXSCORE_KEY);
+				Map<String, Object> ret = runSearch(collector, searcher,
+						parsedQuery, explain, count, start);
+				LinkedHashMap<Document, Float> coll =
+					(LinkedHashMap<Document, Float>) ret.get(RESULT_RESULT_KEY);
+				Float maxScore	= (Float) ret.get(RESULT_MAXSCORE_KEY);
 				result.put(RESULT_RESULT_KEY, coll);
 				int totalhits = collector.getTotalHits();
 				
@@ -376,12 +379,16 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 				result.put(RESULT_MAXSCORE_KEY, maxScore);
 				
 				//PLUG IN DIDYOUMEAN
-				boolean didyoumeanEnabledForRequest =
-					StringUtils.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY), true);
+				boolean didyoumeanEnabledForRequest = StringUtils
+						.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY), true);
 
-				if (start == 0 && didyoumeanenabled && didyoumeanEnabledForRequest
-						&& (totalhits <= didyoumeanactivatelimit || maxScore < this.didyoumeanminscore)) {
-					HashMap<String, Object> didyoumeanResult = didyoumean(parsedQuery, indexAccessor, parser, searcher,
+				if (start == 0 && didyoumeanenabled
+						&& didyoumeanEnabledForRequest
+						&& (totalhits <= didyoumeanactivatelimit
+								|| maxScore == Float.NaN
+								|| maxScore < this.didyoumeanminscore)) {
+					HashMap<String, Object> didyoumeanResult =
+						didyoumean(parsedQuery, indexAccessor, parser, searcher,
 							sorting, userPermissions);
 					result.putAll(didyoumeanResult);
 				}
@@ -401,34 +408,47 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 		}
 		return result;
 	}
-
-	private HashMap<String, Object> didyoumean(Query parsedQuery, IndexAccessor indexAccessor,
-			QueryParser parser, Searcher searcher,
-			String[] sorting, String[] userPermissions) {
-		long dym_start = System.currentTimeMillis();
-		HashMap<String, Object> result = new HashMap<String,Object>(3);
+	/**
+	 * get Result for didyoumean.
+	 * @param parsedQuery - parsed query in which we can replace the search
+	 * words
+	 * @param indexAccessor - accessor to get results from the index
+	 * @param parser - query parser
+	 * @param searcher - searcher to search in the index
+	 * @param sorting - sorting to use
+	 * @param userPermissions - user permission used to get the original result
+	 * @return Map containing the replacement for the searchterm and the result
+	 * for the resulting query.
+	 */
+	private HashMap<String, Object> didyoumean(final Query parsedQuery,
+			final IndexAccessor indexAccessor, final QueryParser parser,
+			final Searcher searcher, final String[] sorting,
+			final String[] userPermissions) {
+		long dymStart = System.currentTimeMillis();
+		HashMap<String, Object> result = new HashMap<String, Object>(3);
 		
 		try {
 			IndexReader reader = indexAccessor.getReader(false);
-			Query rw_query = parsedQuery;
+			Query rwQuery = parsedQuery;
 			Set<Term> termset = new HashSet<Term>();
-			rw_query.extractTerms(termset);
+			rwQuery.extractTerms(termset);
 			
-			Map<String,String[]> suggestions = this.didyoumeanprovider
-					.getSuggestions(termset, this.didyoumeansuggestcount, reader);
+			Map<String, String[]> suggestions = this.didyoumeanprovider
+					.getSuggestions(termset, this.didyoumeansuggestcount,
+							reader);
 			result.put(RESULT_SUGGESTIONS_KEY, suggestions);
 			
 			log.debug("DYM Suggestions took "
-					+ (System.currentTimeMillis() - dym_start) + "ms");
+					+ (System.currentTimeMillis() - dymStart) + "ms");
 			String rewrittenQuery =
-				parsedQuery.toString().replaceAll("\\(\\)","");
+				parsedQuery.toString().replaceAll("\\(\\)", "");
 			indexAccessor.release(reader, false);
 			
 			if (didyoumeanbestquery || advanceddidyoumeanbestquery) {
 				//SPECIAL SUGGESTION
-				//TODO Test if the query will be altered and if any suggestions have
-				//been made... otherwise don't execute second query and don't include
-				//the bestquery
+				//TODO Test if the query will be altered and if any suggestion
+				//have been made... otherwise don't execute second query and
+				//don't include the bestquery
 				for (Entry<String, String[]> e : suggestions.entrySet()) {
 					String term = e.getKey();
 					String[] suggestionsForTerm = e.getValue();
@@ -438,9 +458,11 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 								HashMap<String, Object>>(
 										Collections.reverseOrder());
 						for (String suggestedTerm : suggestionsForTerm) {
-							String newquery = rewrittenQuery.replaceAll(term, suggestedTerm);
-							HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
-									newquery, parser, searcher, sorting, userPermissions);
+							String newquery =
+								rewrittenQuery.replaceAll(term, suggestedTerm);
+							HashMap<String, Object> resultOfNewQuery =
+								getResultsForQuery(newquery, parser, searcher,
+										sorting, userPermissions);
 							if (resultOfNewQuery != null) {
 								resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY,
 										suggestedTerm);
@@ -456,17 +478,20 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 						}
 						result.put(RESULT_BESTQUERY_KEY, suggestionsResults);
 					} else {
-						String newquery = rewrittenQuery.replaceAll(term, suggestionsForTerm[0]);
-						HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
-								newquery, parser, searcher, sorting, userPermissions);
+						String newquery = rewrittenQuery
+								.replaceAll(term, suggestionsForTerm[0]);
+						HashMap<String, Object> resultOfNewQuery = 
+							getResultsForQuery(newquery, parser, searcher,
+									sorting, userPermissions);
 						result.putAll(resultOfNewQuery);
 					}
 				}
 			}
-			log.debug("DYM took "+(System.currentTimeMillis() - dym_start)+"ms");
+			log.debug("DYM took " + (System.currentTimeMillis() - dymStart)
+					+ "ms");
 			return result;
 		} catch (IOException e) {
-			log.error("Cannot access index for didyoumean functionality.",e);
+			log.error("Cannot access index for didyoumean functionality.", e);
 		}
 		return null;
 	}
