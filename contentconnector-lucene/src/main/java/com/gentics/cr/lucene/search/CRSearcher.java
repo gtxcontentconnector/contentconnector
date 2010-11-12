@@ -387,9 +387,11 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 						&& (totalhits <= didyoumeanactivatelimit
 								|| maxScore == Float.NaN
 								|| maxScore < this.didyoumeanminscore)) {
+					String parsedQueryString = parsedQuery.toString().replaceAll("\\(\\)", "");
+					
 					HashMap<String, Object> didyoumeanResult =
-						didyoumean(parsedQuery, indexAccessor, parser, searcher,
-							sorting, userPermissions);
+						didyoumean(query, parsedQuery, indexAccessor, parser,
+								searcher, sorting, userPermissions);
 					result.putAll(didyoumeanResult);
 				}
 				
@@ -410,6 +412,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 	}
 	/**
 	 * get Result for didyoumean.
+	 * @param originalQuery - original query for fallback when wildcards are
+	 * replaced with nothing.
 	 * @param parsedQuery - parsed query in which we can replace the search
 	 * words
 	 * @param indexAccessor - accessor to get results from the index
@@ -420,10 +424,10 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 	 * @return Map containing the replacement for the searchterm and the result
 	 * for the resulting query.
 	 */
-	private HashMap<String, Object> didyoumean(final Query parsedQuery,
-			final IndexAccessor indexAccessor, final QueryParser parser,
-			final Searcher searcher, final String[] sorting,
-			final String[] userPermissions) {
+	private HashMap<String, Object> didyoumean(final String originalQuery,
+			final Query parsedQuery, final IndexAccessor indexAccessor,
+			final QueryParser parser, final Searcher searcher,
+			final String[] sorting, final String[] userPermissions) {
 		long dymStart = System.currentTimeMillis();
 		HashMap<String, Object> result = new HashMap<String, Object>(3);
 		
@@ -436,12 +440,29 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 			Map<String, String[]> suggestions = this.didyoumeanprovider
 					.getSuggestions(termset, this.didyoumeansuggestcount,
 							reader);
+			boolean containswildcards = (originalQuery.indexOf('*') != -1);
+			if (suggestions.size() == 0 && containswildcards) {
+				String newSuggestionQuery =
+					originalQuery.replaceAll(":\\*?([^*]*)\\*?", ":$1");
+				try {
+					rwQuery = parser.parse(newSuggestionQuery);
+					termset = new HashSet<Term>();
+					rwQuery.extractTerms(termset);
+					suggestions = this.didyoumeanprovider
+					.getSuggestions(termset, this.didyoumeansuggestcount,
+							reader);
+					
+				} catch (ParseException e) {
+					log.error("Cannot Parse Suggestion Query.", e);
+				}
+				
+			}
 			result.put(RESULT_SUGGESTIONS_KEY, suggestions);
 			
 			log.debug("DYM Suggestions took "
 					+ (System.currentTimeMillis() - dymStart) + "ms");
 			String rewrittenQuery =
-				parsedQuery.toString().replaceAll("\\(\\)", "");
+				rwQuery.toString().replaceAll("\\(\\)", "");
 			indexAccessor.release(reader, false);
 			
 			if (didyoumeanbestquery || advanceddidyoumeanbestquery) {
