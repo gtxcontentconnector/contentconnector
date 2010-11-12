@@ -3,6 +3,8 @@ package com.gentics.cr.util.indexing;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.cr.CRConfig;
 /**
  * JobQueue worker class.
@@ -12,6 +14,12 @@ import com.gentics.cr.CRConfig;
  *
  */
 public class IndexJobQueue {
+	
+	/**
+	 * Log4j logger for error and debug messages.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(IndexJobQueue.class);
+	
 	/**
 	 * Miliseconds in a second.
 	 */
@@ -161,12 +169,13 @@ public class IndexJobQueue {
 		while (!interrupted && !stop) {
 			try {
 				synchronized (this.pauseMonitor) {
-	                while (paused) {
-	                   this.pauseMonitor.wait();
-	                }
-	            }
+					while (paused) {
+						this.pauseMonitor.wait();
+					}
+				}
 				AbstractUpdateCheckerJob j = this.queue.poll();
 				if (j != null) {
+					LOGGER.debug("Starting Job - " + j.getIdentifyer());
 					synchronized (IndexJobQueue.this) {
 						currentJI = j;
 						currentJob = new Thread(j);
@@ -181,6 +190,7 @@ public class IndexJobQueue {
 						currentJob = null;
 						currentJI = null;
 					}
+					LOGGER.debug("Finished Job - " + j.getIdentifyer());
 				}
 				// Wait for next cycle
 				if (!Thread.currentThread().isInterrupted()) {
