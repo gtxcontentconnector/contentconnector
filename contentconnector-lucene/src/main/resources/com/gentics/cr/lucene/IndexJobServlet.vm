@@ -47,17 +47,17 @@ $humanReadableCounter$unit $numberOutput##
 
 #macro(humanreadableTime $number $unit)##
 #set($output = "#humanreadable($number $unit ['1000ms', '60s', '60m', '24h', '0d'])")##
-$output.replaceAll('([0-9A-Za-z]* ){2} .*','$1')
+$output.replaceAll('([0-9A-Za-z]* ){2} .*','$1')##
 #end##
 
 #macro(humanreadableMemory $number $unit)##
 #set($output = "#humanreadable($number $unit ['8b', '1024B', '1024KB', '1024MB', '0GB'])")##
-$output.replaceAll('([0-9A-Za-z]*).*','$1')
+$output.replaceAll('([0-9A-Za-z]*).*','$1')##
 #end##
 
 #macro(round $number $round)
 #set($numberString = "$!number")
-$numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")
+$numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 #end
 <html>
 	<head>
@@ -151,7 +151,11 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")
 					<div class="row #getnextrow() small center">#round($indexSize 2) MB</div>
 					<div class="row #getnextrow() small center">$loc.lastModified()</div>
 					<div class="row #getnextrow() small center">#if($loc.isPeriodical()) true #else false #end</div>
-					<div class="row #getnextrow() small center">#humanreadableTime($queue.getInterval() "s")</div>
+					<div class="row #getnextrow() small center">
+						#set($createTime="#humanreadableTime($loc.getInterval() 's')")
+						#set($checkTime="#humanreadableTime($queue.getInterval() 's')")
+						<span title="create new index jobs every $createTime, check for jobs every $checkTime">$createTime ... $checkTime</span>
+					</div>
 					<div class="row #getnextrow() small center">$queue.getSize()</div>
 					<div class="row #getnextrow() small">
 						#if($queue.isRunning())

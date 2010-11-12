@@ -116,7 +116,7 @@ public abstract class IndexLocation {
 	 * Get the IndexLocation's interval that is used to create new jobs.
 	 * @return interval as int
 	 */
-	public int getInterval() {
+	public final int getInterval() {
 		return this.periodical_interval;
 	}
 
