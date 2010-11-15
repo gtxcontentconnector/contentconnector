@@ -17,13 +17,11 @@ public final class StaticConfigurationContainer {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger
-		.getLogger(StaticConfigurationContainer.class);
+	private static Logger log = Logger.getLogger(StaticConfigurationContainer.class);
 	/**
 	 * Cache for parsed configs.
 	 */
-	private static Hashtable<String, CRConfigFileLoader> configmap 
-		= new Hashtable<String, CRConfigFileLoader>(2);
+	private static Hashtable<String, CRConfigFileLoader> configmap = new Hashtable<String, CRConfigFileLoader>(2);
 	
 	/**
 	 * Prevent instantiation.
@@ -51,6 +49,8 @@ public final class StaticConfigurationContainer {
 	 */
 	public static CRConfigFileLoader getConfig(final String key,
 			final String webapproot, final String subdir) {
+		assertStaticAttributesInitialized();
+
 		CRConfigFileLoader config = configmap.get(key);
 		if (config == null) {
 			log.debug("Config not found, will create new config instance.");
@@ -61,5 +61,14 @@ public final class StaticConfigurationContainer {
 		}
 
 		return config;
+	}
+	
+	public static void assertStaticAttributesInitialized() {
+		if (configmap == null) {
+			configmap = new Hashtable<String, CRConfigFileLoader>(2);
+		}
+		if (log == null) {
+			log = Logger.getLogger(StaticConfigurationContainer.class);
+		}
 	}
 }
