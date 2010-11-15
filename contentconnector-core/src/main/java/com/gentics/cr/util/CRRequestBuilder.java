@@ -200,18 +200,20 @@ public class CRRequestBuilder {
 		}
 		if (defaultparameters != null) {
 			if (this.type == null) {
-				this.type = (String) defaultparameters.get("type");
+				this.type = defaultparameters.getString("type");
 				setRepositoryType(this.type);
 			}
 			if (this.node_id == null) {
-				String defaultNode = (String) defaultparameters.get("node");
+				String defaultNode = defaultparameters.getString("node");
 				if (defaultNode != null) {
 					this.node_id = defaultNode.split("^");
 				}
 			}
-			if (this.contentid == null) {
-				contentid = (String) defaultparameters
-						.getString("contentid", contentid);
+			if (contentid == null) {
+				contentid = defaultparameters.getString("contentid");
+			}
+			if (filter == null) {
+				filter = defaultparameters.getString("filter");
 			}
 			if (this.attributes == null || this.attributes.length == 0) {
 				String defaultAttributes =
