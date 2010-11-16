@@ -13,6 +13,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.HttpVersion;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.ProtocolException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
@@ -36,9 +38,14 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 	protected String name=null;
 	
 	private static final String URL_KEY = "URL";
-	
+	/**
+	 * Key to configure the used http version. Defaults to HTTP/1.0
+	 * 
+	 * Can be configured in the following manner: HTTP/<major>.<minor> 
+	 */
+	private static final String HTTP_VERSION_KEY = "HTTPVERSION";
 	private String path="";
-	
+	private HttpVersion httpVersion = HttpVersion.HTTP_1_0;
 	protected HttpClient client;
 	
 	/**
@@ -50,9 +57,17 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 		super(config);
 		this.name=config.getName();
 		//LOAD ADDITIONAL CONFIG
-		client = new HttpClient();
+		client = new HttpClient(new MultiThreadedHttpConnectionManager());
 		this.path = (String)config.get(URL_KEY);
 		if(this.path==null)log.error("COULD NOT GET URL FROM CONFIG (add RP.<rpnumber>.url=<url> to config). OVERTHINK YOUR CONFIG!");
+		String httpVersionString = config.getString(HTTP_VERSION_KEY);
+		if(httpVersionString != null) {
+			try {
+				this.httpVersion=HttpVersion.parse(httpVersionString);
+			} catch (ProtocolException e) {
+				throw new CRException(e);
+			}
+		}
 	}
 	
 		
@@ -128,21 +143,21 @@ public class HTTPClientRequestProcessor extends RequestProcessor {
 			
 			GetMethod method = new GetMethod(this.path+"?"+reqUrl);
 		    
-		    // Provide custom retry handler is necessary
-		 	method.getParams().setVersion(HttpVersion.HTTP_1_0);
+		   
+		 	method.getParams().setVersion(httpVersion);
 		 	
 		 	//Set request charset
 		 	method.setRequestHeader("Content-type","text/xml; charset=UTF-8");
-		 	
+		 	// Provide custom retry handler is necessary
 		    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 		    		new DefaultHttpMethodRetryHandler(3, false));
 
 		    try {
 			      // Execute the method.
 			    int statusCode = client.executeMethod(method);
-	
+			    log.info("Request: " + reqUrl + " Status: " + statusCode);
 			    if (statusCode != HttpStatus.SC_OK) {
-			    	HTTPClientRequestProcessor.log.error("Request failed: " + method.getStatusLine());
+			    	log.error("Request failed: " + method.getStatusLine());
 			    }
 	
 			    Collection<CRResolvableBean> result = new Vector<CRResolvableBean>();
