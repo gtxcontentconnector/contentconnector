@@ -236,7 +236,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				status.setCurrentStatusString("Writer accquired. Starting index job.");
 
 				if (rp == null) {
-					throw new CRException("FATAL ERROR", "Datasource not available");
+					throw new CRException("FATAL ERROR", "RequestProcessor not available");
 				}
 
 				String bsString = (String) config.get(BATCH_SIZE_KEY);
