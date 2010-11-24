@@ -34,4 +34,10 @@ public class DefaultIndexLocation extends IndexLocation {
 		
 	}
 
+	@Override
+	public boolean isOptimized() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

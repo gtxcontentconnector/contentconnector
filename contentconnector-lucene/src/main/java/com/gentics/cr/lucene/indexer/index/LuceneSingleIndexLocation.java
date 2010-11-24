@@ -213,4 +213,21 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
       }
     }
   }
+
+	@Override
+	public boolean isOptimized() {
+		boolean ret = false;
+		IndexAccessor indexAccessor = this.getAccessor();
+	    IndexReader reader  = null;
+	    try {
+	      reader = indexAccessor.getReader(false);
+	      ret = reader.isOptimized();
+	    } catch(IOException ex) {
+	      log.error("IOException happened during test of index. ", ex);
+	    } finally {
+	      indexAccessor.release(reader, false);
+	    }
+	    
+		return ret;
+	}
 }

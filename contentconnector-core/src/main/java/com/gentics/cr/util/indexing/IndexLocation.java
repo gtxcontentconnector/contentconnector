@@ -457,6 +457,8 @@ public abstract class IndexLocation {
 		return getDocCount() > 0;
 	}
 	
+	public abstract boolean isOptimized();
+	
 
 	
 	/**

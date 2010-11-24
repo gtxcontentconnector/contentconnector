@@ -127,6 +127,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			<div class="row #getnextrow()">Index</div>
 			<div class="row #getnextrow()">Objects in Index</div>
 			<div class="row #getnextrow()">Size of Index Directory</div>
+			<div class="row #getnextrow()">Is Optimized</div>
 			<div class="row #getnextrow()">Index was modified</div>
 			<div class="row #getnextrow()">Periodical indexing</div>
 			<div class="row #getnextrow()">Current checkinterval</div>
@@ -149,6 +150,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 					<div class="row #getnextrow() small center">$loc.getDocCount()</div>
 					#set($indexSize = "$loc.indexSizeMB()")
 					<div class="row #getnextrow() small center">#round($indexSize 2) MB</div>
+					<div class="row #getnextrow() small center">$loc.isOptimized()</div>
 					<div class="row #getnextrow() small center">$loc.lastModified()</div>
 					<div class="row #getnextrow() small center">#if($loc.isPeriodical()) true #else false #end</div>
 					<div class="row #getnextrow() small center">
