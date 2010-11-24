@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.tools.generic.EscapeTool;
@@ -114,6 +116,13 @@ public class VelocityContentRepository extends ContentRepository {
       ensureTemplateManager();
       loadTemplate();
       templateManager.put("resolvables", this.resolvableColl);
+      HashMap<String, Object> additionalObjects = 
+    	  this.getAdditionalDeployableObjects();
+      if (additionalObjects != null) {
+    	  for (Entry<String, Object> e : additionalObjects.entrySet()) {
+    		  templateManager.put(e.getKey(), e.getValue());
+    	  }
+      }
       String encoding = this.getResponseEncoding();
       templateManager.put("encoding", encoding);
       //TODO use templateName (absolute) instead of errorTemplate.getKey()

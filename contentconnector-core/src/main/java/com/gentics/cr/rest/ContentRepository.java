@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -51,52 +52,92 @@ public abstract class ContentRepository implements Serializable {
 	protected Vector<CRResolvableBean> resolvableColl;
 
 	protected String response_encoding;
+	
+	/**
+	 * Holds objects that can later be deployed in the render context.
+	 */
+	private HashMap<String, Object> additinalDeployableObjects;
 
+	/**
+	 * Adds objects that can be deployed in the render context.
+	 * @param objects objects to deploy
+	 */
+	public final void addAdditionalDeployableObjects(final 
+			Map<String, Object> objects) {
+		if (additinalDeployableObjects == null) {
+			additinalDeployableObjects = new HashMap<String, Object>();
+		}
+		additinalDeployableObjects.putAll(objects);
+	}
+	
+	/**
+	 * Add object that can be deployed in the render context.
+	 * @param key key for deployment
+	 * @param value deployed object
+	 */
+	public final void addAdditionalDeployableObject(final String key,
+			final Object value) {
+		if (additinalDeployableObjects == null) {
+			additinalDeployableObjects = new HashMap<String, Object>();
+		}
+		additinalDeployableObjects.put(key, value);
+	}
+	
+	/**
+	 * Returns all objects that were deployed to be put in the render context.
+	 * @return objects
+	 */
+	public final HashMap<String, Object> getAdditionalDeployableObjects() {
+		return additinalDeployableObjects;
+	}
+	
 	/**
 	 * Get responce encoding. Defaults to utf-8
 	 * 
-	 * @return
+	 * @return encoding
 	 */
-	public String getResponseEncoding() {
-		if (this.response_encoding == null)
+	public final String getResponseEncoding() {
+		if (this.response_encoding == null) {
 			return "utf-8";
-		else
+			
+		} else {
 			return (this.response_encoding);
+		}
 	}
 
 	/**
-	 * Sets the response encoding
+	 * Sets the response encoding.
 	 * 
-	 * @param encoding
+	 * @param encoding encoding
 	 */
-	public void setResponseEncoding(String encoding) {
+	public final void setResponseEncoding(final String encoding) {
 		this.response_encoding = encoding;
 	}
 
 	/**
-	 * Set options array
+	 * Set options array.
 	 * 
-	 * @param optionsArray
+	 * @param optionsArray the array to be set.
 	 */
-	public void setOptionsArray(String[] optionsArray) {
+	public final void setOptionsArray(final String[] optionsArray) {
 		this.optionsArray = optionsArray;
 	}
 
 	/**
-	 * Get Options Array
+	 * Get Options Array.
 	 * 
-	 * @return
+	 * @return options array
 	 */
-	public String[] getOptionsArray() {
+	public final String[] getOptionsArray() {
 		return optionsArray;
 	}
 
 	/**
-	 * returns true if this is the root repository and has no fathers
+	 * Method to determine if this repository is the root repository. 
 	 * 
-	 * @return
+	 * @return true if this is the root repository and has no fathers.
 	 */
-	public boolean isRoot() {
+	public final boolean isRoot() {
 		return (this.isRoot);
 	}
 

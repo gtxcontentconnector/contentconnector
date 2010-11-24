@@ -14,12 +14,11 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRServletConfig;
-import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
-import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
+import com.gentics.cr.util.RequestBeanWrapper;
 import com.gentics.cr.util.response.ServletResponseTypeSetter;
 
 
@@ -75,7 +74,7 @@ public class RESTServlet extends HttpServlet {
     // get the objects
     
     HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
-    objects.put("request", new BeanWrapper(request));
+    objects.put("request", new RequestBeanWrapper(request));
     objects.put("session", new HttpSessionWrapper(request.getSession()));
     CRRequestBuilder rB = new CRRequestBuilder(request, crConf);
     //response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
