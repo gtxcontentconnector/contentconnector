@@ -73,6 +73,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			h2 { text-transform: uppercase; font-weight: bold; font-size: 15pt; color: #A0A0A0; margin: 15px 0 10px 0; }
 			a { text-decoration: none; }
 			a.dellink { color:red; }
+			a.optlink { color:green; }
 			
 			img { border: none; }
 			
@@ -184,6 +185,9 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 							<div class="clear"></div>
 							<div class="key">clear Index</div>
 							<div class="value right"><a class="dellink" href="?action=clear&idx=$e.getKey()$nc">add</a></div>
+							<div class="clear"></div>
+							<div class="key">optimize Index</div>
+							<div class="value right"><a class="optlink" href="?action=optimize&idx=$e.getKey()$nc">add</a></div>
 							<div class="clear"></div>
 						</div>
 					</div>

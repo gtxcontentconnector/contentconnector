@@ -117,6 +117,9 @@ public class IndexJobServlet extends VelocityServlet {
 					if ("clear".equalsIgnoreCase(action))	{
 						loc.createClearJob();
 					}
+					if ("optimize".equalsIgnoreCase(action))	{
+						loc.createOptimizeJob();
+					}
 					if ("addJob".equalsIgnoreCase(action)) {
 						String cr = request.getParameter("cr");
 						if ("all".equalsIgnoreCase(cr)) {
