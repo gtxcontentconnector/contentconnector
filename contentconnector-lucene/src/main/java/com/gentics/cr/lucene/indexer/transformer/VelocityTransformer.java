@@ -42,6 +42,8 @@ public class VelocityTransformer extends ContentTransformer {
 	 */
 	private ITemplate tpl;
 	
+	private VelocityTools tools = new VelocityTools();
+	
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
@@ -83,6 +85,7 @@ public class VelocityTransformer extends ContentTransformer {
 	@Override
 	public final void processBean(final CRResolvableBean bean) {
 		vtm.put("page", bean);
+		vtm.put("tools", tools);
 		try {
 			String output = vtm.render(tpl.getKey(), tpl.getSource());
 			if (output != null && targetAttribute != null) {
