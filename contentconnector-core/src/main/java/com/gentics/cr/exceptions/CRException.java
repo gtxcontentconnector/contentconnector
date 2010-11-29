@@ -149,6 +149,16 @@ public class CRException extends Exception implements Serializable{
 	}
 
 	/**
+	 * Create a new {@link CRException} with the given Message.
+	 * @param crMessage - message for the Exception
+	 */
+	public CRException(final String crMessage) {
+		super(crMessage);
+		message = crMessage;
+		type = "ERROR";
+	}
+
+	/**
 	 * gets the Stacktrace as String
 	 * @return stringstacktrace
 	 */
