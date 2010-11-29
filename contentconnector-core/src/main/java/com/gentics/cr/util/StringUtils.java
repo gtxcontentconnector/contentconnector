@@ -220,14 +220,14 @@ public final class StringUtils {
 	 * </ul>
 	 */
 	public static String toCMSFolder(final String folderPubDir) {
-		return folderPubDir.replaceAll("&", "und")
-			.replaceAll("ß", "ss")
-			.replace("ü", "ue")
-			.replace("Ü", "Ue")
-			.replace("ö", "oe")
-			.replace("Ö", "Oe")
-			.replace("ä", "ae")
-			.replace("Ä", "Ae")
+		return folderPubDir.replace("&", "und")
+			.replace("\u00DF", "ss")
+			.replace("\u00FC", "ue")
+			.replace("\u00DC", "Ue")
+			.replace("\u00F6", "oe")
+			.replace("\u00D6", "Oe")
+			.replace("\u00E4", "ae")
+			.replace("\u00C4", "Ae")
 			.replaceAll("[^a-zA-Z0-9._/-]", "_");
 	}
 }
