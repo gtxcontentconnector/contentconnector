@@ -4,13 +4,13 @@ package com.gentics.cr.lucene.indexaccessor;
  * Derived from code by subshell GmbH
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements.	See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License.	You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *		 http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,237 +44,250 @@ import org.apache.lucene.store.Directory;
  */
 class DefaultIndexAccessor implements IndexAccessor {
 
-  protected final static Logger logger = Logger.getLogger(DefaultIndexAccessor.class.getPackage()
-      .getName());
+	protected final static Logger logger = Logger.getLogger(DefaultIndexAccessor.class.getPackage()
+			.getName());
 
-  private static final int POOL_SIZE = 10;
+	private static final int POOL_SIZE = 10;
 
-  private Analyzer analyzer;
+	private Analyzer analyzer;
 
-  private IndexReader cachedReadingReader = null;
+	private IndexReader cachedReadingReader = null;
 
-  protected final Map<Similarity, IndexSearcher> cachedSearchers;
+	/**
+	 * cache for searchers.
+	 */
+	protected final Map<Similarity, IndexSearcher> cachedSearchers;
 
-  private IndexWriter cachedWriter = null;
+	private IndexWriter cachedWriter = null;
 
-  private IndexReader cachedWritingReader = null;
+	private IndexReader cachedWritingReader = null;
 
-  protected boolean closed = true;
+	protected boolean closed = true;
 
-  private Directory directory;
+	private Directory directory;
 
-  protected int readingReaderUseCount = 0;
+	protected int readingReaderUseCount = 0;
 
-  protected final ExecutorService pool;
-  
-  protected int numReopening = 0;
+	protected final ExecutorService pool;
+	
+	protected int numReopening = 0;
 
-  protected boolean isReopening = false;
-  
-  protected int searcherUseCount = 0;
+	protected boolean isReopening = false;
+	
+	/**
+	 * use count for cached searcher.
+	 */
+	protected int searcherUseCount = 0;
 
-  protected int writerUseCount = 0;
+	protected int writerUseCount = 0;
 
-  protected int numSearchersForRetirment = 0;
+	protected int numSearchersForRetirment = 0;
 
-  protected List<IndexSearcher> createdSearchers = new CopyOnWriteArrayList<IndexSearcher>();
+	protected List<IndexSearcher> createdSearchers = new CopyOnWriteArrayList<IndexSearcher>();
 
-  protected int writingReaderUseCount = 0;
+	protected int writingReaderUseCount = 0;
 
-  /**
-   * Creates a new instance with the given {@link Directory} and
-   * {@link Analyzer}.
-   * 
-   * @param dir
-   *          the directory on top of which to create the {@link IndexAccessor}.
-   * @param analyzer
-   *          the analyzer to associate with the {@link IndexAccessor}.
-   */
-  public DefaultIndexAccessor(Directory dir, Analyzer analyzer) {
-    this.directory = dir;
-    this.analyzer = analyzer;
-    pool = Executors.newFixedThreadPool(POOL_SIZE);
-    cachedSearchers = new HashMap<Similarity, IndexSearcher>();
-  }
+	/**
+	 * marker for closing searchers currently in use. this is used when the
+	 * index should be reopened.
+	 * @see #reopen()
+	 */
+	private boolean closeAllReleasedSearchers = true;
 
-  /**
-   * Throws an Exception if IndexAccessor is closed. This method assumes it is
-   * invoked in a synchronized context.
-   */
-  private void checkClosed() {
-    if (closed) {
-      throw new IllegalStateException("index accessor has been closed");
-    }
-  }
+	/**
+	 * Creates a new instance with the given {@link Directory} and
+	 * {@link Analyzer}.
+	 * 
+	 * @param dir the directory on top of which to create the
+	 * {@link IndexAccessor}.
+	 * @param indexAnalyzer the analyzer to associate with the
+	 * {@link IndexAccessor}.
+	 */
+	public DefaultIndexAccessor(final Directory dir,
+			final Analyzer indexAnalyzer) {
+		directory = dir;
+		analyzer = indexAnalyzer;
+		pool = Executors.newFixedThreadPool(POOL_SIZE);
+		cachedSearchers = new HashMap<Similarity, IndexSearcher>();
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#close()
-   */
-  public synchronized void close() {
+	/**
+	 * Throws an Exception if IndexAccessor is closed. This method assumes it is
+	 * invoked in a synchronized context.
+	 */
+	private void checkClosed() {
+		if (closed) {
+			throw new IllegalStateException("index accessor has been closed");
+		}
+	}
 
-    if (closed) {
-      return;
-    }
-    closed = true;
-    while ((readingReaderUseCount > 0) || (searcherUseCount > 0) || (writingReaderUseCount > 0)
-        || (writerUseCount > 0) || (numReopening > 0)) {
-      try {
-        wait();
-      } catch (InterruptedException e) {
-      }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#close()
+	 */
+	public synchronized void close() {
 
-    closeCachedReadingReader();
-    closeCachedSearchers();
-    closeCachedWritingReader();
-    closeCachedWriter();
-    shutdownAndAwaitTermination(pool);
-//    int i = 0;
-//    for (IndexSearcher s : createdSearchers) {
-//      System.out.println(i++ + ":" + s.getIndexReader().refCount + " :" + s.getIndexReader());
-//    }
-//    System.out.println("DIA Closed");
-  }
+		if (closed) {
+			return;
+		}
+		closed = true;
+		while ((readingReaderUseCount > 0) || (searcherUseCount > 0) || (writingReaderUseCount > 0)
+				|| (writerUseCount > 0) || (numReopening > 0)) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
 
-  /**
-   * Closes the cached reading Reader if it has been created. This method
-   * assumes it is invoked in a synchronized context.
-   */
-  protected void closeCachedReadingReader() {
-    if (cachedReadingReader == null) {
-      return;
-    }
+		closeCachedReadingReader();
+		closeCachedSearchers();
+		closeCachedWritingReader();
+		closeCachedWriter();
+		shutdownAndAwaitTermination(pool);
+//		int i = 0;
+//		for (IndexSearcher s : createdSearchers) {
+//			System.out.println(i++ + ":" + s.getIndexReader().refCount + " :" + s.getIndexReader());
+//		}
+//		System.out.println("DIA Closed");
+	}
 
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("closing cached reading reader");
-    }
+	/**
+	 * Closes the cached reading Reader if it has been created. This method
+	 * assumes it is invoked in a synchronized context.
+	 */
+	protected void closeCachedReadingReader() {
+		if (cachedReadingReader == null) {
+			return;
+		}
 
-    try {
-      cachedReadingReader.close();
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "error closing reading Reader", e);
-    } finally {
-      cachedReadingReader = null;
-    }
-  }
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("closing cached reading reader");
+		}
 
-  /**
-   * Closes all of the Searchers in the Searcher cache. This method is invoked
-   * in a synchronized context.
-   */
-  protected void closeCachedSearchers() {
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("closing cached searchers (" + cachedSearchers.size() + ")");
-    }
+		try {
+			cachedReadingReader.close();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "error closing reading Reader", e);
+		} finally {
+			cachedReadingReader = null;
+		}
+	}
 
-    for (IndexSearcher searcher : cachedSearchers.values()) {
-      try {
-        searcher.getIndexReader().close();
-      } catch (IOException e) {
-        logger.log(Level.SEVERE, "error closing cached Searcher", e);
-      }
-    }
+	/**
+	 * Closes all of the Searchers in the Searcher cache. This method is invoked
+	 * in a synchronized context.
+	 */
+	protected void closeCachedSearchers() {
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("closing cached searchers (" + cachedSearchers.size() + ")");
+		}
 
-    cachedSearchers.clear();
-  }
+		for (IndexSearcher searcher : cachedSearchers.values()) {
+			try {
+				searcher.getIndexReader().close();
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, "error closing cached Searcher", e);
+			}
+		}
 
-  /**
-   * Closes the cached Writer if it has been created. This method is invoked in
-   * a synchronized context.
-   */
-  protected void closeCachedWriter() {
-    if (cachedWriter == null) {
-      return;
-    }
+		cachedSearchers.clear();
+	}
 
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("closing cached writer");
-    }
+	/**
+	 * Closes the cached Writer if it has been created. This method is invoked in
+	 * a synchronized context.
+	 */
+	protected void closeCachedWriter() {
+		if (cachedWriter == null) {
+			return;
+		}
 
-    try {
-      cachedWriter.close();
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "error closing cached Writer", e);
-    } finally {
-      cachedWriter = null;
-    }
-  }
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("closing cached writer");
+		}
 
-  /**
-   * Closes the cache writing Reader if it has been created. This method is
-   * invoked in a synchronized context.
-   */
-  protected void closeCachedWritingReader() {
-    if (cachedWritingReader == null) {
-      return;
-    }
+		try {
+			cachedWriter.close();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "error closing cached Writer", e);
+		} finally {
+			cachedWriter = null;
+		}
+	}
 
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("closing cached writing reader");
-    }
+	/**
+	 * Closes the cache writing Reader if it has been created. This method is
+	 * invoked in a synchronized context.
+	 */
+	protected void closeCachedWritingReader() {
+		if (cachedWritingReader == null) {
+			return;
+		}
 
-    try {
-      cachedWritingReader.close();
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "error closing cached writing Reader", e);
-    } finally {
-      cachedWritingReader = null;
-    }
-  }
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("closing cached writing reader");
+		}
 
-  
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#getReader(boolean)
-   */
-  public IndexReader getReader(boolean write) throws IOException {
-    return write ? getWritingReader() : getReadingReader();
-  }
+		try {
+			cachedWritingReader.close();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "error closing cached writing Reader", e);
+		} finally {
+			cachedWritingReader = null;
+		}
+	}
 
-  /**
-   * Return the reader that was opened for read-only operations, or a new one if
-   * it hasn't been opened already.
-   */
-  private synchronized IndexReader getReadingReader() throws IOException {
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#getReader(boolean)
+	 */
+	public IndexReader getReader(boolean write) throws IOException {
+		return write ? getWritingReader() : getReadingReader();
+	}
 
-    checkClosed();
+	/**
+	 * Return the reader that was opened for read-only operations, or a new one if
+	 * it hasn't been opened already.
+	 */
+	private synchronized IndexReader getReadingReader() throws IOException {
 
-    if (cachedReadingReader != null) {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("returning cached reading reader");
-      }
+		checkClosed();
 
-      readingReaderUseCount++;
-    } else {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("opening new reading reader and caching it");
-      }
+		if (cachedReadingReader != null) {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("returning cached reading reader");
+			}
 
-      cachedReadingReader = IndexReader.open(directory);
-      readingReaderUseCount = 1;
-    }
+			readingReaderUseCount++;
+		} else {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("opening new reading reader and caching it");
+			}
 
-    notifyAll();
-    return cachedReadingReader;
-  }
+			cachedReadingReader = IndexReader.open(directory);
+			readingReaderUseCount = 1;
+		}
 
-  /**
+		notifyAll();
+		return cachedReadingReader;
+	}
+
+	/**
 	 * Fetches a double checked Searcher that has been checked for the presence of a reopen file
 	 * Note that it may occure that a prioritized Searcher may be reopened twice.
 	 * @param indexLocation 
 	 * @return
 	 * @throws IOException
 	 */
-  public Searcher getPrioritizedSearcher() throws IOException
-  {
-	  	boolean reopened = this.numReopening > 0;
+	public Searcher getPrioritizedSearcher() throws IOException
+	{
+			boolean reopened = this.numReopening > 0;
 		IndexSearcher searcher = (IndexSearcher) getSearcher();
 		
-		if(reopened)
-		{
+		if (reopened) {
 			//REOPEN SEARCHER AS IT WAS PRIORITIZED
 			synchronized (DefaultIndexAccessor.this) 
 			{
@@ -298,440 +311,448 @@ class DefaultIndexAccessor implements IndexAccessor {
 		}
 		
 		return searcher;
-  }
-  
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#getSearcher()
-   */
-  public Searcher getSearcher() throws IOException {
-    return getSearcher(Similarity.getDefault(), null);
-  }
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher()
+	 */
+	public Searcher getSearcher() throws IOException {
+		return getSearcher(Similarity.getDefault(), null);
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.index.IndexReader)
-   */
-  public Searcher getSearcher(IndexReader indexReader) throws IOException {
-    return getSearcher(Similarity.getDefault(), indexReader);
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.index.IndexReader)
+	 */
+	public Searcher getSearcher(IndexReader indexReader) throws IOException {
+		return getSearcher(Similarity.getDefault(), indexReader);
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.search.Similarity,
-   *      org.apache.lucene.index.IndexReader)
-   */
-  public synchronized Searcher getSearcher(Similarity similarity, IndexReader indexReader)
-      throws IOException {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.search.Similarity,
+	 *			org.apache.lucene.index.IndexReader)
+	 */
+	public synchronized Searcher getSearcher(Similarity similarity, IndexReader indexReader)
+			throws IOException {
 
-    checkClosed();
+		checkClosed();
 
-    IndexSearcher searcher = cachedSearchers.get(similarity);
-    if (searcher != null) {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("returning cached searcher");
-      }
+		IndexSearcher searcher = cachedSearchers.get(similarity);
+		if (searcher != null) {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("returning cached searcher");
+			}
+		} else {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("opening new searcher and caching it");
+			}
+			searcher = indexReader != null ? new IndexSearcher(indexReader)
+					: new IndexSearcher(directory);
+			createdSearchers.add(searcher);
+			searcher.setSimilarity(similarity);
+			cachedSearchers.put(similarity, searcher);
 
-      searcherUseCount++;
-    } else {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("opening new searcher and caching it");
-      }
-      searcher = indexReader != null ? new IndexSearcher(indexReader)
-          : new IndexSearcher(directory);
-      createdSearchers.add(searcher);
-      searcher.setSimilarity(similarity);
-      cachedSearchers.put(similarity, searcher);
+			
+		}
+		searcherUseCount++;
+		notifyAll();
+		return searcher;
+	}
 
-      searcherUseCount++;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.lucene.indexaccessor.IndexAccessor#getWriter()
+	 */
+	public IndexWriter getWriter() throws IOException {
+		return getWriter(true);
+	}
 
-    notifyAll();
-    return searcher;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#getWriter(boolean, boolean)
+	 */
+	private synchronized IndexWriter getWriter(boolean autoCommit) throws IOException {
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.apache.lucene.indexaccessor.IndexAccessor#getWriter()
-   */
-  public IndexWriter getWriter() throws IOException {
-    return getWriter(true);
-  }
+		checkClosed();
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#getWriter(boolean, boolean)
-   */
-  private synchronized IndexWriter getWriter(boolean autoCommit) throws IOException {
+		while (writingReaderUseCount > 0) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
 
-    checkClosed();
+		if (cachedWriter != null) {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("returning cached writer:" + Thread.currentThread().getId());
+			}
 
-    while (writingReaderUseCount > 0) {
-      try {
-        wait();
-      } catch (InterruptedException e) {
-      }
-    }
+			writerUseCount++;
+		} else {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("opening new writer and caching it:" + Thread.currentThread().getId());
+			}
 
-    if (cachedWriter != null) {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("returning cached writer:" + Thread.currentThread().getId());
-      }
+			cachedWriter = new IndexWriter(directory, analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
+			writerUseCount = 1;
+		}
 
-      writerUseCount++;
-    } else {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("opening new writer and caching it:" + Thread.currentThread().getId());
-      }
+		notifyAll();
+		return cachedWriter;
+	}
 
-      cachedWriter = new IndexWriter(directory, analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
-      writerUseCount = 1;
-    }
+	/**
+	 * Return the reader that was opened for read-write operations, or a new one
+	 * if it hasn't been opened already.
+	 */
+	private synchronized IndexReader getWritingReader() throws CorruptIndexException, IOException {
 
-    notifyAll();
-    return cachedWriter;
-  }
+		checkClosed();
 
-  /**
-   * Return the reader that was opened for read-write operations, or a new one
-   * if it hasn't been opened already.
-   */
-  private synchronized IndexReader getWritingReader() throws CorruptIndexException, IOException {
+		while (writerUseCount > 0) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
 
-    checkClosed();
+		if (cachedWritingReader != null) {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("returning cached writing reader");
+			}
 
-    while (writerUseCount > 0) {
-      try {
-        wait();
-      } catch (InterruptedException e) {
-      }
-    }
+			writingReaderUseCount++;
+		} else {
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("opening new writing reader");
+			}
 
-    if (cachedWritingReader != null) {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("returning cached writing reader");
-      }
+			cachedWritingReader = IndexReader.open(directory,false);
+			writingReaderUseCount = 1;
+		}
 
-      writingReaderUseCount++;
-    } else {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("opening new writing reader");
-      }
+		notifyAll();
+		return cachedWritingReader;
+	}
 
-      cachedWritingReader = IndexReader.open(directory,false);
-      writingReaderUseCount = 1;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#isOpen()
+	 */
+	public boolean isOpen() {
+		return !closed;
+	}
 
-    notifyAll();
-    return cachedWritingReader;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#open()
+	 */
+	public synchronized void open() {
+		closed = false;
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#isOpen()
-   */
-  public boolean isOpen() {
-    return !closed;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#readingReadersOut()
+	 */
+	public int readingReadersOut() {
+		return readingReaderUseCount;
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#open()
-   */
-  public synchronized void open() {
-    closed = false;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#release(org.apache.lucene.index.IndexReader,
+	 *			boolean)
+	 */
+	public void release(IndexReader reader, boolean write) {
+		if (reader != null) {
+			if (write) {
+				releaseWritingReader(reader);
+			} else {
+				releaseReadingReader(reader);
+			}
+		}
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#readingReadersOut()
-   */
-  public int readingReadersOut() {
-    return readingReaderUseCount;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#release(org.apache.lucene.index.IndexWriter)
+	 */
+	public synchronized void release(IndexWriter writer) {
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#release(org.apache.lucene.index.IndexReader,
-   *      boolean)
-   */
-  public void release(IndexReader reader, boolean write) {
-    if (reader != null) {
-      if (write) {
-        releaseWritingReader(reader);
-      } else {
-        releaseReadingReader(reader);
-      }
-    }
-  }
+		try {
+			if (writer != cachedWriter) {
+				throw new IllegalArgumentException("writer not opened by this index accessor");
+			}
+			writerUseCount--;
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#release(org.apache.lucene.index.IndexWriter)
-   */
-  public synchronized void release(IndexWriter writer) {
+			if (writerUseCount == 0) {
+				if (logger.isLoggable(Level.FINE)) {
+					logger.fine("closing cached writer:" + Thread.currentThread().getId());
+				}
 
-    try {
-      if (writer != cachedWriter) {
-        throw new IllegalArgumentException("writer not opened by this index accessor");
-      }
-      writerUseCount--;
+				try {
+					cachedWriter.close();
+				} catch (IOException e) {
+					logger.log(Level.SEVERE, "error closing cached Writer:" + Thread.currentThread().getId(),
+							e);
+				} finally {
+					cachedWriter = null;
+				}
+			}
 
-      if (writerUseCount == 0) {
-        if (logger.isLoggable(Level.FINE)) {
-          logger.fine("closing cached writer:" + Thread.currentThread().getId());
-        }
+		} finally {
+			notifyAll();
+		}
 
-        try {
-          cachedWriter.close();
-        } catch (IOException e) {
-          logger.log(Level.SEVERE, "error closing cached Writer:" + Thread.currentThread().getId(),
-              e);
-        } finally {
-          cachedWriter = null;
-        }
-      }
+		if (writerUseCount == 0) {
+			numReopening++;
+			pool.execute(new Runnable() {
+				public void run() {
+					synchronized (DefaultIndexAccessor.this) {
+						if (numReopening > 5) {
+							// there are too many reopens pending, so just bail
+							numReopening--;
+							return;
+						}
+						waitForReadersAndReopenCached();
+						numReopening--;
+						DefaultIndexAccessor.this.notifyAll();
+					}
+				}
+			});
 
-    } finally {
-      notifyAll();
-    }
+		}
 
-    if (writerUseCount == 0) {
-      numReopening++;
-      pool.execute(new Runnable() {
-        public void run() {
-          synchronized (DefaultIndexAccessor.this) {
-            if(numReopening > 5) {
-              // there are too many reopens pending, so just bail
-              numReopening--;
-              return;
-            }
-            waitForReadersAndReopenCached();
-            numReopening--;
-            DefaultIndexAccessor.this.notifyAll();
-          }
-        }
-      });
+	}
 
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#release(org.apache.lucene.search.Searcher)
+	 */
+	public synchronized void release(Searcher searcher) {
+		searcherUseCount--;
+		if (searcherUseCount == 0 && closeAllReleasedSearchers) {
+			closeCachedSearchers();
+			closeAllReleasedSearchers = false;
+		}
+		notifyAll();
+	}
 
-  }
+	/** Release the reader that was opened for read-only operations. */
+	private synchronized void releaseReadingReader(IndexReader reader) {
+		if (reader == null) {
+			return;
+		}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#release(org.apache.lucene.search.Searcher)
-   */
-  public synchronized void release(Searcher searcher) {
-    // TODO: could clear searchers here, but may be better to start a timer that does it periodically
-    // if (warm && retiredSearchers.size() > 0) {
-    // pool.execute(new Runnable() {
-    // public void run() {
-    // synchronized (DefaultIndexAccessor.this) {
-    // retireSearchers();
-    // }
-    // }
-    //
-    // });
-    // }
+		if (reader != cachedReadingReader) {
+			throw new IllegalArgumentException("reading reader not opened by this index accessor");
+		}
 
-    searcherUseCount--;
-    notifyAll();
-  }
+		readingReaderUseCount--;
+		notifyAll();
+	}
 
-  /** Release the reader that was opened for read-only operations. */
-  private synchronized void releaseReadingReader(IndexReader reader) {
-    if (reader == null) {
-      return;
-    }
+	/** Release the reader that was opened for read-write operations. */
+	private synchronized void releaseWritingReader(IndexReader reader) {
+		if (reader == null) {
+			return;
+		}
 
-    if (reader != cachedReadingReader) {
-      throw new IllegalArgumentException("reading reader not opened by this index accessor");
-    }
+		try {
+			
+			if (reader != cachedWritingReader) {
+				throw new IllegalArgumentException("writing Reader not opened by this index accessor");
+			}
 
-    readingReaderUseCount--;
-    notifyAll();
-  }
+			writingReaderUseCount--;
 
-  /** Release the reader that was opened for read-write operations. */
-  private synchronized void releaseWritingReader(IndexReader reader) {
-    if (reader == null) {
-      return;
-    }
+			if (writingReaderUseCount == 0) {
+				if (logger.isLoggable(Level.FINE)) {
+					logger.fine("closing cached writing Reader");
+				}
 
-    try {
-    	
-      if (reader != cachedWritingReader) {
-        throw new IllegalArgumentException("writing Reader not opened by this index accessor");
-      }
+				try {
+					cachedWritingReader.close();
+				} catch (IOException e) {
+				} finally {
+					cachedWritingReader = null;
+				}
+			}
+		} finally {
+			notifyAll();
+		}
 
-      writingReaderUseCount--;
+		if (writingReaderUseCount == 0) {
+			numReopening++;
+			pool.execute(new Runnable() {
+				public void run() {
+					synchronized (DefaultIndexAccessor.this) {
+						if(numReopening > 5) {
+							logger.log(Level.WARNING,"Too many reopens");
+						}
+						waitForReadersAndReopenCached();
+						numReopening--;
+						DefaultIndexAccessor.this.notifyAll();
+					}
+				}
+			});
+		}
+	}
 
-      if (writingReaderUseCount == 0) {
-        if (logger.isLoggable(Level.FINE)) {
-          logger.fine("closing cached writing Reader");
-        }
+	/**
+	 * Reopens all of the Searchers in the Searcher cache. This method is invoked
+	 * in a synchronized context.
+	 */
+	private void reopenCachedSearchers() {
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("reopening cached searchers (" + cachedSearchers.size() + "):"
+					+ Thread.currentThread().getId());
+		}
+		Set<Similarity> keys = cachedSearchers.keySet();
+		for (Similarity key : keys) {
+			IndexSearcher searcher = cachedSearchers.get(key);
+			try {
+				IndexReader oldReader = searcher.getIndexReader();
+				IndexSearcher oldSearcher = searcher;
+				IndexReader newReader = oldReader.reopen();
 
-        try {
-          cachedWritingReader.close();
-        } catch (IOException e) {
-        } finally {
-          cachedWritingReader = null;
-        }
-      }
-    } finally {
-      notifyAll();
-    }
+				if (newReader != oldReader) {
 
-    if (writingReaderUseCount == 0) {
-      numReopening++;
-      pool.execute(new Runnable() {
-        public void run() {
-          synchronized (DefaultIndexAccessor.this) {
-            if(numReopening > 5) {
-              logger.log(Level.WARNING,"Too many reopens");
-            }
-            waitForReadersAndReopenCached();
-            numReopening--;
-            DefaultIndexAccessor.this.notifyAll();
-          }
-        }
-      });
-    }
-  }
+					cachedSearchers.remove(key);
+					searcher = new IndexSearcher(newReader);
+					searcher.setSimilarity(oldSearcher.getSimilarity());
+					oldSearcher.getIndexReader().close();
+					cachedSearchers.put(key, searcher);
 
-  /**
-   * Reopens all of the Searchers in the Searcher cache. This method is invoked
-   * in a synchronized context.
-   */
-  private void reopenCachedSearchers() {
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("reopening cached searchers (" + cachedSearchers.size() + "):"
-          + Thread.currentThread().getId());
-    }
-    Set<Similarity> keys = cachedSearchers.keySet();
-    for (Similarity key : keys) {
-      IndexSearcher searcher = cachedSearchers.get(key);
-      try {
-        IndexReader oldReader = searcher.getIndexReader();
-        IndexSearcher oldSearcher = searcher;
-        IndexReader newReader = oldReader.reopen();
+				}
 
-        if (newReader != oldReader) {
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, "error reopening cached Searcher", e);
+			}
+		}
 
-          cachedSearchers.remove(key);
-          searcher = new IndexSearcher(newReader);
-          searcher.setSimilarity(oldSearcher.getSimilarity());
-          oldSearcher.getIndexReader().close();
-          cachedSearchers.put(key, searcher);
+	}
 
-        }
+	/**
+	 * Reopens the cached reading Reader. This method assumes it is invoked in a
+	 * synchronized context.
+	 */
+	private void reopenReadingReader() {
+		if (cachedReadingReader == null) {
+			return;
+		}
 
-      } catch (IOException e) {
-        logger.log(Level.SEVERE, "error reopening cached Searcher", e);
-      }
-    }
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("reopening cached reading reader");
+		}
+		IndexReader oldReader = cachedReadingReader;
+		try {
+			cachedReadingReader = cachedReadingReader.reopen();
+			if (oldReader != cachedReadingReader) {
+				oldReader.close();
+			}
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "error reopening reading Reader", e);
+		}
 
-  }
+	}
 
-  /**
-   * Reopens the cached reading Reader. This method assumes it is invoked in a
-   * synchronized context.
-   */
-  private void reopenReadingReader() {
-    if (cachedReadingReader == null) {
-      return;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#activeSearchers()
+	 */
+	public int searcherUseCount() {
+		return searcherUseCount;
+	}
 
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("reopening cached reading reader");
-    }
-    IndexReader oldReader = cachedReadingReader;
-    try {
-      cachedReadingReader = cachedReadingReader.reopen();
-      if (oldReader != cachedReadingReader) {
-        oldReader.close();
-      }
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "error reopening reading Reader", e);
-    }
+	protected void shutdownAndAwaitTermination(ExecutorService pool) {
+		pool.shutdown(); // Disable new tasks from being submitted
+		try {
+			// Wait a while for existing tasks to terminate
+			if (!pool.awaitTermination(20, TimeUnit.SECONDS)) {
+				pool.shutdownNow(); // Cancel currently executing tasks
+				// Wait a while for tasks to respond to being cancelled
+				if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+					System.err.println("Pool did not terminate");
+			}
+		} catch (InterruptedException ie) {
+			// (Re-)Cancel if current thread also interrupted
+			pool.shutdownNow();
+			// Preserve interrupt status
+			Thread.currentThread().interrupt();
+		}
+	}
 
-  }
+	/** This method assumes it is invoked in a synchronized context. */
+	private void waitForReadersAndReopenCached() {
+		while ((readingReaderUseCount > 0) || (searcherUseCount > 0)) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
+		if(numReopening > 1) {
+			// there are other calls to reopen pending, so we can bail
+			return;
+		}
+		reopenReadingReader();
+		reopenCachedSearchers();
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#activeSearchers()
-   */
-  public int searcherUseCount() {
-    return searcherUseCount;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#writersOut()
+	 */
+	public int writerUseCount() {
+		return writerUseCount;
+	}
 
-  protected void shutdownAndAwaitTermination(ExecutorService pool) {
-    pool.shutdown(); // Disable new tasks from being submitted
-    try {
-      // Wait a while for existing tasks to terminate
-      if (!pool.awaitTermination(20, TimeUnit.SECONDS)) {
-        pool.shutdownNow(); // Cancel currently executing tasks
-        // Wait a while for tasks to respond to being cancelled
-        if (!pool.awaitTermination(60, TimeUnit.SECONDS))
-          System.err.println("Pool did not terminate");
-      }
-    } catch (InterruptedException ie) {
-      // (Re-)Cancel if current thread also interrupted
-      pool.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
-    }
-  }
-
-  /** This method assumes it is invoked in a synchronized context. */
-  private void waitForReadersAndReopenCached() {
-    while ((readingReaderUseCount > 0) || (searcherUseCount > 0)) {
-      try {
-        wait();
-      } catch (InterruptedException e) {
-      }
-    }
-    if(numReopening > 1) {
-      // there are other calls to reopen pending, so we can bail
-      return;
-    }
-    reopenReadingReader();
-    reopenCachedSearchers();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#writersOut()
-   */
-  public int writerUseCount() {
-    return writerUseCount;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#writingReadersOut()
-   */
-  public int writingReadersUseCount() {
-    return writingReaderUseCount;
-  }
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.mhs.indexaccessor.IndexAccessor#writingReadersOut()
+	 */
+	public int writingReadersUseCount() {
+		return writingReaderUseCount;
+	}
+	
+	/**
+	 * reopen the index by releasing all writers and searchers. this is useful
+	 * if the index is changed from outside the jvm.
+	 * @throws IOException - TODO javadoc
+	 */
 	public void reopen() throws IOException {
 		IndexWriter tempWriter = this.getWriter();
 		this.release(tempWriter);
+		releaseAllSearchers();
+	}
+	
+	/**
+	 * release all searchers to reopen the index.
+	 * @see #reopen()
+	 */
+	private synchronized void releaseAllSearchers() {
+		if (searcherUseCount() == 0 && cachedSearchers.size() > 0) {
+			closeCachedSearchers();
+		} else {
+			closeAllReleasedSearchers = true;
+		}
 	}
 
 }
