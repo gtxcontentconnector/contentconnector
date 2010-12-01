@@ -38,13 +38,18 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	/**
 	 * Initializes the Lucene Implementation of {@link IndexUpdateChecker}.
 	 * @param indexLocation
-	 * @param termKey - Key under wich the termValue is stored in the Index e.g. CRID
+	 * @param termKey - Key under wich the termValue is stored in the Index e.g.
+	 * CRID
 	 * @param termValue - Value wich to use for iteration e.g. CRID_1
-	 * @param idAttribute - ID-Attribute key that will be used for Identifyer comparison. This has to represent the field where the identifyer in the method {@link #checkUpToDate(String, int)} is present.
+	 * @param idAttribute - ID-Attribute key that will be used for Identifyer
+	 * comparison. This has to represent the field where the identifyer in the
+	 * method {@link #checkUpToDate(String, int)} is present.
 	 * @throws IOException 
 	 */
-	public LuceneIndexUpdateChecker(LuceneIndexLocation indexLocation,String termKey, String termValue,String idAttribute) throws IOException
-	{
+	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation,
+			final String termKey,
+			final String termValue,
+			final String idAttribute) throws IOException {
 		this.indexLocation = indexLocation;
 		indexAccessor = indexLocation.getAccessor();
 		IndexReader reader = indexAccessor.getReader(true);
@@ -129,20 +134,20 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		IndexReader writeReader = null;
 		boolean readerNeedsWrite = true;
 		try {
-			for(String contentId:docs.keySet()){
+			for (String contentId:docs.keySet()) {
 				if (!checkedDocuments.contains(contentId)) {
-					log.debug("Object "+contentId+" wasn't checked in the last run. So i will delete it.");
-					if (writeReader==null) {
-							writeReader = indexAccessor.getReader(readerNeedsWrite);
+					log.debug("Object " + contentId + " wasn't checked in the last run. So i will delete it.");
+					if (writeReader == null) {
+						writeReader = indexAccessor.getReader(readerNeedsWrite);
 					}
 					writeReader.deleteDocument(docs.get(contentId));
 				}
 			}
 		} catch (IOException e) {
-			log.error("Cannot delete objects from index.",e);
+			log.error("Cannot delete objects from index.", e);
 		} finally {
 			//always release writeReader it blocks other threads if you don't 
-			if (writeReader!=null) {
+			if (writeReader != null) {
 				indexAccessor.release(writeReader, readerNeedsWrite);
 			}
 		}
@@ -162,8 +167,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		LinkedHashMap<String,Integer> ret = new LinkedHashMap<String,Integer>(tmp.size());
 		Vector<String> v = new Vector<String>(tmp.keySet());
 		Collections.sort(v);
-		for(String id:v)
-		{
+		for (String id : v) {
 			ret.put(id, tmp.get(id));
 		}
 		return ret;

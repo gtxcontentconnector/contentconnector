@@ -561,21 +561,21 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
 	/**
 	 * Convert a resolvable to a Lucene Document.
-	 * @param newDoc 
+	 * @param doc lucene document to reuse (update)
 	 * @param resolvable Contains the resolvable to be indexed
 	 * @param attributes A map of attribute names, which values are true if the
 	 * attribute should be stored or fales if the attribute should only be
 	 * indexed. Only attributes configured in this map will be indexed
 	 * @param config The name of this config will be used as CRID
-	 * (ContentRepository Identifyer). The ID-Attribute should also be configured
-	 * in this config (usually contentid).
-	 * @param reverseattributes Attributes that should be indexed in reverse order
-	 * . This can be used to search faster for words ending with *ing.
+	 * (ContentRepository Identifyer). The ID-Attribute should also be
+	 * configured in this config (usually contentid).
+	 * @param reverseattributes Attributes that should be indexed in reverse
+	 * order. This can be used to search faster for words ending with *ing.
 	 * @return Returns a Lucene Document, ready to be added to the index.
 	 */
-	private Document getDocument(final Document doc, final Resolvable resolvable,
-			final Map<String, Boolean> attributes, final CRConfigUtil config,
-			final List<String> reverseattributes) {
+	private Document getDocument(final Document doc,
+			final Resolvable resolvable, final Map<String, Boolean> attributes,
+			final CRConfigUtil config, final List<String> reverseattributes) {
 		Document newDoc;
 		if (doc == null) {
 			newDoc = new Document();
@@ -584,6 +584,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		}
 		String crID = (String) config.getName();
 		if (crID != null) {
+			newDoc.removeFields(CR_FIELD_KEY);
 			//Add content repository identification
 			newDoc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES,
 					Field.Index.NOT_ANALYZED));
