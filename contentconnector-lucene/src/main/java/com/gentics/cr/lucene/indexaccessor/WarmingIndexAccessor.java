@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Collector;
@@ -21,7 +21,13 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
   private Query warmQuery;
   // look into making a Set again
   private List<IndexSearcher> retiredSearchers;
-    
+  
+  /**
+   * Log4j logger for error and debug messages.
+   */
+  private static final Logger LOGGER =
+	  Logger.getLogger(WarmingIndexAccessor.class);
+  
   /**
    * Create new instance
    * @param dir
@@ -85,10 +91,8 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
    * in a synchronized context.
    */
   protected void reopenCachedSearchers() {
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("reopening cached searchers (" + cachedSearchers.size() + "):"
+    LOGGER.debug("reopening cached searchers (" + cachedSearchers.size() + "):"
           + Thread.currentThread().getId());
-    }
     Set<Similarity> keys = cachedSearchers.keySet();
     for (Similarity key : keys) {
       IndexSearcher searcher = cachedSearchers.get(key);
@@ -111,7 +115,7 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
         }
 
       } catch (IOException e) {
-        logger.log(Level.SEVERE, "error reopening cached Searcher", e);
+        LOGGER.error("error reopening cached Searcher", e);
       }
     }
 
@@ -124,14 +128,12 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
     while (it.hasNext()) {
 
       IndexSearcher s = it.next();
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("closing retired searcher:" + s.getIndexReader());
-      }
+        LOGGER.debug("closing retired searcher:" + s.getIndexReader());
 
       try {
         s.getIndexReader().close();
       } catch (IOException e) {
-        logger.log(Level.SEVERE, "error closing cached Searcher", e);
+        LOGGER.error("error closing cached Searcher", e);
       }
       numSearchersForRetirment--;
     }
@@ -161,9 +163,7 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
     }
 
     public void run() {
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("warming up searcher...");
-      }
+      LOGGER.debug("warming up searcher...");
       try {
         
           searcher.search(warmQuery,new Collector() {
@@ -198,9 +198,7 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
         throw new RuntimeException(e);
       }
 
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine("warming done");
-      }
+      LOGGER.debug("warming done");
 
       synchronized (WarmingIndexAccessor.this) {
         retiredSearchers.add(cachedSearchers.put(searcher.getSimilarity(), searcher));

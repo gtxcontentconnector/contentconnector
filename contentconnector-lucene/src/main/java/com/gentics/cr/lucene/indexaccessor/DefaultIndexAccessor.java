@@ -27,9 +27,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -44,8 +43,11 @@ import org.apache.lucene.store.Directory;
  */
 class DefaultIndexAccessor implements IndexAccessor {
 
-	protected final static Logger logger = Logger.getLogger(DefaultIndexAccessor.class.getPackage()
-			.getName());
+	/**
+	 * Log4j logger for error and debug messages.
+	 */
+	private static final Logger LOGGER =
+		Logger.getLogger(DefaultIndexAccessor.class);
 
 	private static final int POOL_SIZE = 10;
 
@@ -145,11 +147,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 		closeCachedWritingReader();
 		closeCachedWriter();
 		shutdownAndAwaitTermination(pool);
-//		int i = 0;
-//		for (IndexSearcher s : createdSearchers) {
-//			System.out.println(i++ + ":" + s.getIndexReader().refCount + " :" + s.getIndexReader());
-//		}
-//		System.out.println("DIA Closed");
 	}
 
 	/**
@@ -160,15 +157,12 @@ class DefaultIndexAccessor implements IndexAccessor {
 		if (cachedReadingReader == null) {
 			return;
 		}
-
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("closing cached reading reader");
-		}
+		LOGGER.debug("closing cached reading reader");
 
 		try {
 			cachedReadingReader.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "error closing reading Reader", e);
+			LOGGER.error("error closing reading Reader", e);
 		} finally {
 			cachedReadingReader = null;
 		}
@@ -179,15 +173,13 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * in a synchronized context.
 	 */
 	protected void closeCachedSearchers() {
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("closing cached searchers (" + cachedSearchers.size() + ")");
-		}
+		LOGGER.debug("closing cached searchers (" + cachedSearchers.size() + ")");
 
 		for (IndexSearcher searcher : cachedSearchers.values()) {
 			try {
 				searcher.getIndexReader().close();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "error closing cached Searcher", e);
+				LOGGER.error("error closing cached Searcher", e);
 			}
 		}
 
@@ -202,15 +194,12 @@ class DefaultIndexAccessor implements IndexAccessor {
 		if (cachedWriter == null) {
 			return;
 		}
-
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("closing cached writer");
-		}
+		LOGGER.debug("closing cached writer");
 
 		try {
 			cachedWriter.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "error closing cached Writer", e);
+			LOGGER.error("error closing cached Writer", e);
 		} finally {
 			cachedWriter = null;
 		}
@@ -224,15 +213,11 @@ class DefaultIndexAccessor implements IndexAccessor {
 		if (cachedWritingReader == null) {
 			return;
 		}
-
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("closing cached writing reader");
-		}
-
+		LOGGER.debug("closing cached writing reader");
 		try {
 			cachedWritingReader.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "error closing cached writing Reader", e);
+			LOGGER.error("error closing cached writing Reader", e);
 		} finally {
 			cachedWritingReader = null;
 		}
@@ -257,15 +242,10 @@ class DefaultIndexAccessor implements IndexAccessor {
 		checkClosed();
 
 		if (cachedReadingReader != null) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("returning cached reading reader");
-			}
-
+			LOGGER.debug("returning cached reading reader");
 			readingReaderUseCount++;
 		} else {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("opening new reading reader and caching it");
-			}
+			LOGGER.debug("opening new reading reader and caching it");
 
 			cachedReadingReader = IndexReader.open(directory);
 			readingReaderUseCount = 1;
@@ -344,13 +324,9 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 		IndexSearcher searcher = cachedSearchers.get(similarity);
 		if (searcher != null) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("returning cached searcher");
-			}
+			LOGGER.debug("returning cached searcher");
 		} else {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("opening new searcher and caching it");
-			}
+			LOGGER.debug("opening new searcher and caching it");
 			searcher = indexReader != null ? new IndexSearcher(indexReader)
 					: new IndexSearcher(directory);
 			createdSearchers.add(searcher);
@@ -390,15 +366,11 @@ class DefaultIndexAccessor implements IndexAccessor {
 		}
 
 		if (cachedWriter != null) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("returning cached writer:" + Thread.currentThread().getId());
-			}
+			LOGGER.debug("returning cached writer:" + Thread.currentThread().getId());
 
 			writerUseCount++;
 		} else {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("opening new writer and caching it:" + Thread.currentThread().getId());
-			}
+			LOGGER.debug("opening new writer and caching it:" + Thread.currentThread().getId());
 
 			cachedWriter = new IndexWriter(directory, analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
 			writerUseCount = 1;
@@ -413,9 +385,8 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * if it hasn't been opened already.
 	 */
 	private synchronized IndexReader getWritingReader() throws CorruptIndexException, IOException {
-
 		checkClosed();
-
+		
 		while (writerUseCount > 0) {
 			try {
 				wait();
@@ -424,16 +395,10 @@ class DefaultIndexAccessor implements IndexAccessor {
 		}
 
 		if (cachedWritingReader != null) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("returning cached writing reader");
-			}
-
+			LOGGER.debug("returning cached writing reader");
 			writingReaderUseCount++;
 		} else {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("opening new writing reader");
-			}
-
+			LOGGER.debug("opening new writing reader");
 			cachedWritingReader = IndexReader.open(directory,false);
 			writingReaderUseCount = 1;
 		}
@@ -499,15 +464,14 @@ class DefaultIndexAccessor implements IndexAccessor {
 			writerUseCount--;
 
 			if (writerUseCount == 0) {
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("closing cached writer:" + Thread.currentThread().getId());
-				}
+				LOGGER.debug("closing cached writer:"
+						+ Thread.currentThread().getId());
 
 				try {
 					cachedWriter.close();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, "error closing cached Writer:" + Thread.currentThread().getId(),
-							e);
+					LOGGER.error("error closing cached Writer:"
+							+ Thread.currentThread().getId(), e);
 				} finally {
 					cachedWriter = null;
 				}
@@ -581,9 +545,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 			writingReaderUseCount--;
 
 			if (writingReaderUseCount == 0) {
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("closing cached writing Reader");
-				}
+				LOGGER.debug("closing cached writing Reader");
 
 				try {
 					cachedWritingReader.close();
@@ -602,7 +564,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 				public void run() {
 					synchronized (DefaultIndexAccessor.this) {
 						if(numReopening > 5) {
-							logger.log(Level.WARNING,"Too many reopens");
+							LOGGER.warn("Too many reopens");
 						}
 						waitForReadersAndReopenCached();
 						numReopening--;
@@ -618,10 +580,8 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * in a synchronized context.
 	 */
 	private void reopenCachedSearchers() {
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("reopening cached searchers (" + cachedSearchers.size() + "):"
+		LOGGER.debug("reopening cached searchers (" + cachedSearchers.size() + "):"
 					+ Thread.currentThread().getId());
-		}
 		Set<Similarity> keys = cachedSearchers.keySet();
 		for (Similarity key : keys) {
 			IndexSearcher searcher = cachedSearchers.get(key);
@@ -641,7 +601,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 				}
 
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "error reopening cached Searcher", e);
+				LOGGER.error("error reopening cached Searcher", e);
 			}
 		}
 
@@ -656,9 +616,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 			return;
 		}
 
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("reopening cached reading reader");
-		}
+		LOGGER.debug("reopening cached reading reader");
 		IndexReader oldReader = cachedReadingReader;
 		try {
 			cachedReadingReader = cachedReadingReader.reopen();
@@ -666,7 +624,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 				oldReader.close();
 			}
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "error reopening reading Reader", e);
+			LOGGER.error("error reopening reading Reader", e);
 		}
 
 	}
@@ -748,6 +706,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * @see #reopen()
 	 */
 	private synchronized void releaseAllSearchers() {
+		LOGGER.debug("release all cached searchers");
 		if (searcherUseCount() == 0 && cachedSearchers.size() > 0) {
 			closeCachedSearchers();
 		} else {
