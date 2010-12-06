@@ -25,6 +25,10 @@ import com.gentics.cr.util.resolver.SystemPropertyCallback;
 public class CRUtil {
 
 	/**
+	 * marker for properties that shouldn't be resolved.
+	 */
+	private static final String DONOTRESOLVE_MARKER = "DONOTRESOLVE";
+	/**
 	 * system property holding the Gentics Portal.Node confpath.
 	 */
 	public static final String PORTALNODE_CONFPATH =
@@ -152,7 +156,9 @@ public class CRUtil {
 		public static String resolveSystemProperties(final String string) {
 				// avoid NPE here
 				if (string == null) {
-						return null;
+					return null;
+				} else if (string.startsWith(DONOTRESOLVE_MARKER)) {
+					return string.replaceAll("^" + DONOTRESOLVE_MARKER, "");
 				}
 				//init com.gentics.portalnode.confpath if it isn't set
 				if (System.getProperty(PORTALNODE_CONFPATH) == null
