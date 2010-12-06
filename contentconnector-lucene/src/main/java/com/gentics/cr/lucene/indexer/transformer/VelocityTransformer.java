@@ -42,6 +42,14 @@ public class VelocityTransformer extends ContentTransformer {
 	 */
 	private ITemplate tpl;
 	
+	/**
+	 * Name of the configuration for error messages.
+	 */
+	private String configName;
+	
+	/**
+	 * {@link VelocityTools} to deploy into the template context.
+	 */
 	private VelocityTools tools = new VelocityTools();
 	
 	/**
@@ -62,6 +70,7 @@ public class VelocityTransformer extends ContentTransformer {
 			crConfigUtil = new CRConfigUtil(config,
 					"VelocityTransformerConfig");
 		}
+		configName = crConfigUtil.getName();
 		String template = (String) config.get(TRANSFORMER_TEMPLATE_KEY);
 		targetAttribute = (String) config.get(TRANSFORMER_TARGETATTRIBUTE_KEY);
 		
@@ -92,7 +101,9 @@ public class VelocityTransformer extends ContentTransformer {
 				bean.set(targetAttribute, output);
 			}
 		} catch (CRException e) {
-			e.printStackTrace();
+			logger.error("Error while rendering template "+ configName
+					+ TRANSFORMER_TEMPLATE_KEY + " for bean "
+					+ bean.getContentid(), e);
 		}
 		
 	}
