@@ -495,7 +495,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 			} else {
 				setContentid(null);
 			}
-		} else if (obj != null && attribute != null){
+		} else if (obj != null && attribute != null) {
 			if (this.attrMap == null) {
 				this.attrMap = new Hashtable<String, Object>();
 			}
