@@ -27,7 +27,7 @@ import com.gentics.cr.util.Constants;
  */
 
 public abstract class IndexLocation {
-	//STATIC MEMBERS
+
 	protected static final Logger log = Logger.getLogger(IndexLocation.class);
 
 	/**
@@ -657,19 +657,19 @@ public abstract class IndexLocation {
 	 * Creates a map of the configured CRs
 	 * @return
 	 */
-	public Hashtable<String,CRConfigUtil> getCRMap()
-	{
-		CRConfig crconfig = this.config;
-		Hashtable<String,CRConfigUtil> map = new Hashtable<String,CRConfigUtil>();
+	public Hashtable<String,CRConfigUtil> getCRMap() {
+		Hashtable<String, CRConfigUtil> map =
+			new Hashtable<String, CRConfigUtil>();
+		GenericConfiguration crConfigs =
+			(GenericConfiguration) config.get(CR_KEY);
+		if (crConfigs != null) {
+			Hashtable<String, GenericConfiguration> configs =
+				crConfigs.getSubConfigs();
 
-		GenericConfiguration CRc = (GenericConfiguration)crconfig.get(CR_KEY);
-		if (CRc != null) {
-			Hashtable<String, GenericConfiguration> configs = CRc.getSubConfigs();
-
-			for (Entry<String, GenericConfiguration> e:configs.entrySet()) {
+			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				try {
-					map.put(crconfig.getName() + "." + e.getKey(),
-							new CRConfigUtil(e.getValue(), crconfig.getName()
+					map.put(config.getName() + "." + e.getKey(),
+							new CRConfigUtil(e.getValue(), config.getName()
 									+ "." + e.getKey()));
 				} catch (Exception ex) {
 					String name = "<no config name>";
@@ -678,15 +678,16 @@ public abstract class IndexLocation {
 					if (e != null && e.getKey() != null) {
 						key = e.getKey();
 					}
-					if (crconfig != null && crconfig.getName() != null) {
-						name = crconfig.getName();
+					if (config != null && config.getName() != null) {
+						name = config.getName();
 					}
 					log.error("Error while creating cr map for " + name + "."
 							+ key + " - " + cex.getMessage(), cex);
 				}
 			}
 		} else {
-			log.error("THERE ARE NO CRs CONFIGURED FOR INDEXING.");
+			log.error("There are no crs configured for indexing. Config: "
+					+ config.getName());
 		}
 		return map;
 	}
