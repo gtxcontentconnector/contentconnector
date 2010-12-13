@@ -654,10 +654,9 @@ public abstract class IndexLocation {
 	}
 	
 	/**
-	 * Creates a map of the configured CRs
-	 * @return
+	 * @return a map of the configured CRs
 	 */
-	public Hashtable<String,CRConfigUtil> getCRMap() {
+	public final Hashtable<String, CRConfigUtil> getCRMap() {
 		Hashtable<String, CRConfigUtil> map =
 			new Hashtable<String, CRConfigUtil>();
 		GenericConfiguration crConfigs =
