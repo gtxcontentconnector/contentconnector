@@ -141,7 +141,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * @throws CRException 
 	 */
 	public final Collection<CRResolvableBean> getObjects(
-	final CRRequest request, final boolean doNavigation) throws CRException {
+			final CRRequest request, final boolean doNavigation)
+			throws CRException {
 		UseCase uc = MonitorFactory.startUseCase("LuceneRequestProcessor."
 				+ "getObjects(" + name + ")");
 		UseCase ucPrepareSearch = MonitorFactory.startUseCase(
@@ -208,11 +209,11 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			UseCase ucProcessSearchResolvables = MonitorFactory.startUseCase(
 					"LuceneRequestProcessor.getObjects(" + name
 					+ ")#processSearch.Resolvables");
-			LinkedHashMap<Document, Float> docs =
-				objectToLinkedHashMapDocuments(searchResult.get(
-						CRSearcher.RESULT_RESULT_KEY));
+		LinkedHashMap<Document, Float> docs =
+			objectToLinkedHashMapDocuments(searchResult.get(
+					CRSearcher.RESULT_RESULT_KEY));
 			
-			LuceneIndexLocation idsLocation =
+		LuceneIndexLocation idsLocation =
 			LuceneIndexLocation.getIndexLocation(this.config);
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
 		IndexReader reader = null;

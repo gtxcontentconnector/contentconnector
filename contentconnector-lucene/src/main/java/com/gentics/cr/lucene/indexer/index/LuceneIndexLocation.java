@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,7 @@ public abstract class LuceneIndexLocation extends
 		return (dir);
 	}
 	
-	private static String getFirstIndexLocation(CRConfig config)
+	protected static String getFirstIndexLocation(CRConfig config)
 	{
 		String path="";
 		GenericConfiguration locs = (GenericConfiguration)config.get(INDEX_LOCATIONS_KEY);
@@ -222,7 +223,7 @@ public abstract class LuceneIndexLocation extends
 		
 		
 	protected Directory createFSDirectory(File indexLoc) throws IOException {
-		return createFSDirectory(indexLoc,name);
+		return createFSDirectory(indexLoc, name);
 	}
 
 	protected static Directory createFSDirectory(File indexLoc,String name) throws IOException {
@@ -236,8 +237,7 @@ public abstract class LuceneIndexLocation extends
 	}
 
 	/**
-	 * Returns the directory used by this index location.
-	 * @return
+	 * @return the directory used by this index location.
 	 */
 	protected abstract Directory[] getDirectories();
 
