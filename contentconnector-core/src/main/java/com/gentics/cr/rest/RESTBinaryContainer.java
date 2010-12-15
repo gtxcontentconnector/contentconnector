@@ -109,8 +109,7 @@ public class RESTBinaryContainer{
 				if(req.getContentid()==null)
 				{
 					Object obj = reqBuilder.getRequest();
-					if(obj instanceof HttpServletRequest)
-					{
+					if(obj instanceof HttpServletRequest) {
 						String[] reqURI = ((HttpServletRequest)obj).getRequestURI().split("/");
 						ArrayList<String> reqList = new ArrayList<String>(Arrays.asList(reqURI));
 						int index = reqList.indexOf(((HttpServletRequest)obj).getServletPath().replaceAll("/",""));
