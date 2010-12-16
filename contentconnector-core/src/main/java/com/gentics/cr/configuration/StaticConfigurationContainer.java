@@ -66,9 +66,9 @@ public final class StaticConfigurationContainer {
 	}
 	
 	/**
-	 * TODO Javadoc.
+	 * Method to ensure that the container has been initialized.
 	 */
-	public static void assertStaticAttributesInitialized() {
+	private static void assertStaticAttributesInitialized() {
 		if (configmap == null) {
 			configmap = new Hashtable<String, CRConfigFileLoader>(2);
 		}
