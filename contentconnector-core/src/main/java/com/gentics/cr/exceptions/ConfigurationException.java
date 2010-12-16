@@ -16,12 +16,12 @@ public class ConfigurationException extends CRException {
    * default constructor for ConfigurationException, this is a wrapper for
    * {@link CRException#CRException(String, String,
    * com.gentics.cr.exceptions.CRException.ERRORTYPE)}.
-   * @param newtype
-   * @param newmessage
-   * @param type
+   * @param newtype type of the exception
+   * @param newmessage message of the exception
+   * @param type type of the exception
    */
   public ConfigurationException(final String newtype, final String newmessage,
-      final ERRORTYPE type){
+      final ERRORTYPE type) {
     super(newtype, newmessage, type);
   }
 }
