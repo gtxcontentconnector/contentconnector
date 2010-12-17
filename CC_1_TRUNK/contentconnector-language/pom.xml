@@ -1,0 +1,114 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>contentconnector</groupId>
+  <artifactId>contentconnector-language</artifactId>
+  <version>1.3.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Gentics Content.Connector - LANGUAGE</name>
+  <description>This is the LANGUAGE-Extension to the Gentics Content.Connector Suite</description>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-compiler-plugin</artifactId>
+  			<configuration>
+			<source>1.5</source>
+			<target>1.5</target>
+			</configuration>
+  		</plugin>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>attach-javadocs</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>attach-sources</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+  	</plugins>
+  	<extensions>
+			<!-- begin - needed for deploying to repository using webdav -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+			<!-- end - needed for deploying to repository using webdav -->
+		</extensions>
+  </build>
+ 
+	
+	<dependencies>
+		<dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+    </dependency>
+    <dependency>
+      <groupId>contentconnector</groupId>
+      <artifactId>contentconnector-lucene</artifactId>
+      <version>1.3.1-SNAPSHOT</version>
+    </dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>asf-snapshot</id>
+			<name>ASF Maven Repository</name>
+			<layout>default</layout>
+			<url>
+				http://people.apache.org/maven-snapshot-repository
+			</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+	      <id>com.gentics.public</id>
+	      <name>Archiva Managed Public Repository</name>
+	      <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public/</url>
+	      <releases>
+	        <enabled>true</enabled>
+	      </releases>
+	      <snapshots>
+	        <enabled>false</enabled>
+	      </snapshots>
+	    </repository>
+	    <repository>
+	      <id>com.gentics.public_snapshots</id>
+	      <name>Archiva Managed Public Repository</name>
+	      <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
+	      <snapshots>
+	        <enabled>true</enabled>
+	      </snapshots>
+	    </repository>
+	</repositories>
+	
+	<distributionManagement>
+		<repository>
+			<id>archiva.com.gentics.public</id>
+			<name>Internal Release Repository</name>
+			<url>dav:http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+		</repository>
+		<snapshotRepository>
+			<id>archiva.com.gentics.public_snapshots</id>
+			<name>Internal Snapshot Repository</name>
+			<url>dav:http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>
