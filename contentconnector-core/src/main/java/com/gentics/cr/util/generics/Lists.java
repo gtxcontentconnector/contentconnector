@@ -1,6 +1,7 @@
 package com.gentics.cr.util.generics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,8 +46,8 @@ public final class Lists {
 	 * @param clazz - Class to cast elements into
 	 * @return list of objects of type T
 	 */
-	public static <S, T extends S> List<T> toSpecialList(final List<S> list,
-			final Class<T> clazz) {
+	public static <S, T extends S> List<T> toSpecialList(
+			final Collection<S> list, final Class<T> clazz) {
 		List<T> result = new ArrayList<T>(list.size());
 		for (S listElement : list) {
 			if (clazz.isInstance(listElement)) {
