@@ -1,5 +1,11 @@
 package com.gentics.cr.util;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import com.gentics.cr.util.generics.Lists;
+
 /**
  * 
  * @author Christopher
@@ -8,7 +14,7 @@ package com.gentics.cr.util;
 public abstract class AccessibleBean {
 	
 	/**
-	 * Gettor for resolvable objects in the configuration.
+	 * Getter for resolvable objects in the configuration.
 	 * @param key resolving key
 	 * @return resolved object
 	 */
@@ -28,7 +34,7 @@ public abstract class AccessibleBean {
 		 * Get configuration key as {@link String}.
 		 * @param key configuration key to get
 		 * @param defaultValue value to return if configuration key is not set.
-		 * @return configruation key as string, if configuration key is not set
+		 * @return configuration key as string, if configuration key is not set
 		 * returns defaultValue.
 		 */
 		public final String getString(final String key, 
@@ -36,6 +42,29 @@ public abstract class AccessibleBean {
 			Object result = get(key);
 			if (result != null) {
 				return result.toString();
+			} else {
+				return defaultValue;
+			}
+		}
+		
+		/**
+		 * Get configuration key as collection of {@link String}s.
+		 * @param key - configuration key to get
+		 * @param separator - separator to split a string value into multiple
+		 * strings
+		 * @param defaultValue - default value to use if we cannot get the
+		 * property
+		 * @return configuration key as collection of strings
+		 */
+		public final Collection<String> getMultipleString(final String key,
+				final String separator, final Collection<String> defaultValue) {
+			Object value = get(key);
+			if (value instanceof Collection) {
+				return Lists.toSpecialList((Collection<?>) value, String.class);
+			} else if (value instanceof String) {
+				return Arrays.asList(((String) value).split(separator));
+			} else if (value != null) {
+				return Collections.singletonList(value.toString());
 			} else {
 				return defaultValue;
 			}
