@@ -41,11 +41,6 @@ public class TagTransformer extends ContentTransformer {
 		"ADDATTRIBUTESIFEMPTY";
 	
 	/**
-	 * Configuration key for source attribute.
-	 */
-	private static final String REGEX_KEY =
-		"regex";
-	/**
 	 * Configuration key for target attribute.
 	 */
 	private static final String TARGETATTRIBUTE_KEY =
@@ -103,8 +98,6 @@ public class TagTransformer extends ContentTransformer {
 		}
 		configName = crConfigUtil.getName();
 		targetAttribute = config.getString(TARGETATTRIBUTE_KEY);
-//		tagRegex =
-//			Pattern.compile(config.getString(REGEX_KEY, tagRegex.pattern()));
 		tagNames =
 			config.getMultipleString(TAGS_KEY, ",", new Vector<String>());
 		GenericConfiguration addAttributesIfEmptyConfig =
