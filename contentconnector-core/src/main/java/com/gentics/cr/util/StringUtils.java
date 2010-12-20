@@ -1,11 +1,16 @@
 package com.gentics.cr.util;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -91,11 +96,39 @@ public final class StringUtils {
 	 * @return Object as String, <code>null</code> in case object is null.
 	 */
 	public static String toString(final Object obj) {
-		if (obj != null) {
+		if (obj instanceof InputStream) {
+			return streamToString((InputStream) obj);
+		} else if (obj != null) {
 			return obj.toString();
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * Read an {@link InputStream} into a String.
+	 * @param is - InputStream to read the String from.
+	 * @return String with contents from the InputStream.
+	 */
+	public static String streamToString(final InputStream is) {
+		if (is != null) {
+			char[] buffer = new char[Constants.KILOBYTE];
+			StringBuffer result = new StringBuffer();
+			try {
+				Reader reader =
+					new BufferedReader(new InputStreamReader(is, "UTF-8"));
+				int readBytes;
+				while ((readBytes = reader.read(buffer)) != -1) {
+					result.append(buffer, 0, readBytes);
+				}
+				return result.toString();
+			} catch (UnsupportedEncodingException e) {
+				logger.error("Encoding is not supported.", e);
+			} catch (IOException e) {
+				logger.error("Cannot read from InputStream", e);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -123,7 +156,7 @@ public final class StringUtils {
 	 * Create a summary of a collection of objects.
 	 * e.g. ["a", "b"] is transformed to the String "a, b".
 	 * @param collection - Collection containing the objects
-	 * @return String of comma seperated values of the Collection.
+	 * @return String of comma separated values of the Collection.
 	 */
 	public static String getCollectionSummary(final Collection<?> collection) {
 		StringBuilder result =
