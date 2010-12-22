@@ -34,7 +34,7 @@ public class PDFContentTransformerTest extends TestCase {
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
 		
-		assertTrue("testtext \r\n".equals(s));
+		assertEquals("The content (" + s + ") should be (testtext \\r\\n)", "testtext \r\n", s);
 	}
 
 	@After
