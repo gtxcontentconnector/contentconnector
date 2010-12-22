@@ -11,6 +11,7 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.lucene.indexer.transformer.pdf.PDFContentTransformer;
+import com.gentics.cr.lucene.indexer.transformer.test.TUtil;
 
 
 public class PDFContentTransformerTest extends TestCase {
@@ -32,9 +33,9 @@ public class PDFContentTransformerTest extends TestCase {
 	public void testTransformer() throws Exception {
 		ContentTransformer t = new PDFContentTransformer(config);
 		t.processBean(bean);
-		String s = (String) bean.get("binarycontent");
-		
-		assertEquals("The content (" + s + ") should be (testtext \\r\\n)", "testtext \r\n", s);
+		String s = TUtil.normalizeCRLF((String) bean.get("binarycontent"));
+		String x = TUtil.normalizeCRLF("testtext \r\n");
+		assertEquals("The content (" + s + ") should be (" + x + ")", x, s);
 	}
 
 	@After
