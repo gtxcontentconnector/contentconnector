@@ -23,23 +23,73 @@ package org.apache.lucene.search.spell;
  * 
  *
  */
-final class CustomSuggestWord{
+final class CustomSuggestWord {
   /**
-   * the score of the word
+   * the score of the word.
    */
-  public float score;
+  private float score;
+  
+  /**
+   * setScore.
+   * @param s score
+   */
+  public void setScore(final float s) {
+	  score = s;
+  }
+  
+  /**
+   * getScore.
+   * @return score.
+   */
+  public float getScore() {
+	  return score;
+  }
 
   /**
-   * The freq of the word
+   * The freq of the word.
    */
-  public int freq;
+  private int freq;
+  
+  /**
+   * setter for freq.
+   * @param f freq
+   */
+  public void setFreq(final int f) {
+	  freq = f;
+  }
+  /**
+   * getter for freq.
+   * @return freq
+   */
+  public int getFreq() {
+	  return freq;
+  }
 
   /**
-   * the suggested word
+   * the suggested word.
    */
-  public String string;
+  private String string;
 
-  public final int compareTo(CustomSuggestWord a) {
+  /**
+   * getter for String.
+   * @return string
+   */
+  public String getString() {
+	  return string;
+  }
+  /**
+   * Setter for string.
+   * @param str string
+   */
+  public void setString(final String str) {
+	  string = str;
+  }
+  /**
+   * compare.
+   * @param a compare to elem.
+   * @return comp.
+   */
+  public int compareTo(final CustomSuggestWord a) {
     // first criteria: the edit distance
 	
     if (score > a.score) {

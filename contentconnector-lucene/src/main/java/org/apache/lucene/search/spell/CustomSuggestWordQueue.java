@@ -22,17 +22,22 @@ import org.apache.lucene.util.PriorityQueue;
 
 
 /**
- * Sorts SuggestWord instances
+ * Sorts SuggestWord instances.
  *
  */
 final class CustomSuggestWordQueue extends PriorityQueue<CustomSuggestWord> {
 
-  CustomSuggestWordQueue (int size) {
+	/**
+	 * Constructor.
+	 * @param size size
+	 */
+  CustomSuggestWordQueue(final int size) {
     initialize(size);
   }
 
   @Override
-  protected final boolean lessThan (CustomSuggestWord wa, CustomSuggestWord wb) {
+  protected boolean lessThan(final CustomSuggestWord wa,
+		  final CustomSuggestWord wb) {
     int val = wa.compareTo(wb);
     return val < 0;
   }
