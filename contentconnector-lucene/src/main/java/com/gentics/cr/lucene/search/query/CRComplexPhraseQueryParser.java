@@ -6,7 +6,7 @@ import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRRequest;
 /**
- * Wrapper for ComplexPhraseQueryParser
+ * Wrapper for ComplexPhraseQueryParser.
  * @author Christopher
  */
 public class CRComplexPhraseQueryParser extends ComplexPhraseQueryParser {
@@ -18,8 +18,8 @@ public class CRComplexPhraseQueryParser extends ComplexPhraseQueryParser {
 	   * @param searchedAttributes attributes to search in
 	   * @param analyzer analyzer for index
 	   */
-	  public CRComplexPhraseQueryParser(final Version version, final String[] searchedAttributes,
-	      final Analyzer analyzer) {
+	  public CRComplexPhraseQueryParser(final Version version,
+			  final String[] searchedAttributes, final Analyzer analyzer) {
 		  super(version, searchedAttributes[0], analyzer);
 	  }
 	  
@@ -31,8 +31,9 @@ public class CRComplexPhraseQueryParser extends ComplexPhraseQueryParser {
 	   * @param analyzer analyzer for index
 	   * @param crRequest request to get additional parameters from.
 	   */
-	  public CRComplexPhraseQueryParser(final Version version, final String[] searchedAttributes,
-	      final Analyzer analyzer, final CRRequest crRequest) {
+	  public CRComplexPhraseQueryParser(final Version version,
+			final String[] searchedAttributes, final Analyzer analyzer,
+			final CRRequest crRequest) {
 		  this(version, searchedAttributes, analyzer);
 	  }
 

@@ -18,6 +18,19 @@ import com.gentics.cr.CRRequest;
  */
 public class CRQueryParser extends QueryParser {
 
+	/**
+	 * Constant 1.
+	 */
+	private static final int ONE = 1;
+	/**
+	 * Constant 2.
+	 */
+	private static final int TWO = 2;
+	/**
+	 * Constant 3.
+	 */
+	private static final int THREE = 3;
+	
   /**
    * attributes to search in.
    */
@@ -62,7 +75,7 @@ public class CRQueryParser extends QueryParser {
    */
   public final Query parse(final String query) throws ParseException {
     String crQuery = query;
-    if (attributesToSearchIn.length > 1) {
+    if (attributesToSearchIn.length > ONE) {
       crQuery = addMultipleSearchedAttributes(crQuery);
     }
     crQuery = replaceBooleanMnoGoSearchQuery(crQuery);
@@ -92,9 +105,9 @@ public class CRQueryParser extends QueryParser {
       newQuery = new StringBuffer();
       Matcher valueMatcher = getValueMatcher(query);
       while (valueMatcher.find()) {
-        String charsBeforeValue = valueMatcher.group(1);
-        String value = valueMatcher.group(2);
-        String charsAfterValue = valueMatcher.group(3);
+        String charsBeforeValue = valueMatcher.group(ONE);
+        String value = valueMatcher.group(TWO);
+        String charsAfterValue = valueMatcher.group(THREE);
         if (!"AND".equalsIgnoreCase(value)
             && !"OR".equalsIgnoreCase(value)
             && !"NOT".equalsIgnoreCase(value)
@@ -136,9 +149,9 @@ public class CRQueryParser extends QueryParser {
     StringBuffer newQuery = new StringBuffer();
     Matcher valueMatcher = getValueMatcher(crQuery);
     while (valueMatcher.find()) {
-      String charsBeforeValue = valueMatcher.group(1);
-      String value = valueMatcher.group(2);
-      String charsAfterValue = valueMatcher.group(3);
+      String charsBeforeValue = valueMatcher.group(ONE);
+      String value = valueMatcher.group(TWO);
+      String charsAfterValue = valueMatcher.group(THREE);
       if (!"AND".equalsIgnoreCase(value)
           && !"OR".equalsIgnoreCase(value)
           && !"NOT".equalsIgnoreCase(value)) {
@@ -152,8 +165,9 @@ public class CRQueryParser extends QueryParser {
   }
 
   /**
-   * 
-   * @return
+   * get Value Matcher.
+   * @param query query.
+   * @return matcher.
    */
   private Matcher getValueMatcher(final String query) {
     String seperatorCharacterClass = " \\(\\)";
