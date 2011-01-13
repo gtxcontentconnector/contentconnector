@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.search.highlight;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.search.Query;
@@ -18,21 +19,51 @@ import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 /**
- * 
+ * PhraseBolder.
  * Last changed: $Date: 2009-06-26 15:48:16 +0200 (Fr, 26 Jun 2009) $
  * @version $Revision: 105 $
  * @author $Author: supnig@constantinopel.at $
  *
  */
 public class PhraseBolder extends ContentHighlighter implements Formatter {
+	/**
+	   * Log4j logger for error and debug messages.
+	   */
+	  private static Logger log =
+	    Logger.getLogger(PhraseBolder.class);
+	/**
+	 * Default max fragments.
+	 */
+	private static final int DEFAULT_MAX_FRAGMENTS = 3;
+	/**
+	 * Default fragment size.
+	 */
+	private static final int DEFAULT_FRAGMENT_SIZE = 100;
+	/**
+	 * used analyzer.
+	 */
+  private Analyzer analyzer = null;
+  /**
+   * Max fregments.
+   */
+  private int numMaxFragments = DEFAULT_MAX_FRAGMENTS;
+  /**
+   * fragment size.
+   */
+  private int fragmentSize = DEFAULT_FRAGMENT_SIZE;
 
-  private Analyzer analyzer=null;
-  private int numMaxFragments=3;
-  private int fragmentSize=100;
-
-  private String highlightPrefix="";
-  private String highlightPostfix="";
-  private String fragmentSeperator="";
+  /**
+   * highlight prefix.
+   */
+  private String highlightPrefix = "";
+  /**
+   * highlight postfix.
+   */
+  private String highlightPostfix = "";
+  /**
+   * fragment seperator.
+   */
+  private String fragmentSeperator = "";
   
   /**
    * if there should be a seperator at the beginning and at the and of the
@@ -74,57 +105,60 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
   
   /**
    * Create new Instance of PhraseBolder.
-   * @param config
+   * @param config configuration
    */
-  public PhraseBolder(GenericConfiguration config) {
+  public PhraseBolder(final GenericConfiguration config) {
     super(config);
     analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
 
-    highlightPrefix = (String)config.get(PHRASE_PREFIX_KEY);
-    if(highlightPrefix==null)highlightPrefix="<b>";
-    highlightPostfix = (String)config.get(PHRASE_POSTFIX_KEY);
-    if(highlightPostfix==null)highlightPostfix="</b>";
-    fragmentSeperator = (String)config.get(FRAGMENT_SEPERATOR_KEY);
-    if(fragmentSeperator==null)fragmentSeperator=" ... ";
+    highlightPrefix = (String) config.get(PHRASE_PREFIX_KEY);
+    if (highlightPrefix == null) {
+    	highlightPrefix = "<b>";
+    }
+    highlightPostfix = (String) config.get(PHRASE_POSTFIX_KEY);
+    if (highlightPostfix == null) {
+    	highlightPostfix = "</b>";
+    }
+    fragmentSeperator = (String) config.get(FRAGMENT_SEPERATOR_KEY);
+    if (fragmentSeperator == null) {
+    	fragmentSeperator = " ... ";
+    }
     Object surroundingSeperatorObject = config.get(SURROUNDING_SEPERATOR_KEY);
-    if(surroundingSeperatorObject != null){
+    if (surroundingSeperatorObject != null) {
       addSeperatorArroundAllFragments =
         Boolean.parseBoolean((String) surroundingSeperatorObject);
     }
     
-    String nmF = (String)config.get(NUM_MAX_FRAGMENTS_KEY);
-    if(nmF!=null)
-    {
-      try
-      {
+    String nmF = (String) config.get(NUM_MAX_FRAGMENTS_KEY);
+    if (nmF != null)  {
+      try {
         int i = Integer.parseInt(nmF);
         numMaxFragments = i;
-      }catch(NumberFormatException e)
-      {
-        log.error("The configured count of fragments for this ContentHighlighter is not a number");
+      } catch (NumberFormatException e) {
+        log.error("The configured count of fragments for this" 
+        		+ " ContentHighlighter is not a number");
       }
     }
-    String nFS = (String)config.get(NUM_FRAGMENT_SIZE_KEY);
-    if(nFS!=null)
-    {
-      try
-      {
+    String nFS = (String) config.get(NUM_FRAGMENT_SIZE_KEY);
+    if (nFS != null) {
+      try {
         int i = Integer.parseInt(nFS);
         fragmentSize = i;
-      }catch(NumberFormatException e)
-      {
-        log.error("The configured size for fragments for this ContentHighlighter is not a number");
+      } catch (NumberFormatException e) {
+        log.error("The configured size for fragments" 
+        		+ " for this ContentHighlighter is not a number");
       }
     }
   }
 
   /**
-   * Highlights Terms by enclosing them with &lt;b&gt;term&lt;/b&gt;
+   * Highlights Terms by enclosing them with &lt;b&gt;term&lt;/b&gt;.
    * @param originalTermText 
    * @param tokenGroup 
-   * @return 
+   * @return highlightedterm
    */
-  public String highlightTerm(String originalTermText, TokenGroup tokenGroup) {
+  public final String highlightTerm(final String originalTermText,
+		  final TokenGroup tokenGroup) {
     UseCase uc = MonitorFactory.startUseCase(
     "Highlight.PhraseBolder.highlightTerm()");
     if (tokenGroup.getTotalScore() <= 0) {
@@ -140,10 +174,11 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
   /**
    * @param attribute 
    * @param parsedQuery 
-   * @return 
+   * @return highlighted text
    * 
    */
-  public String highlight(String attribute, Query parsedQuery) {
+  public final String highlight(final String attribute,
+		  final Query parsedQuery) {
     UseCase uc = MonitorFactory.startUseCase(
         "Highlight.PhraseBolder.highlight()");
     String result = "";
@@ -168,7 +203,8 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
           fragment = fragment.replaceAll(REMOVE_TEXT_FROM_FRAGMENT_REGEX, "");
           startPosition = attribute.indexOf(fragment);
           endPosition = startPosition + fragment.length();
-          if (!first || (addSeperatorArroundAllFragments && startPosition != 0)) {
+          if (!first || (addSeperatorArroundAllFragments 
+        		  && startPosition != 0)) {
             result += fragmentSeperator;
           }
           result += fragment;
