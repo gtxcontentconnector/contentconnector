@@ -167,6 +167,8 @@ public class TagTransformer extends ContentTransformer {
 					String newCode = handleTag(bean, tagMatcher.group(1),
 							tagMatcher.group(2), tagMatcher.group(0));
 					if (newCode != null) {
+						//replace $ by \$, escapes in java regular expression parsed from string are confusing
+						newCode = newCode.replaceAll("\\$", "\\\\\\$");
 						tagMatcher.appendReplacement(newValue, newCode);
 					}
 				}
