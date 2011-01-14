@@ -64,7 +64,7 @@ public class VelocityTransformer extends ContentTransformer {
 	public VelocityTransformer(final GenericConfiguration config) {
 		super(config);
 		CRConfigUtil crConfigUtil;
-		if(config instanceof CRConfigUtil) {
+		if (config instanceof CRConfigUtil) {
 			crConfigUtil = (CRConfigUtil) config;
 		} else {
 			crConfigUtil = new CRConfigUtil(config,
@@ -101,7 +101,7 @@ public class VelocityTransformer extends ContentTransformer {
 				bean.set(targetAttribute, output);
 			}
 		} catch (CRException e) {
-			logger.error("Error while rendering template "+ configName
+			logger.error("Error while rendering template " + configName
 					+ TRANSFORMER_TEMPLATE_KEY + " for bean "
 					+ bean.getContentid(), e);
 		}
