@@ -32,10 +32,6 @@ public class VelocityTransformer extends ContentTransformer {
 	 * attribute name to store the rendered velocity template in.
 	 */
 	private String targetAttribute;
-	/**
-	 * Velocity template manager.
-	 */
-	private ITemplateManager vtm;
 	
 	/**
 	 * Velocity template to render.
@@ -58,12 +54,16 @@ public class VelocityTransformer extends ContentTransformer {
 	private static Logger logger = Logger.getLogger(VelocityTransformer.class);
 	
 	/**
+	 * Configuration for the VelocityTransformer.
+	 */
+	private CRConfigUtil crConfigUtil;
+	
+	/**
 	 * Creates instance of MergeTransformer.
 	 * @param config configuration for the MergeTransformer
 	 */
 	public VelocityTransformer(final GenericConfiguration config) {
 		super(config);
-		CRConfigUtil crConfigUtil;
 		if (config instanceof CRConfigUtil) {
 			crConfigUtil = (CRConfigUtil) config;
 		} else {
@@ -78,7 +78,6 @@ public class VelocityTransformer extends ContentTransformer {
 			logger.error("Please configure " + TRANSFORMER_TEMPLATE_KEY
 					+ " for my config.");
 		} else {
-				vtm = crConfigUtil.getTemplateManager();
 				try {
 					tpl = new StringTemplate(template);
 				} catch (CRException e) {
@@ -93,6 +92,7 @@ public class VelocityTransformer extends ContentTransformer {
 	
 	@Override
 	public final void processBean(final CRResolvableBean bean) {
+		ITemplateManager vtm = crConfigUtil.getTemplateManager();
 		vtm.put("page", bean);
 		vtm.put("tools", tools);
 		try {
