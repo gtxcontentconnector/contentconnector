@@ -95,7 +95,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		try {
 			rp = config.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
-			log.error("Could not create RequestProcessor instance.", e);
+			log.error("Could not create RequestProcessor instance." 
+					+ config.getName(), e);
 		}
 
 		String timestampattributeString = config.getString(TIMESTAMP_ATTR_KEY);
