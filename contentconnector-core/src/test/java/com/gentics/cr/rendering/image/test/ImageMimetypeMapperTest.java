@@ -24,7 +24,7 @@ public class ImageMimetypeMapperTest extends TestCase {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set("filename", "my.new.testpic.jpg");
 		String type = ImageMimetypeMapper.getTypeFromBean(bean);
-		String shouldbe = "jpg";
+		String shouldbe = "jpeg";
 		assertEquals("The type (" + type + ") should be (" + shouldbe + ")", 
 				type, shouldbe);
 	}
@@ -36,7 +36,7 @@ public class ImageMimetypeMapperTest extends TestCase {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set("mimetype", "image/jpeg");
 		String type = ImageMimetypeMapper.getTypeFromBean(bean);
-		String shouldbe = "jpg";
+		String shouldbe = "jpeg";
 		assertEquals("The type (" + type + ") should be (" + shouldbe + ")", 
 				type, shouldbe);
 	}
