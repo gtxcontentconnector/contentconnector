@@ -44,6 +44,14 @@ public class CRRequest implements Cloneable, Serializable {
 	 * key for storing the attribute array.
 	 */
 	private static final String ATTRIBUTE_ARRAY_KEY = "attributeArray";
+	
+	/**
+	 * parameter to define a prefix for host relative urls (if not set, links
+	 * will not be prefixed.)
+	 * 
+	 * (replaces relative links in a,area and img tags.)
+	 */
+	public static final String PREFIX_HOST_RELATIVE_LINKS = "prefixHostRelativeLinks";
 
 
 	private HashMap<String,Resolvable> objectsToDeploy = new HashMap<String,Resolvable>();

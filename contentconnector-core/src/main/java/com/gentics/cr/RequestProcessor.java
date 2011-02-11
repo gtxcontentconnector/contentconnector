@@ -10,11 +10,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.log4j.Logger;
 
+import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.exceptions.CRException;
@@ -54,6 +57,15 @@ public abstract class RequestProcessor {
 	 * If this is not set, the requestFilter (default query) will be used
 	 */
 	public static final String HIGHLIGHT_QUERY_KEY = "highlightquery";
+	
+	
+	/**
+	 * finds all links in href="" and src="" attributes.
+	 * group 1: contains text before the link
+	 * group 2: contains the link
+	 * group 3: contains text after the link
+	 */
+	protected static final Pattern LINKS_PATTERN = Pattern.compile("(?s:(<(?:a|area|img)[^>]+?(?:href|src)=[\'\"])(/.*?)([\'\"]))");
 	
 	/**
 	 * Create new instance of RequestProcessor
@@ -222,6 +234,7 @@ public abstract class RequestProcessor {
 		
 		//TODO Use content renderer provided by NOPs
 		boolean doReplacePlinks = request.getDoReplacePlinks();
+		String prefixHostRelativeLinks = ObjectTransformer.getString(config.get(CRRequest.PREFIX_HOST_RELATIVE_LINKS), null);
 		boolean doVelocity = request.getDoVelocity();
 		
 		CRResolvableBean crBean = null;
@@ -287,6 +300,9 @@ public abstract class RequestProcessor {
 				if (o != null) {
 					if (o instanceof String) {
 						s = (String) o;
+						if (prefixHostRelativeLinks != null) {
+							s = prefixHostRelativeLinks(s, prefixHostRelativeLinks);
+						}
 						if (doReplacePlinks) {
 	
 							// starttime
@@ -363,6 +379,26 @@ public abstract class RequestProcessor {
 		return crBean;
 	}
 	
+	/**
+	 * prefixes all host-relative links in source with the given prefix.
+	 */
+	public static String prefixHostRelativeLinks(String source, String prefix) {
+		Matcher matcher = LINKS_PATTERN.matcher(source);
+		StringBuffer sb = new StringBuffer(source.length());
+		
+		while (matcher.find()) {
+			String link = matcher.group(2);
+			//if (link.charAt(0) == '/') {
+				matcher.appendReplacement(sb, "$1" + prefix + link + "$3");
+			//} else {
+			//	matcher.appendReplacement(sb, "$1$2$3");
+			//}
+		}
+		matcher.appendTail(sb);
+		
+		return sb.toString();
+	}
+
 	/**
 	 * Converts a Collection of Resolvables to a parameterized collection of Resolvables
 	 * @param col
