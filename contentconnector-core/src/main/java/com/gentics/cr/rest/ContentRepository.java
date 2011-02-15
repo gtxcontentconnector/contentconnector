@@ -205,7 +205,6 @@ public abstract class ContentRepository implements Serializable {
 
 	/**
 	 * Add a resolvable bean
-	 * 
 	 * @param resolvableBean
 	 */
 	public void addObject(CRResolvableBean resolvableBean) {
@@ -333,25 +332,58 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Get contained Objects
-	 * 
-	 * @return
+	 * @param index - index of the object to get from the ContentRepository
+	 * @return object with the given index
+	 */
+	public final CRResolvableBean getObject(final int index) {
+		return resolvableColl.get(index);
+	}
+	
+	/**
+	 * @return objects contained in the ContentRepository
 	 */
 	public Collection<CRResolvableBean> getObjects() {
 		return (Collection<CRResolvableBean>) resolvableColl;
 	}
+	
+	
+	
+	/**
+	 * @return number of objects contained in the ContentRepository
+	 */
+	public final int getSize() {
+		return resolvableColl.size();
+	}
+	
+	
+	/**
+	 * Remove the object with the given index from the ContentRepository.
+	 * @param index - index of the object to remove
+	 * @return the removed object if there was an object present at the index
+	 */
+	public final Object remove(final int index) {
+		return resolvableColl.remove(index);
+	}
 
 	/**
+	 * Replace the object at the given index with the given object.
+	 * @param resolvableBean - object to set for the given index
+	 * @param index - index to set the object
+	 */
+	public final void setObject(final int index, final CRResolvableBean resolvableBean) {
+		this.resolvableColl.add(resolvableBean);
+	}
+	
+	/**
 	 * Replaces objects in the ContentRepository with the objects in the given
-	 * collection
-	 * 
+	 * collection.
 	 * @param objects
 	 *            Collection of CRResolveableBeans which overrides the objects
 	 *            in the ContentRepository
 	 * 
 	 * throws NullPointerException when objects is null
 	 */
-	private void setObjects(Collection<CRResolvableBean> objects) {
+	private void setObjects(final Collection<CRResolvableBean> objects) {
 		if (objects == null) {
 			log
 					.error("Cannot set objects when i get a null value in setObjects(Collection objects)");

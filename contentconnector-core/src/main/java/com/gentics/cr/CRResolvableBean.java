@@ -70,15 +70,17 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 
 	private String mother_type;
 
+	/**
+	 * Resolvable wrapped in this CRResolvableBean.
+	 */
 	private Resolvable resolvable;
 	
 		
 	/**
-	 * Populate the child elements with the given collection of CRResolvableBeans
-	 * @param childRep
+	 * Populate the child elements with the given collection of CRResolvableBeans.
+	 * @param childRep - TODO javadoc
 	 */
-	public void fillChildRepository(Collection<CRResolvableBean> childRep)
-	{
+	public void fillChildRepository(final Collection<CRResolvableBean> childRep) {
 		this.childRepository.addAll(childRep);
 	}
 	
@@ -138,11 +140,11 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 *			 If obj_type of resolvable is 10008 it sets the attribute array to { "binarycontent", "mimetype" }, otherwise to { "binarycontent", "mimetype" }
 	 *			 If you want to be more specific about the attribute array, use public CRResolvableBean(Resolvable resolvable, String[] attributeNames) instead
 	 */
-	public CRResolvableBean(Resolvable resolvable) {
+	public CRResolvableBean(final Resolvable resolvable) {
 		//TODO This is ugly => make more beautiful
 		Object objTypeObject = resolvable.get("obj_type");
 		String objType = null;
-		if(objTypeObject instanceof String) {
+		if (objTypeObject instanceof String) {
 			objType = (String) objTypeObject;
 		} else if (objTypeObject != null) {
 			objType = objTypeObject.toString();
@@ -159,7 +161,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * @param resolvable The Resolvable to be converted to a CRResolveableBean
 	 * @param attributeNames The attributenames as an array of strings that should be fetched from the Resolveable
 	 */
-	public CRResolvableBean(Resolvable resolvable, String[] attributeNames) {
+	public CRResolvableBean(final Resolvable resolvable, final String[] attributeNames) {
 		init(resolvable, attributeNames);
 	}
 
@@ -357,11 +359,10 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * Sets the type of the object
 	 * @param type
 	 */
-	public void setObj_type(String type)
-	{
+	public void setObj_type(String type) {
 		this.obj_type=type;
 	}
-
+	
 	/**
 	 * Returns true if this CRResolvableBean holds binary content
 	 * @return boolean
@@ -482,6 +483,13 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 			return null;
 		}
 	}
+	
+	/**
+	 * @return contained Resolvable if there is any.
+	 */
+	public final Resolvable getResolvable() {
+		return resolvable;
+	}
 
 	/**
 	 * Sets the value of the requested attribute.
@@ -500,6 +508,16 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 				this.attrMap = new Hashtable<String, Object>();
 			}
 			this.attrMap.put(attribute, obj);
+		}
+	}
+	
+	/**
+	 * remove/unset the attribute with the specified name.
+	 * @param attributeName - name of the attribute to remove
+	 */
+	public final void remove(final String attributeName) {
+		if (this.attrMap != null && this.attrMap.contains(attributeName)) {
+			this.attrMap.remove(attributeName);
 		}
 	}
 
