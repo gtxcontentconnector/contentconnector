@@ -464,13 +464,13 @@ public class CRRequestBuilder {
 			try {
 				cr = (ContentRepository) Class.forName(cls).getConstructor(new Class[] {String[].class,String.class}).newInstance(this.getAttributeArray(),encoding);
 			} catch (Exception e) {
-				try{
+				try {
 					cr = (ContentRepository) Class.forName(cls).getConstructor(new Class[] {String[].class,String.class,CRConfigUtil.class}).newInstance(this.getAttributeArray(),encoding,configUtil);
-				} catch(Exception ex) {
+				} catch (Exception ex) {
 					try {
 						cr = (ContentRepository) Class.forName(cls).getConstructor(new Class[] {String[].class,String.class,String[].class,CRConfigUtil.class}).newInstance(this.getAttributeArray(),encoding,null,configUtil);
-					} catch(Exception exc) {
-						logger.error("Could net create ContentRepository instance from class: "+cls, exc);
+					} catch (Exception exc) {
+						logger.error("Could not create ContentRepository instance from class: " + cls, exc);
 					}
 				}
 			}
