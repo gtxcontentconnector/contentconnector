@@ -592,12 +592,20 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		}
 		if (!"".equals(timestampattribute)) {
 			Object updateTimestampObject = resolvable.get(timestampattribute);
-			String updateTimestamp = updateTimestampObject.toString();
-			if (updateTimestamp != null && !"".equals(updateTimestamp)) {
-				newDoc.removeField(timestampAttribute);
-				newDoc.add(new Field(timestampattribute,
-						updateTimestamp.toString(), Field.Store.YES,
-						Field.Index.NOT_ANALYZED));
+			if (updateTimestampObject == null) {
+				log.error("Indexing with an updateattribute (" + timestampattribute + ") has been configured but the attribute is " +
+						"not available in the current indexed object." +
+						"If using the SQLRequestProcesser, remember to configure the" +
+						"updateattribute column also in the 'columns' configuration parameter.");
+			
+			} else {
+				String updateTimestamp = updateTimestampObject.toString();
+				if (updateTimestamp != null && !"".equals(updateTimestamp)) {
+					newDoc.removeField(timestampAttribute);
+					newDoc.add(new Field(timestampattribute,
+							updateTimestamp.toString(), Field.Store.YES,
+							Field.Index.NOT_ANALYZED));
+				}
 			}
 		}
 		for (Entry<String, Boolean> entry : attributes.entrySet()) {
