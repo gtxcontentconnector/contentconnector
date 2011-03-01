@@ -64,6 +64,111 @@ public abstract class ContentHighlighter {
 	  protected static final String REMOVE_TEXT_FROM_FRAGMENT_REGEX 
 	  	= "^[\\p{Punct}\\p{Space}" + UNICODE_PUNCT_CHARS + "&&[^(<]]*";
 
+	/**
+	 * Configuration key to define if fragments seperator should be added at the 
+	 * beginning and end of all fragments. They are only added if the first
+	 * fragment is not from the start and the last fragment is not from the end of
+	 * the attribute.
+	 */
+	protected static final String SURROUNDING_SEPERATOR_KEY = "surroundingseperator";
+
+	/**
+	 * number of fragments we should return. (maximum)
+	 */
+	protected static final String NUM_MAX_FRAGMENTS_KEY = "fragments";
+	/**
+	 * size of fragments (in words or characters).
+	 */
+	protected static final String NUM_FRAGMENT_SIZE_KEY = "fragmentsize";
+	
+	/**
+	 * prefix for highlighted text.
+	 */
+	protected static final String PHRASE_PREFIX_KEY = "highlightprefix";
+	
+	/**
+	 * postfix for highlighted text.
+	 */
+	protected static final String PHRASE_POSTFIX_KEY = "highlightpostfix";
+	
+	/**
+	 * Configuration Key for fragment seperator.
+	 */
+	protected static final String FRAGMENT_SEPERATOR_KEY = "fragmentseperator";
+	
+	
+	/**
+	 * highlight prefix.
+	 */
+	private String highlightPrefix = "";
+
+	/**
+	 * @return the configured highlight prefix.
+	 */
+	protected final String getHighlightPrefix() {
+		return highlightPrefix;
+	}
+
+	/**
+	 * highlight postfix.
+	 */
+	private String highlightPostfix = "";
+	
+	/**
+	 * @return the configured highlight suffix.
+	 */
+	protected final String getHighlightPostfix() {
+		return highlightPostfix;
+	}
+	
+	/**
+	 * fragment seperator.
+	 */
+	private String fragmentSeperator = "";
+	
+	/**
+	 * @return the configured fragment seperator.
+	 */
+	protected final String getFragmentSeperator() {
+		return fragmentSeperator;
+	}
+	
+	/**
+	 * if there should be a seperator at the beginning and at the and of the
+	 * highlighted text.
+	 */
+	private boolean addSeperatorArroundAllFragments = true;
+	
+	/**
+	 * @return <code>true</code> if seperators should be placed arround all fragments.
+	 */
+	protected final boolean addSeperatorArroundAllFragments() {
+		return addSeperatorArroundAllFragments;
+	}
+	
+	/**
+	 * Max fregments.
+	 */
+	private int numMaxFragments;
+	
+	/**
+	 * @return number fragments to return
+	 */
+	protected final int getMaxFragments() {
+		return numMaxFragments;
+	}
+	
+	/**
+	 * fragment size.
+	 */
+	private int fragmentSize;
+	
+	/**
+	 * @return the configured fragment size.
+	 */
+	protected final int getFragmentSize() {
+		return fragmentSize;
+	}
 	
 	/**
 	 * Returns the hightlight attribute that is highlighted by this
@@ -73,6 +178,17 @@ public abstract class ContentHighlighter {
 	public final String getHighlightAttribute() {
 		return (highlightAttribute);
 	}
+	
+	/**
+	 * @return the default value for the fragment size of this implementation.
+	 */
+	protected abstract int getDefaultFragmentSize();
+
+	/**
+	 * @return the default value for max fragments by this implementation.
+	 */
+	protected abstract int getDefaultMaxFragments();
+	
 	/**
 	 * Constructor.
 	 * @param config configuration.
@@ -83,8 +199,15 @@ public abstract class ContentHighlighter {
 		try {
 			expr = ExpressionParser.getInstance().parse(rule);
 		} catch (ParserException e) {
-			e.printStackTrace();
+			log.error("Error parsing highlighter rule.", e);
 		}
+		
+		highlightPrefix = config.getString(PHRASE_PREFIX_KEY, "<b>");
+		highlightPostfix = config.getString(PHRASE_POSTFIX_KEY, "</b>");
+		fragmentSeperator = config.getString(FRAGMENT_SEPERATOR_KEY, " ... ");
+		addSeperatorArroundAllFragments = config.getBoolean(SURROUNDING_SEPERATOR_KEY);
+		numMaxFragments = config.getInteger(NUM_MAX_FRAGMENTS_KEY, getDefaultMaxFragments());
+		fragmentSize = config.getInteger(NUM_FRAGMENT_SIZE_KEY, getDefaultFragmentSize());
 	}
 	
 	/**
