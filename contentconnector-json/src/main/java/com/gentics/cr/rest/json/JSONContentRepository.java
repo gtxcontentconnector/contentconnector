@@ -210,9 +210,9 @@ public class JSONContentRepository extends ContentRepository {
 							{
 								
 								value=(String)bValue;
-							}
-							else
-							{
+							} else if (bValue instanceof Number) {
+								value = bValue.toString();
+							} else {
 								try {
 									value = new String(getBytes(bValue));
 									
