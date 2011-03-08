@@ -32,17 +32,9 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	 */
 	private static final int DEFAULT_MAX_FRAGMENTS = 3;
 	/**
-	 * max number of fragments.
-	 */
-	private int numMaxFragments = DEFAULT_MAX_FRAGMENTS;
-	
-	/**
 	 * default fragment size.
 	 */
 	private static final int DEFAULT_FRAGMENT_SIZE = 100;
-	
-	
-
 	
 	/**
 	 * Create new Instance of PhraseBolder.
@@ -50,7 +42,6 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	 */
 	public WhitespaceVectorBolder(final GenericConfiguration config) {
 		super(config);
-		fragmentSize = DEFAULT_FRAGMENT_SIZE;
 	}
 
 	
@@ -70,8 +61,8 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 			FastVectorHighlighter highlighter =
 				new FastVectorHighlighter(true, true, new SimpleFragListBuilder(),
 						new WhitespaceFragmentsBuilder(
-						new String[]{this.highlightPrefix},
-						new String[]{this.highlightPostfix}));
+						new String[]{getHighlightPrefix()},
+						new String[]{getHighlightPostfix()}));
 			FieldQuery fieldQuery = highlighter.getFieldQuery(parsedQuery);
 			//highlighter.setTextFragmenter(new WordCountFragmenter(fragmentSize));
 
@@ -83,14 +74,14 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 				//TextFragment[] frags = highlighter.getBestTextFragments(tokenStream,
 				//		attribute, true, numMaxFragments);
 				String[] frags = highlighter.getBestFragments(fieldQuery, reader, docId,
-						fieldName, fragmentSize, numMaxFragments);
+						fieldName, getFragmentSize(), getMaxFragments());
 				ucFragments.stop();
 				boolean first = true;
 				if (frags != null) {
 					for (String frag : frags) {
 						frag = frag.replaceAll(REMOVE_TEXT_FROM_FRAGMENT_REGEX, "");
 						if (!first) {
-							result.append(fragmentSeperator);
+							result.append(getFragmentSeperator());
 						} else {
 							first = false;
 						}
