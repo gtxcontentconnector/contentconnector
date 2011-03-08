@@ -41,31 +41,16 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	 */
 	private static final int DEFAULT_FRAGMENT_SIZE = 100;
 	
-	/**
-	 * size of a fragment.
-	 */
-	private int fragmentSize = DEFAULT_FRAGMENT_SIZE;
+	
 
-	/**
-	 * highlight prefix.
-	 */
-	private String highlightPrefix = "";
-	/**
-	 * highlight suffix.
-	 */
-	private String highlightPostfix = "";
-	/**
-	 * Fragment seperator.
-	 */
-	private String fragmentSeperator = "";
-
+	
 	/**
 	 * Create new Instance of PhraseBolder.
 	 * @param config config
 	 */
 	public WhitespaceVectorBolder(final GenericConfiguration config) {
 		super(config);
-		
+		fragmentSize = DEFAULT_FRAGMENT_SIZE;
 	}
 
 	

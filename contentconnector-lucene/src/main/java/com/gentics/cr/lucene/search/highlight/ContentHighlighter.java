@@ -100,7 +100,7 @@ public abstract class ContentHighlighter {
 	/**
 	 * highlight prefix.
 	 */
-	private String highlightPrefix = "";
+	protected String highlightPrefix = "";
 
 	/**
 	 * @return the configured highlight prefix.
@@ -112,7 +112,7 @@ public abstract class ContentHighlighter {
 	/**
 	 * highlight postfix.
 	 */
-	private String highlightPostfix = "";
+	protected String highlightPostfix = "";
 	
 	/**
 	 * @return the configured highlight suffix.
@@ -124,7 +124,7 @@ public abstract class ContentHighlighter {
 	/**
 	 * fragment seperator.
 	 */
-	private String fragmentSeperator = "";
+	protected String fragmentSeperator = "";
 	
 	/**
 	 * @return the configured fragment seperator.
@@ -149,7 +149,7 @@ public abstract class ContentHighlighter {
 	/**
 	 * Max fregments.
 	 */
-	private int numMaxFragments;
+	protected int numMaxFragments;
 	
 	/**
 	 * @return number fragments to return
@@ -161,7 +161,7 @@ public abstract class ContentHighlighter {
 	/**
 	 * fragment size.
 	 */
-	private int fragmentSize;
+	protected int fragmentSize;
 	
 	/**
 	 * @return the configured fragment size.
