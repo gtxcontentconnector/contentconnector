@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -179,67 +181,39 @@ public class JSONContentRepository extends ContentRepository {
 				
 				if(bValue!=null)
 				{
-					if((!entry.equals("binarycontent")) &&(bValue.getClass().isArray()||bValue.getClass()==ArrayList.class))
+					//deal with multivalue attributes
+					if(bValue.getClass().isArray()|| bValue instanceof List)
 					{
 						JSONArray value = new JSONArray();
-						ArrayList<Object> arr;
-						if(bValue.getClass()==ArrayList.class)
-							arr=(ArrayList<Object>)bValue;
-						else
-						{
-							arr=new ArrayList<Object>();
+						List<Object> arr;
+						if(bValue instanceof List) {
+							arr = new ArrayList<Object>();
+							List<Object> ob_arr = (List<Object>) bValue;
+							for(Object obj : ob_arr) {								
+								String v ="";
+								v = convertToString(obj);
+								arr.add(v);
+							}
+						} else {
+							arr = new ArrayList<Object>();
 							Object[] ob_arr = (Object[])bValue;
-							for(int i=0;i<ob_arr.length;i++ )
-								arr.add(ob_arr[i]);
+							for(Object obj : ob_arr) {								
+								String v ="";
+								v = convertToString(obj);
+								arr.add(v);
+							}
 						}
 						value.addAll(arr);
 						attrContainer.element(entry, value);
-					}
+					} 
+					//dealt with single value attributes (String, Number, ByteArray)
 					else
 					{
-						String value="";
-						if(entry.equals("binarycontent"))
-						{
-							byte[] bs = (byte[])bValue;
-							value=new String(bs);
-						}
-						else
-						{
-							//value=(String) bValue;
-							if(bValue.getClass()==String.class)
-							{
-								
-								value=(String)bValue;
-							} else if (bValue instanceof Number) {
-								value = bValue.toString();
-							} else {
-								try {
-									value = new String(getBytes(bValue));
-									
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-	//						if(bValue.getClass()==String.class)
-	//						{
-	//							value=(String) bValue;
-	//						}
-	//						else
-	//						{
-	//							value=(String) bValue.toString();
-	//						}
-						}
+						String value="";				
+						value = convertToString(bValue);						
 						attrContainer.element(entry, value);
-					}
-					
-				}
-				/* 
-				if (value == null) {
-					value = "";
-				}*/
-				
-				
+					}					
+				}				
 			}
 			objElement.element("attributes",attrContainer);
 		}
@@ -258,6 +232,21 @@ public class JSONContentRepository extends ContentRepository {
 			objElement.element("children",childContainer);
 		}
 		return objElement;
+	}
+
+	private String convertToString(Object bValue) {
+		String value;
+		if(bValue instanceof String) {							
+			value=(String)bValue;
+		} else if (bValue instanceof Number) {
+			value = bValue.toString();
+		} else if (bValue instanceof Date) {
+			value = Long.toString(((Date) bValue).getTime());
+		} else {
+			byte[] bs = (byte[])bValue;
+			value=new String(bs);								
+		}
+		return value;
 	}
 	
 	
