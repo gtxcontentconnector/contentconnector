@@ -124,7 +124,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 			}
 			for (String att : attributes) {
 				if (Arrays.asList(columns).contains(att)) {
-					if (!statement.isEmpty()) {
+					if (!statement.equals("")) {
 						statement += ",";
 					}
 					statement += att;
