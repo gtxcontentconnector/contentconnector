@@ -197,7 +197,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 			numcols = rset.getMetaData().getColumnCount();
 			colnames = new String[numcols];
 			for (int i = 1; i <= numcols; i++) {
-				colnames[i - 1] = rset.getMetaData().getColumnName(i);
+				colnames[i - 1] = rset.getMetaData().getColumnLabel(i);
 			}
 		} catch (SQLException e) {
 			logger.error("Error getting metadata from result.", e);
