@@ -170,7 +170,7 @@ public class DidYouMeanProvider implements IEventReceiver{
     log.debug("Starting to reindex didyoumean index.");
     IndexReader sourceReader = IndexReader.open(source);
     Collection<String> fields = null;
-    if(all) {
+    if (all) {
       fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
     } else {
       fields = dym_fields;
