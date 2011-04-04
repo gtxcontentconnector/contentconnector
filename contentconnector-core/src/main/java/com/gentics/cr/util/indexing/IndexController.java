@@ -63,32 +63,36 @@ public class IndexController {
 	 * Get table of configured indexes
 	 * @return
 	 */
-	public Hashtable<String,IndexLocation> getIndexes()
-	{
+	public Hashtable<String, IndexLocation> getIndexes() {
 		return this.indextable;
 	}
 	
-	
-	private Hashtable<String,IndexLocation> buildIndexTable()
-	{
-		Hashtable<String,IndexLocation> indexes = new Hashtable<String,IndexLocation>(1);
-		GenericConfiguration indexConfiguration = (GenericConfiguration)crconfig.get(INDEX_KEY);
-		if(indexConfiguration!=null)
-		{
-			Hashtable<String,GenericConfiguration> configs = indexConfiguration.getSubConfigs();
+	/**
+	 * Build the index table.
+	 * @return index table.
+	 */
+	private Hashtable<String, IndexLocation> buildIndexTable() {
+		Hashtable<String, IndexLocation> indexes 
+			= new Hashtable<String, IndexLocation>(1);
+		GenericConfiguration indexConfiguration 
+			= (GenericConfiguration) crconfig.get(INDEX_KEY);
+		if (indexConfiguration != null) {
+			Hashtable<String, GenericConfiguration> configs 
+				= indexConfiguration.getSubConfigs();
 
-			for (Entry<String,GenericConfiguration> e:configs.entrySet()) {
+			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				String indexLocationName = e.getKey();
-				IndexLocation indexLocation = IndexLocation.getIndexLocation(new CRConfigUtil(e.getValue(),INDEX_KEY+"."+indexLocationName));
-				if(indexLocation == null){
-					logger.error("Cannot get index location for "+indexLocationName);
-				}
-				else
+				IndexLocation indexLocation = IndexLocation.getIndexLocation(
+						new CRConfigUtil(e.getValue(), INDEX_KEY + "." 
+								+ indexLocationName));
+				if (indexLocation == null) {
+					logger.error("Cannot get index location for "
+							+ indexLocationName);
+				} else {
 					indexes.put(indexLocationName, indexLocation);
+				}
 			}
-		}
-		else
-		{
+		} else {
 			logger.error("THERE ARE NO INDEXES CONFIGURED FOR INDEXING.");
 		}
 		return indexes;
@@ -96,14 +100,11 @@ public class IndexController {
 	
 	
 	/**
-	 * Finalizes all index Locations
+	 * Finalizes all index Locations.
 	 */
-	public void stop()
-	{
-		if(this.indextable!=null)
-		{
-			for(Entry<String,IndexLocation> e:this.indextable.entrySet())
-			{
+	public final void stop() {
+		if (this.indextable != null) {
+			for (Entry<String, IndexLocation> e : this.indextable.entrySet()) {
 				IndexLocation il = e.getValue();
 				il.stop();
 			}
