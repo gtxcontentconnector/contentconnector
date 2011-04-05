@@ -65,12 +65,15 @@ public class Autocompleter implements IEventReceiver{
 		GenericConfiguration auto_conf = (GenericConfiguration)config.get(AUTOCOMPLETE_INDEY_KEY);
 		source = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
 		autocompleteLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(auto_conf,AUTOCOMPLETE_INDEY_KEY));
-		
+		autocompleteLocation.registerDirectoriesSpecial();
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);
 		if(s_autofield!=null)this.autocompletefield=s_autofield;
 		
 		try
 		{
+			//CHECK AND REMOVE LOCKING
+			autocompleteLocation.forceRemoveLock();
+			//REINDEX
 			reIndex();
 		}
 		catch(IOException e)

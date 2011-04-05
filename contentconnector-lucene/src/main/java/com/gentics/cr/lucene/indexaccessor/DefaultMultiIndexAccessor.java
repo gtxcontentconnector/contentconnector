@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MultiReader;
@@ -39,7 +40,11 @@ import org.apache.lucene.store.Directory;
  *
  */
 public class DefaultMultiIndexAccessor implements IndexAccessor {
-
+	/**
+	 * Log4j logger for error and debug messages.
+	 */
+	private static final Logger LOGGER =
+		Logger.getLogger(DefaultMultiIndexAccessor.class);
   private final Map<Searcher, IndexAccessor> multiSearcherAccessors = new HashMap<Searcher, IndexAccessor>();
   private final Map<IndexReader, IndexAccessor> multiReaderAccessors = new HashMap<IndexReader, IndexAccessor>();
 
@@ -199,6 +204,21 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	      }
 	    }
 		return open;
+	}
+	
+	public boolean isLocked() {
+		boolean locked = false;
+		for (Directory d : this.dirs) {
+			try {
+				locked = IndexWriter.isLocked(d);
+			} catch (IOException e) {
+				LOGGER.error(e);
+			}
+			if(locked) {
+				break;
+			}
+		}
+		return locked;
 	}
 	
 	public void open() {

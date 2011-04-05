@@ -494,7 +494,7 @@ public abstract class IndexLocation {
 	
 	public abstract boolean isOptimized();
 	
-
+	public abstract boolean isLocked();
 	
 	/**
 	 * Creates a new CRIndexJob for the given CRConfig and adds the job to the queue

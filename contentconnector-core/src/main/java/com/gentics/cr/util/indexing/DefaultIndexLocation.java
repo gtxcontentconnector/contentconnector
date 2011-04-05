@@ -40,4 +40,10 @@ public class DefaultIndexLocation extends IndexLocation {
 		return false;
 	}
 
+	@Override
+	public boolean isLocked() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

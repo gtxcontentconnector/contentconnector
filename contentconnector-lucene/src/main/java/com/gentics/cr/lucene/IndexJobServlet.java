@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.servlet.VelocityServlet;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
@@ -92,7 +94,8 @@ public class IndexJobServlet extends VelocityServlet {
 			response.setContentType("text/html");
 			Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
 			
-					 
+			setTemplateVariable("specialDirs", SpecialDirectoryRegistry
+					.getInstance().getSpecialDirectories()); 
 			setTemplateVariable("indexes", indexTable.entrySet());
 			setTemplateVariable("nc", nc);
 			setTemplateVariable("selectedIndex", selectedIndex);

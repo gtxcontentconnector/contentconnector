@@ -25,6 +25,7 @@ import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 
 /**
  * This class can be used to build an autocomplete index over an existing lucene index.
@@ -80,7 +81,7 @@ public class DidYouMeanProvider implements IEventReceiver{
     GenericConfiguration auto_conf = (GenericConfiguration)config.get(DIDYOUMEAN_INDEY_KEY);
     source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
     didyoumeanLocation = LuceneIndexLocation.createDirectory(new CRConfigUtil(auto_conf,DIDYOUMEAN_INDEY_KEY));
-    
+    SpecialDirectoryRegistry.getInstance().register(didyoumeanLocation);
     didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);
 
     checkForExistingTerms =
@@ -198,6 +199,7 @@ public class DidYouMeanProvider implements IEventReceiver{
   }
 
   public void finalize() {
+	SpecialDirectoryRegistry.getInstance().unregister(didyoumeanLocation);
     EventManager.getInstance().unregister(this);
   }
 

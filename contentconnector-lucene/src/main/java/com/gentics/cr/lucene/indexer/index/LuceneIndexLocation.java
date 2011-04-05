@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorToken;
+import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.util.Constants;
 import com.gentics.cr.util.indexing.IndexLocation;
 
@@ -39,6 +39,8 @@ public abstract class LuceneIndexLocation extends
 	protected static final String RAM_IDENTIFICATION_KEY = "RAM";
 
 	protected String name = null;
+	
+	private boolean registered = false;
 	
 	private IndexAccessorToken accessorToken = null;
 
@@ -240,6 +242,16 @@ public abstract class LuceneIndexLocation extends
 	 * @return the directory used by this index location.
 	 */
 	protected abstract Directory[] getDirectories();
+	
+	public synchronized void registerDirectoriesSpecial() {
+		if (!registered) {
+			for (Directory d : getDirectories()) {
+				SpecialDirectoryRegistry.getInstance().register(d);
+			}
+			registered = true;
+		}
+		
+	}
 
 	/**
 	 * Get number of documents in Index.
@@ -300,6 +312,11 @@ public abstract class LuceneIndexLocation extends
 
 	@Override
 	public void finalize() {
+		if (registered) {
+			for (Directory d : getDirectories()) {
+				SpecialDirectoryRegistry.getInstance().unregister(d);
+			}
+		}
 		IndexAccessorFactory.getInstance().releaseConsumer(accessorToken);
 	}
 
