@@ -103,7 +103,7 @@ public abstract class IndexLocation {
 	/**
 	 * Holds the time when each index part was checked.
 	 */
-	private HashMap<String, Date> indexJobCreationTimes = null;
+	private Hashtable<String, Date> indexJobCreationTimes = new Hashtable<String, Date>();
 	
 	
 	private IndexJobQueue queue = null;
@@ -547,7 +547,7 @@ public abstract class IndexLocation {
 	 * resets all creation times for index jobs.
 	 */
 	public final void resetIndexJobCreationTimes() {
-		indexJobCreationTimes = new HashMap<String, Date>();
+		indexJobCreationTimes = new Hashtable<String, Date>();
 	}
 
 	private static final String CR_KEY = "CR";
