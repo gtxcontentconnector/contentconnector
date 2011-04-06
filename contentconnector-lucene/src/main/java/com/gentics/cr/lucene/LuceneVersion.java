@@ -17,6 +17,6 @@ public class LuceneVersion {
 		 */
 		public static Version getVersion()
 		{
-			return Version.LUCENE_30;
+			return Version.LUCENE_31;
 		}
 }
