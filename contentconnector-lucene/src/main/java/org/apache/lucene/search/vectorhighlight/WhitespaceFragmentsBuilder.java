@@ -8,6 +8,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.MapFieldSelector;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.highlight.Encoder;
 import org.apache.lucene.search.vectorhighlight.FieldFragList.WeightedFragInfo;
 import org.apache.lucene.search.vectorhighlight.FieldFragList
 	.WeightedFragInfo.SubInfo;
@@ -243,5 +244,19 @@ public class WhitespaceFragmentsBuilder implements FragmentsBuilder {
 					new MapFieldSelector(new String[]{fieldName}));
 			return doc.getFields(fieldName);
 			// according to Document class javadoc, this never returns null
+		}
+
+		public String createFragment(IndexReader arg0, int arg1, String arg2,
+				FieldFragList arg3, String[] arg4, String[] arg5, Encoder arg6)
+				throws IOException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String[] createFragments(IndexReader arg0, int arg1,
+				String arg2, FieldFragList arg3, int arg4, String[] arg5,
+				String[] arg6, Encoder arg7) throws IOException {
+			// TODO Auto-generated method stub
+			return null;
 		}
 }
