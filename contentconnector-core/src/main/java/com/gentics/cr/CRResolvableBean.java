@@ -208,7 +208,10 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 					//serializable objects (Resolvables) and convert them into
 					//CRResolvableBeans
 					try {
-						Object o = inspectResolvableAttribute(PropertyResolver.resolve(
+						//THE FOLLOWING CALL DOES NOT THROW AN EXCEPTION
+						//WHEN THE DB CONNECTION IS LOST
+						Object o = inspectResolvableAttribute(
+								PropertyResolver.resolve(
 								givenResolvable, cleanedAttributeNames[i]));
 						if (o != null) {
 							this.attrMap.put(cleanedAttributeNames[i], o);

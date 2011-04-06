@@ -21,6 +21,34 @@ public class IndexerStatus {
 	private long lastRunDuration = 0;
 	
 	private String currStatusString="";
+	
+	private boolean error = false;
+	
+	private String errorMessage = "";
+	
+	/**
+	 * set the error message.
+	 * @param message error message
+	 */
+	public final void setError(final String message) {
+		error = true;
+		errorMessage = message;
+	}
+	/**
+	 * Check if job had an error.
+	 * @return true if error.
+	 */
+	public final boolean hasError() {
+		return error;
+	}
+	
+	/**
+	 * Fetch error message.
+	 * @return error message if set.
+	 */
+	public final String getErrorMessage() {
+		return errorMessage;
+	}
 
 	/**
 	 * Get current Status String

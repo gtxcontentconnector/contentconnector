@@ -214,6 +214,22 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	}
 	
 	/**
+	 * Check if job had an error.
+	 * @return true if error.
+	 */
+	public final boolean hasError() {
+		return status.hasError();
+	}
+	
+	/**
+	 * Get the current error message if set.
+	 * @return error message.
+	 */
+	public final String getErrorMessage() {
+		return status.getErrorMessage();
+	}
+	
+	/**
 	 * Tests if a {@link AbstractUpdateCheckerJob} has the same identifier as
 	 * the given object being an instance of {@link AbstractUpdateCheckerJob}.
 	 * @param obj Object to test if it is equal to this
@@ -304,8 +320,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 			//Finally delete all Objects from Index that are not checked for an
 			//Update
 			indexUpdateChecker.deleteStaleObjects();
-		}
-		finally {
+		} finally {
 			objectsToUpdateCase.stop();
 		}
 		return updateObjects;
