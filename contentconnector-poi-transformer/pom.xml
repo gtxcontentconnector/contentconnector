@@ -6,7 +6,9 @@
   <packaging>jar</packaging>
   <name>Gentics Content.Connector - POI TRANSFORMER</name>
   <description>This is the POI-TRANSFORMER-Extension to the Gentics Content.Connector Suite</description>
-  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <build>
   	<plugins>
   		<plugin>
