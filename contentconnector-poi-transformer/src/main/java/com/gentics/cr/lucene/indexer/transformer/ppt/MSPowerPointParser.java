@@ -3,7 +3,10 @@ package com.gentics.cr.lucene.indexer.transformer.ppt;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
+import org.apache.poi.hpsf.PropertySet;
+import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.poifs.eventfilesystem.POIFSReader;
 import org.apache.poi.poifs.eventfilesystem.POIFSReaderEvent;
 import org.apache.poi.poifs.eventfilesystem.POIFSReaderListener;
@@ -42,12 +45,11 @@ public class MSPowerPointParser implements POIFSReaderListener {
 		String contents = "";
 		try
 		{
-	        
-	        POIFSReader reader = new POIFSReader();
-	        writer = new ByteArrayOutputStream();
-	        reader.registerListener(this);
-	        reader.read(is);
-	        contents = writer.toString();
+			POIFSReader reader = new POIFSReader();
+			writer = new ByteArrayOutputStream();
+			reader.registerListener(this);
+			reader.read(is);
+			contents = writer.toString(getEncoding());
 		}catch(Exception ex)
 		{
 			ex.printStackTrace();
@@ -59,32 +61,51 @@ public class MSPowerPointParser implements POIFSReaderListener {
 				e.printStackTrace();
 			}
 		}
-        return contents;
+		return contents;
 
-    }
+	}
+	/**
+	 * Hashmap containing the mapping between codepages (office documents)
+	 * and encodings (java streams)
+	 */
+	private final static HashMap<Integer, String> ENCODINGMAPPING = new HashMap<Integer, String>();
+	static {
+		ENCODINGMAPPING.put(1252, "WINDOWS-1252");
+	}
+
+	private String getEncoding() {
+		if(ps != null) {
+			// get the encoding from the document:
+			// http://poi.terra-intl.com/hpsf/how-to.html
+			int codepage = ps.getFirstSection().getCodepage();
+			if(ENCODINGMAPPING.containsKey(codepage)) {
+				return ENCODINGMAPPING.get(codepage);
+			}
+		}
+		//return system default charset
+		return java.nio.charset.Charset.defaultCharset().toString();
+	}
 
 
-	
+	PropertySet ps = null;
 	
 	/**
 	 * @param event 
 	 * 
 	 */
 	public void processPOIFSReaderEvent(POIFSReaderEvent event){
-			if(!event.getName().equalsIgnoreCase("PowerPoint Document"))
-            	return;
-			try
-			{
-	            DocumentInputStream input = event.getStream();
-	            byte[] buffer = new byte[input.available()];
-	            input.read(buffer, 0, input.available());
-	            processContent(0, buffer.length, buffer);
+		try{
+			if(event.getName().equalsIgnoreCase("PowerPoint Document")) {
+				DocumentInputStream input = event.getStream();
+				byte[] buffer = new byte[input.available()];
+				input.read(buffer, 0, input.available());
+				processContent(0, buffer.length, buffer);
+			} else if(event.getName().equalsIgnoreCase("DocumentSummaryInformation") || event.getName().equalsIgnoreCase("SummaryInformation") ) {
+				ps = PropertySetFactory.create(event.getStream());
 			}
-			catch(Exception ex)
-			{
-				ex.printStackTrace();
-			}
-            
+		} catch (Exception e) {
+			throw new RuntimeException("Cannot process PPT Document.", e);
+		}
 	}
 	
 	 private void processContent(int beginIndex, int endIndex, byte[] buffer) {
