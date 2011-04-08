@@ -33,7 +33,7 @@ public class PPTContentTransformerTest extends TestCase {
 		ContentTransformer t = new PPTContentTransformer(config);
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
-		String x = "Click to edit Master title style Click to edit Master text styles\rSecond level\rThird level\rFourth level\rFifth level Test Text ";
+		String x = "Click to edit Master title style Click to edit Master text styles\rSecond level\rThird level\rFourth level\rFifth level Test Text This text contains special characters ÖÜÄöüäß? ";
 		assertEquals(x,s);
 	}
 
