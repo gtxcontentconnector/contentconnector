@@ -226,7 +226,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 							<div class="smallheader">last jobs</div>
 							<div class="smallbox">
 								#foreach($lj in $lastJobs)
-									<div#if($lj.hasError()) class="error" title="$lj.getErrorMessage()"#end>TEST $lj.hasError() $lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getStartDate()<br />&nbsp;&nbsp;&nbsp; #humanreadableTime($lj.getDuration() "ms") for $lj.getObjectsDone() Objects</div>
+									<div#if($lj.hasError()) class="error" title="$lj.getErrorMessage()"#end>$lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getStartDate()<br />&nbsp;&nbsp;&nbsp; #humanreadableTime($lj.getDuration() "ms") for $lj.getObjectsDone() Objects</div>
 								#end
 							</div>
 						</div>
