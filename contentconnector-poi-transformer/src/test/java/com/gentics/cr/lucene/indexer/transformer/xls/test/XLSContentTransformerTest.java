@@ -14,7 +14,7 @@ import com.gentics.cr.lucene.indexer.transformer.xls.XLSContentTransformer;
 
 
 public class XLSContentTransformerTest extends TestCase {
-	CRResolvableBean bean;
+	CRResolvableBean bean, xlsxbean;
 	GenericConfiguration config;
 	
 	@Before
@@ -27,12 +27,29 @@ public class XLSContentTransformerTest extends TestCase {
 		
 		config = new GenericConfiguration();
 		config.set("attribute", "binarycontent");
+		
+		
+		xlsxbean = new CRResolvableBean();
+		
+
+		InputStream xstream = XLSContentTransformerTest.class.getResourceAsStream("testdoc.xlsx");
+		byte[] xarr = IOUtils.toByteArray(stream);
+		xlsxbean.set("binarycontent", arr);
+		
 	}
 	
 	public void testTransformer() throws Exception {
 		ContentTransformer t = new XLSContentTransformer(config);
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
+		
+		assertTrue("testtext,".equals(s));
+	}
+	
+	public void testXLSX() throws Exception {
+		ContentTransformer t = new XLSContentTransformer(config);
+		t.processBean(xlsxbean);
+		String s = (String) xlsxbean.get("binarycontent");
 		
 		assertTrue("testtext,".equals(s));
 	}
