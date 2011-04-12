@@ -447,6 +447,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 				try {
 					rwQuery = parser.parse(newSuggestionQuery);
 					termset = new HashSet<Term>();
+					//REWRITE NEWLY PARSED QUERY
+					rwQuery = rwQuery.rewrite(reader);
 					rwQuery.extractTerms(termset);
 					suggestions = this.didyoumeanprovider
 					.getSuggestions(termset, this.didyoumeansuggestcount,
