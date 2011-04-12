@@ -28,14 +28,7 @@ public class XLSContentTransformerTest extends TestCase {
 		config = new GenericConfiguration();
 		config.set("attribute", "binarycontent");
 		
-		
-		xlsxbean = new CRResolvableBean();
-		
-
-		InputStream xstream = XLSContentTransformerTest.class.getResourceAsStream("testdoc.xlsx");
-		byte[] xarr = IOUtils.toByteArray(stream);
-		xlsxbean.set("binarycontent", arr);
-		
+			
 	}
 	
 	public void testTransformer() throws Exception {
@@ -46,14 +39,7 @@ public class XLSContentTransformerTest extends TestCase {
 		assertTrue("testtext,".equals(s));
 	}
 	
-	public void testXLSX() throws Exception {
-		ContentTransformer t = new XLSContentTransformer(config);
-		t.processBean(xlsxbean);
-		String s = (String) xlsxbean.get("binarycontent");
-		
-		assertTrue("testtext,".equals(s));
-	}
-
+	
 	@After
 	public void tearDown() throws Exception {
 		
