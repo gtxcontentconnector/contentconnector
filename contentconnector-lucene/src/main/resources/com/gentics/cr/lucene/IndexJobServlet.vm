@@ -61,7 +61,7 @@ $output.replaceAll('([0-9A-Za-z]* ){2} .*','$1')##
 
 #macro(humanreadableMemory $number $unit)##
 #set($output = "#humanreadable($number $unit ['8b', '1024B', '1024KB', '1024MB', '0GB'])")##
-$output.replaceAll('([0-9A-Za-z]*).*','$1')##
+$output.replaceAll('([0-9]*)([A-Za-z]*)[ ]+([0-9]*)([A-Za-z]*).*','$1.$3$2')##
 #end##
 
 #macro(round $number $round)
@@ -130,7 +130,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 				<div class="row">Memory</div>
 			</div>
 			<div class="indexcontainer">
-				<div class="row">#humanreadableMemory($usedmemory "B")/ #humanreadableMemory($totalmemory "B") (max #humanreadableMemory($maxmemory "B"))</div>
+				<div class="row">#humanreadableMemory($usedmemory "B") / #humanreadableMemory($totalmemory "B") (max #humanreadableMemory($maxmemory "B")) </div>
 			</div>
 		</div>
 		<div style="clear: both;"></div>
