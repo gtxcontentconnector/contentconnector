@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
@@ -11,7 +10,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.cr.CRConfig;
-import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 

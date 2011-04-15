@@ -115,7 +115,9 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			
 			.smallheader { font-weight: bold; }
 			.smallbox { margin-left: 4px; }
-			.error { background-color:red; }
+			.oldjob { border: 1px solid #000000; background-color: #FEFEFE; margin-top: 0.5em; }
+			.oldjob.error { background-color: #F06969; }
+			
 		</style>
 	</head>
 	<body>
@@ -226,7 +228,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 							<div class="smallheader">last jobs</div>
 							<div class="smallbox">
 								#foreach($lj in $lastJobs)
-									<div#if($lj.hasError()) class="error" title="$lj.getErrorMessage()"#end>$lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getStartDate()<br />&nbsp;&nbsp;&nbsp; #humanreadableTime($lj.getDuration() "ms") for $lj.getObjectsDone() Objects</div>
+									<div#if($lj.hasError()) class="oldjob error" title="$lj.getErrorMessage()"#else class="oldjob"#end>#if($lj.hasError())ERROR:#end $lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getStartDate()<br />&nbsp;&nbsp;&nbsp; #humanreadableTime($lj.getDuration() "ms") for $lj.getObjectsDone() Objects</div>
 								#end
 							</div>
 						</div>
@@ -266,7 +268,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 		</div>
 		<div style="clear: both;"></div>
 		#end
-		<h2>Functions</h2>
+		
 		#set($reportaction="report")
 		#if("$!action"=="report")
 			<div class="report margintop_50">
@@ -276,6 +278,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			<br/>
 			#set($reportaction="show")
 		#end
+		<h2>Functions</h2>
 		<a href="?action=$action$nc" title="Refresh"><img src="data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%19%00%00%00%16%08%02%00%00%00%BA%DD%A0%E1%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%04gAMA%00%00%B1%8F%0B%FCa%05%00%00%00%09pHYs%00%00%0E%C3%00%00%0E%C3%01%C7o%A8d%00%00%02%06IDAT8Oc%F8O%3D%C0%40%3D%A3%FE%0FQ%B3%0E%9F%B93g%C5%81%09%F3v%CCYu%F0%C8%D9%BB%C8%012k%C5%3E%B4%F0%C1%E9%C7%DDG%AFE%E7Mp%89nu%8F%EB%F6L%EE%F7L%99%08%24%13Jg%EF%3Dq%F3%C9%9B%AF)e%D3%F3%9B%17%13e%D6%C2u%87%5D%A3%9B%DD%E2%BB%BDR%A7%FAd%CE%0E%C8%9D%EF%9F%B3%C0%3F%7B%1E%90%ED%9B1-%B6d%0EP%AA%A4k-a%B3%0E%9F%BD%E3%10Z%E7%1A%DF%E3%975%ABg%C1%E1%93W%9E%DDx%F4%1EH%F6%CC%3F%14%94%B7%C87k%BEw%C6%1C%AF%B4Ye%BD%5B%09%9B%15%90%D2%E1%14%DD%E1%912m%E7%B1%7B%C8%AA%EF%3F%FF%1CW%3A%CF%2B%7D%B6O%D6%7C%20*%EB%DDF%C0%ACm%87%AF%D8%85%D5%B9%C4%F7%F7%2F%3A%8C%A64%22%B7%DF1%BA%C3%3Dy%9Ag%FA%5C%CF%8Cy%C5%DD%5B%08%98%D58i%ADmh%A3s%C2%E4%F3%B7%5E!%2B%5D%B4%EEHa%CB%E2%FAI%9B%1B%A7%EFj%9A%B1%07%88%E6m8C%D8%2C%9B%B0%16%CF%94%E9%D7%1E%BC%235K%A0%A7%89%BEy%DB%ADB%9B%EDc%26%9C%BB%F9%92R%B3%80%E1e%11%D4%60%1B%D9%DB6%7B7V%B3%BAgm%CA%AA%9E%3D%7D%E9%5ELY%2Ci%D5-%B6%CD%22%BC%D32%A2g%FD%DE%2B%C8%1A%5E~%FC%BDl%CB%09%23%AFBS%FF%9A%C2%D6%95D%99%B5%E7%C4-%D3%C0F%F3%B0n%EB%F0%CE%CA%BE%B5%FBN%DF%01j%DB%7F%FAvy%E7%12%13%EFRc%BF%1A%B3%E0%B6%BD%A7%EF%13e%16P%D1%D4e%07%CCB%DALC%3A%8D%03%5B%0C%7Dk%8D%7C*%F5%BDJ%0C%BC%CA%81l%B3%90%F6%19%AB%8Ec%F5%3E%CE%FC%B8n%CF%25%EF%D4I%26%81%ED%26%81m%26%01%CDF%FEM%40%D2%2Fs%FA%C6%037q%C5%09%BE%F2%EB%C6%E3%8FK%B6%9Ck%9A%B6%BD%A2wS%D3%B4%9D%CB%B7%5D%BC%F9%E43%9E%C8%1D%A2e!I%C9%15%00n%BE%AB%C2a%3F%B9%DD%00%00%00%00IEND%AEB%60%82" alt="Refresh" /></a><a href="?action=$reportaction$nc" title="Show performance report"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAXCAYAAAD+4+QTAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAALbSURBVEhLvZVtSFNRGMf/Z/d6165rRQWlUzDfw0owUSNdZvRiQhBR0YdAfCEiCOpDVOCnoJL6UIH2QYqSYPihFIYl0cx0CPMlWSVhzYiywqigkVO5u/d2zmLR9N7t+kEfNgbnPOf5Pc//PM8ZUalhkc20yPHD4ZcEQhYil+fFOIZ9fmzJz0RpQYZhEQxD9tXfnBf0UcspYyBWScT6hv1qZd0Nlf1qGVu/fqcr5r7W+ahK/s92bpae4XGM+SfwOzgDq9WC3IwUbCtIj6pE73wUhGl+6VYnLpyo+qf50/43uNv2BJM/psBxAkwJPEBov6gK1q6y4thBB3IyU2BfLULrPMsi5p20tntw/0EPCL8MvCDCxAvgeR6qSsIQWZFpAAkrrQJar9bq3o8uhGXVcKUVCaINlkQbHEUbUFaYgRU2C34FptE36Ef/yAdIIRkKhZ2pLkNFcbYmSBdyoL4RNBYEiw2na/Zi99b1UQEGRr/iYlMnBdBh46iE1FxN1ZoQzWF87BnFz0CQymPGHscmXUDDySrIIQmyzKRT0e19axwyODJGdeegEh7lJTmaFTBAUV4SztbvpA1hAmci8Ay8Ng5hnirhINBLNgt/pYgYkygCYGvsHr58/hRzKDXlWm4VodDHOTgzi5lZKSqAq7kuXMFcY6DSoo3GK8nNSoUi066h367elzGzvNbiCu8n21N1/TQrqSzNgy1RgKSE4HL70NE9Oi/At0AIzk4vnB3PwntZdnHhLez2vsP5RiedcBE8UeAozsSusnzsoLPSM+RHV7cX7l4fVM4MjvpcPncUFYVpmtXEnPhm53Pce9gPFRyVToISmqUTHqLtKoHQNUKfmQSziJrD5Th+qERXrrhPfbv7FW639WDy+xTrOfqhd0WbwkQIkpPWoPZIBfZv1570CDUuhDmOTQQw5BvH+4+TCE5LEC1mZKWtQ8HmdGTbrTEbg20agsSNEsdhSf7j/wCoWIX3GFcELwAAAABJRU5ErkJggg==" alt="Show performance report" /></a><br/>
 	</body>
 </html>
