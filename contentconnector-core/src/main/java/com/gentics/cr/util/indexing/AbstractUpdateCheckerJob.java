@@ -277,8 +277,10 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 					updateObjects = (Collection<CRResolvableBean>)
 						rp.getObjects(request);
 				} catch (CRException e) {
-					log.error("Error getting results for full index from "
-							+ "requestprocessor", e);
+					String message = "Error getting objects to full index from "
+						+ "RequestProcessor. " + e.getMessage();
+					log.error(message, e);
+					status.setError(message);
 				} 
 			} else {
 				//Sorted (by the idAttribute) list of Resolvables to check for
@@ -289,8 +291,10 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 					objectsToIndex = (Collection<CRResolvableBean>)
 						rp.getObjects(request);
 				} catch (CRException e) {
-					log.error("Error getting results for full index from "
-							+ "requestprocessor", e);
+					String message = "Error getting objects to index from "
+						+ "RequestProcessor. " + e.getMessage();
+					log.error(message, e);
+					status.setError(message);
 					return null;
 				}
 				Iterator<CRResolvableBean> resolvableIterator =
@@ -314,6 +318,8 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 				} catch (WrongOrderException e) {
 					log.error("Got the objects from the datasource in the wrong"
 							+ "order.", e);
+					status.setError("Got the objects from the datasource in the"
+							+ "wrong order.");
 					return null;
 				}
 			}
