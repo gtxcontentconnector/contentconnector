@@ -11,7 +11,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 
-import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.Constants;
 
 /**
@@ -51,7 +50,7 @@ public class SpecialDirectoryInformationEntry {
 	public static String createDirectoryIdentifyer(final Directory dir) {
 		String id = "";
 		if (dir instanceof FSDirectory) {
-			id = ((FSDirectory) dir).getFile().getPath();
+			id = ((FSDirectory) dir).getDirectory().getPath();
 		} else if (dir instanceof RAMDirectory) {
 			id = "RAM_" + dir.toString();
 		} else {
@@ -75,7 +74,7 @@ public class SpecialDirectoryInformationEntry {
 		long size = 0;
 		if (directory instanceof FSDirectory) {
 			size = FileUtils.sizeOfDirectory(
-					((FSDirectory) directory).getFile());
+					((FSDirectory) directory).getDirectory());
 		} else if (directory instanceof RAMDirectory) {
 			size = ((RAMDirectory) directory).sizeInBytes();
 		}
@@ -98,7 +97,7 @@ public class SpecialDirectoryInformationEntry {
 	public final Date lastModified() {
 		long date = 0;
 		if (directory instanceof FSDirectory) {
-			date = ((FSDirectory) directory).getFile().lastModified();
+			date = ((FSDirectory) directory).getDirectory().lastModified();
 		} else if (directory instanceof RAMDirectory) {
 			date = System.currentTimeMillis();
 		}
