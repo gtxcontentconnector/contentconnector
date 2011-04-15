@@ -130,9 +130,9 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 	                result.add(bean);
 	            }
 	        } catch(SQLException e) {
-	            e.printStackTrace();
+	            throw new CRException(e);
 	        } catch(Exception ex){
-	        	ex.printStackTrace();
+	        	throw new CRException(ex);
 	        }
 			finally {
 	            try { if (rset != null) rset.close(); } catch(Exception e) { }
