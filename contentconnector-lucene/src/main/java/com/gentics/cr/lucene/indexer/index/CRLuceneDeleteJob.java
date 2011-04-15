@@ -12,12 +12,23 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
-
+/**
+ * This job is used to clear a lucene index.
+ * @author Christopher
+ *
+ */
 public class CRLuceneDeleteJob extends AbstractUpdateCheckerJob {
 
   
-	public CRLuceneDeleteJob(CRConfig config, IndexLocation indexLoc,
-			Hashtable<String, CRConfigUtil> configmap) {
+	/**
+	 * Constructor.
+	 * @param config configuration
+	 * @param indexLoc indexLocation
+	 * @param configmap index config map
+	 */
+	public CRLuceneDeleteJob(final CRConfig config, 
+			final IndexLocation indexLoc,
+			final Hashtable<String, CRConfigUtil> configmap) {
 		super(config, indexLoc, configmap);
 		log = Logger.getLogger(CRLuceneDeleteJob.class);
 		// TODO Auto-generated constructor stub
