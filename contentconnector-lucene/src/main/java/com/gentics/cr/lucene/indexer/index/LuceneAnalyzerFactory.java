@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
@@ -196,19 +197,18 @@ public final class LuceneAnalyzerFactory {
 		if (stopWordFile != null) {
 			//initialize Analyzer with stop words
 			try {
-				analyzer =
-					new StandardAnalyzer(LuceneVersion.getVersion(), 
+				analyzer =	new StandardAnalyzer(LuceneVersion.getVersion(), 
 							stopWordFile);
+				return analyzer;
 			} catch (IOException ex) {
 				LOGGER.error("Could not open stop words file. "
 						+ "Will create standard "
 						+ "analyzer.", ex);
-				analyzer = new StandardAnalyzer(LuceneVersion.getVersion());
 			}
-		} else {
-			//if no stop word list exists load fall back
-			analyzer = new StandardAnalyzer(LuceneVersion.getVersion());
 		}
+		
+		analyzer = new StandardAnalyzer(LuceneVersion.getVersion(),
+				CharArraySet.EMPTY_SET);
 		return analyzer;
 	}
 }
