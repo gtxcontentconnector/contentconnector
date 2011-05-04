@@ -49,7 +49,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	/**
 	 * static log4j {@link Logger} to log errors and debug.
 	 */
-	private static Logger log = Logger.getLogger(CRLuceneIndexJob.class);
+	private static final Logger LOG = Logger.getLogger(CRLuceneIndexJob.class);
+	/**
+	 * static log4j {@link Logger} to log errors and debug.
+	 */
+	private static final Logger TR_LOG = Logger
+		.getLogger(ContentTransformer.class);
 
 	/**
 	 * Name of class to use for IndexLocation, must extend
@@ -525,21 +530,27 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						+ ").indexBean");
 				try {
 					//CALL PRE INDEX PROCESSORS/TRANSFORMERS
-					//TODO This could be optimized for multicore servers with a map/reduce
-					//algorithm
+					//TODO This could be optimized for multicore servers with 
+					//a map/reduce algorithm
 					if (transformerlist != null) {
 						for (ContentTransformer transformer : transformerlist) {
 							try {
-								status.setCurrentStatusString("TRANSFORMING... TRANSFORMER: "
-										+ transformer.getTransformerKey() + "; BEAN: "
-										+ bean.get(idAttribute));
+								
 								if (transformer.match(bean)) {
-									transformer.processBeanWithMonitoring(bean, indexWriter);
+									String msg = "TRANSFORMER: "
+										+ transformer.getTransformerKey() 
+										+ "; BEAN: " + bean
+										.get(idAttribute);
+									status.setCurrentStatusString(msg);
+									TR_LOG.debug(msg);
+									transformer.processBeanWithMonitoring(bean, 
+											indexWriter);
 								}
 							} catch (Exception e) {
 								//TODO Remember broken files
-								log.error("Error while Transforming Contentbean with id: "
-										+ bean.get(idAttribute) + " Transformer: "
+								log.error("Error while Transforming Contentbean"
+										+ "with id: " + bean.get(idAttribute) 
+										+ " Transformer: "
 										+ transformer.getTransformerKey() + " "
 										+ transformer.getClass().getName(), e);
 							}
