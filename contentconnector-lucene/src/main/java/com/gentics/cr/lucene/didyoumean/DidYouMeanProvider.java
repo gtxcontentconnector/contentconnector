@@ -147,37 +147,42 @@ public class DidYouMeanProvider implements IEventReceiver{
    */
   public Map<String,String[]> getSuggestions(Set<Term> termlist,int count,IndexReader reader)
   {
-    Map<String,String[]> result = new LinkedHashMap<String,String[]>();
+    Map<String, String[]> result = new LinkedHashMap<String, String[]>();
     Set<String> uniquetermset = new HashSet<String>();
-    for (Term t : termlist) {
-      if(all) {
-        uniquetermset.add(t.text());
-      } else {
-        //ONLY ADD TERM IF IT COMES FROM A DYM FIELD
-        if(dym_fields.contains(t.field())) {
-          uniquetermset.add(t.text());
-        }
-      }
-    }
-    log.debug("Will use the following fields for dym: "+dym_fields.toString());
-    for(String term : uniquetermset) {
-      try {
-        if(checkForExistingTerms || !this.spellchecker.exist(term)) {
-          String[] ts = this.spellchecker.suggestSimilar(term, count, reader,
-              didyoumeanfield, true);
-          if (ts!=null && ts.length>0) {
-            result.put(term, ts);
-          }
-        }
-      } catch(IOException ex) {
-        log.error("Could not suggest terms",ex);
-      }
+    if (this.spellchecker != null) {
+	    for (Term t : termlist) {
+	      if (all) {
+	        uniquetermset.add(t.text());
+	      } else {
+	        //ONLY ADD TERM IF IT COMES FROM A DYM FIELD
+	        if (dym_fields.contains(t.field())) {
+	          uniquetermset.add(t.text());
+	        }
+	      }
+	    }
+	    log.debug("Will use the following fields for dym: "
+	    			+ dym_fields.toString());
+	    for (String term : uniquetermset) {
+	      try {
+	        if (checkForExistingTerms || !this.spellchecker.exist(term)) {
+	          String[] ts = this.spellchecker
+	          		.suggestSimilar(term, count, reader,
+	          				didyoumeanfield, true);
+	          if (ts != null && ts.length > 0) {
+	            result.put(term, ts);
+	          }
+	        }
+	      } catch (IOException ex) {
+	        log.error("Could not suggest terms", ex);
+	      }
+	    }
+    } else {
+    	log.error("Spellchecker has not properly been initialized.");
     }
     return result;
   }
 
-  private void reIndex() throws IOException
-  {
+  private void reIndex() throws IOException {
     // build a dictionary (from the spell package) 
     log.debug("Starting to reindex didyoumean index.");
     IndexReader sourceReader = IndexReader.open(source);
