@@ -110,8 +110,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 	 */
 	private void loadConfigFile(final String path) {
 		String errorMessage = "Could not load configuration file at: "
-			+ CRUtil.resolveSystemProperties("${" + CRUtil.PORTALNODE_CONFPATH
-					+ "}/rest/" + this.getName() + ".properties") + "!";
+			+ CRUtil.resolveSystemProperties(path) + "!";
 		try {
 			//LOAD SERVLET CONFIGURATION
 			String confpath = CRUtil.resolveSystemProperties(path);
