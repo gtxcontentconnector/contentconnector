@@ -24,6 +24,7 @@ import com.gentics.cr.events.Event;
 import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 
@@ -75,6 +76,10 @@ public class DidYouMeanProvider implements IEventReceiver{
   
   private Collection<String> dym_fields = null;
   
+  private boolean dymreopenupdate = false;
+  
+  private static final String UPDATE_ON_REOPEN_KEY = "dymreopenupdate";
+  
   public DidYouMeanProvider(CRConfig config)
   {
     GenericConfiguration src_conf = (GenericConfiguration)config.get(SOURCE_INDEX_KEY);
@@ -91,6 +96,10 @@ public class DidYouMeanProvider implements IEventReceiver{
     		(float) 0.0);
     Integer minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
     
+    String sDYMReopenUpdate = config.getString(UPDATE_ON_REOPEN_KEY);
+    if (sDYMReopenUpdate != null) {
+    	dymreopenupdate = Boolean.parseBoolean(sDYMReopenUpdate);
+    }
     
     //FETCH DYM FIELDS
     if (this.didyoumeanfield.equalsIgnoreCase("ALL")) {
@@ -137,6 +146,26 @@ public class DidYouMeanProvider implements IEventReceiver{
   public CustomSpellChecker getInitializedSpellchecker() {
     return this.spellchecker;
   }
+  
+  private long lastupdatestored = 0;
+  
+  private void checkForUpdate() {
+		boolean reopened = false;
+		try {
+			if (source.fileExists("reopen")) {
+				long lastmodified = source.fileModified("reopen");
+				if (lastmodified != lastupdatestored) {
+					reopened = true;
+					lastupdatestored = lastmodified;
+				}
+			}
+			if (reopened) {
+					reIndex();	
+			}
+		} catch (IOException e) {
+			log.debug("Could not reIndex autocomplete index.", e);
+		}
+	}
 
   /**
    * TODO javadoc.
@@ -147,6 +176,10 @@ public class DidYouMeanProvider implements IEventReceiver{
    */
   public Map<String,String[]> getSuggestions(Set<Term> termlist,int count,IndexReader reader)
   {
+	  
+	  if (dymreopenupdate) {
+		  checkForUpdate();
+	  }
     Map<String, String[]> result = new LinkedHashMap<String, String[]>();
     Set<String> uniquetermset = new HashSet<String>();
     if (this.spellchecker != null) {
@@ -182,7 +215,7 @@ public class DidYouMeanProvider implements IEventReceiver{
     return result;
   }
 
-  private void reIndex() throws IOException {
+  private synchronized void reIndex() throws IOException {
     // build a dictionary (from the spell package) 
     log.debug("Starting to reindex didyoumean index.");
     IndexReader sourceReader = IndexReader.open(source);
