@@ -21,6 +21,7 @@ import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.spell.LuceneDictionary;
+import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -57,7 +58,11 @@ public class Autocompleter implements IEventReceiver{
 	
 	private static final String AUTOCOMPLETE_FIELD_KEY="autocompletefield";
 	
+	private static final String AUTOCOMPLETE_REOPEN_UPDATE = "autocompletereopenupdate";
+	
 	private String autocompletefield = "content";
+	
+	private boolean autocompletereopenupdate = false;
 	
 	public Autocompleter(CRConfig config)
 	{
@@ -68,6 +73,11 @@ public class Autocompleter implements IEventReceiver{
 		autocompleteLocation.registerDirectoriesSpecial();
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);
 		if(s_autofield!=null)this.autocompletefield=s_autofield;
+		
+		String sReopenUpdate = config.getString(AUTOCOMPLETE_REOPEN_UPDATE);
+		if (sReopenUpdate != null) { 
+			autocompletereopenupdate = Boolean.parseBoolean(sReopenUpdate);
+		}
 		
 		try
 		{
@@ -104,6 +114,10 @@ public class Autocompleter implements IEventReceiver{
 		String term = request.getRequestFilter();
 		// get the top 5 terms for query 
 		
+		if (autocompletereopenupdate) {
+			checkForUpdate();
+		}
+		
 		IndexAccessor ia = autocompleteLocation.getAccessor();
 		Searcher autoCompleteSearcher = ia.getPrioritizedSearcher();
 		IndexReader autoCompleteReader = ia.getReader(false);
@@ -126,8 +140,35 @@ public class Autocompleter implements IEventReceiver{
         
         return result;
 	}
+	private long lastupdatestored = 0;
+	private void checkForUpdate() {
+		IndexAccessor ia = source.getAccessor();
+		boolean reopened = false;
+		try {
+			IndexReader reader = ia.getReader(false);
+			Directory dir = reader.directory();
+			try {
+				if (dir.fileExists("reopen")) {
+					long lastupdate = dir.fileModified("reopen");
+					if (lastupdate != lastupdatestored) {
+						reopened = true;
+						lastupdatestored = lastupdate;
+					}
+				}
+			} finally {
+				ia.release(reader, false);
+			}
+			if (reopened) {
+				
+					reIndex();
+				
+			}
+		} catch (IOException e) {
+			log.debug("Could not reIndex autocomplete index.", e);
+		}
+	}
 	
-	private void reIndex() throws IOException
+	private synchronized void reIndex() throws IOException
 	{
 		// build a dictionary (from the spell package) 
 		log.debug("Starting to reindex autocomplete index.");
