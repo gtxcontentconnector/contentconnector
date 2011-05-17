@@ -1,6 +1,5 @@
 package com.gentics.cr.util.indexing;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
@@ -49,7 +48,7 @@ public abstract class IndexLocation {
 	 */
 //	private static final String INDEX_LOCATION_CLASS_DEFAULT =
 //		"com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
-	private static final String PERIODICAL_KEY = "PERIODICAL";
+	private static final String PERIODICALCLASS_KEY = "periodicalClass";  
 	private static Hashtable<String, IndexLocation> indexmap;
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
 	
@@ -108,7 +107,7 @@ public abstract class IndexLocation {
 	
 	private IndexJobQueue queue = null;
 	protected CRConfig config;
-	private boolean periodical = false;
+	private IPeriodicalIndexConfig periodicalIndexConfig;
 	private int periodical_interval = 60; //60 seconds
 	private Thread periodical_thread;
 	private boolean lockdetection = false;
@@ -168,7 +167,7 @@ public abstract class IndexLocation {
 		config = givenConfig;
 		queue = new IndexJobQueue(config);
 
-		periodical = config.getBoolean(PERIODICAL_KEY, periodical);
+		periodicalIndexConfig = initPeriodicalIndexConfig(config);
 
 		periodical_interval =
 			config.getInteger(PERIODICAL_INTERVAL_KEY, periodical_interval);
@@ -183,6 +182,21 @@ public abstract class IndexLocation {
 		initIndexIntervals();
 		
 	}
+	
+	private IPeriodicalIndexConfig initPeriodicalIndexConfig(CRConfig config) {
+		String className = config.getString(PERIODICALCLASS_KEY);
+
+		if (className!=null && className.length()!=0) {
+			try {
+				Class<?> clazz = Class.forName(className);
+				Constructor<?> constructor = clazz.getConstructor(CRConfig.class);
+				return (IPeriodicalIndexConfig)constructor.newInstance(config);
+			} catch (Exception e) {
+				log.warn("Cound not init configured "+PERIODICALCLASS_KEY+": "+className, e);
+			}
+		 }
+		 return new PeriodicalIndexStandardConfig(config);
+	 }
 
 	/**
 	 * Check the index intervals of all IndexParts and init the Map
@@ -207,11 +221,11 @@ public abstract class IndexLocation {
 	 * 
 	 */
 	private void initializeQueue() {
-		if (periodical) {
+		if (periodicalIndexConfig.isPeriodical()) {
 			periodical_thread = new Thread(new Runnable() {
 				public void run() {
 					boolean interrupted = false;
-					while (periodical && !interrupted
+					while (periodicalIndexConfig.isPeriodical() && !interrupted
 							&& !Thread.currentThread().isInterrupted()) {
 						try {
 							createAllCRIndexJobs();
@@ -703,7 +717,7 @@ public abstract class IndexLocation {
 	 * @return
 	 */
 	public boolean isPeriodical() {
-		return this.periodical;
+		return periodicalIndexConfig.isPeriodical();
 	}
 	
 	/**
