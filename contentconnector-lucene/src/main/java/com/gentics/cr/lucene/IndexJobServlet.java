@@ -32,7 +32,7 @@ public class IndexJobServlet extends VelocityServlet {
 	private static final String NAGIOS_PARAM = "nagios";
 	private static final long serialVersionUID = 0002L;
 	private Logger log = Logger.getLogger(IndexJobServlet.class);
-	private IndexController indexer;
+	protected IndexController indexer;
 	
 	public void init(final ServletConfig config) throws ServletException {
 
