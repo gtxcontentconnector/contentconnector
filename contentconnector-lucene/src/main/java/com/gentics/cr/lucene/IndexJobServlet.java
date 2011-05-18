@@ -60,7 +60,7 @@ public class IndexJobServlet extends VelocityServlet {
 		long s = new Date().getTime();
 		// get the objects
 
-		String action = request.getParameter("action");
+		String action = getAction(request);
 		String index = request.getParameter("idx");
 
 		if (doNag) {
@@ -86,25 +86,10 @@ public class IndexJobServlet extends VelocityServlet {
 			}
 			skipRenderingVelocity();
 		} else {
-			String nc = "&t=" + System.currentTimeMillis();
-			String selectedIndex = request.getParameter("index");
-			Long totalMemory = Runtime.getRuntime().totalMemory();
-			Long freeMemory = Runtime.getRuntime().freeMemory();
-			Long maxMemory = Runtime.getRuntime().maxMemory();
 			response.setContentType("text/html");
 			Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
 			
-			setTemplateVariable("specialDirs", SpecialDirectoryRegistry
-					.getInstance().getSpecialDirectories()); 
-			setTemplateVariable("indexes", indexTable.entrySet());
-			setTemplateVariable("nc", nc);
-			setTemplateVariable("selectedIndex", selectedIndex);
-			setTemplateVariable("report", MonitorFactory.getSimpleReport());
-			setTemplateVariable("action", action);
-			setTemplateVariable("maxmemory", maxMemory);
-			setTemplateVariable("totalmemory", totalMemory);
-			setTemplateVariable("freememory", freeMemory);
-			setTemplateVariable("usedmemory", totalMemory - freeMemory);
+			setTemplateVariables(request);
 			
 			for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
 			IndexLocation loc = e.getValue();
@@ -141,6 +126,31 @@ public class IndexJobServlet extends VelocityServlet {
 		// endtime
 		long e = new Date().getTime();
 		this.log.info("Executiontime for getting Status " + (e - s));
+	}
+	
+	protected void setTemplateVariables(HttpServletRequest request) {
+		Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
+		String nc = "&t=" + System.currentTimeMillis();
+		String selectedIndex = request.getParameter("index");
+		Long totalMemory = Runtime.getRuntime().totalMemory();
+		Long freeMemory = Runtime.getRuntime().freeMemory();
+		Long maxMemory = Runtime.getRuntime().maxMemory();
+		
+		setTemplateVariable("specialDirs", SpecialDirectoryRegistry
+				.getInstance().getSpecialDirectories()); 
+		setTemplateVariable("indexes", indexTable.entrySet());
+		setTemplateVariable("nc", nc);
+		setTemplateVariable("selectedIndex", selectedIndex);
+		setTemplateVariable("report", MonitorFactory.getSimpleReport());
+		setTemplateVariable("action", getAction(request));
+		setTemplateVariable("maxmemory", maxMemory);
+		setTemplateVariable("totalmemory", totalMemory);
+		setTemplateVariable("freememory", freeMemory);
+		setTemplateVariable("usedmemory", totalMemory - freeMemory);
+	}
+	
+	protected String getAction(HttpServletRequest request) {
+		return request.getParameter("action");
 	}
 
 }
