@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.servlet.VelocityServlet;
@@ -35,7 +34,7 @@ public class IndexJobServlet extends VelocityServlet {
 	private Logger log = Logger.getLogger(IndexJobServlet.class);
 	private IndexController indexer;
 	
-	public final void init(final ServletConfig config) throws ServletException {
+	public void init(final ServletConfig config) throws ServletException {
 
 		super.init(config);
 		this.indexer = new IndexController(config.getServletName());
