@@ -720,6 +720,10 @@ public abstract class IndexLocation {
 		return periodicalIndexConfig.isPeriodical();
 	}
 	
+	public IPeriodicalIndexConfig getPeriodicalIndexConfig() {
+		return periodicalIndexConfig;
+	}
+	
 	/**
 	 * Stops all Index workers
 	 */
