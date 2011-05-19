@@ -145,6 +145,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			<div class="row #getnextrow()">Index was modified</div>
 			<div class="row #getnextrow()">Is Locked</div>
 			<div class="row #getnextrow()">Periodical indexing</div>
+			<div class="row #getnextrow()">Periodical Config Class</div>
 			<div class="row #getnextrow()">Current checkinterval</div>
 			<div class="row #getnextrow()">Elements in queue</div>
 			<div class="row #getnextrow()">Workerstatus</div>
@@ -169,6 +170,8 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 					<div class="row #getnextrow() small center">$loc.lastModified()</div>
 					<div class="row #getnextrow() small center">$loc.isLocked()</div>
 					<div class="row #getnextrow() small center">#if($loc.isPeriodical()) true #else false #end</div>
+					#set($pConfig = $loc.getPeriodicalIndexConfig())
+					<div class="row #getnextrow() small center" title="$pConfig.getClass().getName()">$pConfig.getClass().getSimpleName()</div>
 					<div class="row #getnextrow() small center">
 						#set($createTime="#humanreadableTime($loc.getInterval() 's')")
 						#set($checkTime="#humanreadableTime($queue.getInterval() 's')")
