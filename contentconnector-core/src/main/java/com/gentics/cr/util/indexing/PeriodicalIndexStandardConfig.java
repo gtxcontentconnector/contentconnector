@@ -10,16 +10,26 @@ import com.gentics.cr.CRConfig;
 public class PeriodicalIndexStandardConfig implements IPeriodicalIndexConfig {
 
 	/**
-	 * Configuration key for periodical indexer jobs 
+	 * Configuration key for periodical indexer jobs.
 	 */
 	public static final String PERIODICAL_KEY = "PERIODICAL";
 	
+	/**
+	 * configured value for periodical indexer execution.
+	 */
 	private boolean periodical;
 	
-	public PeriodicalIndexStandardConfig(CRConfig config) {
+	/**
+	 * 
+	 * @param config
+	 */
+	public PeriodicalIndexStandardConfig(final CRConfig config) {
 		periodical = config.getBoolean(PERIODICAL_KEY, PERIODICAL_DEFAULT);
 	}
 	
+	/**
+	 * @return configured value for periodical indexer execution.
+	 */
 	public boolean isPeriodical() {
 		return periodical;
 	}

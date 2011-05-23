@@ -33,7 +33,7 @@ public class IndexJobServlet extends VelocityServlet {
 	private static final long serialVersionUID = 0002L;
 	private Logger log = Logger.getLogger(IndexJobServlet.class);
 	protected IndexController indexer;
-	
+
 	public void init(final ServletConfig config) throws ServletException {
 
 		super.init(config);
@@ -127,6 +127,9 @@ public class IndexJobServlet extends VelocityServlet {
 		this.log.info("Executiontime for getting Status " + (e - s));
 	}
 	
+	/**
+     * set variables for velocity template
+     */
 	protected void setTemplateVariables(HttpServletRequest request) {
 		Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
 		String nc = "&t=" + System.currentTimeMillis();

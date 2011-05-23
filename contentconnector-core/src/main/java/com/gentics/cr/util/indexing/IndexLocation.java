@@ -48,10 +48,14 @@ public abstract class IndexLocation {
 	 */
 //	private static final String INDEX_LOCATION_CLASS_DEFAULT =
 //		"com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
+    /**
+     * Config key for a classname. 
+     * The given class is called to calculate the periodical execution flag of the indexer. 
+     */
 	private static final String PERIODICALCLASS_KEY = "periodicalClass";  
 	private static Hashtable<String, IndexLocation> indexmap;
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
-	
+
 	/**
 	 * Configuration key for the interval in which new jobs are created.
 	 */
@@ -183,16 +187,25 @@ public abstract class IndexLocation {
 		
 	}
 	
-	private IPeriodicalIndexConfig initPeriodicalIndexConfig(CRConfig config) {
+	/**
+	 * Initialize a config class for the periodical execution flag of the indexer.
+	 * If init of the configured class fails, a fallback class is returned. 
+	 * 
+	 * @return configclass
+	 * @param config
+	 */
+	private IPeriodicalIndexConfig initPeriodicalIndexConfig(
+			final CRConfig config) {
 		String className = config.getString(PERIODICALCLASS_KEY);
 
-		if (className!=null && className.length()!=0) {
+		if (className != null && className.length() != 0) {
 			try {
 				Class<?> clazz = Class.forName(className);
 				Constructor<?> constructor = clazz.getConstructor(CRConfig.class);
 				return (IPeriodicalIndexConfig)constructor.newInstance(config);
 			} catch (Exception e) {
-				log.warn("Cound not init configured "+PERIODICALCLASS_KEY+": "+className, e);
+				log.warn("Cound not init configured " + PERIODICALCLASS_KEY
+						+ ": " + className, e);
 			}
 		 }
 		 return new PeriodicalIndexStandardConfig(config);
