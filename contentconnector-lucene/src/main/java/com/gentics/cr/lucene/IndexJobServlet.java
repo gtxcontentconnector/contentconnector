@@ -37,8 +37,18 @@ public class IndexJobServlet extends VelocityServlet {
 	public void init(final ServletConfig config) throws ServletException {
 
 		super.init(config);
-		this.indexer = new IndexController(config.getServletName());
+		this.indexer = initIndexController(config);
 
+	}
+	
+	/**
+	 * implemented as own method to change executed context.
+	 * 
+	 * @param config
+	 * @return indexController
+	 */
+	public IndexController initIndexController(final ServletConfig config) {
+		return new IndexController(config.getServletName());
 	}
 
 	@Override
