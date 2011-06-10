@@ -1,5 +1,6 @@
 package com.gentics.cr.lucene.search.query;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
@@ -16,6 +17,11 @@ import com.gentics.cr.util.generics.Instanciator;
  *
  */
 public final class CRQueryParserFactory {
+	
+	/**
+	 * Log4j logger.
+	 */
+	private static Logger logger = Logger.getLogger(CRQueryParserFactory.class);
 
 	/**
 	 * Default constructor to prevent instantiation of utility class.
@@ -29,7 +35,8 @@ public final class CRQueryParserFactory {
 	
 	/**
 	 * configuration key for lower case expanded terms.
-	 * configures if the wildcardqueries should be automatically converted to lowercase by lucene.
+	 * configures if the wildcardqueries should be automatically converted 
+	 * to lowercase by lucene.
 	 */
 	private static final String LOWER_CASE_EXPANDED_TERMS_KEY = "lowercaseexpandedterms";
 	
@@ -62,10 +69,19 @@ public final class CRQueryParserFactory {
 				
 				String parserClass = pconfig.getString(QUERY_PARSER_CLASS);
 				if (parserClass != null) {
-				parser = (QueryParser) Instanciator.getInstance(parserClass,
+					parser = (QueryParser) Instanciator.getInstance(parserClass,
 						new Object[][]{new Object[]{LuceneVersion.getVersion(),
-								searchedAttributes, analyzer, request}});	
+								searchedAttributes, analyzer, request}});
+					if (parser == null) {
+						logger.warn(String.format(
+								"Configured %s '%s' of CRConfig %s was not initialized",
+								QUERY_PARSER_CLASS,
+								parserClass,
+								config.getName()));
+					}
+					
 				}
+
 			}
 
 			if (parser == null) {
