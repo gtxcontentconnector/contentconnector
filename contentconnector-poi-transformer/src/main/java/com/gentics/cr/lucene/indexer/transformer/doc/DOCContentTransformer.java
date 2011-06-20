@@ -3,6 +3,8 @@ package com.gentics.cr.lucene.indexer.transformer.doc;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.apache.poi.hwpf.OldWordFileFormatException;
+import org.apache.poi.hwpf.extractor.Word6Extractor;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 
 import com.gentics.cr.CRResolvableBean;
@@ -46,11 +48,17 @@ public class DOCContentTransformer extends ContentTransformer{
 			throw new IllegalArgumentException("Parameter must be instance of byte[]");
 		}
 		String ret=null;
-		WordExtractor docextractor;
 		try {
-			docextractor = new WordExtractor(is);
-			
+			WordExtractor docextractor = new WordExtractor(is);
 			ret = docextractor.getText();
+		} catch (OldWordFileFormatException e) {
+			try {
+				is.reset();
+				Word6Extractor docextractor = new Word6Extractor(is);
+				ret = docextractor.getText();
+			} catch (IOException e1) {
+				throw new CRException(e1);
+			}
 			
 		} catch (IOException e) {
 			throw new CRException(e);
