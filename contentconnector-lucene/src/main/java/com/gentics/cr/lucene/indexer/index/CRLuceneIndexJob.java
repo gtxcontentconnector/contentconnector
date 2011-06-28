@@ -264,8 +264,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					} catch (NumberFormatException e) {
 						log.error("The configured " + BATCH_SIZE_KEY 
 								+ " for the Current CR"
-								+ " did not contain a parsable integer. " 
-								+ e.getMessage());
+								+ " did not contain a parsable integer. ",
+								e);
 					}
 				}
 

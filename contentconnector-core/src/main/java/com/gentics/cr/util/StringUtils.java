@@ -263,4 +263,56 @@ public final class StringUtils {
 			.replace("\u00C4", "Ae")
 			.replaceAll("[^a-zA-Z0-9._/-]", "_");
 	}
+
+	/**
+	 * Read from InputStream into String until the given byte sequence is
+	 * matched. The end String is already read from the InputStream when the
+	 * method returns.
+	 * @param is - input stream to read
+	 * @param end - String defining the end of the section to read
+	 * @return String with the contents from the current position of the
+	 * InputStream to the position where the end String starts.
+	 * @throws IOException - if there was an error reading the input stream.
+	 */
+	public static String readUntil(final InputStream is, final String end)
+			throws IOException {
+		return readUntil(is, end.getBytes());
+	}
+	
+	/**
+	 * Read from InputStream into String until the given byte sequence is
+	 * matched. The end byte sequence is already read from the InputStream when
+	 * the method returns.
+	 * @param is - input stream to read
+	 * @param end - byte sequence defining the end of the section top read
+	 * @return String with the contents from the current position of the
+	 * InputStream to the position where the end byte sequence starts.
+	 * @throws IOException - if there was an error reading the input stream.
+	 */
+	public static String readUntil(final InputStream is, final byte[] end)
+			throws IOException {
+		StringBuilder result = new StringBuilder();
+		int matchposition = 0;
+		byte read;
+		byte[] buffer = new byte[end.length];
+		while ((read = (byte) is.read()) != -1) {
+			if (read == end[matchposition]) {
+				buffer[matchposition++] = read;
+				if (matchposition == end.length) {
+					break;
+				}
+			} else if (matchposition != 0) {
+				for (int i = 0; i < matchposition; i++) {
+					result.append((char) buffer[i]);
+				}
+				matchposition = 0;
+				result.append((char) read);
+			} else {
+				result.append((char) read);
+			}
+		}
+		is.mark(0);
+		return result.toString();
+	}
+
 }
