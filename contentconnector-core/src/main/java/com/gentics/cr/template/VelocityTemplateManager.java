@@ -46,7 +46,9 @@ public class VelocityTemplateManager implements ITemplateManager {
 	 * @see com.gentics.cr.template.ITemplateManager#put(java.lang.Object)
 	 */
 	public void put(String key, Object value) {
-		this.objectstoput.put(key, value);
+		if (value != null) {
+			this.objectstoput.put(key, value);
+		}
 	}
 
 	/**
