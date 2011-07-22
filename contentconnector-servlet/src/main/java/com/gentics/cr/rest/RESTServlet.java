@@ -67,7 +67,7 @@ public class RESTServlet extends HttpServlet {
   public void doService(HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
     UseCase uc = MonitorFactory.startUseCase("RESTServlet(" + request.getServletPath() + ")");
-    this.log.debug("Request:" + request.getQueryString());
+    log.debug("Request:" + request.getQueryString());
     
     // starttime
     long s = new Date().getTime();
@@ -83,7 +83,15 @@ public class RESTServlet extends HttpServlet {
     response.getOutputStream().close();
     // endtime
     long e = new Date().getTime();
-    this.log.info("Executiontime for " + request.getQueryString() + ":" + (e - s));
+    if(log.isInfoEnabled()) {
+      StringBuilder requestID = new StringBuilder();
+      requestID.append(request.getRequestURI());
+      if(request.getQueryString() != null) {
+        requestID.append('?');
+        requestID.append(request.getQueryString());
+      }
+      log.info("Executiontime for " + requestID + ":" + (e - s));
+    }
     uc.stop();
   }
 
