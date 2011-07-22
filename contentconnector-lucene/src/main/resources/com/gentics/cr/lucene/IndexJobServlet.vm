@@ -230,7 +230,11 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 						</div>
 					</div>
 					#end
-					#set($lastJobs = $queue.getLastJobs())
+					## We need to clone this list as there is a possibility of the list being modified (add/remove/...) by the IndexJobQueue (e.g. addToLastJobs)
+					## which would result in an java.util.ConcurrentModificationException
+					## This is caused by lastJobs (in IndexJobQueue) being an ArrayList and therefore not threadsafe.
+					## If more such errors occur we should think about making lastJobs a Vector.
+					#set($lastJobs = $queue.getLastJobs().clone())
 					#if($lastJobs)
 						<div class="row #getnextrow() small">
 							<div class="smallheader">last jobs</div>
