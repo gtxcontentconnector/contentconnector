@@ -1,6 +1,14 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
+
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
@@ -10,10 +18,22 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.template.StringTemplate;
+
 /**
- * Render the velocity template into the target attribute.
+ * can be used in one of two ways:<br>
+ * <br>
+ * 1. render a configured template into a configured targetattribute
+ * (attributes: 'template', 'targetattribute') <br>
+ * <br>
+ * 2. render a 'sourceattribute' into the (optional) 'targetattribute'
+ * 
+ * 
+ * you can also add a config attribute named 'contextvars' which contains a java
+ * properties format which will be put into the velocity context. (it also
+ * supports dots - e.g. portal.properties.test=123)
+ * 
  * @author bigbear3001
- *
+ * 
  */
 public class VelocityTransformer extends ContentTransformer {
 
@@ -22,6 +42,13 @@ public class VelocityTransformer extends ContentTransformer {
 	 */
 	private static final String TRANSFORMER_TEMPLATE_KEY =
 		"template";
+	
+	
+	/**
+	 * optionally we can read the template form an attribute instead of a hardcoded template.
+	 */
+	private static final String TRANSFORMER_SOURCEATTRIBUTE_KEY = "sourceattribute";
+	
 	/**
 	 * Configuration key for target attribute.
 	 */
@@ -29,9 +56,19 @@ public class VelocityTransformer extends ContentTransformer {
 		"targetattribute";
 	
 	/**
+	 * user can define additional contextvars in java properties format.
+	 */
+	private static final String TRANSFORMER_ADDITIONAL_CONTEXTVARS = "contextvars";
+	
+	/**
 	 * attribute name to store the rendered velocity template in.
 	 */
 	private String targetAttribute;
+	
+	/**
+	 * additional attributes.
+	 */
+	private Map<String, Object> additionalAttributes = new HashMap<String, Object>();
 	
 	/**
 	 * Velocity template to render.
@@ -57,6 +94,12 @@ public class VelocityTransformer extends ContentTransformer {
 	 * Configuration for the VelocityTransformer.
 	 */
 	private CRConfigUtil crConfigUtil;
+
+
+	/**
+	 * attribute name containing the source template.
+	 */
+	private String sourceAttribute;
 	
 	/**
 	 * Creates instance of MergeTransformer.
@@ -73,8 +116,11 @@ public class VelocityTransformer extends ContentTransformer {
 		configName = crConfigUtil.getName();
 		String template = (String) config.get(TRANSFORMER_TEMPLATE_KEY);
 		targetAttribute = (String) config.get(TRANSFORMER_TARGETATTRIBUTE_KEY);
+		sourceAttribute = (String) config.get(TRANSFORMER_SOURCEATTRIBUTE_KEY);
 		
-		if (template == null) {
+		if (sourceAttribute != null) {
+			// we use the source attribute as template ...
+		} else if (template == null) {
 			logger.error("Please configure " + TRANSFORMER_TEMPLATE_KEY
 					+ " for my config.");
 		} else {
@@ -85,8 +131,49 @@ public class VelocityTransformer extends ContentTransformer {
 				}
 		}
 		if (targetAttribute == null) {
-			logger.error("Please configure " + TRANSFORMER_TARGETATTRIBUTE_KEY
-					+ " for my config.");
+			if (sourceAttribute != null) {
+				targetAttribute = sourceAttribute;
+			} else {
+				logger.error("Please configure " + TRANSFORMER_TARGETATTRIBUTE_KEY
+						+ " for my config.");
+			}
+		}
+		readAdditionalContextVars(config);
+	}
+
+	/**
+	 * read the additiona context vars from the configuration property.
+	 */
+	private void readAdditionalContextVars(final GenericConfiguration config) {
+		String additionalContextVars = (String) config
+				.get(TRANSFORMER_ADDITIONAL_CONTEXTVARS);
+		if (additionalContextVars != null) {
+			Properties props = new Properties();
+			try {
+				props.load(new StringReader(additionalContextVars));
+				Iterator<Entry<Object, Object>> i = props.entrySet().iterator();
+				additionalAttributes = new HashMap<String, Object>();
+				while (i.hasNext()) {
+					Entry<Object, Object> entry = i.next();
+					if (entry.getKey() == null || entry.getValue() == null) {
+						continue;
+					}
+					String key = entry.getKey().toString();
+					String[] keyparts = key.split("\\.");
+					Map<String, Object> lastprop = additionalAttributes;
+					for (int j = 0; j < keyparts.length; j++) {
+						if (j == keyparts.length - 1) {
+							lastprop.put(keyparts[j], entry.getValue());
+						} else {
+							Map<String, Object> newprop = new HashMap<String, Object>();
+							lastprop.put(keyparts[j], newprop);
+							lastprop = newprop;
+						}
+					}
+				}
+			} catch (IOException e) {
+				logger.error("Error while parsing additional context vars.", e);
+			}
 		}
 	}
 	
@@ -95,8 +182,17 @@ public class VelocityTransformer extends ContentTransformer {
 		ITemplateManager vtm = crConfigUtil.getTemplateManager();
 		vtm.put("page", bean);
 		vtm.put("tools", tools);
+		for (Iterator<Entry<String, Object>> i = additionalAttributes
+				.entrySet().iterator(); i.hasNext();) {
+			Entry<String, Object> entry = i.next();
+			vtm.put(entry.getKey(), entry.getValue());
+		}
+		ITemplate tmpl = tpl;
 		try {
-			String output = vtm.render(tpl.getKey(), tpl.getSource());
+			if (sourceAttribute != null) {
+				tmpl = new StringTemplate(bean.getString(sourceAttribute));
+			}
+			String output = vtm.render(tmpl.getKey(), tmpl.getSource());
 			if (output != null && targetAttribute != null) {
 				bean.set(targetAttribute, output);
 			}
