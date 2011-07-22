@@ -1,7 +1,5 @@
 package com.gentics.cr.template;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -17,7 +15,7 @@ import com.gentics.cr.util.Constants;
  *
  */
 public class FileTemplate implements ITemplate {
-	
+
 	/**
 	 * Template source as String.
 	 */
@@ -26,7 +24,7 @@ public class FileTemplate implements ITemplate {
 	 * Key identifying this template.
 	 */
 	private String key;
-	
+
 	/**
 	 * gets the key of the template. usually a md5 hash
 	 * @return key
@@ -34,14 +32,14 @@ public class FileTemplate implements ITemplate {
 	public final String getKey() {
 		return key;
 	}
-	
+
 	/**
 	 * @return source of the template.
 	 */
 	public final String getSource() {
 		return source;
 	}
-	
+
 	/**
 	 * Creates a new instance of FileTemplate.
 	 * @param stream - stream with the template code
@@ -70,7 +68,7 @@ public class FileTemplate implements ITemplate {
 			throw new CRException(e);
 		}
 	}
-	
+
 	/**
 	 * Creates a new instance of FileTemplate.
 	 * @param stream - stream with the template code
@@ -83,7 +81,7 @@ public class FileTemplate implements ITemplate {
 		readSource(stream);
 		this.key = file.getAbsolutePath();
 	}
-	
+
 	/**
 	 * Read a String from the given InputStream.
 	 * @param in - stream to read from

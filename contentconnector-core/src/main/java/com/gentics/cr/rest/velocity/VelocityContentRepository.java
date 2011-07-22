@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.jcs.JCS;
@@ -19,6 +20,7 @@ import org.apache.velocity.tools.generic.EscapeTool;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRError;
+import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rest.ContentRepository;
 import com.gentics.cr.template.FileTemplate;
@@ -78,7 +80,7 @@ public class VelocityContentRepository extends ContentRepository {
 	 */
 	private static final String TEMPLATERELOADING_KEY =
 		"cr.velocity.templatereloading";
-	
+
 	/**
 	 * Configuration key for the frame url.
 	 */
@@ -89,6 +91,16 @@ public class VelocityContentRepository extends ContentRepository {
 	 */
 	private static final String FRAMEPLACEHOLDER_KEY =
 		"cr.velocity.frameplaceholder";
+
+	/**
+	 * Configuration key holding pre defined variables for velocity.
+	 */
+	private static final String VARIABLES_KEY = "cr.velocity.variables";
+
+	/**
+	 * Configuration key for contenttype to set for response.
+	 */
+	private static final String CONTENTTYPE_KEY = "cr.velocity.contenttype";
 
 	/**
 	 * Cache key suffix for the header parsed from the frame.
@@ -160,7 +172,7 @@ public class VelocityContentRepository extends ContentRepository {
 	
 	@Override
 	public final String getContentType() {
-		return "text/html";
+		return config.getString(CONTENTTYPE_KEY, "text/html");
 	}
 
 	@Override
@@ -169,13 +181,8 @@ public class VelocityContentRepository extends ContentRepository {
 			ensureTemplateManager();
 			loadTemplate();
 			templateManager.put("resolvables", this.resolvableColl);
-			HashMap<String, Object> additionalObjects = 
-				this.getAdditionalDeployableObjects();
-			if (additionalObjects != null) {
-				for (Entry<String, Object> e : additionalObjects.entrySet()) {
-					templateManager.put(e.getKey(), e.getValue());
-				}
-			}
+			putObjectsIntoTemplateManager(this.getAdditionalDeployableObjects());
+			putObjectsIntoTemplateManager(((GenericConfiguration) config.get(VARIABLES_KEY)).getProperties());
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding", encoding);
 			String output = templateManager.render(template.getKey(),
@@ -187,6 +194,32 @@ public class VelocityContentRepository extends ContentRepository {
 			respondWithError(stream, e, false);
 		} catch (IOException e) {
 			logger.error("Cannot write to Output stream.", e);
+		}
+	}
+
+	/**
+	 * Insert objects to deploy into the templateManger.
+	 * @param additionalDeployableObjects HashMap with objects to deploy.
+	 */
+	private void putObjectsIntoTemplateManager(
+			final HashMap<String, Object> additionalDeployableObjects) {
+		if (additionalDeployableObjects != null) {
+			for (Entry<String, Object> e : additionalDeployableObjects.entrySet()) {
+				templateManager.put(e.getKey().toString(), e.getValue());
+			}
+		}
+	}
+
+	/**
+	 * Insert objects to deploy into the templateManager.
+	 * @param additionalDeployableObjects Map with objects to deploy.
+	 */
+	private void putObjectsIntoTemplateManager(
+			final Map<Object, Object> additionalDeployableObjects) {
+		if (additionalDeployableObjects != null) {
+			for (Entry<Object, Object> e : additionalDeployableObjects.entrySet()) {
+				templateManager.put(e.getKey().toString(), e.getValue());
+			}
 		}
 	}
 
