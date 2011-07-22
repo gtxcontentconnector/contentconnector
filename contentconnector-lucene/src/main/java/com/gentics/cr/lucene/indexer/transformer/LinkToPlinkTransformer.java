@@ -123,7 +123,8 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 				  link = this.hostprefix+staticlink;
 			  }
 			  //REAPPEND FINISHED LINK
-			  matcher.appendReplacement(buf, linkform+"=\""+link+"\"");
+			  //we need to escape $ as this kills the expression
+			  matcher.appendReplacement(buf, linkform+"=\""+link.replace("$", "\\$") + "\"");
 		  }
 		  matcher.appendTail(buf);
 		  return buf.toString();

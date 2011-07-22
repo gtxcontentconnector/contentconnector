@@ -87,7 +87,8 @@ public class LinkTargetTransformer extends ContentTransformer {
 				  }
 			  }
 			  //REAPPEND FINISHED LINK
-			  matcher.appendReplacement(buf, newlink);
+			  //we need to escape $ as this kills the expression
+			  matcher.appendReplacement(buf, newlink.replace("$", "\\$"));
 		  }
 		  matcher.appendTail(buf);
 		  return buf.toString();
