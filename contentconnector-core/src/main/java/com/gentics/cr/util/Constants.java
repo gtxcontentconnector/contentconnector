@@ -30,6 +30,12 @@ public final class Constants {
 		(1.0 / (((float) KILOBYTE) * ((float) KILOBYTE)));
 	
 	/**
+	 * average word length for german words, if you find a trustworthy resource,
+	 * please change the value and add the link as a comment.
+	 */
+	public static final int AVERAGE_WORD_LENGTH_DE = 7;
+	
+	/**
 	 * Prevents from instantiation.
 	 */
 	private Constants() { }
