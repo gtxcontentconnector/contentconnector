@@ -49,6 +49,11 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
    * @param request {@link ServletRequest} to wrap.
    */
   public RequestWrapper(final HttpServletRequest request) {
+    try {
+      request.setCharacterEncoding("UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      logger.error("Encoding is not Supported for Servlet Reqquest.", e);
+    }
     this.servletRequest = request;
   }
 
