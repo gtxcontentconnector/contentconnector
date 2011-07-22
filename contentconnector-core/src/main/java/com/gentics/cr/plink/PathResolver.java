@@ -273,18 +273,19 @@ public class PathResolver {
 
 		// If filename is empty or not set, no need to return an path
 		if (filename != null && !"".equals(filename)) {
-
 			return pub_dir + filename;
 		} else {
-
+			// no filename or path could be resolved
 			// return a dynamic URL instead
-			log.warn("Object " + linkedObject.get("contentid")
-					+ " has no filename.");
-			//this.log.info("Use dynamic url for "
-			//		+ linkedObject.get("contentid"));
-
-			//return getDynamicUrl((String) linkedObject.get("contentid"));
-			return(null);
+			if (linkedObject.get("contentid") != null) {
+				log.warn("Object " + linkedObject.get("contentid") 
+						+ " has no filename.");
+				return getDynamicUrl((String) linkedObject.get("contentid"));
+			} else {
+				log.warn("Contentid of linkObject could not be resolved " 
+						+ "therefore no filename can be looked up");
+				return null;
+			}
 		}
 	}
 
@@ -292,10 +293,8 @@ public class PathResolver {
 	 * @param contentid
 	 * @return a dynamic URL to suitable for CRServlet.
 	 */
-	public String getDynamicUrl(String contentid) {
-
+	public String getDynamicUrl(final String contentid) {
 		return "?contentid=" + contentid;
-		
 	}
 	
 	/**
