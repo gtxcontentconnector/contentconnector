@@ -19,46 +19,41 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class RegexReplacer extends ContentTransformer{
-	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
-	private static final String STRIPPER_PATTERN_KEY="pattern";
-	private static final String REPLACEMENT_PATTERN_KEY="replacement";
-	private String attribute="";
-	private String pattern="(?s)(<!--[ \t\n\r]*noindexstart[^>]*-->.*?<!--[ \t\n\r]*noindexend[^>]*-->)";
+public class RegexReplacer extends ContentTransformer {
+	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
+	private static final String STRIPPER_PATTERN_KEY = "pattern";
+	private static final String REPLACEMENT_PATTERN_KEY = "replacement";
+	private String attribute = "";
+	private String pattern = "(?s)(<!--[ \t\n\r]*noindexstart[^>]*-->.*?<!--[ \t\n\r]*noindexend[^>]*-->)";
 	private String replacement = "";
 	private Pattern c_pattern = null;
 	/**
 	 * Create Instance of CommentSectionStripper
-	 * if the pattern is not configured in the config: the default pattern (?s)(<!--[ \n\r]*noindexstart[^>]*-->.*?<!--[ \n\r]*noindexend[^>]*-->) will be used
-	 * @param config
+	 * if the pattern is not configured in the config: the default pattern
+	 * {@value #pattern} will be used.
+	 * @param config 
 	 */
-	public RegexReplacer(GenericConfiguration config) {
+	public RegexReplacer(final GenericConfiguration config) {
 		super(config);
-		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
-		String pt = (String)config.get(STRIPPER_PATTERN_KEY);
-		if(pt!=null) pattern = pt;
+		attribute = config.getString(TRANSFORMER_ATTRIBUTE_KEY);
+		pattern = config.getString(STRIPPER_PATTERN_KEY, pattern);
 		c_pattern = Pattern.compile(pattern);
-		String rp = (String)config.get(REPLACEMENT_PATTERN_KEY);
-		if(rp!=null)replacement = rp;
+		replacement = config.getString(REPLACEMENT_PATTERN_KEY, replacement);
 	}
 
 	@Override
-	public void processBean(CRResolvableBean bean) {
-		if(this.attribute!=null)
-		{
+	public void processBean(final CRResolvableBean bean) {
+		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			if(obj!=null)
-			{
+			if (obj != null) {
 				String newString = getStringContents(obj);
-				if(newString!=null)
-				{
+				if (newString != null) {
 					bean.set(this.attribute, newString);
 				}
 			}
-		}
-		else
-		{
-			log.error("Configured attribute is null. Bean will not be processed");
+		} else {
+			log.error(
+					"Configured attribute is null. Bean will not be processed");
 		}
 	
 	}
