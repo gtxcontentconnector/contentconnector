@@ -354,7 +354,8 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 			analyzer = LuceneAnalyzerFactory
 					.createAnalyzer((GenericConfiguration) this.config);
 
-			if (searchedAttributes != null && searchedAttributes.length > 0) {
+			if (searchedAttributes != null && searchedAttributes.length > 0 
+					&& query != null && !query.equals("")) {
 				QueryParser parser = CRQueryParserFactory.getConfiguredParser(
 						searchedAttributes, analyzer, request, config);
 				

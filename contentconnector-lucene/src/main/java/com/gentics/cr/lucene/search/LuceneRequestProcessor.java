@@ -281,6 +281,9 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				//NOT IMPLEMENTED YET, BUT WE DO GENERATE MORE EXPLANATION OUTPUT YET
 				//log.error("LUCENEREQUESTPROCESSER CAN NOT YET RETURN A TREE STRUCTURE");
 			}*/
+		} else {
+			// searchresult is null - we don't want to procede - we want to throw an error
+			result = null;
 		}
 		ucProcessSearch.stop();
 		uc.stop();
