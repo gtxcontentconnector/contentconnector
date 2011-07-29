@@ -133,7 +133,7 @@ public abstract class RequestProcessor {
 			throws CRException {
 		request.setCountString("1");
 		Collection<CRResolvableBean> coll = getObjects(request);
-		if(!coll.isEmpty())
+		if(coll != null && !coll.isEmpty())
 		{
 			Iterator<CRResolvableBean> bIt = coll.iterator();
 			if(bIt.hasNext())
