@@ -249,7 +249,7 @@ public abstract class RequestProcessor {
 				// load element from cache
 				if (cache != null) {
 					
-					Object obj =	cache.get(contentid);
+					Object obj = cache.get(contentid);
 					if(obj!=null)
 					{
 						if(obj instanceof CRResolvableBean)

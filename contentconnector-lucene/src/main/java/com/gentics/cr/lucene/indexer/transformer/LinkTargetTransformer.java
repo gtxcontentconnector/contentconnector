@@ -43,8 +43,6 @@ public class LinkTargetTransformer extends ContentTransformer {
 		}
 		externaltarget = this.config.getString(EXTERNALTARGET_KEY);
 		externaltitle = this.config.getString(EXTERNAL_TITLE_KEY);
-		
-		
 	}
 
 	@Override
