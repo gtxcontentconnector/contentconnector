@@ -119,13 +119,13 @@ public class PlinkProcessor {
 
 		String link = "";
 		String contentid = plink.getContentId();
-		String cacheKey = contentid; 
+		String cacheKey = contentid;
 		
 		String type = "";
 		if (request.getRequest() != null && request.getRequest() instanceof HttpServletRequest) {
 			type = ((HttpServletRequest) request.getRequest()).getParameter("format");
 			String typeArg = ((HttpServletRequest) request.getRequest()).getParameter("type");
-			if (!typeArg.equals("")) {
+			if (typeArg != null && !typeArg.equals("")) {
 				type = typeArg;
 			}
 			// reset to an empty string if php or null
