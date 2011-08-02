@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.log4j.Logger;
@@ -14,6 +16,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PLinkInformation;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.ITemplateManager;
@@ -116,10 +119,30 @@ public class PlinkProcessor {
 
 		String link = "";
 		String contentid = plink.getContentId();
+		String cacheKey = contentid; 
+		
+		String type = "";
+		if (request.getRequest() != null && request.getRequest() instanceof HttpServletRequest) {
+			type = ((HttpServletRequest) request.getRequest()).getParameter("format");
+			String typeArg = ((HttpServletRequest) request.getRequest()).getParameter("type");
+			if (!typeArg.equals("")) {
+				type = typeArg;
+			}
+			// reset to an empty string if php or null
+			// otherwise just use the given type for the cache-key
+			if (type == null || type.equals("php")) {
+				type = "";
+			}
+			// if the link refers to a binary-file, always use an empty type (this falls back to "php")
+			if (contentid.startsWith(config.getBinaryType() + ".")) {
+				type = "";
+			}
+			cacheKey += "-" + type;
+		}
 
 		// load link from cache
 		if (plinkCache != null) {
-			link = (String) plinkCache.get(contentid);
+			link = (String) plinkCache.get(cacheKey);
 		}
 
 		// no cache object so try to prepare a link
@@ -185,7 +208,7 @@ public class PlinkProcessor {
 		try {
 
 			if (plinkCache != null) {
-				plinkCache.put(contentid, link);
+				plinkCache.put(cacheKey, link);
 			}
 
 		} catch (CacheException e) {
