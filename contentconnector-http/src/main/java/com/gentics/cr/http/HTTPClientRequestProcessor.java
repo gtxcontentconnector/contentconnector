@@ -12,7 +12,7 @@ public class HTTPClientRequestProcessor extends
 	}
 
 	@Override
-	void appendCustomGetParam(GetUrlBuilder urlBuilder, CRRequest request) {
+	protected void appendCustomGetParam(GetUrlBuilder urlBuilder, CRRequest request) {
 		// IN THE DEFAULT IMPLEMENTATION WE DO NOTHING HERE
 	}
 

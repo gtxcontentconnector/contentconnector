@@ -30,150 +30,145 @@ import com.gentics.cr.exceptions.CRException;
  */
 public abstract class AbstractHTTPClientRequestProcessor extends RequestProcessor {
  
- private static Logger log = Logger.getLogger(AbstractHTTPClientRequestProcessor.class);
- protected String name=null;
+	private static Logger log = Logger.getLogger(AbstractHTTPClientRequestProcessor.class);
+	protected String name=null;
  
- private static final String URL_KEY = "URL";
- /**
-  * Key to configure the used http version. Defaults to HTTP/1.0
-  *
-  * Can be configured in the following manner: HTTP/<major>.<minor>
-  */
- private static final String HTTP_VERSION_KEY = "HTTPVERSION";
- private String path="";
- private HttpVersion httpVersion = HttpVersion.HTTP_1_0;
- protected HttpClient client;
+	private static final String URL_KEY = "URL";
+	/**
+  	 * Key to configure the used http version. Defaults to HTTP/1.0
+	 *
+  	 * Can be configured in the following manner: HTTP/<major>.<minor>
+  	 */
+	private static final String HTTP_VERSION_KEY = "HTTPVERSION";
+	private String path="";
+	private HttpVersion httpVersion = HttpVersion.HTTP_1_0;
+	protected HttpClient client;
  
- /**
-  * Create new instance of HTTPClientRequestProcessor
-  * @param config
-  * @throws CRException
-  */
- public AbstractHTTPClientRequestProcessor(CRConfig config) throws CRException {
-  super(config);
-  this.name=config.getName();
-  //LOAD ADDITIONAL CONFIG
-  client = new HttpClient(new MultiThreadedHttpConnectionManager());
-  this.path = (String)config.get(URL_KEY);
-  if(this.path==null)log.error("COULD NOT GET URL FROM CONFIG (add RP.<rpnumber>.url=<url> to config). OVERTHINK YOUR CONFIG!");
-  String httpVersionString = config.getString(HTTP_VERSION_KEY);
-  if(httpVersionString != null) {
-   try {
-    this.httpVersion=HttpVersion.parse(httpVersionString);
-   } catch (ProtocolException e) {
-    throw new CRException(e);
-   }
-  }
- }
+	/**
+	 * Create new instance of HTTPClientRequestProcessor
+	 * @param config
+	 * @throws CRException
+	 */
+	public AbstractHTTPClientRequestProcessor(CRConfig config) throws CRException {
+		super(config);
+		this.name=config.getName();
+		//LOAD ADDITIONAL CONFIG
+		client = new HttpClient(new MultiThreadedHttpConnectionManager());
+		this.path = (String)config.get(URL_KEY);
+		if(this.path==null)log.error("COULD NOT GET URL FROM CONFIG (add RP.<rpnumber>.url=<url> to config). OVERTHINK YOUR CONFIG!");
+		String httpVersionString = config.getString(HTTP_VERSION_KEY);
+		if(httpVersionString != null) {
+			try {
+				this.httpVersion=HttpVersion.parse(httpVersionString);
+			} catch (ProtocolException e) {
+				throw new CRException(e);
+			}
+		}
+	}
  
- /**
-  * Requests Objects from a remote ContentConnector Servlet using type JavaXML
-  * @param request
-  * @param doNavigation
-  * @return Collection of CRResolvableBean
-  * @throws CRException
-  */
- public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
-   ArrayList<CRResolvableBean> resultlist = new ArrayList<CRResolvableBean>();
- 
-   String reqUrl = buildGetUrlString(request);
-   
-   GetMethod method = new GetMethod(reqUrl);
-     
+	/**
+	 * Requests Objects from a remote ContentConnector Servlet using type JavaXML
+	 * @param request
+	 * @param doNavigation
+	 * @return Collection of CRResolvableBean
+	 * @throws CRException
+	 */
+	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
+		ArrayList<CRResolvableBean> resultlist = new ArrayList<CRResolvableBean>();
+
+		String reqUrl = buildGetUrlString(request);
+
+		GetMethod method = new GetMethod(reqUrl);
+
+
+		method.getParams().setVersion(httpVersion);
     
-    method.getParams().setVersion(httpVersion);
-    
-    //Set request charset
-    method.setRequestHeader("Content-type","text/xml; charset=UTF-8");
-    // Provide custom retry handler is necessary
-      method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-        new DefaultHttpMethodRetryHandler(3, false));
+		//Set request charset
+		method.setRequestHeader("Content-type","text/xml; charset=UTF-8");
+		// Provide custom retry handler is necessary
+		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+				new DefaultHttpMethodRetryHandler(3, false));
  
-      try {
-         // Execute the method.
-       int statusCode = client.executeMethod(method);
-       log.info("Request: " + reqUrl + " Status: " + statusCode);
-       if (statusCode != HttpStatus.SC_OK) {
-        log.error("Request failed: " + method.getStatusLine());
-       }
- 
-       Collection<CRResolvableBean> result = new Vector<CRResolvableBean>();
-      
-       ObjectInputStream objstream = new ObjectInputStream(method.getResponseBodyAsStream());
-       Object responseObject;
-    try {
-     responseObject = objstream.readObject();
+		try {
+			// Execute the method.
+			int statusCode = client.executeMethod(method);
+			log.info("Request: " + reqUrl + " Status: " + statusCode);
+			if (statusCode != HttpStatus.SC_OK) {
+				log.error("Request failed: " + method.getStatusLine());
+			}
+
+			Collection<CRResolvableBean> result = new Vector<CRResolvableBean>();
+			ObjectInputStream objstream = new ObjectInputStream(method.getResponseBodyAsStream());
+			Object responseObject;
+			try {
+				responseObject = objstream.readObject();
      
-        objstream.close();
+				objstream.close();
  
         
-        if(responseObject instanceof Collection<?>)
-        {
-         result = this.toCRResolvableBeanCollection(responseObject);
-        }
-        else if(responseObject instanceof CRError)
-        {
-         CRError ex = (CRError)responseObject;
-         throw new CRException(ex);
-        }
-        else
-        {
-         log.error("COULD NOT CAST RESULT. Perhaps remote agent does not work properly");
-        }
+				if(responseObject instanceof Collection<?>)
+				{
+					result = this.toCRResolvableBeanCollection(responseObject);
+				}
+				else if(responseObject instanceof CRError)
+				{
+					CRError ex = (CRError)responseObject;
+					throw new CRException(ex);
+				}
+				else
+				{
+					log.error("COULD NOT CAST RESULT. Perhaps remote agent does not work properly");
+				}
       
-    } catch (ClassNotFoundException e) {
-     log.error("Coult not load object from http response",e);
-     throw new CRException(e);
-    }
+			} catch (ClassNotFoundException e) {
+				log.error("Coult not load object from http response",e);
+				throw new CRException(e);
+			}
        
-    if(result!=null)
-    {
-     for(CRResolvableBean crBean:result)
-     {
-      resultlist.add(crBean);
-     }
-    }
+			if(result!=null)
+			{
+				for(CRResolvableBean crBean:result)
+				{
+					resultlist.add(crBean);
+				}
+			}
+			
+		} catch (HttpException e) {
+			log.error("Fatal protocol violation",e);
+			throw new CRException(e);
+		} catch (IOException e) {
+			log.error("Fatal transport error",e);
+			throw new CRException(e);
+		} finally {
+			// Release the connection.
+			method.releaseConnection();
+		} 
  
-      } catch (HttpException e) {
-        log.error("Fatal protocol violation",e);
-        throw new CRException(e);
-      } catch (IOException e) {
-        log.error("Fatal transport error",e);
-        throw new CRException(e);
-      } finally {
-        // Release the connection.
-        method.releaseConnection();
-      } 
+		return resultlist;
+	}
  
-  return resultlist;
- }
- 
- protected String buildGetUrlString(CRRequest request) {
-  GetUrlBuilder urlBuilder = new GetUrlBuilder(this.path);
+	protected String buildGetUrlString(CRRequest request) {
+		GetUrlBuilder urlBuilder = new GetUrlBuilder(this.path);
   
-  urlBuilder.append("filter", request.getRequestFilter());
-  urlBuilder.appendArray("attributes", request.getAttributeArray());
-  urlBuilder.append(request, "count");
-  urlBuilder.append(request, "start");
-  urlBuilder.appendArray("sorting", request.getSortArray());
-  urlBuilder.appendSkipFalse(request, RequestProcessor.META_RESOLVABLE_KEY);
-  urlBuilder.appendSkipNull(request, RequestProcessor.HIGHLIGHT_QUERY_KEY);
-  urlBuilder.append("type", "JavaBIN");
- 
-  appendCustomGetParam(urlBuilder, request);
- 
-  return urlBuilder.toString();
- }
- 
- abstract void appendCustomGetParam(GetUrlBuilder urlBuilder,
-		 CRRequest request);
- 
-
- @Override
- public void finalize() {
-  
- }
- 
- 
- 
+		urlBuilder.append("filter", request.getRequestFilter());
+		urlBuilder.appendArray("attributes", request.getAttributeArray());
+		urlBuilder.append(request, "count");
+		urlBuilder.append(request, "start");
+		urlBuilder.appendArray("sorting", request.getSortArray());
+		urlBuilder.appendSkipFalse(request, RequestProcessor.META_RESOLVABLE_KEY);
+		urlBuilder.appendSkipNull(request, RequestProcessor.HIGHLIGHT_QUERY_KEY);
+		urlBuilder.append("type", "JavaBIN");
+		
+		appendCustomGetParam(urlBuilder, request);
+		
+		return urlBuilder.toString();
+	}
+	
+	protected abstract void appendCustomGetParam(GetUrlBuilder urlBuilder, CRRequest request);
+	
+	
+	@Override
+	public void finalize() {
+		
+	}
 }
