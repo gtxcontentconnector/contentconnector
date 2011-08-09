@@ -706,6 +706,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * @throws IOException - TODO javadoc
 	 */
 	public void reopen() throws IOException {
+		//TODO only open writer if there are already some open
 		IndexWriter tempWriter = this.getWriter();
 		this.release(tempWriter);
 		releaseAllSearchers();
