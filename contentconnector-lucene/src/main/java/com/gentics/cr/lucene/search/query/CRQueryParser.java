@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.search.query;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -42,6 +43,11 @@ public class CRQueryParser extends QueryParser {
   private CRRequest request;
 
   /**
+   * Log4j logger for error and debug messages.
+   */
+  private static final Logger LOGGER = Logger.getLogger(CRQueryParser.class);
+  
+  /**
    * initialize a CRQeryParser with multiple search attributes.
    * @param version version of lucene
    * @param searchedAttributes attributes to search in
@@ -75,11 +81,13 @@ public class CRQueryParser extends QueryParser {
    */
   public final Query parse(final String query) throws ParseException {
     String crQuery = query;
+    LOGGER.debug("parsing query: " + crQuery);
     if (attributesToSearchIn.length > ONE) {
       crQuery = addMultipleSearchedAttributes(crQuery);
     }
     crQuery = replaceBooleanMnoGoSearchQuery(crQuery);
     crQuery = addWildcardsForWordmatchParameter(crQuery);
+    LOGGER.debug("parsed query: " + crQuery); 
     return super.parse(crQuery);
   }
 
