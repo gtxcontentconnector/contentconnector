@@ -97,6 +97,11 @@ public class CRSearcher {
 	 * Key to put the suggested term for the bestresult into the result.
 	 */
 	public static final String RESULT_SUGGESTEDTERM_KEY = "suggestedTerm";
+	
+	/**
+	 * Key to put the orignal term for the suggested term into the bestresult.
+	 */
+	private static final String RESULT_ORIGTERM_KEY = "originalTerm";
 
 	/**
 	 * Key to configure the limit of results we activate the didyoumean code. 
@@ -490,6 +495,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 							if (resultOfNewQuery != null) {
 								resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY,
 										suggestedTerm);
+								resultOfNewQuery.put(RESULT_ORIGTERM_KEY, term);
 								Integer resultCount =
 									(Integer) resultOfNewQuery
 											.get(RESULT_BESTQUERYHITS_KEY);
