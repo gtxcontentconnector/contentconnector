@@ -100,7 +100,7 @@ public class CRQueryParser extends QueryParser {
 	 * query is given back.
 	 */
 	private String addMultipleSearchedAttributes(final String query) {
-		StringBuffer newQuery;
+		StringBuffer newQuery = new StringBuffer();
 		String replacement = "";
 		for (String attribute : attributesToSearchIn) {
 			if (replacement.length() > 0) {
@@ -110,7 +110,6 @@ public class CRQueryParser extends QueryParser {
 		}
 		if (replacement.length() > 0) {
 			replacement = "(" + replacement + ")";
-			newQuery = new StringBuffer();
 			Matcher valueMatcher = getValueMatcher(query);
 			while (valueMatcher.find()) {
 				String charsBeforeValue = valueMatcher.group(ONE);
@@ -125,8 +124,6 @@ public class CRQueryParser extends QueryParser {
 				}
 			}
 			valueMatcher.appendTail(newQuery);
-		} else {
-			return query;
 		}
 		return newQuery.toString();
 	}
