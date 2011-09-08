@@ -20,12 +20,12 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import com.gentics.cr.lucene.LuceneVersion;
+
 public class SimpleLucene {
 
 	public static final String CONTENT_ATTRIBUTE = "content";
 
-	Version luceneVersion = Version.LUCENE_31;
-	
 	IndexSearcher searcher;
 	
 	
@@ -36,7 +36,9 @@ public class SimpleLucene {
 	}
 	
 	public void add(Document document) throws CorruptIndexException, IOException {
-		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(luceneVersion, new StandardAnalyzer(luceneVersion));
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(
+					LuceneVersion.getVersion(),
+					new StandardAnalyzer(LuceneVersion.getVersion()));
 		IndexWriter writer = new IndexWriter(index, indexWriterConfig);
 		writer.addDocument(document);
 		writer.optimize();
@@ -71,12 +73,19 @@ public class SimpleLucene {
 	}
 	
 	public Collection<Document> find(String luceneQuery) throws ParseException, IOException {
-		initSearcher();
-		QueryParser queryParser = new QueryParser(luceneVersion, CONTENT_ATTRIBUTE, new StandardAnalyzer(luceneVersion));
+		QueryParser queryParser = new QueryParser(
+				LuceneVersion.getVersion(),
+				CONTENT_ATTRIBUTE,
+				new StandardAnalyzer(LuceneVersion.getVersion()));
 		Query query = queryParser.parse(luceneQuery);
+		return find(query);
+	}
+	
+	public Collection<Document> find(Query query) throws CorruptIndexException, IOException {
+		initSearcher();
 		TopDocs hits = searcher.search(query, Integer.MAX_VALUE);
-		ArrayList<Document> result = new ArrayList<Document>(); 
-		for(ScoreDoc document : hits.scoreDocs) {
+		ArrayList<Document> result = new ArrayList<Document>();
+		for (ScoreDoc document : hits.scoreDocs) {
 			result.add(searcher.doc(document.doc));
 		}
 		return result;
