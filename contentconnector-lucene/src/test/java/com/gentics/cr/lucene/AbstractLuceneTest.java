@@ -9,7 +9,7 @@ import com.gentis.cr.lucene.search.query.mocks.ComparableDocument;
 
 import junit.framework.TestCase;
 
-public class AbstractLuceneTest extends TestCase {
+public abstract class AbstractLuceneTest extends TestCase {
 	
 	public AbstractLuceneTest(String name) {
 		super(name);
