@@ -82,12 +82,12 @@ public class CRQueryParser extends QueryParser {
 	public final Query parse(final String query) throws ParseException {
 		String crQuery = query;
 		LOGGER.debug("parsing query: " + crQuery);
+		crQuery = replaceBooleanMnoGoSearchQuery(crQuery);
 		if (attributesToSearchIn.length > ONE) {
 			crQuery = addMultipleSearchedAttributes(crQuery);
 		}
-		crQuery = replaceBooleanMnoGoSearchQuery(crQuery);
 		crQuery = addWildcardsForWordmatchParameter(crQuery);
-		LOGGER.debug("parsed query: " + crQuery); 
+		LOGGER.debug("parsed query: " + crQuery);
 		return super.parse(crQuery);
 	}
 
@@ -194,8 +194,8 @@ public class CRQueryParser extends QueryParser {
 	 */
 	private String replaceBooleanMnoGoSearchQuery(final String mnoGoSearchQuery) {
 		String luceneQuery = mnoGoSearchQuery
-			.replace(" ?| ?", "OR")
-			.replace(" ?& ?", "AND")
+			.replaceAll(" ?\\| ?", " OR ")
+			.replaceAll(" ?& ?", " AND ")
 			.replace('\'', '"');
 		luceneQuery = luceneQuery.replaceAll(" ~([a-zA-Z0-9üöäÜÖÄß]+)", " NOT $1");
 		return luceneQuery;
