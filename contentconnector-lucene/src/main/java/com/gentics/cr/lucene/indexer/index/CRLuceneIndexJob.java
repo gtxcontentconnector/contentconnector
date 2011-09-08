@@ -464,7 +464,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				if (indexAccessor != null && indexWriter != null) {
 						indexAccessor.release(indexWriter);
 				}
-				if (indexAccessor != null && indexWriter != null) {
+				if (indexAccessor != null && indexReader != null) {
 						indexAccessor.release(indexReader, false);
 				}
 				
