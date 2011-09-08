@@ -19,6 +19,10 @@ import com.gentis.cr.lucene.search.query.mocks.ComparableDocument;
 import com.gentis.cr.lucene.search.query.mocks.SimpleLucene;
 
 public class CRQueryParserTest extends AbstractLuceneTest {
+	
+	public CRQueryParserTest(String name) {
+		super(name);
+	}
 	private static final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer(LuceneVersion.getVersion());
 	private static final String[] SEARCHED_ATTRIBUTES = new String[]{SimpleLucene.CONTENT_ATTRIBUTE, "binarycontent"};
 	private CRQueryParser parser;

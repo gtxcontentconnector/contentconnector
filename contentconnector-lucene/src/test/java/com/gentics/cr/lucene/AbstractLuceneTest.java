@@ -11,6 +11,10 @@ import junit.framework.TestCase;
 
 public class AbstractLuceneTest extends TestCase {
 	
+	public AbstractLuceneTest(String name) {
+		super(name);
+	}
+
 	protected void containsAll(Collection<Document> matchedDocuments,
 			ComparableDocument[] documents) {
 		assertTrue(matchedDocuments.containsAll(Arrays.asList(documents)));
