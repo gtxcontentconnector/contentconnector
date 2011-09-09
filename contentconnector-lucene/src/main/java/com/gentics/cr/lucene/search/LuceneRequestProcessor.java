@@ -98,7 +98,11 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 */
 	public static final String HIGHLIGHT_QUERY_KEY = "highlightquery";
 
-	private static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
+	/**
+	 * Configuration key for the attributes to be searched when no explizit
+	 * attribute is given in the query.
+	 */
+	public static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
 
 	/**
 	 * Create new instance of LuceneRequestProcessor.
@@ -361,6 +365,4 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	public void finalize() {
 		if(this.searcher!=null)this.searcher.finalize();
 	}
-
-	
 }
