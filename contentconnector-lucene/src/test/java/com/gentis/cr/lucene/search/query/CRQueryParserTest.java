@@ -114,4 +114,11 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 		matchedDocuments = lucene.find(parser.parse("content:\"word9 word1\" AND node_id:1"));
 		containsOnly(matchedDocuments, documents.get(0));
 	}
+	
+	public void testWordMatchComplexSubGroupAddSign() throws CorruptIndexException, IOException, ParseException {
+		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
+		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
+		Collection<Document> matchedDocuments = lucene.find(parser.parse("+(word1 word9)"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(0), documents.get(1), documents.get(2)});
+	}
 }

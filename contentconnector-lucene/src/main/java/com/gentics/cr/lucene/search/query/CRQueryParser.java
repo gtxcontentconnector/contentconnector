@@ -120,6 +120,7 @@ public class CRQueryParser extends QueryParser {
 				if (!"AND".equalsIgnoreCase(value)
 						&& !"OR".equalsIgnoreCase(value)
 						&& !"NOT".equalsIgnoreCase(value)
+						&& !"+".equals(value)
 						&& !value.contains(":")) {
 					valueMatcher.appendReplacement(newQuery, charsBeforeValue
 							+ replacement + charsAfterValue);
