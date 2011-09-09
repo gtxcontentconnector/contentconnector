@@ -344,7 +344,10 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			final Object obj) {
 		return (LinkedHashMap<Document, Float>) obj;
 	}
-	
+
+	/**
+	 * @return the attributes to search in from the condfig.
+	 */
 	private String[] getSearchedAttributes() {
 		String sa = (String) this.config.get(SEARCHED_ATTRIBUTES_KEY);
 		String[] ret = null;
