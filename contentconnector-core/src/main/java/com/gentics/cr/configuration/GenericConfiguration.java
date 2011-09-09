@@ -33,7 +33,22 @@ public class GenericConfiguration extends AccessibleBean
    * Properties container.
    */
   private Properties properties;
+
+  /**
+   * Defines how the keys in the configuration should be converted (default = uppercase).
+   */
+  public enum KeyConversion {
+    /**
+     * These are the values which a key can be converted to.
+     */
+    UPPER_CASE, LOWER_CASE, UNCHANGED
+  };
   
+  /**
+   * Defines how the key-values are stored in the configuration.
+   */
+  private KeyConversion keyHandling = KeyConversion.UPPER_CASE; 
+
   /**
    * Container for subconfigs.
    */
@@ -60,9 +75,22 @@ public class GenericConfiguration extends AccessibleBean
 	public final void setProperties(final Properties props) {
 		this.properties = props;
 	}
-	
-	
-  
+
+	/**
+	 * This is used to modify the key-management of the configuration.
+	 * 
+	 * @param conversion
+	 *            A KeyConversion-Attribute (either uppercase, lowercase or
+	 *            unchanged).
+	 */
+	public final void setKeyConversion(final KeyConversion conversion) {
+		if (conversion != null) {
+			this.keyHandling = conversion;
+		} else {
+			this.keyHandling = KeyConversion.UPPER_CASE;
+		}
+	}
+
   /**
    * Returns rebuilt property tree as flat property file.
    * @return flattened property file
@@ -276,7 +304,9 @@ public class GenericConfiguration extends AccessibleBean
 			}
 			String confKey = getSubConfigKey(key);
 			if (this.subconfigs.get(confKey) == null) {
-				this.subconfigs.put(confKey, new GenericConfiguration());
+				GenericConfiguration subconf = new GenericConfiguration();
+				subconf.setKeyConversion(this.keyHandling);
+				this.subconfigs.put(confKey, subconf);
 			}
 			this.subconfigs.get(confKey).set(getSubKey(key), value);
 		} else {
@@ -352,6 +382,16 @@ public class GenericConfiguration extends AccessibleBean
 	 * @return <code>key</code> as upper case string
 	 */
 	private String convertKey(final String key) {
-		return key.toUpperCase();
+		switch (this.keyHandling) {
+			case UPPER_CASE:
+				return key.toUpperCase();
+
+			case LOWER_CASE:
+				return key.toLowerCase();
+
+			case UNCHANGED:
+			default:
+				return key;
+		}
 	}
 }

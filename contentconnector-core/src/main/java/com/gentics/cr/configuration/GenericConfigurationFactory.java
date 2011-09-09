@@ -22,13 +22,35 @@ public final class GenericConfigurationFactory {
 	
 	/**
 	 * Creates a <code>GenericConfiguration</code> instance from a Map.
-	 * @param configMap Map that will be used.
+	 * 
+	 * @param configMap
+	 *            Map that will be used.
 	 * @return created GenericConfiguration instance
 	 */
-	public static GenericConfiguration createFromMap(final Map<String, String> 
-					configMap) {
+	public static GenericConfiguration createFromMap(
+			final Map<String, String> configMap) {
+		return GenericConfigurationFactory
+				.createFromMap(configMap, null);
+	}
+
+	/**
+	 * Creates a <code>GenericConfiguration</code> instance from a Map.
+	 * 
+	 * @param configMap
+	 *            Map that will be used.
+	 * @param keyHandling
+	 *            Defines in which way the keys should be stored in the
+	 *            configuration.
+	 * @return created GenericConfiguration instance
+	 */
+	public static GenericConfiguration createFromMap(
+			final Map<String, String> configMap,
+			final GenericConfiguration.KeyConversion keyHandling) {
 		GenericConfiguration conf = new GenericConfiguration();
-		
+		if (keyHandling != null) {
+			conf.setKeyConversion(keyHandling);
+		}
+
 		for (Entry<String, String> e : configMap.entrySet()) {
 			String value = CRUtil.resolveSystemProperties(e.getValue());
 			conf.set(e.getKey(), value);
@@ -37,14 +59,36 @@ public final class GenericConfigurationFactory {
 	}
 	
 	/**
-	 * Creates a <code>GenericConfiguration</code> instance 
-	 * from <code>Properties</code>.
-	 * @param props Map that will be used.
+	 * Creates a <code>GenericConfiguration</code> instance from
+	 * <code>Properties</code>.
+	 * 
+	 * @param props
+	 *            Map that will be used.
 	 * @return created GenericConfiguration instance
 	 */
 	public static GenericConfiguration createFromProperties(final 
 			Properties props) {
+		return GenericConfigurationFactory.createFromProperties(props, null);
+	}
+
+	/**
+	 * Creates a <code>GenericConfiguration</code> instance from
+	 * <code>Properties</code>.
+	 * 
+	 * @param props
+	 *            Map that will be used.
+	 * @param keyHandling
+	 *            Defines in which way the keys should be stored in the
+	 *            configuration.
+	 * @return created GenericConfiguration instance
+	 */
+	public static GenericConfiguration createFromProperties(final 
+			Properties props,
+			final GenericConfiguration.KeyConversion keyHandling) {
 		GenericConfiguration conf = new GenericConfiguration();
+		if (keyHandling != null) {
+			conf.setKeyConversion(keyHandling);
+		}
 		
 		for (Entry<Object, Object> e : props.entrySet()) {
 			String value = CRUtil
@@ -53,21 +97,41 @@ public final class GenericConfigurationFactory {
 		}
 		return conf;
 	}
-	
+
 	/**
 	 * Creates a <code>GenericConfiguration</code> instance from a String.
-	 * @param configurationString String that will be used.
+	 * 
+	 * @param configurationString
+	 *            String that will be used.
 	 * @return created GenericConfiguration instance
-	 * @throws IOException if no stream could be created from the String
+	 * @throws IOException
+	 *             if no stream could be created from the String
 	 */
 	public static GenericConfiguration createFromString(final String 
 			configurationString) throws IOException {
+		return GenericConfigurationFactory.createFromString(configurationString, null);
+	}
+	
+	/**
+	 * Creates a <code>GenericConfiguration</code> instance from a String.
+	 * 
+	 * @param configurationString
+	 *            String that will be used.
+	 * @param keyHandling
+	 *            Defines in which way the keys should be stored in the
+	 *            configuration.
+	 * @return created GenericConfiguration instance
+	 * @throws IOException
+	 *             if no stream could be created from the String
+	 */
+	public static GenericConfiguration createFromString(final String 
+			configurationString, final GenericConfiguration.KeyConversion keyHandling) throws IOException {
 		if (configurationString != null) {
 			Properties props = new Properties();
 			props.load(new ByteArrayInputStream(
 						configurationString.getBytes()));
 			
-			return createFromProperties(props);
+			return createFromProperties(props, keyHandling);
 		}
 		return null;
 	}
