@@ -1,5 +1,7 @@
 package com.gentics.cr.lucene.search.query;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +37,7 @@ public class CRQueryParser extends QueryParser {
 	/**
 	 * attributes to search in.
 	 */
-	private String[] attributesToSearchIn;
+	private Collection<String> attributesToSearchIn;
 
 	/**
 	 * request to search for additional parameters.
@@ -56,7 +58,7 @@ public class CRQueryParser extends QueryParser {
 	public CRQueryParser(final Version version, final String[] searchedAttributes,
 			final Analyzer analyzer) {
 		super(version, searchedAttributes[0], analyzer);
-		attributesToSearchIn = searchedAttributes;
+		attributesToSearchIn = Arrays.asList(searchedAttributes);
 	}
 	
  
@@ -83,7 +85,7 @@ public class CRQueryParser extends QueryParser {
 		String crQuery = query;
 		LOGGER.debug("parsing query: " + crQuery);
 		crQuery = replaceBooleanMnoGoSearchQuery(crQuery);
-		if (attributesToSearchIn.length > ONE) {
+		if (attributesToSearchIn.size() > ONE) {
 			crQuery = addMultipleSearchedAttributes(crQuery);
 		}
 		crQuery = addWildcardsForWordmatchParameter(crQuery);
@@ -159,13 +161,16 @@ public class CRQueryParser extends QueryParser {
 		while (valueMatcher.find()) {
 			String charsBeforeValue = valueMatcher.group(ONE);
 			String value = valueMatcher.group(TWO);
+			String attribute = value.indexOf(":") != -1 ? value.replaceAll(":.*$", "") : "";
 			String charsAfterValue = valueMatcher.group(THREE);
 			if (!"AND".equalsIgnoreCase(value)
 					&& !"OR".equalsIgnoreCase(value)
-					&& !"NOT".equalsIgnoreCase(value)) {
-				valueMatcher.appendReplacement(newQuery, charsBeforeValue
-						+ value.replaceAll("(.*:)?(.+)", "$1" + appendToWordBegin + "$2"
-								+ appendToWordEnd) + charsAfterValue);
+					&& !"NOT".equalsIgnoreCase(value) && attributesToSearchIn.contains(attribute)) {
+				if(!value.matches("[^:]+:\"[^\"]+\"")) {
+					valueMatcher.appendReplacement(newQuery, charsBeforeValue
+							+ value.replaceAll("(.*:\\(?)?([^: \\(\\)]+)", "$1" + appendToWordBegin + "$2"
+									+ appendToWordEnd) + charsAfterValue);
+				}
 			}
 		}
 		valueMatcher.appendTail(newQuery);
@@ -181,7 +186,7 @@ public class CRQueryParser extends QueryParser {
 		String seperatorCharacterClass = " \\(\\)";
 		Pattern valuePattern = Pattern.compile(
 				"([" + seperatorCharacterClass + "]*)"
-				+ "(\"[^\"]+\"|[^" + seperatorCharacterClass + "]+)"
+				+ "([^:]+:(?:\\([^\\)]+\\)|\"[^\"]+\")|\"[^\"]+\"|[^" + seperatorCharacterClass + "]+)"
 				+ "([" + seperatorCharacterClass + "]*)");
 		Matcher valueMatcher = valuePattern.matcher(query);
 		return valueMatcher;
