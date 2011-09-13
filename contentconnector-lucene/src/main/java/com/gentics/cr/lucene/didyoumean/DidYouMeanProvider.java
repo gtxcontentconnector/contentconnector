@@ -38,118 +38,118 @@ import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
  */
 public class DidYouMeanProvider implements IEventReceiver{
 
-  protected static final Logger log = Logger.getLogger(DidYouMeanProvider.class);
-  private Directory source;
-  private Directory didyoumeanLocation;
-  
-  
-  
-  private static final String SOURCE_INDEX_KEY="srcindexlocation";
-  
-  private static final String DIDYOUMEAN_INDEY_KEY="didyoumeanlocation";
-  
-  private static final String DIDYOUMEAN_FIELD_KEY="didyoumeanfields";
-  
-  private static final String DIDYOUMEAN_MIN_DISTANCESCORE="didyoumeanmindistancescore";
-  
-  private static final String DIDYOUMEAN_MIN_DOCFREQ="didyoumeanmindocfreq";
-  
-  /**
-   * Configuration key to activate the didyoumean feature for terms that are in
-   * the index but have a low result size.
-   */
-  private static final String DIDYOUMEAN_EXISTINGTERMS_KEY =
-    "didyoumean_forexisitingterms";
-  
+	protected static final Logger log = Logger.getLogger(DidYouMeanProvider.class);
+	private Directory source;
+	private Directory didyoumeanLocation;
+	
+	
+	
+	private static final String SOURCE_INDEX_KEY="srcindexlocation";
+	
+	private static final String DIDYOUMEAN_INDEY_KEY="didyoumeanlocation";
+	
+	private static final String DIDYOUMEAN_FIELD_KEY="didyoumeanfields";
+	
+	private static final String DIDYOUMEAN_MIN_DISTANCESCORE="didyoumeanmindistancescore";
+	
+	private static final String DIDYOUMEAN_MIN_DOCFREQ="didyoumeanmindocfreq";
+	
+	/**
+	 * Configuration key to activate the didyoumean feature for terms that are in
+	 * the index but have a low result size.
+	 */
+	private static final String DIDYOUMEAN_EXISTINGTERMS_KEY =
+		"didyoumean_forexisitingterms";
+	
 
-  private String didyoumeanfield = "all";
-  
-  private CustomSpellChecker spellchecker=null;
-  
-  private boolean all = false;
-  
-  /**
-   * Mark if we should provide the didyoumean feature for existing terms (with
-   * low result count).
-   */
-  private boolean checkForExistingTerms = false;
-  
-  private Collection<String> dym_fields = null;
-  
-  private boolean dymreopenupdate = false;
-  
-  private static final String UPDATE_ON_REOPEN_KEY = "dymreopenupdate";
-  
-  public DidYouMeanProvider(CRConfig config)
-  {
-    GenericConfiguration src_conf = (GenericConfiguration)config.get(SOURCE_INDEX_KEY);
-    GenericConfiguration auto_conf = (GenericConfiguration)config.get(DIDYOUMEAN_INDEY_KEY);
-    source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
-    didyoumeanLocation = LuceneIndexLocation.createDirectory(new CRConfigUtil(auto_conf,DIDYOUMEAN_INDEY_KEY));
-    SpecialDirectoryRegistry.getInstance().register(didyoumeanLocation);
-    didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);
+	private String didyoumeanfield = "all";
+	
+	private CustomSpellChecker spellchecker=null;
+	
+	private boolean all = false;
+	
+	/**
+	 * Mark if we should provide the didyoumean feature for existing terms (with
+	 * low result count).
+	 */
+	private boolean checkForExistingTerms = false;
+	
+	private Collection<String> dym_fields = null;
+	
+	private boolean dymreopenupdate = false;
+	
+	private static final String UPDATE_ON_REOPEN_KEY = "dymreopenupdate";
+	
+	public DidYouMeanProvider(CRConfig config)
+	{
+		GenericConfiguration src_conf = (GenericConfiguration)config.get(SOURCE_INDEX_KEY);
+		GenericConfiguration auto_conf = (GenericConfiguration)config.get(DIDYOUMEAN_INDEY_KEY);
+		source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
+		didyoumeanLocation = LuceneIndexLocation.createDirectory(new CRConfigUtil(auto_conf,DIDYOUMEAN_INDEY_KEY));
+		SpecialDirectoryRegistry.getInstance().register(didyoumeanLocation);
+		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);
 
-    checkForExistingTerms =
-      config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY, checkForExistingTerms);
-    
-    Float minDScore = config.getFloat(DIDYOUMEAN_MIN_DISTANCESCORE,
-    		(float) 0.0);
-    Integer minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
-    
-    String sDYMReopenUpdate = config.getString(UPDATE_ON_REOPEN_KEY);
-    if (sDYMReopenUpdate != null) {
-    	dymreopenupdate = Boolean.parseBoolean(sDYMReopenUpdate);
-    }
-    
-    //FETCH DYM FIELDS
-    if (this.didyoumeanfield.equalsIgnoreCase("ALL")) {
-      all = true;
-    } else if (this.didyoumeanfield.contains(",")) {
-      String[] arr = this.didyoumeanfield.split(",");
-      dym_fields = new ArrayList<String>(Arrays.asList(arr));
-    } else {
-      dym_fields = new ArrayList<String>(1);
-      dym_fields.add(this.didyoumeanfield);
-    }
-    
-    try {
-    	//CHECK FOR EXISTING LOCK AND REMOVE IT
-    	synchronized (this) {
-	    	try {
+		checkForExistingTerms =
+			config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY, checkForExistingTerms);
+		
+		Float minDScore = config.getFloat(DIDYOUMEAN_MIN_DISTANCESCORE,
+				(float) 0.0);
+		Integer minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
+		
+		String sDYMReopenUpdate = config.getString(UPDATE_ON_REOPEN_KEY);
+		if (sDYMReopenUpdate != null) {
+			dymreopenupdate = Boolean.parseBoolean(sDYMReopenUpdate);
+		}
+		
+		//FETCH DYM FIELDS
+		if (this.didyoumeanfield.equalsIgnoreCase("ALL")) {
+			all = true;
+		} else if (this.didyoumeanfield.contains(",")) {
+			String[] arr = this.didyoumeanfield.split(",");
+			dym_fields = new ArrayList<String>(Arrays.asList(arr));
+		} else {
+			dym_fields = new ArrayList<String>(1);
+			dym_fields.add(this.didyoumeanfield);
+		}
+		
+		try {
+			//CHECK FOR EXISTING LOCK AND REMOVE IT
+			synchronized (this) {
+				try {
 				if (IndexWriter.isLocked(didyoumeanLocation)) {
 					IndexWriter.unlock(didyoumeanLocation);
 				}
 			} catch (IOException e) {
 				log.error(e.getMessage(), e);
 			}
-    	}
-      spellchecker = new CustomSpellChecker(didyoumeanLocation,
-    		  minDScore, minDFreq);
-      reIndex();
-    } catch (IOException e) {
-      log.error("Could not create didyoumean index.", e);
-    }
-    EventManager.getInstance().register(this);
-  }
-  
-  
-  public void processEvent(Event event) {
-    if(IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType())) {
-      try {
-        reIndex();
-      } catch(IOException e) {
-        log.error("Could not reindex didyoumean index.", e);
-      }
-    }
-  }
-  
-  public CustomSpellChecker getInitializedSpellchecker() {
-    return this.spellchecker;
-  }
-  
-  private long lastupdatestored = 0;
-  
-  private void checkForUpdate() {
+			}
+			spellchecker = new CustomSpellChecker(didyoumeanLocation,
+					minDScore, minDFreq);
+			reIndex();
+		} catch (IOException e) {
+			log.error("Could not create didyoumean index.", e);
+		}
+		EventManager.getInstance().register(this);
+	}
+	
+	
+	public void processEvent(Event event) {
+		if(IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType())) {
+			try {
+				reIndex();
+			} catch(IOException e) {
+				log.error("Could not reindex didyoumean index.", e);
+			}
+		}
+	}
+	
+	public CustomSpellChecker getInitializedSpellchecker() {
+		return this.spellchecker;
+	}
+	
+	private long lastupdatestored = 0;
+	
+	private void checkForUpdate() {
 		boolean reopened = false;
 		try {
 			if (source.fileExists("reopen")) {
@@ -167,78 +167,96 @@ public class DidYouMeanProvider implements IEventReceiver{
 		}
 	}
 
-  /**
-   * TODO javadoc.
-   * @param termlist TODO javadoc
-   * @param count TODO javadoc
-   * @param reader TODO javadoc
-   * @return TODO javadoc
-   */
-  public Map<String,String[]> getSuggestions(Set<Term> termlist,int count,IndexReader reader)
-  {
-	  
-	  if (dymreopenupdate) {
-		  checkForUpdate();
-	  }
-    Map<String, String[]> result = new LinkedHashMap<String, String[]>();
-    Set<String> uniquetermset = new HashSet<String>();
-    if (this.spellchecker != null) {
-	    for (Term t : termlist) {
-	      if (all) {
-	        uniquetermset.add(t.text());
-	      } else {
-	        //ONLY ADD TERM IF IT COMES FROM A DYM FIELD
-	        if (dym_fields.contains(t.field())) {
-	          uniquetermset.add(t.text());
-	        }
-	      }
-	    }
-	    log.debug("Will use the following fields for dym: "
-	    			+ dym_fields.toString());
-	    for (String term : uniquetermset) {
-	      try {
-	        if (checkForExistingTerms || !this.spellchecker.exist(term)) {
-	          String[] ts = this.spellchecker
-	          		.suggestSimilar(term, count, reader,
-	          				didyoumeanfield, true);
-	          if (ts != null && ts.length > 0) {
-	            result.put(term, ts);
-	          }
-	        }
-	      } catch (IOException ex) {
-	        log.error("Could not suggest terms", ex);
-	      }
-	    }
-    } else {
-    	log.error("Spellchecker has not properly been initialized.");
-    }
-    return result;
-  }
+	/**
+	 * TODO javadoc.
+	 * @param termlist TODO javadoc
+	 * @param count TODO javadoc
+	 * @param reader TODO javadoc
+	 * @return TODO javadoc
+	 */
+	public Map<String,String[]> getSuggestions(Set<Term> termlist, int count, IndexReader reader)
+	{
+		return getSuggestionsStringFromMap(getSuggestionTerms(termlist, count, reader));
+	}
+	
+	public Map<Term,Term[]> getSuggestionTerms(Set<Term> termlist, int count, IndexReader reader) {
+		
+		if (dymreopenupdate) {
+			checkForUpdate();
+		}
+		Map<Term, Term[]> result = new LinkedHashMap<Term, Term[]>();
+		Set<Term> termset = new HashSet<Term>();
+		if (this.spellchecker != null) {
+			for (Term t : termlist) {
+				//CHECK IF ALL FIELDS ENABLED FOR SUGGESTIONS OTHERWHISE ONLY ADD TERM IF IT COMES FROM A DYM FIELD
+				if (all || dym_fields.contains(t.field())) {
+					termset.add(t);
+				}
+			}
+			log.debug("Will use the following fields for dym: "
+						+ dym_fields.toString());
+			for (Term term : termset) {
+				try {
+					if (checkForExistingTerms || !this.spellchecker.exist(term.text())) {
+						String[] ts = this.spellchecker
+								.suggestSimilar(term.text(), count, reader,
+										term.field(), true);
+						if (ts != null && ts.length > 0) {
+							Term[] suggestedTerms = new Term[ts.length];
+							for(int i = 0; i < ts.length; i++) {
+								suggestedTerms[i] = term.createTerm(ts[i]);
+							}
+							result.put(term, suggestedTerms);
+						}
+					}
+				} catch (IOException ex) {
+					log.error("Could not suggest terms", ex);
+				}
+			}
+		} else {
+			log.error("Spellchecker has not properly been initialized.");
+		}
+		return result;
+	}
 
-  private synchronized void reIndex() throws IOException {
-    // build a dictionary (from the spell package) 
-    log.debug("Starting to reindex didyoumean index.");
-    IndexReader sourceReader = IndexReader.open(source);
-    Collection<String> fields = null;
-    if (all) {
-      fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
-    } else {
-      fields = dym_fields;
-    }
-    try {
-      for (String fieldname : fields) {
-        LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname); 
-        spellchecker.indexDictionary(dict);
-      }
-    } finally {
-      sourceReader.close(); 
-    }
-    log.debug("Finished reindexing didyoumean index.");
-  }
+	private synchronized void reIndex() throws IOException {
+		// build a dictionary (from the spell package) 
+		log.debug("Starting to reindex didyoumean index.");
+		IndexReader sourceReader = IndexReader.open(source);
+		Collection<String> fields = null;
+		if (all) {
+			fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
+		} else {
+			fields = dym_fields;
+		}
+		try {
+			for (String fieldname : fields) {
+				LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname); 
+				spellchecker.indexDictionary(dict);
+			}
+		} finally {
+			sourceReader.close(); 
+		}
+		log.debug("Finished reindexing didyoumean index.");
+	}
 
-  public void finalize() {
+	public void finalize() {
 	SpecialDirectoryRegistry.getInstance().unregister(didyoumeanLocation);
-    EventManager.getInstance().unregister(this);
-  }
+		EventManager.getInstance().unregister(this);
+	}
+
+
+	public Map<String, String[]> getSuggestionsStringFromMap(Map<Term, Term[]> suggestions) {
+		Map<String, String[]> result = new LinkedHashMap<String, String[]>();
+		for(Term key : suggestions.keySet()) {
+			Term[] values = suggestions.get(key);
+			ArrayList<String> valueStrings = new ArrayList<String>(values.length);
+			for(Term value : values) {
+				valueStrings.add(value.text());
+			}
+			result.put(key.text(), valueStrings.toArray(new String[valueStrings.size()]));
+		}
+		return result;
+	}
 
 }
