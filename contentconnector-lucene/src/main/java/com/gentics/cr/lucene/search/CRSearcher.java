@@ -399,7 +399,7 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 
 				if (start == 0 && didyoumeanenabled
 						&& didyoumeanEnabledForRequest
-						&& (totalhits <= didyoumeanactivatelimit
+						&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1
 								|| maxScore == Float.NaN
 								|| maxScore < this.didyoumeanminscore)) {
 					String parsedQueryString = parsedQuery.toString().replaceAll("\\(\\)", "");
