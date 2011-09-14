@@ -156,6 +156,9 @@ public class CRRequestBuilder {
 		if (this.filter == null) {
 			this.filter = requestWrapper.getParameter("q");
 		}
+		if (this.filter == null) {
+			this.filter = requestWrapper.getParameter("query");
+		}
 		if (this.count == null) {
 			this.count = requestWrapper.getParameter("ps");
 		}
