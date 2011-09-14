@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.commons.collections.ExtendedProperties;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -12,6 +13,7 @@ import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
+import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
 
 import com.gentics.cr.exceptions.CRException;
 
@@ -57,7 +59,12 @@ public class VelocityTemplateManager implements ITemplateManager {
 	public String render(String templateName, String templateSource) throws CRException {
 		String renderedTemplate=null;
 		long s1 = System.currentTimeMillis();
+		
 		StringResourceRepository rep = StringResourceLoader.getRepository();
+		if (rep == null) {
+			rep = new StringResourceRepositoryImpl();
+			StringResourceLoader.setRepository(StringResourceLoader.REPOSITORY_NAME_DEFAULT, rep);
+		}
 		rep.setEncoding(this.encoding);
 		try {
 			
@@ -65,6 +72,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 			if(template==null)
 			{
 				rep.putStringResource(templateName, templateSource);
+				
 				template = Velocity.getTemplate(templateName);
 				rep.removeStringResource(templateName);
 				this.templates.put(templateName, template);
