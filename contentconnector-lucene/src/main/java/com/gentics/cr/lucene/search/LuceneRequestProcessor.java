@@ -103,6 +103,11 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * attribute is given in the query.
 	 */
 	public static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
+	
+	/**
+	 * Key to store the parsed query in the meta resolvable.
+	 */
+	public static final String PARSED_QUERY_KEY = "parsed_query";
 
 	/**
 	 * Create new instance of LuceneRequestProcessor.
@@ -206,7 +211,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			Object metaKey = request.get(META_RESOLVABLE_KEY);
 			if (metaKey != null && (Boolean) metaKey) {
 				CRResolvableBean metaBean = new CRMetaResolvableBean(
-						searchResult, request, start, count);
+						searchResult, request, parsedQuery, start, count);
 				result.add(metaBean);
 			}
 			ucProcessSearchMeta.stop();

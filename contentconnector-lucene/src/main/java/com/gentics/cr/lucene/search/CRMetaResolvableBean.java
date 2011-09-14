@@ -2,6 +2,8 @@ package com.gentics.cr.lucene.search;
 
 import java.util.HashMap;
 
+import org.apache.lucene.search.Query;
+
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 
@@ -43,5 +45,11 @@ public class CRMetaResolvableBean extends CRResolvableBean {
     set(CRSearcher.RESULT_BESTQUERYHITS_KEY,
         searchResult.get(CRSearcher.RESULT_BESTQUERYHITS_KEY));
   }
+
+public CRMetaResolvableBean(HashMap<String, Object> searchResult,
+		CRRequest request, Query parsedQuery, int start, int count) {
+	this(searchResult, request, start, count);
+	set(LuceneRequestProcessor.PARSED_QUERY_KEY, parsedQuery);
+}
 
 }
