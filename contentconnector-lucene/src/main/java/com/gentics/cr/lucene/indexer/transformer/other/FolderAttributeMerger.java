@@ -1,7 +1,6 @@
 package com.gentics.cr.lucene.indexer.transformer.other;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.log4j.Logger;
@@ -51,7 +50,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 			targetAttribute = target.toString();
 		}
 	}
-	
+
 	@Override
 	public void processBean(CRResolvableBean contentBean) {
 		String targetAttributeValues = "";
@@ -68,7 +67,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 				}
 			}
 		}
-			
+
 		for (String attribute : contentAttributes) {
 			Object attributeObject = contentBean.get(attribute);
 			if (attributeObject != null) {
@@ -76,7 +75,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 				targetAttributeValues += contentAttributesString;
 			}
 		}
-			
+
 		if (!targetAttributeValues.equals("")) {
 			String contentid = contentBean.getContentid();
 			String folderid = "";
@@ -91,8 +90,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }
