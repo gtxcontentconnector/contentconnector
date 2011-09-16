@@ -151,7 +151,7 @@ public class IndexJobServlet extends VelocityServlet {
 			LuceneSingleIndexLocation indexLocation = (LuceneSingleIndexLocation) location;
 			File indexDirectory = new File(indexLocation.getReopenFilename()).getParentFile();
 			File writeLock = null;
-			boolean weWroteTheWriteLock;
+			boolean weWroteTheWriteLock = false;
 			try {
 				indexLocation.checkLock();
 				if (indexDirectory.canWrite()) {
