@@ -170,7 +170,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 					<div class="row #getnextrow() small header">$e.getKey()</div>
 					<div class="row #getnextrow() small center">$loc.getDocCount()</div>
 					#set($indexSize = "$loc.indexSizeMB()")
-					<div class="row #getnextrow() small center">#round($indexSize 2) MB</div>
+					<div class="row #getnextrow() small center">#round($indexSize 2) MB <a href="?action=download&idx=$e.getKey()" target="_blank">.tar.gz</a></div>
 					<div class="row #getnextrow() small center">$loc.isOptimized()</div>
 					<div class="row #getnextrow() small center">$loc.lastModified()</div>
 					<div class="row #getnextrow() small center">$loc.isLocked()</div>
