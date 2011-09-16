@@ -1,4 +1,4 @@
-package com.gentis.cr.lucene.search.query;
+package com.gentics.cr.lucene.search.query;
 
 import java.io.IOException;
 import java.util.ArrayList;
