@@ -2,13 +2,13 @@ package com.gentics.cr.lucene.indexaccessor;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements.	See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License.	You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *		 http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,166 +43,172 @@ import org.apache.lucene.store.Directory;
  */
 public class IndexAccessorFactory {
 
-  /**
-   * Log4j logger for debug and error messages.
-   */
-  private static Logger logger = Logger.getLogger(IndexAccessorFactory.class);
+	/**
+	 * Log4j logger for debug and error messages.
+	 */
+	private static Logger logger = Logger.getLogger(IndexAccessorFactory.class);
 
-  /**
-   * Holds an single instance of {@link IndexAccessorFactory} to give it to
-   * others who want to read a lucene index.
-   */
-  private static final IndexAccessorFactory INDEXACCESSORFACTORY =
-    new IndexAccessorFactory();
+	/**
+	 * Holds an single instance of {@link IndexAccessorFactory} to give it to
+	 * others who want to read a lucene index.
+	 */
+	private static final IndexAccessorFactory INDEXACCESSORFACTORY =
+		new IndexAccessorFactory();
 
-  private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors =
-    new ConcurrentHashMap<Directory, IndexAccessor>();
-  
-  private Vector<IndexAccessorToken> consumer = new Vector<IndexAccessorToken>();
+	private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors =
+		new ConcurrentHashMap<Directory, IndexAccessor>();
+	
+	private Vector<IndexAccessorToken> consumer = new Vector<IndexAccessorToken>();
 
-  /**
-   * boolean mark for indicating {@link IndexAccessorFactory} was closed before.
-   */
-  private static boolean wasClosed = false;
+	/**
+	 * boolean mark for indicating {@link IndexAccessorFactory} was closed before.
+	 */
+	private static boolean wasClosed = false;
 
-  static {
-    LogManager manager = LogManager.getLogManager();
-    InputStream is = ClassLoader.getSystemResourceAsStream(
-        "logger.properties");
+	static {
+		LogManager manager = LogManager.getLogManager();
+		InputStream is = ClassLoader.getSystemResourceAsStream(
+				"logger.properties");
 
-    if (is != null) {
-      try {
-        manager.readConfiguration(is);
-      } catch (SecurityException e) {
-        throw new RuntimeException(e);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
+		if (is != null) {
+			try {
+				manager.readConfiguration(is);
+			} catch (SecurityException e) {
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
 
-  /**
-   * @return
-   */
-  public static IndexAccessorFactory getInstance() {
-    return INDEXACCESSORFACTORY;
-  }
+	/**
+	 * @return
+	 */
+	public static IndexAccessorFactory getInstance() {
+		return INDEXACCESSORFACTORY;
+	}
 
-  private IndexAccessorFactory() {
-    // prevent instantiation.
-  }
-  
-  public synchronized IndexAccessorToken registerConsumer()
-  {
-	  IndexAccessorToken token = new IndexAccessorToken();
-	  this.consumer.add(token);
-	  return token;
-  }
-  
-  public synchronized void releaseConsumer(IndexAccessorToken token)
-  {
-	  this.consumer.remove(token);
-	  if(this.consumer.size()==0)
-	  {
-		  close();
-	  }
-  }
+	private IndexAccessorFactory() {
+		// prevent instantiation.
+	}
+	
+	public synchronized IndexAccessorToken registerConsumer()
+	{
+		IndexAccessorToken token = new IndexAccessorToken();
+		this.consumer.add(token);
+		return token;
+	}
+	
+	public synchronized void releaseConsumer(IndexAccessorToken token)
+	{
+		this.consumer.remove(token);
+		if(this.consumer.size()==0)
+		{
+			close();
+		}
+	}
 
-  /**
-   * Closes all of the open IndexAccessors and releases any open resources.
-   */
-  private synchronized void close() {
-    if (!wasClosed) {
-      synchronized (indexAccessors) {
-        for (IndexAccessor accessor : indexAccessors.values()) {
-          accessor.close();
-        }
-        indexAccessors.clear();
-      }
-      wasClosed = true;
-      logger.debug("IndexAccessorFactory is now closed.");
-    }
-  }
+	/**
+	 * Closes all of the open IndexAccessors and releases any open resources.
+	 */
+	private synchronized void close() {
+		if (!wasClosed) {
+			synchronized (indexAccessors) {
+				for (IndexAccessor accessor : indexAccessors.values()) {
+					accessor.close();
+				}
+				indexAccessors.clear();
+			}
+			wasClosed = true;
+			if(logger.isDebugEnabled()) {
+				try {
+					throw new Exception("Closing index accessory factory lucene search is now disabled.");
+				} catch (Exception e) {
+					logger.debug("IndexAccessorFactory is now closed.", e);
+				}
+			}
+		}
+	}
 
-  /**
-   * 
-   * @param dir
-   * @param analyzer
-   * @throws IOException
-   */
-  public void createAccessor(Directory dir, Analyzer analyzer) throws IOException {
-    createAccessor(dir, analyzer, null, null);
-  }
-  /**
-   * 
-   * @param dir
-   * @param analyzer
-   * @param query
-   * @throws IOException
-   */
-  public void createAccessor(Directory dir, Analyzer analyzer, Query query) throws IOException {
-    createAccessor(dir, analyzer, query, null);
-  };
+	/**
+	 * 
+	 * @param dir
+	 * @param analyzer
+	 * @throws IOException
+	 */
+	public void createAccessor(Directory dir, Analyzer analyzer) throws IOException {
+		createAccessor(dir, analyzer, null, null);
+	}
+	/**
+	 * 
+	 * @param dir
+	 * @param analyzer
+	 * @param query
+	 * @throws IOException
+	 */
+	public void createAccessor(Directory dir, Analyzer analyzer, Query query) throws IOException {
+		createAccessor(dir, analyzer, query, null);
+	};
 
-  private void createAccessor(Directory dir, Analyzer analyzer, Query query, Set<Sort> sortFields)
-      throws IOException {
-    IndexAccessor accessor = null;
-    if (query != null) {
-      accessor = new WarmingIndexAccessor(dir, analyzer, query);
-    } else {
-      accessor = new DefaultIndexAccessor(dir, analyzer);
-    }
-    accessor.open();
+	private void createAccessor(Directory dir, Analyzer analyzer, Query query, Set<Sort> sortFields)
+			throws IOException {
+		IndexAccessor accessor = null;
+		if (query != null) {
+			accessor = new WarmingIndexAccessor(dir, analyzer, query);
+		} else {
+			accessor = new DefaultIndexAccessor(dir, analyzer);
+		}
+		accessor.open();
 
-    if (dir.listAll().length == 0) {
-      IndexWriter indexWriter = new IndexWriter(dir, null, true, IndexWriter.MaxFieldLength.UNLIMITED);
-      indexWriter.close();
-    }
+		if (dir.listAll().length == 0) {
+			IndexWriter indexWriter = new IndexWriter(dir, null, true, IndexWriter.MaxFieldLength.UNLIMITED);
+			indexWriter.close();
+		}
 
-    IndexAccessor existingAccessor = indexAccessors.putIfAbsent(dir, accessor);
-    if (existingAccessor != null) {
-      throw new IllegalStateException("IndexAccessor already exists: " + dir);
-    }
+		IndexAccessor existingAccessor = indexAccessors.putIfAbsent(dir, accessor);
+		if (existingAccessor != null) {
+			throw new IllegalStateException("IndexAccessor already exists: " + dir);
+		}
 
-  }
+	}
 
-  /**
-   * Get an {@link IndexAccessor} for the specified {@link Directory}.
-   * @param indexDir {@link Directory} to get the {@link IndexAccessor} for.
-   * @return {@link IndexAccessor} for the {@link Directory}.
-   */
-  public IndexAccessor getAccessor(final Directory indexDir) {
-    if (wasClosed) {
-      throw new AlreadyClosedException("IndexAccessorFactory was already closed"
-          + ". Maybe there is a shutdown in progress.");
-    }
-    IndexAccessor indexAccessor = indexAccessors.get(indexDir);
-    if (indexAccessor == null) {
-      throw new IllegalStateException("Requested Accessor does not exist");
-    }
-    return indexAccessor;
+	/**
+	 * Get an {@link IndexAccessor} for the specified {@link Directory}.
+	 * @param indexDir {@link Directory} to get the {@link IndexAccessor} for.
+	 * @return {@link IndexAccessor} for the {@link Directory}.
+	 */
+	public IndexAccessor getAccessor(final Directory indexDir) {
+		if (wasClosed) {
+			throw new AlreadyClosedException("IndexAccessorFactory was already closed"
+					+ ". Maybe there is a shutdown in progress.");
+		}
+		IndexAccessor indexAccessor = indexAccessors.get(indexDir);
+		if (indexAccessor == null) {
+			throw new IllegalStateException("Requested Accessor does not exist");
+		}
+		return indexAccessor;
 
-  }
-  /**
-   * Check if an Accessor is already created for that directory
-   * @param indexDir directory in which contains the index file
-   * @return boolean true if present, false if not
-   */
-  public boolean hasAccessor(Directory indexDir) {
-	  IndexAccessor indexAccessor = indexAccessors.get(indexDir);
-	  if(indexAccessor == null){
-		  return false;
-	  }
-	  return true;
-  }
+	}
+	/**
+	 * Check if an Accessor is already created for that directory
+	 * @param indexDir directory in which contains the index file
+	 * @return boolean true if present, false if not
+	 */
+	public boolean hasAccessor(Directory indexDir) {
+		IndexAccessor indexAccessor = indexAccessors.get(indexDir);
+		if(indexAccessor == null){
+			return false;
+		}
+		return true;
+	}
 
-  /**
-   * @param dirs 
-   * @return
-   */
-  public IndexAccessor getMultiIndexAccessor(Directory[] dirs) {
-    IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
-    
-    return multiIndexAccessor;
-  }
+	/**
+	 * @param dirs 
+	 * @return
+	 */
+	public IndexAccessor getMultiIndexAccessor(Directory[] dirs) {
+		IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
+		
+		return multiIndexAccessor;
+	}
 }
