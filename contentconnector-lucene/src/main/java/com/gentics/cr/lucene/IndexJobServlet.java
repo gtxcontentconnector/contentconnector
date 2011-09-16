@@ -1,29 +1,20 @@
 package com.gentics.cr.lucene;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
-import javax.naming.directory.DirContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.indexer.index.LockedIndexException;
 import com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.monitoring.MonitorFactory;
@@ -159,13 +150,35 @@ public class IndexJobServlet extends VelocityServlet {
 		if (location instanceof LuceneSingleIndexLocation) {
 			LuceneSingleIndexLocation indexLocation = (LuceneSingleIndexLocation) location;
 			File indexDirectory = new File(indexLocation.getReopenFilename()).getParentFile();
-			response.setContentType("application/x-compressed, application/x-tar");
-			response.setHeader("Content-Disposition","attachment; filename=" + index + ".tar.gz");
+			File writeLock = null;
+			boolean weWroteTheWriteLock;
 			try {
-				ArchiverUtil.generateGZippedTar(response.getOutputStream(), indexDirectory);
+				indexLocation.checkLock();
+				if (indexDirectory.canWrite()) {
+					writeLock = new File(indexDirectory, "write.lock");
+					if (writeLock.createNewFile()) {
+						weWroteTheWriteLock = true;
+					} else {
+						throw new LockedIndexException(new Exception("the write lock file already exists in the index."));
+					}
+					//set to read only so the index jobs will not delete it.
+					writeLock.setReadOnly();
+					response.setContentType("application/x-compressed, application/x-tar");
+					response.setHeader("Content-Disposition","attachment; filename=" + index + ".tar.gz");
+					ArchiverUtil.generateGZippedTar(response.getOutputStream(), indexDirectory);
+				} else {
+					log.error("Cannot lock the index directory to ensure the consistency of the archive.");
+				}
 			} catch (IOException e) {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				log.error("Cannot generate the archive correctly.", e);
+			} catch (LockedIndexException e) {
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				log.error("Cannot generate the archive while the index is locked.", e);
+			} finally {
+				if (writeLock != null && writeLock.exists() && weWroteTheWriteLock) {
+					writeLock.delete();
+				}
 			}
 			
 		} else {
