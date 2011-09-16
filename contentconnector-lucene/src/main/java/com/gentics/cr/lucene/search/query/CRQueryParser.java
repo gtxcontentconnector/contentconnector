@@ -120,6 +120,7 @@ public class CRQueryParser extends QueryParser {
 				if (!"AND".equalsIgnoreCase(value)
 						&& !"OR".equalsIgnoreCase(value)
 						&& !"NOT".equalsIgnoreCase(value)
+						&& !"TO".equalsIgnoreCase(value)
 						&& !"+".equals(value)
 						&& !value.contains(":")) {
 					valueMatcher.appendReplacement(newQuery, charsBeforeValue
@@ -187,7 +188,7 @@ public class CRQueryParser extends QueryParser {
 		String seperatorCharacterClass = " \\(\\)";
 		Pattern valuePattern = Pattern.compile(
 				"([" + seperatorCharacterClass + "]*)"
-				+ "([^:]+:(?:\\([^\\)]+\\)|\"[^\"]+\")|\"[^\"]+\"|[^" + seperatorCharacterClass + "]+)"
+				+ "([^:]+:(?:\\([^\\)]+\\)|\\[[^\\]]+\\]|\"[^\"]+\")|\"[^\"]+\"|[^" + seperatorCharacterClass + "]+)"
 				+ "([" + seperatorCharacterClass + "]*)");
 		Matcher valueMatcher = valuePattern.matcher(query);
 		return valueMatcher;

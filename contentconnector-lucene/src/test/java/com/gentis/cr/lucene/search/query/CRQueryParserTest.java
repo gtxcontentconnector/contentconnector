@@ -113,6 +113,23 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 		containsOnly(matchedDocuments, documents.get(0));
 	}
 	
+	public void testWordMatchComplexSubRangeOperator() throws ParseException, CorruptIndexException, IOException {
+		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
+		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
+		Collection<Document> matchedDocuments = lucene.find(parser.parse("content:word AND edittimestamp:[1304510397 TO 1314627329]"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(4), documents.get(5), documents.get(6), documents.get(7)});
+		
+		crRequest.set(CRRequest.WORDMATCH_KEY, "wrd");
+		parser = new CRQueryParser(LuceneVersion.getVersion(), new String[]{"edittimestamp"}, STANDARD_ANALYZER, crRequest);
+		matchedDocuments = lucene.find(parser.parse("[1304510397 TO 1314627329]"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(4), documents.get(5), documents.get(6), documents.get(7)});
+		
+		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
+		parser = new CRQueryParser(LuceneVersion.getVersion(), new String[]{"edittimestamp"}, STANDARD_ANALYZER, crRequest);
+		matchedDocuments = lucene.find(parser.parse("[1304510397 TO 1314627329]"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(4), documents.get(5), documents.get(6), documents.get(7)});
+	}
+	
 	public void testWordMatchComplexSubGroupAddSign() throws CorruptIndexException, IOException, ParseException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
