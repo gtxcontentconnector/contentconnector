@@ -251,14 +251,6 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 		return ret;
 	}
 
-	public void finalize() {
-		LuceneIndexLocation idsLocation =
-			LuceneIndexLocation.getIndexLocation(this.config);
-		if (idsLocation != null) {
-			idsLocation.stop();
-		}
-	}
-
 	/**
 	 * Run a Search against the lucene index.
 	 * @param searcher TODO javadoc
