@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -76,7 +77,7 @@ public class SimpleLucene {
 		QueryParser queryParser = new QueryParser(
 				LuceneVersion.getVersion(),
 				CONTENT_ATTRIBUTE,
-				new StandardAnalyzer(LuceneVersion.getVersion()));
+				new StandardAnalyzer(LuceneVersion.getVersion(), CharArraySet.EMPTY_SET));
 		Query query = queryParser.parse(luceneQuery);
 		return find(query);
 	}
