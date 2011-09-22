@@ -96,6 +96,7 @@ public class CRQueryParser extends QueryParser {
 	
 	
 	private String replaceSpecialCharactersFromQuery(String crQuery) {
+		final String specialCharacters = "-";
 		StringBuffer newQuery = new StringBuffer();
 		Matcher valueMatcher = getValueMatcher(crQuery);
 		while (valueMatcher.find()) {
@@ -106,9 +107,9 @@ public class CRQueryParser extends QueryParser {
 			if (!"AND".equalsIgnoreCase(valueWithAttribute)
 					&& !"OR".equalsIgnoreCase(valueWithAttribute)
 					&& !"NOT".equalsIgnoreCase(valueWithAttribute) && attributesToSearchIn.contains(attribute)) {
-				if(!valueWithAttribute.matches("[^:]+:\"[^\"]+\"")) {
+				if(!valueWithAttribute.matches("[^:]+:\"[^\"]+\"") && valueWithAttribute.matches(".*[" + specialCharacters +  "].*")) {
 					String replacement = Matcher.quoteReplacement(charsBeforeValue
-							+ "(" + valueWithAttribute.replaceAll("\\\\[-]([^-]+)", " +" + attribute + ":$1)") + charsAfterValue);
+							+ "(" + valueWithAttribute.replaceAll("\\\\?[" + specialCharacters + "]([^" + specialCharacters + "]+)", " +" + attribute + ":$1)") + charsAfterValue);
 					valueMatcher.appendReplacement(newQuery, replacement);
 				}
 			}
