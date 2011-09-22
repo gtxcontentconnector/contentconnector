@@ -88,10 +88,35 @@ public class CRQueryParser extends QueryParser {
 		if (attributesToSearchIn.size() > ONE) {
 			crQuery = addMultipleSearchedAttributes(crQuery);
 		}
+		crQuery = replaceSpecialCharactersFromQuery(crQuery);
 		crQuery = addWildcardsForWordmatchParameter(crQuery);
 		LOGGER.debug("parsed query: " + crQuery);
 		return super.parse(crQuery);
 	}
+	
+	
+	private String replaceSpecialCharactersFromQuery(String crQuery) {
+		StringBuffer newQuery = new StringBuffer();
+		Matcher valueMatcher = getValueMatcher(crQuery);
+		while (valueMatcher.find()) {
+			String charsBeforeValue = valueMatcher.group(ONE);
+			String valueWithAttribute = valueMatcher.group(TWO);
+			String attribute = valueWithAttribute.indexOf(":") != -1 ? valueWithAttribute.replaceAll(":.*$", "") : "";
+			String charsAfterValue = valueMatcher.group(THREE);
+			if (!"AND".equalsIgnoreCase(valueWithAttribute)
+					&& !"OR".equalsIgnoreCase(valueWithAttribute)
+					&& !"NOT".equalsIgnoreCase(valueWithAttribute) && attributesToSearchIn.contains(attribute)) {
+				if(!valueWithAttribute.matches("[^:]+:\"[^\"]+\"")) {
+					String replacement = Matcher.quoteReplacement(charsBeforeValue
+							+ "(" + valueWithAttribute.replaceAll("\\\\[-]([^-]+)", " +" + attribute + ":$1)") + charsAfterValue);
+					valueMatcher.appendReplacement(newQuery, replacement);
+				}
+			}
+		}
+		valueMatcher.appendTail(newQuery);
+		return newQuery.toString();
+	}
+
 
 	/**
 	 * parse given query and prepare it to search in multiple attributes with
