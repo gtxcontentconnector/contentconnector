@@ -142,6 +142,8 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 	public void testEscapedMinus() throws CorruptIndexException, IOException, ParseException {
 		Collection<Document> matchedDocuments = lucene.find(parser.parse("with\\-minusinit"));
 		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(3), documents.get(4)});
+		matchedDocuments = lucene.find(parser.parse("with-minusinit"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(3), documents.get(4)});
 	}
 	
 	public void testEscapedMinusWordMatch() throws CorruptIndexException, IOException, ParseException {
