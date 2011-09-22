@@ -26,6 +26,9 @@ import com.gentics.cr.lucene.LuceneVersion;
 public class SimpleLucene {
 
 	public static final String CONTENT_ATTRIBUTE = "content";
+	
+	private static final StandardAnalyzer ANALYZER =
+		new StandardAnalyzer(LuceneVersion.getVersion(), CharArraySet.EMPTY_SET);
 
 	IndexSearcher searcher;
 	
@@ -39,7 +42,7 @@ public class SimpleLucene {
 	public void add(Document document) throws CorruptIndexException, IOException {
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(
 					LuceneVersion.getVersion(),
-					new StandardAnalyzer(LuceneVersion.getVersion()));
+					ANALYZER);
 		IndexWriter writer = new IndexWriter(index, indexWriterConfig);
 		writer.addDocument(document);
 		writer.optimize();
@@ -77,7 +80,7 @@ public class SimpleLucene {
 		QueryParser queryParser = new QueryParser(
 				LuceneVersion.getVersion(),
 				CONTENT_ATTRIBUTE,
-				new StandardAnalyzer(LuceneVersion.getVersion(), CharArraySet.EMPTY_SET));
+				ANALYZER);
 		Query query = queryParser.parse(luceneQuery);
 		return find(query);
 	}
