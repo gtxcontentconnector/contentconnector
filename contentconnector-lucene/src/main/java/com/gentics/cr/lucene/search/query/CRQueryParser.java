@@ -169,9 +169,10 @@ public class CRQueryParser extends QueryParser {
 					&& !"OR".equalsIgnoreCase(value)
 					&& !"NOT".equalsIgnoreCase(value) && attributesToSearchIn.contains(attribute)) {
 				if(!value.matches("[^:]+:\"[^\"]+\"")) {
-					valueMatcher.appendReplacement(newQuery, charsBeforeValue
+					String replacement = Matcher.quoteReplacement(charsBeforeValue
 							+ value.replaceAll("(.*:\\(?)?([^: \\(\\)]+)", "$1" + appendToWordBegin + "$2"
 									+ appendToWordEnd) + charsAfterValue);
+					valueMatcher.appendReplacement(newQuery, replacement);
 				}
 			}
 		}
