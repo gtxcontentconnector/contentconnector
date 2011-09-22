@@ -109,7 +109,7 @@ public class CRQueryParser extends QueryParser {
 					&& !"NOT".equalsIgnoreCase(valueWithAttribute) && attributesToSearchIn.contains(attribute)) {
 				if(!valueWithAttribute.matches("[^:]+:\"[^\"]+\"") && valueWithAttribute.matches(".*[" + specialCharacters +  "].*")) {
 					String replacement = Matcher.quoteReplacement(charsBeforeValue
-							+ "(" + valueWithAttribute.replaceAll("\\\\?[" + specialCharacters + "]([^" + specialCharacters + "]+)", " +" + attribute + ":$1)") + charsAfterValue);
+							+ "(" + valueWithAttribute.replaceAll("\\\\?[" + specialCharacters + "]([^" + specialCharacters + "]+)", " +" + attribute + ":$1") + ")" + charsAfterValue);
 					valueMatcher.appendReplacement(newQuery, replacement);
 				}
 			}

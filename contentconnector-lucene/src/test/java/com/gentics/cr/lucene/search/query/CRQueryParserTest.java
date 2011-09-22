@@ -43,7 +43,7 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 		/* 0 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word9 word1", "node_id:1")));
 		/* 1 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word2 word9", "node_id:1")));
 		/* 2 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word3", "binarycontent:word9", "node_id:2")));
-		/* 3 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":wörd4 with-minusinit", "node_id:2")));
+		/* 3 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":wörd4 with-minusinit with-minus-in-it", "node_id:2")));
 		/* 4 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word5 minusinit with", "updatetimestamp:1311604678", "edittimestamp:1311604678", "node_id:3"))); //25.07.2011 16:37:58
 		/* 5 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word6", "updatetimestamp:1313160620", "edittimestamp:1313160620", "node_id:3"))); //12.08.2011 16:50:20
 		/* 6 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word7", "updatetimestamp:1314627329", "edittimestamp:1314627329", "node_id:3"))); //29.08.2011 16:15:29
@@ -139,17 +139,22 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(0), documents.get(1), documents.get(2)});
 	}
 	
-	public void testEscapedMinus() throws CorruptIndexException, IOException, ParseException {
+	public void testMinus() throws CorruptIndexException, IOException, ParseException {
 		Collection<Document> matchedDocuments = lucene.find(parser.parse("with\\-minusinit"));
 		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(3), documents.get(4)});
 		matchedDocuments = lucene.find(parser.parse("with-minusinit"));
 		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(3), documents.get(4)});
 	}
 	
+	public void testMultipleEscapedMinus() throws CorruptIndexException, IOException, ParseException {
+		Collection<Document> matchedDocuments = lucene.find(parser.parse("with-minus-in-it"));
+		containsOnly(matchedDocuments, documents.get(3));
+	}
+	
 	public void testEscapedMinusWordMatch() throws CorruptIndexException, IOException, ParseException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("With\\-MinusInIt"));
+		Collection<Document> matchedDocuments = lucene.find(parser.parse("with\\-minusinit"));
 		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(3), documents.get(4)});
 	}
 }
