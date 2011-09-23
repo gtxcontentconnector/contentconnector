@@ -27,6 +27,8 @@ import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
 
 /**
  * This class can be used to build an autocomplete index over an existing lucene index.
@@ -220,6 +222,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 	}
 
 	private synchronized void reIndex() throws IOException {
+		UseCase ucReIndex = MonitorFactory.startUseCase("reIndex()"); 
 		// build a dictionary (from the spell package) 
 		log.debug("Starting to reindex didyoumean index.");
 		IndexReader sourceReader = IndexReader.open(source);
@@ -238,6 +241,7 @@ public class DidYouMeanProvider implements IEventReceiver{
 			sourceReader.close(); 
 		}
 		log.debug("Finished reindexing didyoumean index.");
+		ucReIndex.stop();
 	}
 
 	public void finalize() {
