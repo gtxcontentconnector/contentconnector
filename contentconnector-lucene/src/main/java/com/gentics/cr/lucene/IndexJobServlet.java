@@ -203,8 +203,10 @@ public class IndexJobServlet extends VelocityServlet {
 		setTemplateVariable("indexes", indexTable.entrySet());
 		setTemplateVariable("nc", nc);
 		setTemplateVariable("selectedIndex", selectedIndex);
-		setTemplateVariable("report", MonitorFactory.getSimpleReport());
-		setTemplateVariable("action", getAction(request));
+		String action = getAction(request);
+		if ("report".equalsIgnoreCase(action))
+			setTemplateVariable("report", MonitorFactory.getSimpleReport());
+		setTemplateVariable("action", action);
 		setTemplateVariable("maxmemory", maxMemory);
 		setTemplateVariable("totalmemory", totalMemory);
 		setTemplateVariable("freememory", freeMemory);
