@@ -26,6 +26,9 @@ public class CleanupTextTest extends TestCase {
 				"1. First chapter ...................................................................................................................... 2\n" +
 				"2. Second chapter .................................................................................................................................... 7");
 		assertEquals("Index points are not reduced correctly.", "1. Index Title ... 1 1. First chapter ... 2 2. Second chapter ... 7", result);
+		
+		result = transform("First chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 33 Second chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 66");
+		assertEquals("Index points are not reduced correctly.", "First chapter ... Page 33 Second chapter ... Page 66", result);
 	}
 	
 	public void testUmlauts() throws CRException {

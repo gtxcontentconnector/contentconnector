@@ -31,6 +31,25 @@ public class CleanupText extends ContentTransformer{
 		SPACES
 	}
 	
+	private class State {
+		StringBuilder result = new StringBuilder();
+		StringBuilder buffer = new StringBuilder();
+		boolean whitespacePending = false;
+		Replacing activeReplacing = Replacing.NONE;
+		
+		private void setReplacing(Replacing replacing) {
+			if (activeReplacing != replacing) {
+				result.append(buffer);
+				buffer.replace(0, buffer.length(), "");
+				if (whitespacePending) {
+					result.append(' ');
+					whitespacePending = false;
+				}
+				activeReplacing = replacing;
+			}
+		}
+	}
+	
 	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
 	
 	private String attribute="";
@@ -51,29 +70,26 @@ public class CleanupText extends ContentTransformer{
 				Object obj = bean.get(attribute);
 				if (obj != null) {
 					boolean changed = false;
-					StringBuilder result = new StringBuilder();
-					StringBuilder buffer = new StringBuilder();
+					State state = new State();
 					Reader reader = getStreamContents(obj);
 					int cInt;
-					Replacing activeReplacing = Replacing.NONE;
 					while ((cInt = reader.read()) != -1) {
 						char character = (char) cInt;
-						if (character == '.') {
-							activeReplacing = setReplacing(activeReplacing, result, buffer, Replacing.INDEX_POINT);
-							if (buffer.length() < 3) {
-								buffer.append(character);
+						boolean whitespace = checkWhitespaceCharacter(character, cInt);
+						if (character == '.' || (state.activeReplacing == Replacing.INDEX_POINT && whitespace)) {
+							state.setReplacing(Replacing.INDEX_POINT);
+							if (whitespace) {
+								state.whitespacePending  = true;
+								changed = true;
+							} else if (state.buffer.length() < 3) {
+								state.buffer.append(character);
 							} else {
 								changed = true;
 							}
-						} else if (character == '\r' || character == '\n' || character == '\t' || character == ' '
-							//http://www.cs.sfu.ca/~ggbaker/reference/characters/#space
-							|| cInt == 160 //non breaking space
-							|| cInt == 8195 //em-space
-							|| cInt == 8194 //en-space
-							) {
-							activeReplacing = setReplacing(activeReplacing, result, buffer, Replacing.SPACES);
-							if (buffer.length() == 0) {
-								buffer.append(' ');
+						} else if (whitespace) {
+							state.setReplacing(Replacing.SPACES);
+							if (state.buffer.length() == 0) {
+								state.buffer.append(' ');
 							} else {
 								changed = true;
 							}
@@ -81,13 +97,13 @@ public class CleanupText extends ContentTransformer{
 							//ASCII Controll Characters
 							changed = true;
 						} else {
-							activeReplacing = setReplacing(activeReplacing, result, buffer, Replacing.NONE);
-							result.append(character);
+							state.setReplacing(Replacing.NONE);
+							state.result.append(character);
 						}
 					}
-					activeReplacing = setReplacing(activeReplacing, result, buffer, Replacing.NONE);
+					state.setReplacing(Replacing.NONE);
 					if (changed) {
-						bean.set(attribute, result.toString());
+						bean.set(attribute, state.result.toString());
 					}
 				}
 			} else {
@@ -97,14 +113,13 @@ public class CleanupText extends ContentTransformer{
 			throw new CRException("Cannot read the attribute " + attribute + ".", e);
 		}
 	}
-
-	private Replacing setReplacing(Replacing activeReplacing, StringBuilder result, StringBuilder buffer, Replacing replacing) {
-		if (activeReplacing != replacing) {
-			result.append(buffer);
-			buffer.replace(0, buffer.length(), "");
-			activeReplacing = replacing;
-		}
-		return activeReplacing;
+	
+	private boolean checkWhitespaceCharacter(char character, int cInt) {
+		return character == '\r' || character == '\n' || character == '\t' || character == ' '
+			//http://www.cs.sfu.ca/~ggbaker/reference/characters/#space
+			|| cInt == 160 //non breaking space
+			|| cInt == 8195 //em-space
+			|| cInt == 8194; //en-space
 	}
 	
 	
