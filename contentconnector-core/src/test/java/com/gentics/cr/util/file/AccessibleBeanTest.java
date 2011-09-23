@@ -24,6 +24,7 @@ public class AccessibleBeanTest extends TestCase {
 	public void testGetString() {
 		assertEquals("Cannot output byte array as string", "abc", bean.getString("byteArray"));
 		assertEquals("Cannot output string as string", "abc", bean.getString("string"));
+		assertEquals("Cannot output string as string", "abc", bean.getString("notfoundattribute", "abc"));
 	}
 	
 	class MyAccessibleBean extends AccessibleBean {
