@@ -40,10 +40,12 @@ public abstract class AccessibleBean {
 		public final String getString(final String key, 
 				final String defaultValue) {
 			Object result = get(key);
-			if (result != null) {
-				return result.toString();
-			} else {
+			if (result == null) {
 				return defaultValue;
+			} else if (result instanceof byte[]) {
+				return new String((byte[]) result);
+			} else {
+				return result.toString();
 			}
 		}
 		
