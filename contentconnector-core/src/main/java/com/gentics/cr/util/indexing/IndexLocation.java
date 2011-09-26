@@ -238,6 +238,14 @@ public abstract class IndexLocation {
 			periodical_thread = new Thread(new Runnable() {
 				public void run() {
 					boolean interrupted = false;
+
+					try {
+						Thread.sleep(periodicalIndexConfig.getFirstJobStartDelay()
+								* Constants.MILLISECONDS_IN_A_SECOND);
+					} catch (InterruptedException ex) {
+						interrupted = true;
+					}
+					
 					while (periodicalIndexConfig.isPeriodical() && !interrupted
 							&& !Thread.currentThread().isInterrupted()) {
 						try {
