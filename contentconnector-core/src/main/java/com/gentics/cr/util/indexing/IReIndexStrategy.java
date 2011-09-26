@@ -8,6 +8,6 @@ package com.gentics.cr.util.indexing;
  */
 public interface IReIndexStrategy {
 	
-	public boolean skipReIndex();
+	public boolean skipReIndex(IndexLocation indexLocation);
 
 }

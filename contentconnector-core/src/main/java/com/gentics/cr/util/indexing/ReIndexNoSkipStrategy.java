@@ -9,10 +9,10 @@ import com.gentics.cr.CRConfig;
  */
 public class ReIndexNoSkipStrategy implements IReIndexStrategy {
 
-	public ReIndexNoSkipStrategy(CRConfig config) {
+	public ReIndexNoSkipStrategy(final CRConfig config) {
 	}
 
-	public boolean skipReIndex() {
+	public boolean skipReIndex(IndexLocation indexLocation) {
 		return false;
 	}		
 }
