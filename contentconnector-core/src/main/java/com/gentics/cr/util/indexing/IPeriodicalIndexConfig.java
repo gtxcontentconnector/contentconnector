@@ -22,5 +22,5 @@ public interface IPeriodicalIndexConfig {
 	/**
 	 * the index job creation wait for the configured amount of second till the first job is triggered
 	 */
-	public int getFirstJobStartDelay();
+	public long getFirstJobStartDelay();
 }

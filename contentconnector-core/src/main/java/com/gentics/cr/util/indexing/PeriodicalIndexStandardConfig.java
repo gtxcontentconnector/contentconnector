@@ -49,7 +49,7 @@ public class PeriodicalIndexStandardConfig implements IPeriodicalIndexConfig {
 	/**
 	 * @return delay before first index job is triggered
 	 */
-	public int getFirstJobStartDelay() {
+	public long getFirstJobStartDelay() {
 		return firstJobStartDelay;
 	}
 	
