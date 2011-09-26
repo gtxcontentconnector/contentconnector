@@ -12,7 +12,7 @@ public interface IPeriodicalIndexConfig {
 	/**
 	 * default value for periodical indexer execution.
 	 */
-	public static final int PERIODICAL_FIRSTJOBSTARTDELAY = 0;
+	public static final long PERIODICAL_FIRSTJOBSTARTDELAY = 0;
 	
 	/**
 	 * @return configured value for periodical indexer execution.

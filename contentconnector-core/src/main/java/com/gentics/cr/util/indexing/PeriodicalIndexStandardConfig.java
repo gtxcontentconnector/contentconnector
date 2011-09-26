@@ -27,7 +27,7 @@ public class PeriodicalIndexStandardConfig implements IPeriodicalIndexConfig {
 	/**
 	 * delay before first index job is triggered
 	 */
-	private int firstJobStartDelay;
+	private long firstJobStartDelay;
 	
 	/**
 	 * 
@@ -35,8 +35,11 @@ public class PeriodicalIndexStandardConfig implements IPeriodicalIndexConfig {
 	 */
 	public PeriodicalIndexStandardConfig(final CRConfig config) {
 		periodical = config.getBoolean(PERIODICAL_KEY, PERIODICAL_DEFAULT);
-		firstJobStartDelay = config.getInteger(FIRSTJOBSTARTDELAY_KEY,
-				PERIODICAL_FIRSTJOBSTARTDELAY);
+		try {
+			firstJobStartDelay = Long.parseLong(config.getString(FIRSTJOBSTARTDELAY_KEY));
+		} catch (NumberFormatException e) {
+			firstJobStartDelay = PERIODICAL_FIRSTJOBSTARTDELAY;
+		}
 	}
 	
 	/**
