@@ -1,6 +1,7 @@
 package com.gentics.cr.lucene.autocomplete;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,11 @@ import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
+import com.gentics.cr.util.indexing.IReIndexStrategy;
+import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
 
 /**
  * This class can be used to build an autocomplete index over an existing lucene index.
@@ -58,11 +64,15 @@ public class Autocompleter implements IEventReceiver{
 	
 	private static final String AUTOCOMPLETE_FIELD_KEY="autocompletefield";
 	
+	private static final String REINDEXSTRATEGYCLASS_KEY = "reindexStrategyClass";  
+	
 	private static final String AUTOCOMPLETE_REOPEN_UPDATE = "autocompletereopenupdate";
 	
 	private String autocompletefield = "content";
 	
 	private boolean autocompletereopenupdate = false;
+	
+	private IReIndexStrategy reindexStrategy;
 	
 	public Autocompleter(CRConfig config)
 	{
@@ -72,6 +82,7 @@ public class Autocompleter implements IEventReceiver{
 		autocompleteLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(auto_conf,AUTOCOMPLETE_INDEY_KEY));
 		autocompleteLocation.registerDirectoriesSpecial();
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);
+		reindexStrategy = initReindexStrategy(config);
 		if(s_autofield!=null)this.autocompletefield=s_autofield;
 		
 		String sReopenUpdate = config.getString(AUTOCOMPLETE_REOPEN_UPDATE);
@@ -97,13 +108,16 @@ public class Autocompleter implements IEventReceiver{
 	public void processEvent(Event event) {
 		if(IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType()))
 		{
-			try
-			{
-				reIndex();
-			}
-			catch(IOException e)
-			{
-				log.error("Could not reindex autocomplete index.", e);
+			IndexLocation il = (IndexLocation)event.getData();
+			if (!reindexStrategy.skipReIndex(il)) {
+				try
+				{
+					reIndex();
+				}
+				catch(IOException e)
+				{
+					log.error("Could not reindex autocomplete index.", e);
+				}
 			}
 		}
 	}
@@ -170,6 +184,7 @@ public class Autocompleter implements IEventReceiver{
 	
 	private synchronized void reIndex() throws IOException
 	{
+		UseCase ucReIndex = MonitorFactory.startUseCase("reIndex()"); 
 		// build a dictionary (from the spell package) 
 		log.debug("Starting to reindex autocomplete index.");
 		IndexAccessor sia = this.source.getAccessor();
@@ -225,6 +240,7 @@ public class Autocompleter implements IEventReceiver{
         }
         autocompleteLocation.createReopenFile();
         log.debug("Finished reindexing autocomplete index.");
+        ucReIndex.stop();
 	}
 	
 	public void finalize()
@@ -233,5 +249,29 @@ public class Autocompleter implements IEventReceiver{
 		autocompleteLocation.stop();
 		EventManager.getInstance().unregister(this);
 	}
+	
+	/**
+	 * Initialize a config class for the periodical execution flag of the indexer.
+	 * If init of the configured class fails, a fallback class is returned. 
+	 * 
+	 * @return configclass
+	 * @param config
+	 */
+	private IReIndexStrategy initReindexStrategy(
+			final CRConfig config) {
+		String className = config.getString(REINDEXSTRATEGYCLASS_KEY);
+
+		if (className != null && className.length() != 0) {
+			try {
+				Class<?> clazz = Class.forName(className);
+				Constructor<?> constructor = clazz.getConstructor(CRConfig.class);
+				return (IReIndexStrategy)constructor.newInstance(config);
+			} catch (Exception e) {
+				log.warn("Cound not init configured " + REINDEXSTRATEGYCLASS_KEY
+						+ ": " + className, e);
+			}
+		 }
+		 return new ReIndexNoSkipStrategy(config);
+	 }
 
 }
