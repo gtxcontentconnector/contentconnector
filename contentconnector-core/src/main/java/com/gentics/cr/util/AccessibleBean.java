@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.util.generics.Lists;
 
 /**
@@ -48,7 +49,25 @@ public abstract class AccessibleBean {
 				return result.toString();
 			}
 		}
-		
+
+		/**
+		 * get an attribute as {@link CRResolvableBean}.
+		 * @param key - attribute key to get
+		 * @param defaultValue - default value in case the attribute is not set.
+		 * @return attribute as {@link CRResolvableBean}, <code>null</code> in case the attribute is not set
+		 */
+		public final CRResolvableBean getObject(final String key,
+				final CRResolvableBean defaultValue) {
+			Object result = get(key);
+			if (result == null) {
+				return defaultValue;
+			} else if (result instanceof CRResolvableBean) {
+				return (CRResolvableBean) result;
+			} else {
+				return defaultValue;
+			}
+		}
+
 		/**
 		 * Get configuration key as collection of {@link String}s.
 		 * @param key - configuration key to get
@@ -67,6 +86,25 @@ public abstract class AccessibleBean {
 				return Arrays.asList(((String) value).split(separator));
 			} else if (value != null) {
 				return Collections.singletonList(value.toString());
+			} else {
+				return defaultValue;
+			}
+		}
+		
+		/**
+		 * Get configuration key as collection of {@link CRResolvableBean}s.
+		 * @param key - configuration key to get
+		 * @param defaultValue - default value to use if we cannot get the
+		 * property
+		 * @return configuration key as collection of {@link CRResolvableBean}s
+		 */
+		public final Collection<CRResolvableBean> getMultipleObjects(final String key,
+				final Collection<CRResolvableBean> defaultValue) {
+			Object value = get(key);
+			if (value instanceof Collection) {
+				return Lists.toSpecialList((Collection<?>) value, CRResolvableBean.class);
+			} else if (value instanceof CRResolvableBean) {
+				return Collections.singletonList((CRResolvableBean) value);
 			} else {
 				return defaultValue;
 			}
