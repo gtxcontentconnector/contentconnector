@@ -1,12 +1,9 @@
 package com.gentics.cr.lucene.search.query;
 
-import java.awt.PageAttributes.OriginType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
-import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -18,8 +15,6 @@ import org.apache.lucene.search.Query;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.lucene.AbstractLuceneTest;
 import com.gentics.cr.lucene.LuceneVersion;
-import com.gentics.cr.lucene.search.query.BooleanQueryRewriter;
-import com.gentics.cr.lucene.search.query.CRQueryParser;
 import com.gentis.cr.lucene.search.query.mocks.ComparableDocument;
 import com.gentis.cr.lucene.search.query.mocks.SimpleLucene;
 

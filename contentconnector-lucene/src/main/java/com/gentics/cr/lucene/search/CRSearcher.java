@@ -2,11 +2,9 @@ package com.gentics.cr.lucene.search;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -394,7 +392,6 @@ private TopDocsCollector<?> createCollector(final Searcher searcher,
 						&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1
 								|| maxScore == Float.NaN
 								|| maxScore < this.didyoumeanminscore)) {
-					String parsedQueryString = parsedQuery.toString().replaceAll("\\(\\)", "");
 
 					HashMap<String, Object> didyoumeanResult =
 						didyoumean(query, parsedQuery, indexAccessor, parser,

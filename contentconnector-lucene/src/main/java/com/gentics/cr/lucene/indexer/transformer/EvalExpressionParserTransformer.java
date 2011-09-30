@@ -1,8 +1,5 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -17,7 +14,6 @@ import com.gentics.api.lib.resolving.PropertyResolver;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.util.CRUtil;
 
 /**
  * Last changed: $Date: 2011-05-13 10:40:00 +0200 (Fr, 13 May 2011) $
