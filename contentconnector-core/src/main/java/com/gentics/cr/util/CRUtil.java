@@ -167,6 +167,8 @@ public class CRUtil {
 					+ File.separator + "conf" + File.separator + "gentics"
 					+ File.separator;
 					System.setProperty(PORTALNODE_CONFPATH, defaultConfPath);
+				} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith("file:/")) {
+					System.setProperty(PORTALNODE_CONFPATH, System.getProperty(PORTALNODE_CONFPATH).replace("file:/", ""));
 				}
 				String result = CRUtilResolver.resolveSystemProperties(string);
 				result =
