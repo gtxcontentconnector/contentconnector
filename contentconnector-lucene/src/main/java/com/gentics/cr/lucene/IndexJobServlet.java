@@ -25,24 +25,19 @@ import com.gentics.cr.util.indexing.IndexController;
 import com.gentics.cr.util.indexing.IndexJobQueue;
 import com.gentics.cr.util.indexing.IndexLocation;
 
-
-
-
 /**
  * @author Christopher Supnig
  */
 public class IndexJobServlet extends VelocityServlet {
 
-	private static final String NAGIOS_PARAM = "nagios";
 	private static final long serialVersionUID = 0002L;
-	private Logger log = Logger.getLogger(IndexJobServlet.class);
+	private static final Logger LOGGER = Logger.getLogger(IndexJobServlet.class);
 	protected IndexController indexer;
 
 	public void init(final ServletConfig config) throws ServletException {
 
 		super.init(config);
 		this.indexer = initIndexController(config);
-
 	}
 	
 	/**
@@ -62,13 +57,9 @@ public class IndexJobServlet extends VelocityServlet {
 		}
 	}
 
-
 	public void doService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 
-		this.log.debug("Request:" + request.getQueryString());
-		String nagString = request.getParameter(NAGIOS_PARAM);
-		boolean doNag = Boolean.parseBoolean(nagString);
 		// starttime
 		long s = new Date().getTime();
 		// get the objects
@@ -79,60 +70,36 @@ public class IndexJobServlet extends VelocityServlet {
 			generateArchive(index, response);
 			skipRenderingVelocity();
 		} else {
-			if (doNag) {
-				response.setContentType("text/plain");
-				Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
-				for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
-					if (e.getKey().equalsIgnoreCase(index)) {
-						IndexLocation loc = e.getValue();
-						IndexJobQueue queue = loc.getQueue();
-						if (queue != null && queue.isRunning()) {
-							response.getWriter().write("WorkerThread:OK\n");
-						} else {
-							response.getWriter().write("WorkerThread:NOK\n");
-						}
-						response.getWriter().write("ObjectsInIndex:" + loc.getDocCount()
-								+ "\n");
-						AbstractUpdateCheckerJob j = queue.getCurrentJob();
-						if (j != null) {
-							response.getWriter().write("CurrentJobObjectsToIndex:"
-									+ j.getObjectsToIndex() + "\n");
-						}
+			response.setContentType("text/html");
+			Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
+			
+			setTemplateVariables(request);
+			
+			for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
+			IndexLocation loc = e.getValue();
+				IndexJobQueue queue = loc.getQueue();
+				Hashtable<String, CRConfigUtil> map = loc.getCRMap();
+				if (e.getKey().equalsIgnoreCase(index)) {
+					if ("stopWorker".equalsIgnoreCase(action)) {
+						queue.pauseWorker();
 					}
-				}
-				skipRenderingVelocity();
-			} else {
-				response.setContentType("text/html");
-				Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
-				
-				setTemplateVariables(request);
-				
-				for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
-				IndexLocation loc = e.getValue();
-					IndexJobQueue queue = loc.getQueue();
-					Hashtable<String, CRConfigUtil> map = loc.getCRMap();
-					if (e.getKey().equalsIgnoreCase(index)) {
-						if ("stopWorker".equalsIgnoreCase(action)) {
-							queue.pauseWorker();
-						}
-						if ("startWorker".equalsIgnoreCase(action)) {
-							queue.resumeWorker();
-						}
-						if ("clear".equalsIgnoreCase(action))	{
-							loc.createClearJob();
-						}
-						if ("optimize".equalsIgnoreCase(action))	{
-							loc.createOptimizeJob();
-						}
-						if ("addJob".equalsIgnoreCase(action)) {
-							String cr = request.getParameter("cr");
-							if ("all".equalsIgnoreCase(cr)) {
-								loc.createAllCRIndexJobs();
-							} else {
-								if (cr != null) {
-									CRConfigUtil crc = map.get(cr);
-									loc.createCRIndexJob(crc, map);
-								}
+					if ("startWorker".equalsIgnoreCase(action)) {
+						queue.resumeWorker();
+					}
+					if ("clear".equalsIgnoreCase(action))	{
+						loc.createClearJob();
+					}
+					if ("optimize".equalsIgnoreCase(action))	{
+						loc.createOptimizeJob();
+					}
+					if ("addJob".equalsIgnoreCase(action)) {
+						String cr = request.getParameter("cr");
+						if ("all".equalsIgnoreCase(cr)) {
+							loc.createAllCRIndexJobs();
+						} else {
+							if (cr != null) {
+								CRConfigUtil crc = map.get(cr);
+								loc.createCRIndexJob(crc, map);
 							}
 						}
 					}
@@ -142,10 +109,15 @@ public class IndexJobServlet extends VelocityServlet {
 		}
 		// endtime
 		long e = new Date().getTime();
-		this.log.info("Executiontime for getting " + action + " " + (e - s));
+		LOGGER.info("Executiontime for getting " + action + " " + (e - s));
 	}
 	
-	private void generateArchive(String index, HttpServletResponse response) {
+	/**
+	 * Create an archive of the index.
+	 * @param index Index to create a tarball of.
+	 * @param response 
+	 */
+	private void generateArchive(final String index, final HttpServletResponse response) {
 		IndexLocation location = indexer.getIndexes().get(index);
 		if (location instanceof LuceneSingleIndexLocation) {
 			LuceneSingleIndexLocation indexLocation = (LuceneSingleIndexLocation) location;
@@ -159,22 +131,23 @@ public class IndexJobServlet extends VelocityServlet {
 					if (writeLock.createNewFile()) {
 						weWroteTheWriteLock = true;
 					} else {
-						throw new LockedIndexException(new Exception("the write lock file already exists in the index."));
+						throw new LockedIndexException(
+								new Exception("the write lock file already exists in the index."));
 					}
 					//set to read only so the index jobs will not delete it.
 					writeLock.setReadOnly();
 					response.setContentType("application/x-compressed, application/x-tar");
-					response.setHeader("Content-Disposition","attachment; filename=" + index + ".tar.gz");
+					response.setHeader("Content-Disposition", "attachment; filename=" + index + ".tar.gz");
 					ArchiverUtil.generateGZippedTar(response.getOutputStream(), indexDirectory);
 				} else {
-					log.error("Cannot lock the index directory to ensure the consistency of the archive.");
+					LOGGER.error("Cannot lock the index directory to ensure the consistency of the archive.");
 				}
 			} catch (IOException e) {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				log.error("Cannot generate the archive correctly.", e);
+				LOGGER.error("Cannot generate the archive correctly.", e);
 			} catch (LockedIndexException e) {
 				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				log.error("Cannot generate the archive while the index is locked.", e);
+				LOGGER.error("Cannot generate the archive while the index is locked.", e);
 			} finally {
 				if (writeLock != null && writeLock.exists() && weWroteTheWriteLock) {
 					writeLock.delete();
@@ -182,15 +155,16 @@ public class IndexJobServlet extends VelocityServlet {
 			}
 			
 		} else {
-			log.error("generating an archive for " + location + " not supported yet.");
+			LOGGER.error("generating an archive for " + location + " not supported yet.");
 		}
 		
 	}
 
 	/**
-     * set variables for velocity template
+     * set variables for velocity template.
+     * @param request .
      */
-	protected void setTemplateVariables(HttpServletRequest request) {
+	protected final void setTemplateVariables(final HttpServletRequest request) {
 		Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
 		String nc = "&t=" + System.currentTimeMillis();
 		String selectedIndex = request.getParameter("index");
@@ -204,8 +178,9 @@ public class IndexJobServlet extends VelocityServlet {
 		setTemplateVariable("nc", nc);
 		setTemplateVariable("selectedIndex", selectedIndex);
 		String action = getAction(request);
-		if ("report".equalsIgnoreCase(action))
+		if ("report".equalsIgnoreCase(action)) {
 			setTemplateVariable("report", MonitorFactory.getSimpleReport());
+		}
 		setTemplateVariable("action", action);
 		setTemplateVariable("maxmemory", maxMemory);
 		setTemplateVariable("totalmemory", totalMemory);
@@ -213,7 +188,12 @@ public class IndexJobServlet extends VelocityServlet {
 		setTemplateVariable("usedmemory", totalMemory - freeMemory);
 	}
 	
-	protected String getAction(HttpServletRequest request) {
+	/**
+	 * Get action parameter from request.
+	 * @param request Request to get the action parameter of.
+	 * @return String containing the action.
+	 */
+	protected final String getAction(final HttpServletRequest request) {
 		return request.getParameter("action");
 	}
 
