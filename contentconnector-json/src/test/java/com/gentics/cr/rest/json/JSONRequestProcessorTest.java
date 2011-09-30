@@ -25,9 +25,14 @@ public class JSONRequestProcessorTest extends TestCase {
 		String confpath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().toURI().toURL().toString();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confpath);
 		config = new CRConfigFileLoader("json", this.getClass().getResource(".").toString());
-		
 		requestProcessor = config.getNewRequestProcessorInstance(1);
 		request = new CRRequest();
+	}
+	
+	public void testObjectsFile() throws CRException {
+		config = new CRConfigFileLoader("jsonfile", this.getClass().getResource(".").toString());
+		requestProcessor = config.getNewRequestProcessorInstance(1);
+		testGetObjects();
 	}
 	
 	public void testGetObjects() throws CRException {

@@ -1,5 +1,7 @@
 package com.gentics.cr.rest.json;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -11,6 +13,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.util.StringUtils;
 
 /**
  * Request Processor to create simple structures via json.<br />
@@ -58,11 +61,22 @@ public class JSONRequestProcessor extends RequestProcessor {
 
 	/**
 	 * init the json string and convert it into {@link CRResolvableBean}s.
+	 * @throws CRException 
 	 */
-	private synchronized void initObjects() {
+	private synchronized void initObjects() throws CRException {
 		if (objects == null) {
 			objects = new Vector<CRResolvableBean>();
-			String objectString = config.getString("objects", "[]");
+			String objectString;
+			String jsonFile = config.getString("file");
+			if(jsonFile != null) {
+				try {
+					objectString = StringUtils.streamToString(new FileInputStream(jsonFile));
+				} catch (FileNotFoundException e) {
+					throw new CRException("Cannot find the given json file.", e);
+				}
+			} else {
+				objectString = config.getString("objects", "{objects:[]}");
+			}
 			JSONObject json = JSONObject.fromObject(objectString);
 			JSONArray jsonObjects = json.getJSONArray("objects");
 			for(Object object : jsonObjects) {
