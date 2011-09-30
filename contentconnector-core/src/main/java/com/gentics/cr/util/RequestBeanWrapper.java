@@ -1,6 +1,5 @@
 package com.gentics.cr.util;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
