@@ -1,4 +1,4 @@
-package com.gentis.cr.lucene.search.query.mocks;
+package com.gentics.cr.lucene.search.query.mocks;
 
 import java.io.IOException;
 import java.util.ArrayList;

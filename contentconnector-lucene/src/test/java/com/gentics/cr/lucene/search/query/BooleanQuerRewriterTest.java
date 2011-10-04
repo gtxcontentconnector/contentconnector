@@ -15,8 +15,8 @@ import org.apache.lucene.search.Query;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.lucene.AbstractLuceneTest;
 import com.gentics.cr.lucene.LuceneVersion;
-import com.gentis.cr.lucene.search.query.mocks.ComparableDocument;
-import com.gentis.cr.lucene.search.query.mocks.SimpleLucene;
+import com.gentics.cr.lucene.search.query.mocks.ComparableDocument;
+import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
 
 public class BooleanQuerRewriterTest extends AbstractLuceneTest {
 	

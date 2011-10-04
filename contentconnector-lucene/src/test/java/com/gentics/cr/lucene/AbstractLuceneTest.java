@@ -9,8 +9,8 @@ import junit.framework.TestCase;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import com.gentis.cr.lucene.search.query.mocks.ComparableDocument;
-import com.gentis.cr.lucene.search.query.mocks.SimpleLucene;
+import com.gentics.cr.lucene.search.query.mocks.ComparableDocument;
+import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
 
 public abstract class AbstractLuceneTest extends TestCase {
 	
