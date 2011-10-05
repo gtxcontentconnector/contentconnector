@@ -15,41 +15,43 @@ import com.gentics.cr.CRResolvableBean;
  */
 public class CRMetaResolvableBean extends CRResolvableBean {
 
-  /**
-   * Generated serialVersionUID.
-   */
-  private static final long serialVersionUID = 5942419514161041700L;
+	/**
+	 * Generated serialVersionUID.
+	 */
+	private static final long serialVersionUID = 5942419514161041700L;
 
-  /**
-   * initialize the MetaResolvable for the search result.
-   * @param searchResult search result to get the hit count and suggestions from
-   * @param request Search request to get the initial query from
-   * @param start index of first result to return in the result
-   * @param count number of items to return in the result
-   */
-  public CRMetaResolvableBean(final HashMap<String, Object> searchResult,
-      final CRRequest request,final int start, final int count) {
-    set(LuceneRequestProcessor.META_HITS_KEY,
-        searchResult.get(CRSearcher.RESULT_HITS_KEY));
-    set(CRSearcher.RESULT_HITS_KEY,
-        searchResult.get(CRSearcher.RESULT_HITS_KEY));
-    set(LuceneRequestProcessor.META_START_KEY, start);
-    set(LuceneRequestProcessor.META_COUNT_KEY, count);
-    set(LuceneRequestProcessor.META_QUERY_KEY, request.getRequestFilter());
-    set(CRSearcher.RESULT_SUGGESTIONS_KEY,
-        searchResult.get(CRSearcher.RESULT_SUGGESTIONS_KEY));
-    set(CRSearcher.RESULT_MAXSCORE_KEY,
-        searchResult.get(CRSearcher.RESULT_MAXSCORE_KEY));
-    set(CRSearcher.RESULT_BESTQUERY_KEY,
-        searchResult.get(CRSearcher.RESULT_BESTQUERY_KEY));
-    set(CRSearcher.RESULT_BESTQUERYHITS_KEY,
-        searchResult.get(CRSearcher.RESULT_BESTQUERYHITS_KEY));
-  }
+	/**
+	 * initialize the MetaResolvable for the search result.
+	 * @param searchResult search result to get the hit count and suggestions from
+	 * @param request Search request to get the initial query from
+	 * @param start index of first result to return in the result
+	 * @param count number of items to return in the result
+	 */
+	public CRMetaResolvableBean(final HashMap<String, Object> searchResult, final CRRequest request,
+			final int start, final int count) {
+		set(LuceneRequestProcessor.META_HITS_KEY, searchResult.get(CRSearcher.RESULT_HITS_KEY));
+		set(CRSearcher.RESULT_HITS_KEY, searchResult.get(CRSearcher.RESULT_HITS_KEY));
+		set(LuceneRequestProcessor.META_START_KEY, start);
+		set(LuceneRequestProcessor.META_COUNT_KEY, count);
+		set(LuceneRequestProcessor.META_QUERY_KEY, request.getRequestFilter());
+		set(CRSearcher.RESULT_SUGGESTIONS_KEY, searchResult.get(CRSearcher.RESULT_SUGGESTIONS_KEY));
+		set(CRSearcher.RESULT_MAXSCORE_KEY, searchResult.get(CRSearcher.RESULT_MAXSCORE_KEY));
+		set(CRSearcher.RESULT_BESTQUERY_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERY_KEY));
+		set(CRSearcher.RESULT_BESTQUERYHITS_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERYHITS_KEY));
+	}
 
-public CRMetaResolvableBean(HashMap<String, Object> searchResult,
-		CRRequest request, Query parsedQuery, int start, int count) {
-	this(searchResult, request, start, count);
-	set(LuceneRequestProcessor.PARSED_QUERY_KEY, parsedQuery);
-}
+	/**
+	 * initialize the MetaResolvable for the search result.
+	 * @param searchResult search result to get the hit count and suggestions from
+	 * @param request Search request to get the initial query from
+	 * @param parsedQuery parsed query which is set to the object
+	 * @param start index of first result to return in the result
+	 * @param count number of items to return in the result
+	 */
+	public CRMetaResolvableBean(final HashMap<String, Object> searchResult, final CRRequest request, 
+			final Query parsedQuery, final int start, final int count) {
+		this(searchResult, request, start, count);
+		set(LuceneRequestProcessor.PARSED_QUERY_KEY, parsedQuery);
+	}
 
 }
