@@ -37,9 +37,7 @@ public class CRRequestProcessor extends RequestProcessor {
 	public CRRequestProcessor(CRConfig config) throws CRException {
 		super(config);
 	}
-	
-	
-	
+
 	/**
 	 * 
 	 * Fetch the matching objects using the given CRRequest. 
