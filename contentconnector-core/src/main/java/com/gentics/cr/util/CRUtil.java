@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
@@ -33,6 +37,11 @@ public class CRUtil {
 	 */
 	public static final String PORTALNODE_CONFPATH =
 		"com.gentics.portalnode.confpath";
+
+	/**
+	 * Log4J Logger for debugging purposes.
+	 */
+	private final static Logger LOGGER = Logger.getLogger(CRUtil.class);
 
 	/**
 	 * Convert a String like "contentid:asc,name:desc" into an Sorting Array.
@@ -168,7 +177,15 @@ public class CRUtil {
 					+ File.separator;
 					System.setProperty(PORTALNODE_CONFPATH, defaultConfPath);
 				} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith("file:/")) {
-					System.setProperty(PORTALNODE_CONFPATH, System.getProperty(PORTALNODE_CONFPATH).replace("file:/", ""));
+					File confFile = null;
+					try {
+						confFile = new File(new URI(System.getProperty(PORTALNODE_CONFPATH)));
+					} catch (URISyntaxException e) {
+						LOGGER.error("Could not convert PORTALNODE_CONFPATH (" 
+								+ System.getProperty(PORTALNODE_CONFPATH) + ") to an absolutePath", e);
+					}
+					String confFilePath = confFile.getAbsolutePath();
+					System.setProperty(PORTALNODE_CONFPATH, confFilePath);
 				}
 				String result = CRUtilResolver.resolveSystemProperties(string);
 				result =
