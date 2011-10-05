@@ -30,7 +30,7 @@ public class CRRequestProcessor extends RequestProcessor {
 	private HashMap<String, Resolvable> resolvables = null;
 	
 	/**
-	 * Create a new instance of CRRequestProcessor
+	 * Create a new instance of CRRequestProcessor.
 	 * @param config
 	 * @throws CRException
 	 */
@@ -75,9 +75,7 @@ public class CRRequestProcessor extends RequestProcessor {
 				}
 
 				String[] prefillAttributes = request.getAttributeArray();
-				prefillAttributes = ArrayHelper
-						.removeElements(prefillAttributes, "contentid",
-								"updatetimestamp");
+				prefillAttributes = ArrayHelper.removeElements(prefillAttributes, "contentid", "updatetimestamp");
 				// do the query
 				Collection<Resolvable> col = this.toResolvableCollection(
 						ds.getResult(dsFilter, prefillAttributes,
@@ -91,21 +89,16 @@ public class CRRequestProcessor extends RequestProcessor {
 							) {
 						CRResolvableBean crBean = new CRResolvableBean(
 								it.next(), request.getAttributeArray());
-						if (config.getFolderType().equals(crBean.getObj_type())
-								&& doNavigation) {
+						if (config.getFolderType().equals(crBean.getObj_type()) && doNavigation) {
 							//Process child elements
-							String fltr = "object.folder_id=='"
-								+ crBean.getContentid() + "'";
+							String fltr = "object.folder_id=='" + crBean.getContentid() + "'";
 							if (request.getChildFilter() != null) {
-								fltr += "AND (" + request.getChildFilter()
-									+ ")";
+								fltr += "AND (" + request.getChildFilter() + ")";
 							}
-							//If object is a folder => retrieve the children of
-							//the object
+							//If object is a folder => retrieve the children of the object
 							CRRequest childReq = request.Clone();
 							childReq.setRequestFilter(fltr);
-							crBean.fillChildRepository(
-									getNavigation(childReq));
+							crBean.fillChildRepository(getNavigation(childReq));
 						}
 						collection.add(this.replacePlinks(crBean, request));
 					}
@@ -127,13 +120,8 @@ public class CRRequestProcessor extends RequestProcessor {
 		return collection;
 	}
 
-
-
 	@Override
 	public void finalize() {
-		// TODO Auto-generated method stub
 	}
-
-
 
 }
