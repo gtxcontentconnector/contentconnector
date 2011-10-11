@@ -122,6 +122,7 @@ public class RESTBinaryContainer{
 					//contentid=request.getRequestURI().replaceFirst(request.getContextPath()+request.getServletPath()+"/","").replaceAll("/","");
 				}
 			}
+			req.setAttributeArray(new String[]{"mimetype"});
 			// load by url if no contentid
 			if (req.isUrlRequest()) {
 				crBean = rp.getContentByUrl(req);
