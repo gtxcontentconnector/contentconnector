@@ -15,10 +15,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
+import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.exception.UnknownPropertyException;
+import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.PropertyResolver;
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.portalnode.expressions.ExpressionParserHelper;
 import com.gentics.cr.util.AccessibleBean;
+import com.gentics.lib.content.GenticsContentObjectImpl;
 
 /**
  * Rosolveable Proxy Class. As Resolvsables are not serializable this class gets
@@ -54,6 +60,11 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * generated unique serial version id.
 	 */
 	private static final long serialVersionUID = -8743515908056719834L;
+	
+	/**
+	 * Log4j logger.
+	 */
+	private final static Logger LOGGER = Logger.getLogger(CRResolvableBean.class);
 
 	private Collection<CRResolvableBean> childRepository;
 
@@ -75,11 +86,9 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	private Resolvable resolvable;
 
 	/**
-	 * Populate the child elements with the given collection of
-	 * CRResolvableBeans.
+	 * Populate the child elements with the given collection of CRResolvableBeans.
 	 * 
-	 * @param childRep -
-	 *            TODO javadoc
+	 * @param childRep - TODO javadoc
 	 */
 	public void fillChildRepository(final Collection<CRResolvableBean> childRep) {
 		this.childRepository.addAll(childRep);
@@ -95,19 +104,20 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	}
 
 	/**
-	 * Returns if this CRResolvableBean has a filled children list
+	 * Returns if this CRResolvableBean has a filled children list.
 	 * 
 	 * @return
 	 */
 	public boolean hasChildren() {
 		boolean children = false;
-		if (this.childRepository != null && this.childRepository.size() > 0)
+		if (this.childRepository != null && this.childRepository.size() > 0) {
 			children = true;
+		}
 		return children;
 	}
 
 	/**
-	 * Set the child elements to the given collection of CRResolvableBeans
+	 * Set the child elements to the given collection of CRResolvableBeans.
 	 * 
 	 * @param children
 	 */
@@ -116,7 +126,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	}
 
 	/**
-	 * Create new instance of CRResolvableBean
+	 * Create new instance of CRResolvableBean.
 	 */
 	public CRResolvableBean() {
 		this.contentid = "10001";
@@ -126,14 +136,14 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * Create new instance of CRResolvableBean. This will generate an empty
 	 * CRResolvableBean with only the contentid set.
 	 * 
-	 * @param contentid
+	 * @param id initialize the bean with the given contentid
 	 */
-	public CRResolvableBean(String contentid) {
-		this.contentid = contentid;
+	public CRResolvableBean(final String id) {
+		this.contentid = id;
 	}
 
 	/**
-	 * Create new instance of CRResolvableBean
+	 * Create new instance of CRResolvableBean.
 	 * 
 	 * @param resolvable
 	 *            Sets the given resolvable as basis for the CRResolvableBean If
@@ -329,6 +339,27 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public void setContentid(final String id) {
 		this.contentid = id;
+	}
+
+	/**
+	 * Get the parent folder of the current bean.
+	 * @return GenticsContentObjectImpl representing the parent folder.
+	 */
+	public GenticsContentObjectImpl getMother() {
+		try {
+			GenticsContentObjectImpl r = (GenticsContentObjectImpl) resolvable;
+			Datasource datasource = r.getDatasource();
+			DatasourceFilter filter = 
+				ExpressionParserHelper.createDatasourceFilter(
+						"object.contentid == \"10002." + mother_id + "\"" 
+						+ " && object.obj_type == 10002", datasource);
+			Collection<?> parentFolder = datasource.getResult(filter, new String[] { "contentid" });
+			return (GenticsContentObjectImpl) (parentFolder.iterator().next());
+		} catch (Exception e) {
+			LOGGER.error("Could not retreive mother folder (" + mother_type
+					+ "." + mother_id + ") of current bean: " + contentid);
+			return null;
+		}
 	}
 
 	/**
