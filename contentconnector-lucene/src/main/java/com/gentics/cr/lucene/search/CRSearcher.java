@@ -356,7 +356,7 @@ public class CRSearcher {
 				// GENERATE A NATIVE QUERY
 
 				parsedQuery = searcher.rewrite(parsedQuery);
-
+				
 				result = new HashMap<String, Object>(3);
 				result.put(RESULT_QUERY_KEY, parsedQuery);
 
