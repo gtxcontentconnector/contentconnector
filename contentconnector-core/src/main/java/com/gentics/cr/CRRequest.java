@@ -468,19 +468,14 @@ public class CRRequest implements Cloneable, Serializable {
 			ds = config.getDatasource();
 		}
 
-		if ((this.getRequestFilter() == null || this.getRequestFilter().equals(
-				""))
-				&& this.getContentid() != null
-				&& !this.getContentid().equals("")) {
-			this.setRequestFilter("object.contentid=='" + this.getContentid()
-					+ "'");
+		if ((this.getRequestFilter() == null || this.getRequestFilter().equals(""))
+				&& this.getContentid() != null && !this.getContentid().equals("")) {
+			this.setRequestFilter("object.contentid=='" + this.getContentid() + "'");
 		}
 
 		// TEST IF REQUEST FILTER IS SAVE
-		Expression expression = PortalConnectorFactory.createExpression(this
-				.getRequestFilter());
-		// IF NO EXCEPTION IS THROWN IN THE ABOVE STATEMENT, FILTER IS
-		// CONSIDERED TO BE SAVE
+		Expression expression = PortalConnectorFactory.createExpression(this.getRequestFilter());
+		// IF NO EXCEPTION IS THROWN IN THE ABOVE STATEMENT, FILTER IS CONSIDERED TO BE SAVE
 
 		// ADD APPLICATION RULE IF IT IS SET
 		if (config.getApplicationRule() == null
