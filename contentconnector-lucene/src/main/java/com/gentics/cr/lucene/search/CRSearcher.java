@@ -250,34 +250,35 @@ public class CRSearcher {
 	 * @param start
 	 * @return ArrayList of results
 	 */
-	private HashMap<String, Object> runSearch(final TopDocsCollector<?> collector, final Searcher searcher,
+	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final Searcher searcher,
 			final Query parsedQuery, final boolean explain, final int count, final int start) {
 		try {
 			searcher.search(parsedQuery, collector);
 
-			TopDocs tdocs = collector.topDocs();
-			log.debug("topdocs: " + tdocs);
+			TopDocs tdocs = collector.topDocs(start, count);
 
 			Float maxScoreReturn = tdocs.getMaxScore();
 			log.debug("maxScoreReturn: " + maxScoreReturn);
 
 			ScoreDoc[] hits = tdocs.scoreDocs;
-			log.debug("hits: " + StringUtils.getCollectionSummary(Arrays.asList(hits)));
+			log.debug("hits (topdocs): \n" + StringUtils.getCollectionSummary(Arrays.asList(hits), "\n"));
 
 			LinkedHashMap<Document, Float> result = new LinkedHashMap<Document, Float>(hits.length);
 
 			// Calculate the number of documents to be fetched
-			int num = Math.min(hits.length - start, count);
+			int num = Math.min(hits.length, count);
 			for (int i = 0; i < num; i++) {
-				ScoreDoc currentDoc = hits[start + i];
+				ScoreDoc currentDoc = hits[i];
 				if (currentDoc.doc != Integer.MAX_VALUE) {
 					log.debug("currentDoc id: " + currentDoc.doc + " ; score: " + currentDoc.score);
 					Document doc = searcher.doc(currentDoc.doc);
 					// add id field for AdvancedContentHighlighter
-					doc.add(new Field("id", hits[start + i].doc + "", Field.Store.YES, Field.Index.NO));
-					result.put(doc, hits[start + i].score);
+					doc.add(new Field("id", hits[i].doc + "", Field.Store.YES, Field.Index.NO));
+					log.debug("adding contentid: " + doc.getField("contentid"));
+					log.debug("with hits[" + i + "].score = " + hits[i].score);
+					result.put(doc, hits[i].score);
 					if (explain) {
-						Explanation ex = searcher.explain(parsedQuery, hits[start + i].doc);
+						Explanation ex = searcher.explain(parsedQuery, hits[i].doc);
 						log_explain.debug("Explanation for " + doc.toString() + " - " + ex.toString());
 					}
 				} else {
@@ -309,7 +310,7 @@ public class CRSearcher {
 	}
 
 	/**
-	 * Search in lucene index.
+	 * Search in lucene index (executes executeSearcher).
 	 * 
 	 * @param query query string
 	 * @param searchedAttributes TODO javadoc
@@ -331,7 +332,7 @@ public class CRSearcher {
 		Searcher searcher;
 		Analyzer analyzer;
 		// Collect count + start hits
-		int hits = count + start;
+		int hits = count + start;	// we want to retreive the startcount (start) to endcount (hits)
 
 		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
 
@@ -345,7 +346,6 @@ public class CRSearcher {
 		TopDocsCollector<?> collector = createCollector(searcher, hits, sorting, computescores, userPermissions);
 		HashMap<String, Object> result = null;
 		try {
-
 			analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) this.config);
 
 			if (searchedAttributes != null && searchedAttributes.length > 0 && query != null && !query.equals("")) {
@@ -356,11 +356,24 @@ public class CRSearcher {
 				// GENERATE A NATIVE QUERY
 
 				parsedQuery = searcher.rewrite(parsedQuery);
-				
+
 				result = new HashMap<String, Object>(3);
 				result.put(RESULT_QUERY_KEY, parsedQuery);
 
-				Map<String, Object> ret = runSearch(collector, searcher, parsedQuery, explain, count, start);
+				Map<String, Object> ret = executeSearcher(collector, searcher, parsedQuery, explain, count, start);
+				if (log.isDebugEnabled()) {
+					for (Object res : ret.values()) {
+						if (res instanceof LinkedHashMap) {
+							LinkedHashMap<Document, Float> documents = (LinkedHashMap<Document, Float>) res;
+							if (documents != null) {
+								for (Entry doc : documents.entrySet()) {
+									Document doCument = (Document) doc.getKey();
+									log.debug("CRSearcher.search: " + doCument.getField("contentid").toString());
+								}
+							}
+						}
+					}
+				}
 				if (ret != null) {
 					LinkedHashMap<Document, Float> coll = (LinkedHashMap<Document, Float>) ret.get(RESULT_RESULT_KEY);
 					Float maxScore = (Float) ret.get(RESULT_MAXSCORE_KEY);
@@ -511,7 +524,7 @@ public class CRSearcher {
 		HashMap<String, Object> result = new HashMap<String, Object>(3);
 		try {
 			TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
-			runSearch(bestcollector, searcher, query, false, 1, 0);
+			executeSearcher(bestcollector, searcher, query, false, 1, 0);
 			result.put(RESULT_BESTQUERY_KEY, query);
 			result.put(RESULT_BESTQUERYHITS_KEY, bestcollector.getTotalHits());
 			return result;
