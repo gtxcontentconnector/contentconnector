@@ -159,11 +159,22 @@ public final class StringUtils {
 	 * @return String of comma separated values of the Collection.
 	 */
 	public static String getCollectionSummary(final Collection<?> collection) {
+		return getCollectionSummary(collection, ",");
+	}
+	
+	/**
+	 * Create a summary of a collection of objects.
+	 * they are seperated by the provided seperator.
+	 * @param collection Collection containing the objects to display.
+	 * @param seperator Seperator to use.
+	 * @return String of seperated values of the collection.
+	 */
+	public static String getCollectionSummary(final Collection<?> collection, final String seperator) {
 		StringBuilder result =
 			new StringBuilder(collection.size() * AVERAGE_WORD_LENGTH);
 		for (Object object : collection) {
 			if (result.length() != 0) {
-				result.append(",");
+				result.append(seperator);
 			}
 			result.append(' ');
 			result.append(object);
