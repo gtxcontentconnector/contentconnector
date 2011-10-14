@@ -180,6 +180,19 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		log.debug("Search in Index took " + (System.currentTimeMillis() - indexSearchStartTime) + "ms");
 		/** * Get results */
 
+		if (log.isDebugEnabled()) {
+			for (Object res : searchResult.values()) {
+				if (res instanceof LinkedHashMap) {
+					LinkedHashMap<Document, Float> documents = (LinkedHashMap<Document, Float>) res;
+					if (documents != null) {
+						for (Entry doc : documents.entrySet()) {
+							Document doCument = (Document) doc.getKey();
+							log.debug("LuceneRequestProcessor.getObjects: " + doCument.getField("contentid").toString());
+						}
+					}
+				}
+			}
+		}
 		/**
 		 * process search
 		 */
