@@ -108,7 +108,13 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				}
 				if (documentUpdateTimestamp == null
 						|| !documentUpdateTimestamp.equals(timestampString)) {
+					if (log.isTraceEnabled()) {
+						log.trace(identifyer + ": object is not up to date.");
+					}
 					return false;
+				}
+				if (log.isTraceEnabled()) {
+					log.trace(identifyer + ": object is up to date.");
 				}
 				return true;
 			} catch (IOException e) {
@@ -134,14 +140,19 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		IndexReader writeReader = null;
 		boolean readerNeedsWrite = true;
 		try {
-			for (String contentId:docs.keySet()) {
+			boolean objectsDeleted = false;
+			for (String contentId : docs.keySet()) {
 				if (!checkedDocuments.contains(contentId)) {
 					log.debug("Object " + contentId + " wasn't checked in the last run. So i will delete it.");
 					if (writeReader == null) {
 						writeReader = indexAccessor.getReader(readerNeedsWrite);
 					}
 					writeReader.deleteDocument(docs.get(contentId));
+					objectsDeleted = true;
 				}
+			}
+			if (objectsDeleted) {
+				indexLocation.createReopenFile();
 			}
 		} catch (IOException e) {
 			log.error("Cannot delete objects from index.", e);
