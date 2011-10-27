@@ -3,8 +3,10 @@ package com.gentics.cr.lucene;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -14,7 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.lucene.indexer.index.CRLuceneIndexJob;
 import com.gentics.cr.lucene.indexer.index.LockedIndexException;
+import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.monitoring.MonitorFactory;
@@ -24,6 +28,7 @@ import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
 import com.gentics.cr.util.indexing.IndexJobQueue;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.cr.util.indexing.IndexExtension;
 
 /**
  * @author Christopher Supnig
@@ -103,6 +108,19 @@ public class IndexJobServlet extends VelocityServlet {
 							}
 						}
 					}
+					if ("addExtensionJob".equalsIgnoreCase(action)) {
+						String sExt = request.getParameter("ext");
+						try {
+							HashMap<String, IndexExtension> extensions = ((LuceneIndexLocation) loc).getExtensions();
+							if(extensions.containsKey(sExt)){
+								IndexExtension extension = extensions.get(sExt);
+								String job = request.getParameter("job");
+								extension.addJob(job);
+							}
+						} catch(Exception ex) {
+							LOGGER.info("Couldn not add extension Job");
+						}
+					}
 				}
 			}
 			render(response);
@@ -171,7 +189,7 @@ public class IndexJobServlet extends VelocityServlet {
 		Long totalMemory = Runtime.getRuntime().totalMemory();
 		Long freeMemory = Runtime.getRuntime().freeMemory();
 		Long maxMemory = Runtime.getRuntime().maxMemory();
-		
+	
 		setTemplateVariable("specialDirs", SpecialDirectoryRegistry
 				.getInstance().getSpecialDirectories()); 
 		setTemplateVariable("indexes", indexTable.entrySet());

@@ -166,6 +166,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 				#set($j = "")
 				#set($j = $queue.getCurrentJob())
 				#set($previousRow="even")
+				#set($extensions = $loc.getExtensions())
 				<div class="indexblock#if($j!="") active#end">
 					<div class="row #getnextrow() small header">$e.getKey()</div>
 					<div class="row #getnextrow() small center">$loc.getDocCount()</div>
@@ -214,6 +215,22 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 							<div class="clear"></div>
 						</div>
 					</div>
+					#if($extensions.size() > 0)
+					<div class="row #getnextrow() small">
+					#foreach($extensionEntries in $extensions.entrySet())
+						#set($extName = $extensionEntries.getKey())
+						#set($extension = $extensionEntries.getValue()) 
+						<div class="smallheader">extension: $extName</div>
+						<div class="smallbox">
+						#foreach($job in $extension.getJobs())
+						<div class="key">$job</div>
+						<div class="value right"><a href="?action=addExtensionJob&idx=$e.getKey()&ext=$extName&job=$job$nc">add</a></div>
+						<div class="clear"></div>
+						#end
+						</div>
+					#end
+					</div>
+					#end
 					
 					#if ("$!j" != "")
 					<div class="row #getnextrow() small">
