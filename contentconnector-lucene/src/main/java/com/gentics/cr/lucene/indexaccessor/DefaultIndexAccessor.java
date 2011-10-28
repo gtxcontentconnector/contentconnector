@@ -242,7 +242,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 		checkClosed();
 
 		if (cachedReadingReader != null) {
-			LOGGER.debug("returning cached reading reader");
+			LOGGER.trace("returning cached reading reader");
 			readingReaderUseCount++;
 		} else {
 			LOGGER.debug("opening new reading reader and caching it");
@@ -357,7 +357,9 @@ class DefaultIndexAccessor implements IndexAccessor {
 	private synchronized IndexWriter getWriter(boolean autoCommit) throws IOException {
 
 		checkClosed();
-
+		if (LOGGER.isDebugEnabled() && writingReaderUseCount > 0) {
+			LOGGER.debug("writer already used (" + writingReaderUseCount + "), waiting for job to release it.");
+		}
 		while (writingReaderUseCount > 0) {
 			try {
 				wait();
