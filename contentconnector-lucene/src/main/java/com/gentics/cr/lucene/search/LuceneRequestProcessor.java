@@ -52,6 +52,11 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	
 	private boolean getStoredAttributes = false;
 	
+	/**
+	 * init CRMetaResolvableBean with or without parsed_query 
+	 */
+	private boolean showParsedQuery = false;
+	
 	private static final String SCORE_ATTRIBUTE_KEY = "SCOREATTRIBUTE";
 	private static final String GET_STORED_ATTRIBUTE_KEY = "GETSTOREDATTRIBUTES";
 	
@@ -108,6 +113,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * Key to store the parsed query in the meta resolvable.
 	 */
 	public static final String PARSED_QUERY_KEY = "parsed_query";
+	
+	/**
+	 * Key to configure if CRMetaResolvableBean should contain parsed_query
+	 * 
+	 * 
+	 */
+	private static final String SHOW_PARSED_QUERY_KEY = "showparsedquery";
+	
 
 	/**
 	 * Create new instance of LuceneRequestProcessor.
@@ -122,6 +135,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				(String) config.get(GET_STORED_ATTRIBUTE_KEY));
 		highlighters = ContentHighlighter.getTransformerTable(
 				(GenericConfiguration) config);
+		showParsedQuery = Boolean.parseBoolean(
+				(String) this.config.get(SHOW_PARSED_QUERY_KEY));
 	}
 
 	/**
@@ -289,7 +304,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 
 		Object metaKey = request.get(META_RESOLVABLE_KEY);
 		if (metaKey != null && (Boolean) metaKey) {
-			CRResolvableBean metaBean = new CRMetaResolvableBean(searchResult, request, parsedQuery, start, count);
+			final CRResolvableBean metaBean;
+			if (showParsedQuery) {
+				metaBean = new CRMetaResolvableBean(
+						searchResult, request, parsedQuery, start, count);
+			} else { 
+				metaBean = new CRMetaResolvableBean(
+						searchResult, request, start, count);
+			}
 			result.add(metaBean);
 		}
 
