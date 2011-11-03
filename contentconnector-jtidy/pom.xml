@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>contentconnector</groupId>
   <artifactId>contentconnector-jtidy</artifactId>
-  <version>1.9.1</version>
+  <version>1.10.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Gentics Content.Connector - JTIDY</name>
   <description>This is the JTIDY-Extension to the Gentics Content.Connector Suite</description>
@@ -68,7 +68,7 @@
 	<dependency>
       <groupId>contentconnector</groupId>
       <artifactId>contentconnector-lucene</artifactId>
-      <version>1.9.1</version>
+      <version>1.10.0-SNAPSHOT</version>
     </dependency>
 	</dependencies>
 	<repositories>
