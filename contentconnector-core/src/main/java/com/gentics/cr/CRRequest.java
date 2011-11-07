@@ -84,13 +84,20 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * Create a new instance of CRRequest.
 	 * 
-	 * @param requestFilter - Rule to fetch the objects
-	 * @param startString - Number of start element
-	 * @param countString - Count of elements from start element
-	 * @param sortArray - sorting array e.g. String[]{"contentid:asc", "name:desc"}
-	 * @param attributeArray - Attributes to fetch
-	 * @param plinkAttributeArray - Attributes to perform plink replacement within
-	 * @param childFilter - Rule to fetch the child elements (Navigation)
+	 * @param requestFilter -
+	 *            Rule to fetch the objects
+	 * @param startString -
+	 *            Number of start element
+	 * @param countString -
+	 *            Count of elements from start element
+	 * @param sortArray -
+	 *            sorting array e.g. String[]{"contentid:asc", "name:desc"}
+	 * @param attributeArray -
+	 *            Attributes to fetch
+	 * @param plinkAttributeArray -
+	 *            Attributes to perform plink replacement within
+	 * @param childFilter -
+	 *            Rule to fetch the child elements (Navigation)
 	 */
 	public CRRequest(final String requestFilter, final String startString,
 			final String countString, final String[] sortArray,
@@ -104,7 +111,6 @@ public class CRRequest implements Cloneable, Serializable {
 		setAttributeArray(attributeArray);
 		setPlinkAttributeArray(plinkAttributeArray);
 		setChildFilter(childFilter);
-
 	}
 
 	/**
@@ -468,14 +474,19 @@ public class CRRequest implements Cloneable, Serializable {
 			ds = config.getDatasource();
 		}
 
-		if ((this.getRequestFilter() == null || this.getRequestFilter().equals(""))
-				&& this.getContentid() != null && !this.getContentid().equals("")) {
-			this.setRequestFilter("object.contentid=='" + this.getContentid() + "'");
+		if ((this.getRequestFilter() == null || this.getRequestFilter().equals(
+				""))
+				&& this.getContentid() != null
+				&& !this.getContentid().equals("")) {
+			this.setRequestFilter("object.contentid=='" + this.getContentid()
+					+ "'");
 		}
 
 		// TEST IF REQUEST FILTER IS SAVE
-		Expression expression = PortalConnectorFactory.createExpression(this.getRequestFilter());
-		// IF NO EXCEPTION IS THROWN IN THE ABOVE STATEMENT, FILTER IS CONSIDERED TO BE SAVE
+		Expression expression = PortalConnectorFactory.createExpression(this
+				.getRequestFilter());
+		// IF NO EXCEPTION IS THROWN IN THE ABOVE STATEMENT, FILTER IS
+		// CONSIDERED TO BE SAVE
 
 		// ADD APPLICATION RULE IF IT IS SET
 		if (config.getApplicationRule() == null
