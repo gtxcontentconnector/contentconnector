@@ -24,86 +24,111 @@ import com.gentics.cr.events.Event;
 import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
-import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 
 /**
- * This class can be used to build an autocomplete index over an existing lucene index.
+ * This class can be used to build an autocomplete index over an existing lucene
+ * index.
  * 
  * Last changed: $Date: 2010-04-01 15:20:21 +0200 (Do, 01 Apr 2010) $
+ * 
  * @version $Revision: 528 $
  * @author $Author: supnig@constantinopel.at $
- *
+ * 
  */
-public class DidYouMeanProvider implements IEventReceiver{
+public class DidYouMeanProvider implements IEventReceiver {
 
-	protected static final Logger log = Logger.getLogger(DidYouMeanProvider.class);
-	private Directory source;
+	protected static final Logger log = Logger
+			.getLogger(DidYouMeanProvider.class);
+
+	@Deprecated
+	private Directory source = null;
 	private Directory didyoumeanLocation;
-	
-	
-	
-	private static final String SOURCE_INDEX_KEY="srcindexlocation";
-	
-	private static final String DIDYOUMEAN_INDEY_KEY="didyoumeanlocation";
-	
-	private static final String DIDYOUMEAN_FIELD_KEY="didyoumeanfields";
-	
-	private static final String DIDYOUMEAN_MIN_DISTANCESCORE="didyoumeanmindistancescore";
-	
-	private static final String DIDYOUMEAN_MIN_DOCFREQ="didyoumeanmindocfreq";
-	
+
+	private static final String SOURCE_INDEX_KEY = "srcindexlocation";
+
+	private static final String DIDYOUMEAN_INDEX_KEY = "didyoumeanlocation";
+
+	private static final String DIDYOUMEAN_FIELD_KEY = "didyoumeanfields";
+
+	private static final String DIDYOUMEAN_MIN_DISTANCESCORE = "didyoumeanmindistancescore";
+
+	private static final String DIDYOUMEAN_MIN_DOCFREQ = "didyoumeanmindocfreq";
+
 	/**
-	 * Configuration key to activate the didyoumean feature for terms that are in
-	 * the index but have a low result size.
+	 * Configuration key to activate the didyoumean feature for terms that are
+	 * in the index but have a low result size.
 	 */
-	private static final String DIDYOUMEAN_EXISTINGTERMS_KEY =
-		"didyoumean_forexisitingterms";
-	
+	private static final String DIDYOUMEAN_EXISTINGTERMS_KEY = "didyoumean_forexisitingterms";
+
+	/**
+	 * 
+	 */
+	private static final String DIDYOUMEAN_USE_INDEX_EXTENSION = "didyoumeanUseIndexExtension";
 
 	private String didyoumeanfield = "all";
-	
-	private CustomSpellChecker spellchecker=null;
-	
+
+	private CustomSpellChecker spellchecker = null;
+
 	private boolean all = false;
-	
+
 	/**
 	 * Mark if we should provide the didyoumean feature for existing terms (with
 	 * low result count).
 	 */
 	private boolean checkForExistingTerms = false;
-	
-	private Collection<String> dym_fields = null;
-	
-	private boolean dymreopenupdate = false;
-	
-	private static final String UPDATE_ON_REOPEN_KEY = "dymreopenupdate";
-	
-	public DidYouMeanProvider(CRConfig config)
-	{
-		GenericConfiguration src_conf = (GenericConfiguration)config.get(SOURCE_INDEX_KEY);
-		GenericConfiguration auto_conf = (GenericConfiguration)config.get(DIDYOUMEAN_INDEY_KEY);
-		source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf,"SOURCE_INDEX_KEY"));
-		didyoumeanLocation = LuceneIndexLocation.createDirectory(new CRConfigUtil(auto_conf,DIDYOUMEAN_INDEY_KEY));
-		SpecialDirectoryRegistry.getInstance().register(didyoumeanLocation);
-		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);
 
-		checkForExistingTerms =
-			config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY, checkForExistingTerms);
-		
-		Float minDScore = config.getFloat(DIDYOUMEAN_MIN_DISTANCESCORE,
-				(float) 0.0);
-		Integer minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
-		
-		String sDYMReopenUpdate = config.getString(UPDATE_ON_REOPEN_KEY);
-		if (sDYMReopenUpdate != null) {
-			dymreopenupdate = Boolean.parseBoolean(sDYMReopenUpdate);
+	private Collection<String> dym_fields = null;
+
+	private boolean dymreopenupdate = false;
+
+	private static final String UPDATE_ON_REOPEN_KEY = "dymreopenupdate";
+
+	/**
+	 * flag to indicate if the new DidyoumeanIndexExtension should be used <br>
+	 * new implementations must set the config key "useDidyomeanIndexExtension"
+	 * to true to use the extension
+	 */
+	@Deprecated
+	private boolean useDidyomeanIndexExtension = false;
+
+	private Float minDScore = null;
+	private Integer minDFreq = null;
+
+	public DidYouMeanProvider(CRConfig config) {
+
+		useDidyomeanIndexExtension = config.getBoolean(
+				DIDYOUMEAN_USE_INDEX_EXTENSION, useDidyomeanIndexExtension);
+
+		if (!useDidyomeanIndexExtension) {
+			GenericConfiguration src_conf = (GenericConfiguration) config
+					.get(SOURCE_INDEX_KEY);
+			source = LuceneIndexLocation.createDirectory(new CRConfigUtil(
+					src_conf, "SOURCE_INDEX_KEY"));
 		}
-		
-		//FETCH DYM FIELDS
+
+		GenericConfiguration auto_conf = (GenericConfiguration) config
+				.get(DIDYOUMEAN_INDEX_KEY);
+		didyoumeanLocation = LuceneIndexLocation
+				.createDirectory(new CRConfigUtil(auto_conf,
+						DIDYOUMEAN_INDEX_KEY));
+		if (!useDidyomeanIndexExtension) {
+			SpecialDirectoryRegistry.getInstance().register(didyoumeanLocation);
+		}
+
+		checkForExistingTerms = config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY,
+				checkForExistingTerms);
+
+		minDScore = config.getFloat(DIDYOUMEAN_MIN_DISTANCESCORE, (float) 0.0);
+		minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
+
+		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY,
+				didyoumeanfield);
+
+		// FETCH DYM FIELDS
 		if (this.didyoumeanfield.equalsIgnoreCase("ALL")) {
 			all = true;
 		} else if (this.didyoumeanfield.contains(",")) {
@@ -113,99 +138,139 @@ public class DidYouMeanProvider implements IEventReceiver{
 			dym_fields = new ArrayList<String>(1);
 			dym_fields.add(this.didyoumeanfield);
 		}
-		
-		try {
-			//CHECK FOR EXISTING LOCK AND REMOVE IT
-			synchronized (this) {
-				try {
-				if (IndexWriter.isLocked(didyoumeanLocation)) {
-					IndexWriter.unlock(didyoumeanLocation);
+
+		if (!useDidyomeanIndexExtension) {
+			String sDYMReopenUpdate = config.getString(UPDATE_ON_REOPEN_KEY);
+			if (sDYMReopenUpdate != null) {
+				dymreopenupdate = Boolean.parseBoolean(sDYMReopenUpdate);
+			}
+
+			try {
+
+				// CHECK FOR EXISTING LOCK AND REMOVE IT
+				synchronized (this) {
+					try {
+						if (IndexWriter.isLocked(didyoumeanLocation)) {
+							IndexWriter.unlock(didyoumeanLocation);
+						}
+					} catch (IOException e) {
+						log.error(e.getMessage(), e);
+					}
 				}
+
+				spellchecker = new CustomSpellChecker(didyoumeanLocation,
+						minDScore, minDFreq);
+
+				reIndex();
+
 			} catch (IOException e) {
-				log.error(e.getMessage(), e);
+				log.error("Could not create didyoumean index.", e);
 			}
-			}
-			spellchecker = new CustomSpellChecker(didyoumeanLocation,
-					minDScore, minDFreq);
-			reIndex();
-		} catch (IOException e) {
-			log.error("Could not create didyoumean index.", e);
+
+			EventManager.getInstance().register(this);
 		}
-		EventManager.getInstance().register(this);
 	}
-	
-	
+
+	// @Deprecated
+	// public DidYouMeanProvider(CRConfig config)
+	// {
+	// this(config, false);
+	// }
+
 	public void processEvent(Event event) {
-		if(IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType())) {
+		if (IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event
+				.getType()) && !useDidyomeanIndexExtension) {
 			try {
 				reIndex();
-			} catch(IOException e) {
+			} catch (IOException e) {
 				log.error("Could not reindex didyoumean index.", e);
 			}
 		}
 	}
-	
+
 	public CustomSpellChecker getInitializedSpellchecker() {
 		return this.spellchecker;
 	}
-	
+
 	private long lastupdatestored = 0;
-	
+
+	@Deprecated
 	private void checkForUpdate() {
+
 		boolean reopened = false;
-		try {
-			if (source.fileExists("reopen")) {
-				long lastmodified = source.fileModified("reopen");
-				if (lastmodified != lastupdatestored) {
-					reopened = true;
-					lastupdatestored = lastmodified;
+		if (!useDidyomeanIndexExtension) {
+			try {
+				if (source.fileExists("reopen")) {
+					long lastmodified = source.fileModified("reopen");
+					if (lastmodified != lastupdatestored) {
+						reopened = true;
+						lastupdatestored = lastmodified;
+					}
 				}
+				if (reopened) {
+					reIndex();
+				}
+			} catch (IOException e) {
+				log.debug("Could not reIndex autocomplete index.", e);
 			}
-			if (reopened) {
-					reIndex();	
-			}
-		} catch (IOException e) {
-			log.debug("Could not reIndex autocomplete index.", e);
 		}
+		// TODO: is a reopencheck needed? 
 	}
 
 	/**
 	 * TODO javadoc.
-	 * @param termlist TODO javadoc
-	 * @param count TODO javadoc
-	 * @param reader TODO javadoc
+	 * 
+	 * @param termlist
+	 *            TODO javadoc
+	 * @param count
+	 *            TODO javadoc
+	 * @param reader
+	 *            TODO javadoc
 	 * @return TODO javadoc
 	 */
-	public Map<String,String[]> getSuggestions(Set<Term> termlist, int count, IndexReader reader)
-	{
-		return getSuggestionsStringFromMap(getSuggestionTerms(termlist, count, reader));
+	public Map<String, String[]> getSuggestions(Set<Term> termlist, int count,
+			IndexReader reader) {
+		return getSuggestionsStringFromMap(getSuggestionTerms(termlist, count,
+				reader));
 	}
-	
-	public Map<Term,Term[]> getSuggestionTerms(Set<Term> termlist, int count, IndexReader reader) {
-		
+
+	public Map<Term, Term[]> getSuggestionTerms(Set<Term> termlist, int count,
+			IndexReader reader) {
+
 		if (dymreopenupdate) {
 			checkForUpdate();
 		}
 		Map<Term, Term[]> result = new LinkedHashMap<Term, Term[]>();
 		Set<Term> termset = new HashSet<Term>();
-		if (this.spellchecker != null) {
+		CustomSpellChecker suggestSpellChecker = null;
+		if (!useDidyomeanIndexExtension) {
+			suggestSpellChecker = this.spellchecker;
+		} else {
+			try {
+				suggestSpellChecker = new CustomSpellChecker(didyoumeanLocation, minDScore, minDFreq);
+			} catch (IOException e) {
+				log.error("Could not create spell checker instance", e);
+			}
+		}
+		if (suggestSpellChecker != null) {
 			for (Term t : termlist) {
-				//CHECK IF ALL FIELDS ENABLED FOR SUGGESTIONS OTHERWHISE ONLY ADD TERM IF IT COMES FROM A DYM FIELD
+				// CHECK IF ALL FIELDS ENABLED FOR SUGGESTIONS OTHERWHISE ONLY
+				// ADD TERM IF IT COMES FROM A DYM FIELD
 				if (all || dym_fields.contains(t.field())) {
 					termset.add(t);
 				}
 			}
 			log.debug("Will use the following fields for dym: "
-						+ dym_fields.toString());
+					+ dym_fields.toString());
 			for (Term term : termset) {
 				try {
-					if (checkForExistingTerms || !this.spellchecker.exist(term.text())) {
-						String[] ts = this.spellchecker
-								.suggestSimilar(term.text(), count, reader,
-										term.field(), true);
+					if (checkForExistingTerms
+							|| !suggestSpellChecker.exist(term.text())) {
+						String[] ts = suggestSpellChecker.suggestSimilar(
+								term.text(), count, reader, term.field(), true);
 						if (ts != null && ts.length > 0) {
 							Term[] suggestedTerms = new Term[ts.length];
-							for(int i = 0; i < ts.length; i++) {
+							for (int i = 0; i < ts.length; i++) {
 								suggestedTerms[i] = term.createTerm(ts[i]);
 							}
 							result.put(term, suggestedTerms);
@@ -221,9 +286,10 @@ public class DidYouMeanProvider implements IEventReceiver{
 		return result;
 	}
 
+	@Deprecated
 	private synchronized void reIndex() throws IOException {
-		UseCase ucReIndex = MonitorFactory.startUseCase("reIndex()"); 
-		// build a dictionary (from the spell package) 
+		UseCase ucReIndex = MonitorFactory.startUseCase("reIndex()");
+		// build a dictionary (from the spell package)
 		log.debug("Starting to reindex didyoumean index.");
 		IndexReader sourceReader = IndexReader.open(source);
 		Collection<String> fields = null;
@@ -234,31 +300,34 @@ public class DidYouMeanProvider implements IEventReceiver{
 		}
 		try {
 			for (String fieldname : fields) {
-				LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname); 
+				LuceneDictionary dict = new LuceneDictionary(sourceReader,
+						fieldname);
 				spellchecker.indexDictionary(dict);
 			}
 		} finally {
-			sourceReader.close(); 
+			sourceReader.close();
 		}
 		log.debug("Finished reindexing didyoumean index.");
 		ucReIndex.stop();
 	}
 
 	public void finalize() {
-	SpecialDirectoryRegistry.getInstance().unregister(didyoumeanLocation);
+		SpecialDirectoryRegistry.getInstance().unregister(didyoumeanLocation);
 		EventManager.getInstance().unregister(this);
 	}
 
-
-	public Map<String, String[]> getSuggestionsStringFromMap(Map<Term, Term[]> suggestions) {
+	public Map<String, String[]> getSuggestionsStringFromMap(
+			Map<Term, Term[]> suggestions) {
 		Map<String, String[]> result = new LinkedHashMap<String, String[]>();
-		for(Term key : suggestions.keySet()) {
+		for (Term key : suggestions.keySet()) {
 			Term[] values = suggestions.get(key);
-			ArrayList<String> valueStrings = new ArrayList<String>(values.length);
-			for(Term value : values) {
+			ArrayList<String> valueStrings = new ArrayList<String>(
+					values.length);
+			for (Term value : values) {
 				valueStrings.add(value.text());
 			}
-			result.put(key.text(), valueStrings.toArray(new String[valueStrings.size()]));
+			result.put(key.text(),
+					valueStrings.toArray(new String[valueStrings.size()]));
 		}
 		return result;
 	}
