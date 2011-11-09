@@ -17,7 +17,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.events.Event;
 import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
-import com.gentics.cr.lucene.autocomplete.Autocompleter;
+//import com.gentics.cr.lucene.autocomplete.Autocompleter;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
