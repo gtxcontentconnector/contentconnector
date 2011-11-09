@@ -58,6 +58,7 @@ public class AutocompleteIndexDeleteJob extends AbstractUpdateCheckerJob {
 			writer = ia.getWriter();
 			writer.deleteAll();
 			autocompleteLocation.resetIndexJobCreationTimes();
+			autocompleteLocation.createReopenFile();
 		} catch (IOException e) {
 			log.error("Could not clear index", e);
 		} finally {

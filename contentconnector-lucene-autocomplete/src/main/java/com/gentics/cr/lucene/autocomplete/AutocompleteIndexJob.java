@@ -115,6 +115,7 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 				writer.addDocument(doc);
 			}
 			writer.optimize();
+			autocompleteLocation.createReopenFile();
 		} finally {
 
 			sia.release(sourceReader, false);
@@ -122,8 +123,7 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 
 			aia.release(writer);
 			// aia.release(reader,false);
-		}
-		autocompleteLocation.createReopenFile();
+		}		
 		log.debug("Finished reindexing autocomplete index.");
 		ucReIndex.stop();
 	}
