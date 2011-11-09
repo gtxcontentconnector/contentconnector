@@ -11,6 +11,7 @@ import org.apache.lucene.search.spell.LuceneDictionary;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
@@ -53,13 +54,10 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 		UseCase ucReIndex = MonitorFactory.startUseCase("reIndex()");
 		// build a dictionary (from the spell package)
 		log.debug("Starting to reindex didyoumean index.");
-		IndexReader sourceReader = didyoumean.getSourceLocation().getAccessor()
-				.getReader(false);
-		CustomSpellChecker spellchecker = new CustomSpellChecker(
-				didyoumean.getDidyoumeanDirectory(), didyoumean.getMinDScore(),
-				didyoumean.getMinDFreq());
-		Collection<String> fields = null;
-		
+		IndexAccessor sourceAccessor = didyoumean.getSourceLocation().getAccessor();
+		IndexReader sourceReader = sourceAccessor.getReader(false);
+		CustomSpellChecker spellchecker = didyoumean.getSpellchecker();
+		Collection<String> fields = null;		
 
 		if (didyoumean.isAll()) {
 			fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
@@ -73,8 +71,9 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 				spellchecker.indexDictionary(dict);
 			}			
 		} finally {
-			sourceReader.close();
-			spellchecker.close();
+			if(sourceAccessor != null && sourceReader != null) {
+				sourceAccessor.release(sourceReader, false);
+			}
 		}
 		log.debug("Finished reindexing didyoumean index.");
 		ucReIndex.stop();

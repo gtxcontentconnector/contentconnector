@@ -24,6 +24,7 @@ import com.gentics.cr.events.Event;
 import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.monitoring.MonitorFactory;
@@ -46,7 +47,11 @@ public class DidYouMeanProvider implements IEventReceiver {
 
 	@Deprecated
 	private Directory source = null;
-	private Directory didyoumeanLocation;
+	
+	//@Deprecated
+	//private Directory didyoumeanDirectory;
+	
+	private LuceneIndexLocation didyoumeanLocation;
 
 	private static final String SOURCE_INDEX_KEY = "srcindexlocation";
 
@@ -112,12 +117,13 @@ public class DidYouMeanProvider implements IEventReceiver {
 
 		GenericConfiguration auto_conf = (GenericConfiguration) config
 				.get(DIDYOUMEAN_INDEX_KEY);
+		CRConfigUtil dymConfUtil = new CRConfigUtil(auto_conf,
+				DIDYOUMEAN_INDEX_KEY);
 		didyoumeanLocation = LuceneIndexLocation
-				.createDirectory(new CRConfigUtil(auto_conf,
-						DIDYOUMEAN_INDEX_KEY));
+				.getIndexLocation(dymConfUtil);
 		if (!useDidyomeanIndexExtension) {
-			SpecialDirectoryRegistry.getInstance().register(didyoumeanLocation);
-		}
+			didyoumeanLocation.registerDirectoriesSpecial();
+		} 
 
 		checkForExistingTerms = config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY,
 				checkForExistingTerms);
@@ -139,6 +145,14 @@ public class DidYouMeanProvider implements IEventReceiver {
 			dym_fields.add(this.didyoumeanfield);
 		}
 
+
+		try {
+			spellchecker = new CustomSpellChecker(didyoumeanLocation,
+					minDScore, minDFreq);
+		} catch (IOException e1) {
+			log.error("Could not create didyoumean index.", e1);
+		}
+
 		if (!useDidyomeanIndexExtension) {
 			String sDYMReopenUpdate = config.getString(UPDATE_ON_REOPEN_KEY);
 			if (sDYMReopenUpdate != null) {
@@ -146,25 +160,10 @@ public class DidYouMeanProvider implements IEventReceiver {
 			}
 
 			try {
-
-				// CHECK FOR EXISTING LOCK AND REMOVE IT
-				synchronized (this) {
-					try {
-						if (IndexWriter.isLocked(didyoumeanLocation)) {
-							IndexWriter.unlock(didyoumeanLocation);
-						}
-					} catch (IOException e) {
-						log.error(e.getMessage(), e);
-					}
-				}
-
-				spellchecker = new CustomSpellChecker(didyoumeanLocation,
-						minDScore, minDFreq);
-
 				reIndex();
 
 			} catch (IOException e) {
-				log.error("Could not create didyoumean index.", e);
+				
 			}
 
 			EventManager.getInstance().register(this);
@@ -194,11 +193,12 @@ public class DidYouMeanProvider implements IEventReceiver {
 
 	private long lastupdatestored = 0;
 
-	@Deprecated
+	
 	private void checkForUpdate() {
 
-		boolean reopened = false;
+		
 		if (!useDidyomeanIndexExtension) {
+			boolean reopened = false;
 			try {
 				if (source.fileExists("reopen")) {
 					long lastmodified = source.fileModified("reopen");
@@ -213,8 +213,8 @@ public class DidYouMeanProvider implements IEventReceiver {
 			} catch (IOException e) {
 				log.debug("Could not reIndex autocomplete index.", e);
 			}
-		}
-		// TODO: is a reopencheck needed? 
+		} 
+		
 	}
 
 	/**
@@ -242,17 +242,8 @@ public class DidYouMeanProvider implements IEventReceiver {
 		}
 		Map<Term, Term[]> result = new LinkedHashMap<Term, Term[]>();
 		Set<Term> termset = new HashSet<Term>();
-		CustomSpellChecker suggestSpellChecker = null;
-		if (!useDidyomeanIndexExtension) {
-			suggestSpellChecker = this.spellchecker;
-		} else {
-			try {
-				suggestSpellChecker = new CustomSpellChecker(didyoumeanLocation, minDScore, minDFreq);
-			} catch (IOException e) {
-				log.error("Could not create spell checker instance", e);
-			}
-		}
-		if (suggestSpellChecker != null) {
+		
+		if (this.spellchecker != null) {
 			for (Term t : termlist) {
 				// CHECK IF ALL FIELDS ENABLED FOR SUGGESTIONS OTHERWHISE ONLY
 				// ADD TERM IF IT COMES FROM A DYM FIELD
@@ -265,8 +256,8 @@ public class DidYouMeanProvider implements IEventReceiver {
 			for (Term term : termset) {
 				try {
 					if (checkForExistingTerms
-							|| !suggestSpellChecker.exist(term.text())) {
-						String[] ts = suggestSpellChecker.suggestSimilar(
+							|| !this.spellchecker.exist(term.text())) {
+						String[] ts = this.spellchecker.suggestSimilar(
 								term.text(), count, reader, term.field(), true);
 						if (ts != null && ts.length > 0) {
 							Term[] suggestedTerms = new Term[ts.length];
@@ -312,7 +303,7 @@ public class DidYouMeanProvider implements IEventReceiver {
 	}
 
 	public void finalize() {
-		SpecialDirectoryRegistry.getInstance().unregister(didyoumeanLocation);
+		didyoumeanLocation.stop();
 		EventManager.getInstance().unregister(this);
 	}
 

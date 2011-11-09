@@ -7,9 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.spell.CustomSpellChecker;
-import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -17,10 +15,8 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.events.Event;
 import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
-//import com.gentics.cr.lucene.autocomplete.Autocompleter;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
-import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.util.indexing.AbstractIndexExtension;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IReIndexStrategy;
@@ -31,8 +27,8 @@ import com.gentics.cr.util.indexing.SimpleIndexJobAdderThread;
 
 /**
  * This {@link IndexExtension} creates and maintains an autocomplete-index. The
- * {@link DidYouMeanProvider} uses the index created by this extension to provide
- * didyoumean search suggestions.
+ * {@link DidYouMeanProvider} uses the index created by this extension to
+ * provide didyoumean search suggestions.
  * 
  */
 public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
@@ -41,7 +37,8 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 			.getLogger(DidyoumeanIndexExtension.class);
 
 	private static final String REINDEX_JOB = "reIndex";
-	private static final String[] jobs = { REINDEX_JOB };
+	private static final String CLEAR_JOB = "clearDidyoumeanIndex";
+	private static final String[] jobs = { REINDEX_JOB, CLEAR_JOB };
 
 	private CRConfig config;
 
@@ -51,8 +48,8 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 
 	private IndexLocation callingIndexLocation;
 
-	private LuceneIndexLocation source;
-	private Directory didyoumeanDirectory;
+	private LuceneIndexLocation sourceLocation;
+	private LuceneIndexLocation didyoumeanLocation;
 
 	private static final String SOURCE_INDEX_KEY = "srcindexlocation";
 
@@ -99,18 +96,19 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 		CRConfigUtil src_conf_util = new CRConfigUtil(src_conf,
 				"SOURCE_INDEX_KEY");
 		if (src_conf_util.getPropertySize() > 0) {
-			source = LuceneIndexLocation.getIndexLocation(src_conf_util);
+			sourceLocation = LuceneIndexLocation
+					.getIndexLocation(src_conf_util);
 		}
-		if (source == null) {
-			source = (LuceneIndexLocation) callingLocation;
+		if (sourceLocation == null) {
+			sourceLocation = (LuceneIndexLocation) callingLocation;
 		}
 
 		GenericConfiguration didyou_conf = (GenericConfiguration) config
 				.get(DIDYOUMEAN_INDEX_KEY);
-		didyoumeanDirectory = LuceneIndexLocation
-				.createDirectory(new CRConfigUtil(didyou_conf,
+		didyoumeanLocation = LuceneIndexLocation
+				.getIndexLocation(new CRConfigUtil(didyou_conf,
 						DIDYOUMEAN_INDEX_KEY));
-		SpecialDirectoryRegistry.getInstance().register(didyoumeanDirectory);
+		didyoumeanLocation.registerDirectoriesSpecial();
 
 		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY,
 				didyoumeanfield);
@@ -129,23 +127,21 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 		}
 		reindexStrategy = initReindexStrategy(config);
 
-		// CHECK FOR EXISTING LOCK AND REMOVE IT
-		synchronized (this) {
-			try {
-				if (IndexWriter.isLocked(didyoumeanDirectory)) {
-					IndexWriter.unlock(didyoumeanDirectory);
-				}
-			} catch (IOException e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-
 		subscribeToIndexFinished = config.getBoolean(
 				DIDYOUMEAN_SUBSCRIBE_TO_INDEX_FINISHED,
 				subscribeToIndexFinished);
 
 		if (subscribeToIndexFinished) {
 			EventManager.getInstance().register(this);
+		}
+
+		try {
+			spellchecker = new CustomSpellChecker(didyoumeanLocation,
+					minDScore, minDFreq);
+		} catch (IOException e) {
+			log.debug("Could not create Spellchecker", e);
+			// without spellchecker the extension won't work - stop it
+			this.stop();
 		}
 
 		log.debug("Succesfully registered DidyoumeanIndexExtension");
@@ -179,11 +175,11 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 	 */
 	@Override
 	public void stop() {
-		source.stop();
-		try {
-			didyoumeanDirectory.close();
-		} catch (IOException e) {
-			log.error("Could not close didyoumean Directory", e);
+		sourceLocation.stop();
+		if (spellchecker != null) {
+			spellchecker.close();
+		} else if (didyoumeanLocation != null) {
+			didyoumeanLocation.stop();
 		}
 		if (subscribeToIndexFinished) {
 			EventManager.getInstance().unregister(this);
@@ -241,9 +237,16 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 		if (indexLocation != null) {
 			actualLocation = indexLocation;
 		}
+
 		if (REINDEX_JOB.equalsIgnoreCase(name)) {
 			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new DidyoumeanIndexJob(
 					this.config, actualLocation, this);
+			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
+					actualLocation, job);
+			thread.run();
+		} else if (CLEAR_JOB.equalsIgnoreCase(name)) {
+			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new DidyoumeanIndexDeleteJob(
+					config, actualLocation, this);
 			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
 					actualLocation, job);
 			thread.run();
@@ -269,12 +272,12 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 		this.dym_fields = dym_fields;
 	}
 
-	public Directory getDidyoumeanDirectory() {
-		return didyoumeanDirectory;
+	public LuceneIndexLocation getDidyoumeanLocation() {
+		return didyoumeanLocation;
 	}
 
 	public LuceneIndexLocation getSourceLocation() {
-		return source;
+		return sourceLocation;
 	}
 
 	public CustomSpellChecker getSpellchecker() {
