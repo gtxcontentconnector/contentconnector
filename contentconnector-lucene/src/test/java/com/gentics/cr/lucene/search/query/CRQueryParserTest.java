@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.search.query;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.Matcher;
 
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -14,7 +13,6 @@ import org.apache.lucene.queryParser.ParseException;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.lucene.AbstractLuceneTest;
 import com.gentics.cr.lucene.LuceneVersion;
-import com.gentics.cr.lucene.search.query.CRQueryParser;
 import com.gentics.cr.lucene.search.query.mocks.ComparableDocument;
 import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
 
