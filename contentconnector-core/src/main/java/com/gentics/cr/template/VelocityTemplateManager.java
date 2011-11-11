@@ -4,7 +4,6 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.commons.collections.ExtendedProperties;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;

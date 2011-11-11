@@ -8,17 +8,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.cr.util.resolver.CRUtilResolver;
-import com.gentics.cr.util.resolver.Callback;
-import com.gentics.cr.util.resolver.ContentConnectorCallback;
-import com.gentics.cr.util.resolver.SystemPropertyCallback;
+
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:24:41 +0200 (Do, 01 Apr 2010) $
