@@ -18,9 +18,9 @@ import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.search.query.mocks.ComparableDocument;
 import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
 
-public class BooleanQuerRewriterTest extends AbstractLuceneTest {
+public class BooleanQueryRewriterTest extends AbstractLuceneTest {
 	
-	public BooleanQuerRewriterTest(String name) {
+	public BooleanQueryRewriterTest(String name) {
 		super(name);
 	}
 	private static final StandardAnalyzer STANDARD_ANALYZER = new StandardAnalyzer(LuceneVersion.getVersion());
