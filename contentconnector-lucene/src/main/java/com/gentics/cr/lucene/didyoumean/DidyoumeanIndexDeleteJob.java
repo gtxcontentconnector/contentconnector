@@ -3,14 +3,11 @@ package com.gentics.cr.lucene.didyoumean;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.spell.CustomSpellChecker;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
-import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
 

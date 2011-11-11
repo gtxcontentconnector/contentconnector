@@ -1,10 +1,6 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

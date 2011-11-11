@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.gentics.cr.servlet.VelocityServlet;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
 import com.gentics.cr.util.indexing.IndexJobQueue;
@@ -22,6 +21,8 @@ import com.gentics.cr.util.indexing.IndexLocation;
  * Nagios Servlet for IndexJobServlet. 
  */
 public class IndexJobNagiosServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = -1686996634146038875L;
 	
 	private static final Logger LOGGER = Logger.getLogger(IndexJobNagiosServlet.class);
 	protected IndexController indexer;
