@@ -33,8 +33,9 @@ public final class EnvironmentConfiguration {
 	/**
 	 * Path to the jcs configuration file.
 	 */
-	private static final String CACHE_FILE_PATH =
+	private static String cacheFilePath =
 		CONFPATH + "/cache.ccf";
+
 
 	/**
 	 * Configuration key if we should use the same caches as Gentics
@@ -100,6 +101,21 @@ public final class EnvironmentConfiguration {
 	}
 	
 	/**
+	 * @return the current cache file path.
+	 */
+	public static String getCacheFilePath() {
+		return cacheFilePath;
+	}
+	
+	/**
+	 * set a new cache file path where the jcs cache.ccf is located.
+	 * @param newCacheFilePath - path for the jcs cache configuration file
+	 */
+	public static void setCacheFilePath(String newCacheFilePath) {
+		cacheFilePath = newCacheFilePath;
+	}
+
+	/**
 	 * @return <code>true</code> if the logger init has not (yet) failed, otherwhise false.
 	 */
 	public static boolean getLoggerState() {
@@ -115,7 +131,7 @@ public final class EnvironmentConfiguration {
 					CONFPATH + "/") + "!";
 		try {
 			//LOAD CACHE CONFIGURATION
-			String confpath = CRUtil.resolveSystemProperties(CACHE_FILE_PATH);
+			String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
 			Properties cacheProps = new Properties();
 			cacheProps.load(new FileInputStream(confpath));
 			if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY)
