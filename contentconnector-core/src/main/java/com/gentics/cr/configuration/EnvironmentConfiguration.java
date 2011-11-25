@@ -39,7 +39,7 @@ public final class EnvironmentConfiguration {
 	/**
 	 * Path to the default log4j property file.
 	 */
-	private static final String LOGGER_FILE_PATH =
+	private static String loggerFilePath =
 		configurationPath + "/nodelog.properties";
 
 	/**
@@ -84,16 +84,16 @@ public final class EnvironmentConfiguration {
 	 *		 - load cache properties for JCS
 	 */
 	public static void loadEnvironmentProperties() {
-		loadLoggerPropperties();
+		loadLoggerProperties();
 		loadCacheProperties();
 	}
 
 	/**
 	 * Load Property file for log4j.
 	 */
-	public static void loadLoggerPropperties() {
+	public static void loadLoggerProperties() {
 		Properties logprops = new Properties();
-		String confpath = CRUtil.resolveSystemProperties(LOGGER_FILE_PATH);
+		String confpath = CRUtil.resolveSystemProperties(loggerFilePath);
 		String errorMessage = "Could not find nodelog.properties at: " + confpath;
 		try {
 			logprops.load(new FileInputStream(confpath));
@@ -110,21 +110,6 @@ public final class EnvironmentConfiguration {
 				loggerInitFailed = true;
 			}
 		}
-	}
-	
-	/**
-	 * @return the current cache file path.
-	 */
-	public static String getCacheFilePath() {
-		return cacheFilePath;
-	}
-	
-	/**
-	 * set a new cache file path where the jcs cache.ccf is located.
-	 * @param newCacheFilePath - path for the jcs cache configuration file
-	 */
-	public static void setCacheFilePath(String newCacheFilePath) {
-		cacheFilePath = newCacheFilePath;
 	}
 
 	/**
@@ -188,7 +173,7 @@ public final class EnvironmentConfiguration {
 	 */
 	private static void logError(final String message) {
 		if (!loggerInitialized()) {
-			loadLoggerPropperties();
+			loadLoggerProperties();
 		}
 		if (loggerInitialized()) {
 			log.error(message);
@@ -204,7 +189,7 @@ public final class EnvironmentConfiguration {
 	 */
 	private static void logDebug(final String message) {
 		if (!loggerInitialized()) {
-			loadLoggerPropperties();
+			loadLoggerProperties();
 		}
 		if (loggerInitialized()) {
 			log.error(message);
@@ -214,11 +199,28 @@ public final class EnvironmentConfiguration {
 	}
 
 	/**
+	 * @return the current log4j property file path.
+	 */
+	public static String getLoggerConfigPath() {
+		return loggerFilePath;
+	}
+	
+	/**
+	 * set a new logger configuration file path where the log4j properties file is located from .
+	 * @param newCacheFilePath - path for the log4j configuration file
+	 */
+	public static void setLoggerConfigPath(String newLoggerFilePath) {
+		loggerFilePath = newLoggerFilePath;
+	}
+	
+	/**
 	 * set the path for the configuration files.
 	 * @param configLocation - directory which contains the configuration files
 	 */
 	public static void setConfigPath(String configLocation) {
 		configurationPath = configLocation;
+		loggerFilePath = configurationPath + "/nodelog.properties";
+		cacheFilePath = configurationPath + "/cache.ccf";
 	}
 
 	/**
@@ -226,5 +228,20 @@ public final class EnvironmentConfiguration {
 	 */
 	public static String getConfigPath() {
 		return configurationPath;
+	}
+	
+	/**
+	 * @return the current cache file path.
+	 */
+	public static String getCacheFilePath() {
+		return cacheFilePath;
+	}
+	
+	/**
+	 * set a new cache file path where the jcs cache.ccf is located.
+	 * @param newCacheFilePath - path for the jcs cache configuration file
+	 */
+	public static void setCacheFilePath(String newCacheFilePath) {
+		cacheFilePath = newCacheFilePath;
 	}
 }

@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 
 import org.apache.jcs.JCS;
+import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.control.CompositeCacheManager;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,7 @@ public class EnvironmentConfigurationTest {
 	public void setUp() throws Exception {
 		confPath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().toURI().toURL();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, "");
+		EnvironmentConfiguration.setCacheFilePath("${" + CRUtil.PORTALNODE_CONFPATH + "}/cache.ccf");
 	}
 	
 	@After
@@ -39,7 +41,7 @@ public class EnvironmentConfigurationTest {
 	@Test
 	public void testLoadLoggerPropertiesURL(){
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath.getPath());
-		EnvironmentConfiguration.loadLoggerPropperties();
+		EnvironmentConfiguration.loadLoggerProperties();
 		assertTrue("Logger initialization has failed.", EnvironmentConfiguration.getLoggerState());
 	}
 	
@@ -47,7 +49,7 @@ public class EnvironmentConfigurationTest {
 	public void testLoadLoggerPropertiesCleanedURL(){
 		String cleanedConfpath = confPath.getPath().replace("file:/", "");
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, cleanedConfpath);
-		EnvironmentConfiguration.loadLoggerPropperties();
+		EnvironmentConfiguration.loadLoggerProperties();
 		assertTrue("Logger initialization has failed.", EnvironmentConfiguration.getLoggerState());
 	}
 	
@@ -73,5 +75,12 @@ public class EnvironmentConfigurationTest {
 		JCS instance = JCS.getInstance("test");
 		assertNotNull("Cannot initialize the JCS cache from the given config: " + confPath, instance);
 		assertEquals("The cache attributes are not loaded from the given config", 315, instance.getCacheAttributes().getMaxObjects());
+	}
+	
+	@Test
+	public void testConfigDirectory() throws CacheException{
+		EnvironmentConfiguration.setConfigPath(confPath.getPath());
+		EnvironmentConfiguration.loadCacheProperties();
+		JCS.getInstance("test");
 	}
 }
