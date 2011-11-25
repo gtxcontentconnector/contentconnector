@@ -1,0 +1,19 @@
+# DEFAULT CACHE REGION
+## maximum of 1000 objects per cache
+## objects will be removed if longer than 15 minutes idle
+## maximum object lifetime is 30 minutes
+## memory shrinker will actively remove old items every 5 minutes
+jcs.default=
+jcs.default.cacheattributes.MaxObjects=1000
+jcs.default.cacheattributes.UseMemoryShrinker=true
+jcs.default.cacheattributes.MaxMemoryIdleTimeSeconds=1800
+jcs.default.cacheattributes.ShrinkerIntervalSeconds=300
+jcs.default.elementattributes=org.apache.jcs.engine.ElementAttributes
+jcs.default.elementattributes.IsEternal=false
+jcs.default.elementattributes.MaxLifeSeconds=3600
+
+# PRE-DEFINED CACHE REGIONS
+
+## Cache Region for GenticsContentModule - Caches resized images.
+jcs.region.test=
+jcs.region.test.cacheattributes.MaxObjects=315

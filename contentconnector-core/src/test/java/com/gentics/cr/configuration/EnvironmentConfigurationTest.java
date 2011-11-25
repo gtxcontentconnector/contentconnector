@@ -1,12 +1,16 @@
 package com.gentics.cr.configuration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URL;
 
 import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
+import org.apache.jcs.engine.control.CompositeCacheManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +24,16 @@ public class EnvironmentConfigurationTest {
 	public void setUp() throws Exception {
 		confPath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().toURI().toURL();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, "");
+	}
+	
+	@After
+	public void cleanup() throws Exception {
+		Field cacheMgr = JCS.class.getDeclaredField("cacheMgr");
+		cacheMgr.setAccessible(true);
+		cacheMgr.set(cacheMgr, null);
+		Field instance = CompositeCacheManager.class.getDeclaredField("instance");
+		instance.setAccessible(true);
+		instance.set(null, null);
 	}
 	
 	@Test
@@ -38,13 +52,13 @@ public class EnvironmentConfigurationTest {
 	}
 	
 	@Test(expected=IllegalStateException.class)
-	public void testCacheInitFail() throws CacheException {
+	public void testCacheInitFail() throws Throwable {
 		EnvironmentConfiguration.loadCacheProperties();
-		JCS instance = JCS.getInstance("test");
+		JCS.getInstance("test");
 	}
 	
 	@Test
-	public void testCacheInitSystemProperty() throws CacheException {
+	public void testCacheInitSystemProperty() throws Throwable {
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath.getPath());
 		EnvironmentConfiguration.loadCacheProperties();
 		JCS instance = JCS.getInstance("test");
@@ -53,13 +67,11 @@ public class EnvironmentConfigurationTest {
 	}
 	
 	@Test
-	public void testCacheInitWithConfigSetted() throws CacheException {
-		EnvironmentConfiguration.setCacheFilePath(confPath.getPath() + File.pathSeparator + "cache.ccf");
+	public void testCacheInitWithConfigSetted() throws Throwable {
+		EnvironmentConfiguration.setCacheFilePath(confPath.getPath() + File.separator + "cache2.ccf");
 		EnvironmentConfiguration.loadCacheProperties();
 		JCS instance = JCS.getInstance("test");
 		assertNotNull("Cannot initialize the JCS cache from the given config: " + confPath, instance);
-		assertEquals("The cache attributes are not loaded from the given config", 314, instance.getCacheAttributes().getMaxObjects());
-
+		assertEquals("The cache attributes are not loaded from the given config", 315, instance.getCacheAttributes().getMaxObjects());
 	}
-	
 }

@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.apache.jcs.engine.control.CompositeCacheManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.struts.config.ConfigRuleSet;
 
 import com.gentics.cr.util.CRUtil;
 
@@ -19,22 +20,33 @@ import com.gentics.cr.util.CRUtil;
  *
  */
 public final class EnvironmentConfiguration {
+	
+	
 	/**
-	 * Confpath.
+	 * Path were the configuration files are found
 	 */
-	public static final String CONFPATH = "${" + CRUtil.PORTALNODE_CONFPATH
+	private static String configurationPath = "${" + CRUtil.PORTALNODE_CONFPATH
 		+ "}";
-	 /**
+	
+	/**
+	 * Path were the configuration files are found.
+	 * This variable is deprecated. Use {@link #getConfigPath()} instead.
+	 */
+	@Deprecated
+	public static final String CONFPATH = configurationPath;
+	
+	
+	/**
 	 * Path to the default log4j property file.
 	 */
 	private static final String LOGGER_FILE_PATH =
-		CONFPATH + "/nodelog.properties";
+		configurationPath + "/nodelog.properties";
 
 	/**
 	 * Path to the jcs configuration file.
 	 */
 	private static String cacheFilePath =
-		CONFPATH + "/cache.ccf";
+		configurationPath + "/cache.ccf";
 
 
 	/**
@@ -128,7 +140,7 @@ public final class EnvironmentConfiguration {
 	public static void loadCacheProperties() {
 		String errorMessage = "Could not load cache configuration. Perhaps you are "
 			+ "missing the file cache.ccf in " + CRUtil.resolveSystemProperties(
-					CONFPATH + "/") + "!";
+					configurationPath + "/") + "!";
 		try {
 			//LOAD CACHE CONFIGURATION
 			String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
@@ -199,5 +211,20 @@ public final class EnvironmentConfiguration {
 		} else {
 			System.out.println(message);
 		}
+	}
+
+	/**
+	 * set the path for the configuration files.
+	 * @param configLocation - directory which contains the configuration files
+	 */
+	public static void setConfigPath(String configLocation) {
+		configurationPath = configLocation;
+	}
+
+	/**
+	 * @return the path where the configuration files are loaded from.
+	 */
+	public static String getConfigPath() {
+		return configurationPath;
 	}
 }

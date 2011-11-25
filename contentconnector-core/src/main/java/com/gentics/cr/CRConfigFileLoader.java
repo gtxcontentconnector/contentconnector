@@ -27,7 +27,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 	/**
 	 * Config directory. (${com.gentics.portalnode.confpath}/rest/)
 	 */
-	private static final String CONFIG_DIR = EnvironmentConfiguration.CONFPATH 
+	private static final String CONFIG_DIR = EnvironmentConfiguration.getConfigPath()
 		+ "/rest/";
 	/**
 	 * Generated unique serial version id.
