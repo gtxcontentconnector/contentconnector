@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.struts.config.ConfigRuleSet;
 
+import com.gentics.cr.CRConfig;
 import com.gentics.cr.util.CRUtil;
 
 /**
@@ -219,6 +220,7 @@ public final class EnvironmentConfiguration {
 	 */
 	public static void setConfigPath(String configLocation) {
 		configurationPath = configLocation;
+		System.setProperty(CRUtil.PORTALNODE_CONFPATH, configLocation);
 		loggerFilePath = configurationPath + "/nodelog.properties";
 		cacheFilePath = configurationPath + "/cache.ccf";
 	}
