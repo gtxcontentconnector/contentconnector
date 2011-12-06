@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,39 +28,54 @@ import com.gentics.cr.lucene.indexer.IndexerUtil;
  *
  */
 public final class LuceneAnalyzerFactory {
+
 	/**
 	 * Private constructor.
 	 */
 	private LuceneAnalyzerFactory() { }
+
 	/**
 	 * Log4j Logger for error and debug messages.
 	 */
-	protected static final Logger LOGGER =
-		Logger.getLogger(LuceneAnalyzerFactory.class);
+	protected static final Logger LOGGER = Logger.getLogger(LuceneAnalyzerFactory.class);
+
 	/**
 	 * Stop word config key.
 	 */
 	private static final String STOP_WORD_FILE_KEY = "STOPWORDFILE";
+
 	/**
 	 * Analyzer config key.
 	 */
 	private static final String ANALYZER_CONFIG_KEY = "ANALYZERCONFIG";
+
 	/**
 	 * Analyzer class key.
 	 */
 	private static final String ANALYZER_CLASS_KEY = "ANALYZERCLASS";
+
 	/**
 	 * Field name.
 	 */
 	private static final String FIELD_NAME_KEY = "FIELDNAME";
+
 	/**
 	 * Reveres attributes key.
 	 */
 	private static final String REVERSE_ATTRIBUTES_KEY = "REVERSEATTRIBUTES";
+
 	/**
 	 * 	Reverse Attribute suffix.
 	 */
 	public static final String REVERSE_ATTRIBUTE_SUFFIX = "_REVERSE";
+	
+	/**
+	 * This Map stores the same information as the PerFieldAnalyzerWrapper, 
+	 * makes the used Analyzer class names (canonical names) per field accessible.
+	 * filled in the createAnalyzer method
+	 */
+	private static Map<String, String> configuredAnalyzerMap = new HashMap<String, String>();	
+
 	/**
 	 * TODO javadoc.
 	 * @param config TODO javadoc
@@ -67,10 +83,10 @@ public final class LuceneAnalyzerFactory {
 	 */
 	public static List<String> getReverseAttributes(
 			final GenericConfiguration config) {
-		GenericConfiguration aconfig = loadAnalyzerConfig(config);
-		if (aconfig != null) {
+		GenericConfiguration analyzerConfig = loadAnalyzerConfig(config);
+		if (analyzerConfig != null) {
 			String reverseAttributeString =
-				(String) aconfig.get(REVERSE_ATTRIBUTES_KEY);
+				(String) analyzerConfig.get(REVERSE_ATTRIBUTES_KEY);
 			return IndexerUtil.getListFromString(reverseAttributeString, ",");
 		}
 		return null;
@@ -82,42 +98,51 @@ public final class LuceneAnalyzerFactory {
 	 * @return TODO javadoc
 	 */
 	public static Analyzer createAnalyzer(final GenericConfiguration config) {
+		// Caching the analyzer instances is not possible as those do not implement Serializable
+		// TODO: cache the config (imho caching should be implemented in the config itself)
+
 		PerFieldAnalyzerWrapper analyzerWrapper =
 			new PerFieldAnalyzerWrapper(createDefaultAnalyzer(config));
-		//TODO Cache analyzer instances and do not read file each time
+		configuredAnalyzerMap.clear();
+
 		//Load analyzer config
 		GenericConfiguration analyzerConfig = loadAnalyzerConfig(config);
 		if (analyzerConfig != null) {
-			ArrayList<String> addedRattributes = new ArrayList<String>();
+			ArrayList<String> addedReverseAttributes = new ArrayList<String>();
 			List<String> reverseAttributes = getReverseAttributes(config);
-			Map<String, GenericConfiguration> subconfigs =
-				analyzerConfig.getSortedSubconfigs();
+			Map<String, GenericConfiguration> subconfigs = analyzerConfig.getSortedSubconfigs();
 			if (subconfigs != null) {
-				for (Map.Entry<String, GenericConfiguration> e 
-						: subconfigs.entrySet()) {
-					GenericConfiguration analyzerconfig = e.getValue();
+				for (Map.Entry<String, GenericConfiguration> entry : subconfigs.entrySet()) {
+					GenericConfiguration analyzerconfig = entry.getValue();
 					String fieldname = analyzerconfig.getString(FIELD_NAME_KEY);
-					String analyzerclass = analyzerconfig
-							.getString(ANALYZER_CLASS_KEY);
-					Analyzer a = createAnalyzer(analyzerclass, analyzerconfig);
-					analyzerWrapper.addAnalyzer(fieldname, a);
+					String analyzerclass = analyzerconfig.getString(ANALYZER_CLASS_KEY);
+					
+					Analyzer analyzerInstance = createAnalyzer(analyzerclass, analyzerconfig);
+					analyzerWrapper.addAnalyzer(fieldname, analyzerInstance);
+					configuredAnalyzerMap.put(fieldname, analyzerInstance.getClass().getCanonicalName());
+
 					//ADD REVERSE ANALYZERS
-					if (reverseAttributes != null
-							&& reverseAttributes.contains(fieldname)) {
-						addedRattributes.add(fieldname);
-						analyzerWrapper.addAnalyzer(fieldname 
-								+ REVERSE_ATTRIBUTE_SUFFIX,
-								new ReverseAnalyzer(a));
+					if (reverseAttributes != null && reverseAttributes.contains(fieldname)) {
+						addedReverseAttributes.add(fieldname);
+						
+						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer(analyzerInstance);
+						analyzerWrapper.addAnalyzer(fieldname + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer);
+
+						configuredAnalyzerMap.put(fieldname + REVERSE_ATTRIBUTE_SUFFIX, 
+								reverseAnalyzer.getClass().getCanonicalName());
 					}
 				}
 			}
 			//ADD ALL NON CONFIGURED REVERSE ANALYZERS
 			if (reverseAttributes != null && reverseAttributes.size() > 0) {
 				for (String att : reverseAttributes) {
-					if (!addedRattributes.contains(att)) {
+					if (!addedReverseAttributes.contains(att)) {
+						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer(null);
 						analyzerWrapper.addAnalyzer(att 
 								+ REVERSE_ATTRIBUTE_SUFFIX,
-								new ReverseAnalyzer(null));
+								reverseAnalyzer);
+						configuredAnalyzerMap.put(att + REVERSE_ATTRIBUTE_SUFFIX, 
+								reverseAnalyzer.getClass().getCanonicalName());
 					}
 				}
 			}
@@ -210,5 +235,20 @@ public final class LuceneAnalyzerFactory {
 		analyzer = new StandardAnalyzer(LuceneVersion.getVersion(),
 				CharArraySet.EMPTY_SET);
 		return analyzer;
+	}
+
+	/**
+	 * Return a map of all used analyzers (per field).
+	 * This method calls createAnalyzer(config) so it is quite expensive.
+	 * The config parameter is needed for the call to createAnalyzer as this method
+	 * reads the analyzer configuration everytime!
+	 * Key: fieldname
+	 * Value: canonical class name
+	 * @param config needed for listing all analyzers.
+	 * @return Map of analyzers per field.
+	 */
+	public static Map<String, String> getConfiguredAnalyzers(final GenericConfiguration config) {
+		createAnalyzer(config);
+		return configuredAnalyzerMap;
 	}
 }
