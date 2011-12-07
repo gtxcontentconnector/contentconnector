@@ -229,4 +229,13 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 		locked = indexAccessor.isLocked(); 
 		return locked;
 	}
+	/**
+	 * Returns the hashCode of the LockID of the used Directory
+	 * 
+	 * @author Sebastian Vogel <s.vogel@gentics.com>
+	 */
+	@Override
+	public int hashCode() {
+		return dir.getLockID().hashCode();
+	}
 }

@@ -709,8 +709,10 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 */
 	public void reopen() throws IOException {
 		//TODO only open writer if there are already some open
-		IndexWriter tempWriter = this.getWriter();
-		this.release(tempWriter);
+		if(this.cachedWriter != null) {
+			IndexWriter tempWriter = this.getWriter();
+			this.release(tempWriter);
+		}
 		releaseAllSearchers();
 	}
 	

@@ -39,28 +39,26 @@ public abstract class LuceneIndexLocation extends
 	protected static final String RAM_IDENTIFICATION_KEY = "RAM";
 
 	protected String name = null;
-	
+
 	private boolean registered = false;
-	
+
 	private IndexAccessorToken accessorToken = null;
 
 	protected Analyzer getConfiguredAnalyzer() {
 		return LuceneAnalyzerFactory
 				.createAnalyzer((GenericConfiguration) config);
 	}
-	
-	
+
 	/**
 	 * Get a List of configured Attributes to be reversed
+	 * 
 	 * @return
 	 */
-	public List<String> getReverseAttributes()
-	{
-		return LuceneAnalyzerFactory.getReverseAttributes((GenericConfiguration) config);
+	public List<String> getReverseAttributes() {
+		return LuceneAnalyzerFactory
+				.getReverseAttributes((GenericConfiguration) config);
 	}
-	
-	
-	
+
 	/**
 	 * Requests an optimize command on the index
 	 */
@@ -75,21 +73,18 @@ public abstract class LuceneIndexLocation extends
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
-	 * Forcibly removes locks from the subsequent directories
-	 * This code should only be used by failure recovery code... when it is certain that no other thread is accessing the index.
+	 * Forcibly removes locks from the subsequent directories This code should
+	 * only be used by failure recovery code... when it is certain that no other
+	 * thread is accessing the index.
 	 */
-	public void forceRemoveLock()
-	{
+	public void forceRemoveLock() {
 		Directory[] dirs = this.getDirectories();
-		if(dirs!=null)
-		{
-			for(Directory dir:dirs)
-			{
+		if (dirs != null) {
+			for (Directory dir : dirs) {
 				try {
-					if(IndexWriter.isLocked(dir))
-					{
+					if (IndexWriter.isLocked(dir)) {
 						IndexWriter.unlock(dir);
 					}
 				} catch (IOException e) {
@@ -106,16 +101,15 @@ public abstract class LuceneIndexLocation extends
 	 */
 	public void checkLock() throws LockedIndexException {
 		Directory[] dirs = this.getDirectories();
-		
-		if(dirs!=null)
-		{
-			for(Directory dir:dirs)
-			{
+
+		if (dirs != null) {
+			for (Directory dir : dirs) {
 				try {
-					if(IndexWriter.isLocked(dir))throw new LockedIndexException();
+					if (IndexWriter.isLocked(dir))
+						throw new LockedIndexException();
 				} catch (IOException e) {
 					log.error(e.getMessage(), e);
-				} 
+				}
 			}
 		}
 	}
@@ -132,25 +126,24 @@ public abstract class LuceneIndexLocation extends
 		name = config.getName();
 	}
 
-	public static synchronized LuceneIndexLocation getIndexLocation(CRConfig config) {
-		IndexLocation genericIndexLocation = IndexLocation.getIndexLocation(config);
+	public static synchronized LuceneIndexLocation getIndexLocation(
+			CRConfig config) {
+		IndexLocation genericIndexLocation = IndexLocation
+				.getIndexLocation(config);
 		if (genericIndexLocation instanceof LuceneIndexLocation) {
 			return (LuceneIndexLocation) genericIndexLocation;
 		} else {
-			log
-					.error("IndexLocation is not created for Lucene. Using the "
-							+ CRLuceneIndexJob.class.getName()
-							+ " requires that you use the "
-							+ LuceneIndexLocation.class.getName()
-							+ ". You can configure another Job by setting the "
-							+ IndexLocation.UPDATEJOBCLASS_KEY
-							+ " key in your config.");
+			log.error("IndexLocation is not created for Lucene. Using the "
+					+ CRLuceneIndexJob.class.getName()
+					+ " requires that you use the "
+					+ LuceneIndexLocation.class.getName()
+					+ ". You can configure another Job by setting the "
+					+ IndexLocation.UPDATEJOBCLASS_KEY + " key in your config.");
 			return null;
 		}
 	}
-	
-	protected Directory createRAMDirectory()
-	{
+
+	protected Directory createRAMDirectory() {
 		return createRAMDirectory(name);
 	}
 
@@ -159,22 +152,19 @@ public abstract class LuceneIndexLocation extends
 		log.debug("Creating RAM Directory for Index [" + name + "]");
 		return (dir);
 	}
-	
-	protected static String getFirstIndexLocation(CRConfig config)
-	{
-		String path="";
-		GenericConfiguration locs = (GenericConfiguration)config.get(INDEX_LOCATIONS_KEY);
-		if(locs!=null)
-		{
-			Map<String,GenericConfiguration> locationmap = locs.getSortedSubconfigs();
-			if(locationmap!=null)
-			{
-				for(GenericConfiguration locconf:locationmap.values())
-				{
+
+	protected static String getFirstIndexLocation(CRConfig config) {
+		String path = "";
+		GenericConfiguration locs = (GenericConfiguration) config
+				.get(INDEX_LOCATIONS_KEY);
+		if (locs != null) {
+			Map<String, GenericConfiguration> locationmap = locs
+					.getSortedSubconfigs();
+			if (locationmap != null) {
+				for (GenericConfiguration locconf : locationmap.values()) {
 					String p = locconf.getString(INDEX_PATH_KEY);
-					if(p!=null && !"".equals(p))
-					{
-						path=p;
+					if (p != null && !"".equals(p)) {
+						path = p;
 						return path;
 					}
 				}
@@ -182,53 +172,50 @@ public abstract class LuceneIndexLocation extends
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Create a Lucene directory from a config (index path must be configured)
+	 * 
 	 * @param config
 	 * @return
 	 */
-	public static Directory createDirectory(CRConfig config)
-	{
+	public static Directory createDirectory(CRConfig config) {
 		String loc = getFirstIndexLocation(config);
 		return createDirectory(loc);
 	}
-	
+
 	/**
 	 * Create a Lucene directory from a path
+	 * 
 	 * @param indexLocation
 	 * @return
 	 */
-	public static Directory createDirectory(String indexLocation)
-	{
+	public static Directory createDirectory(String indexLocation) {
 		Directory dir;
-		if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
-		{
+		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation)
+				|| indexLocation == null
+				|| indexLocation.startsWith(RAM_IDENTIFICATION_KEY)) {
 			dir = new RAMDirectory();
-			
-		}
-		else
-		{
+
+		} else {
 			File indexLoc = new File(indexLocation);
-			try
-			{
-				dir = createFSDirectory(indexLoc,indexLocation);
-				if(dir==null) dir = createRAMDirectory(indexLocation);
-			}
-			catch(IOException ioe)
-			{
+			try {
+				dir = createFSDirectory(indexLoc, indexLocation);
+				if (dir == null)
+					dir = createRAMDirectory(indexLocation);
+			} catch (IOException ioe) {
 				dir = createRAMDirectory(indexLocation);
 			}
 		}
 		return dir;
 	}
-		
-		
+
 	protected Directory createFSDirectory(File indexLoc) throws IOException {
 		return createFSDirectory(indexLoc, name);
 	}
 
-	protected static Directory createFSDirectory(File indexLoc,String name) throws IOException {
+	protected static Directory createFSDirectory(File indexLoc, String name)
+			throws IOException {
 		if (!indexLoc.exists()) {
 			log.debug("Indexlocation did not exist. Creating directories...");
 			indexLoc.mkdirs();
@@ -242,7 +229,7 @@ public abstract class LuceneIndexLocation extends
 	 * @return the directory used by this index location.
 	 */
 	protected abstract Directory[] getDirectories();
-	
+
 	public synchronized void registerDirectoriesSpecial() {
 		if (!registered) {
 			for (Directory d : getDirectories()) {
@@ -250,11 +237,12 @@ public abstract class LuceneIndexLocation extends
 			}
 			registered = true;
 		}
-		
+
 	}
 
 	/**
 	 * Get number of documents in Index.
+	 * 
 	 * @return doccount number of documents in index
 	 */
 	public abstract int getDocCount();
@@ -264,6 +252,7 @@ public abstract class LuceneIndexLocation extends
 	/**
 	 * Returns an index Accessor, which can be used to share access to an index
 	 * over multiple threads.
+	 * 
 	 * @return IndexAccessor for this index
 	 */
 	public final IndexAccessor getAccessor() {
@@ -274,31 +263,36 @@ public abstract class LuceneIndexLocation extends
 
 	/**
 	 * Checks for reopen file and reopens indexAccessor.
-	 * @param indexAccessor indexAccessor for the index
+	 * 
+	 * @param indexAccessor
+	 *            indexAccessor for the index
 	 * @return true if indexAccessor has been reopened
 	 */
 	public abstract boolean reopenCheck(IndexAccessor indexAccessor);
 
 	/**
 	 * get the date when the index was modified.
+	 * 
 	 * @return last modified date
 	 */
 	public abstract Date lastModified();
 
 	/**
 	 * get index size in Bytes.
+	 * 
 	 * @return index size in Bytes
 	 */
 	public abstract long indexSize();
 
 	/**
 	 * get the index size in MegaBytes.
+	 * 
 	 * @return index size in MegaBytes
 	 */
 	public final double indexSizeMB() {
 		return indexSize() * Constants.MEGABYTES_PER_BYTE;
 	}
-	
+
 	/**
 	 * Tests if the IndexLocation contains an existing Index and returns true if
 	 * it does.
@@ -308,7 +302,6 @@ public abstract class LuceneIndexLocation extends
 	public final boolean isContainingIndex() {
 		return getDocCount() > 0;
 	}
-	
 
 	@Override
 	public void finalize() {
@@ -319,5 +312,35 @@ public abstract class LuceneIndexLocation extends
 		}
 		IndexAccessorFactory.getInstance().releaseConsumer(accessorToken);
 	}
+
+	/**
+	 * True when two LuceneIndexLocations have the same hashCode
+	 * 
+	 * @author Sebastian Vogel <s.vogel@gentics.com>
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+
+		if (this == o) {
+			return true;
+		}
+
+		if (!o.getClass().equals(this.getClass())) {
+			return false;
+		}
+		LuceneIndexLocation that = (LuceneIndexLocation) o;
+
+		if (this.hashCode() == that.hashCode()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public abstract int hashCode();
 
 }

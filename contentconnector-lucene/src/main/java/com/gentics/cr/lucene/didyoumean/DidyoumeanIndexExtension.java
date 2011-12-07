@@ -17,6 +17,7 @@ import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation;
 import com.gentics.cr.util.indexing.AbstractIndexExtension;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IReIndexStrategy;
@@ -154,18 +155,27 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 	 * of the {@link IndexLocation} which fired the event
 	 */
 	public void processEvent(Event event) {
-		if (subscribeToIndexFinished
-				&& IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE
+		if (!subscribeToIndexFinished
+				|| !IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE
 						.equals(event.getType())) {
-			IndexLocation il = (IndexLocation) event.getData();
-			if (!reindexStrategy.skipReIndex(il)) {
-				AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new DidyoumeanIndexJob(
-						config, il, this);
-				SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
-						il, job);
-				thread.start();
-			}
+			return;
+		}		
+
+		Object obj = event.getData();
+		LuceneIndexLocation callingLuceneLocation = (LuceneIndexLocation) callingIndexLocation;
+		
+		if(!callingLuceneLocation.equals(obj)) {
+			return;
 		}
+		
+		if (!reindexStrategy.skipReIndex(callingLuceneLocation)) {
+			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new DidyoumeanIndexJob(
+					config, callingLuceneLocation, this);
+			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
+					callingLuceneLocation, job);
+			thread.start();
+		}
+
 	}
 
 	/*

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
@@ -251,5 +252,20 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 		IndexAccessor indexAccessor = this.getAccessor();
 		locked = indexAccessor.isLocked(); 
 		return locked;
+	}
+	
+	/**
+	* TODO: first implementation of hashCode Method in the
+	* {@link LuceneMultiIndexLocation} - not tested yet!
+	* 
+	* @author Sebastian Vogel <s.vogel@gentics.com>
+	*/
+	@Override
+	public int hashCode() {
+		int hash = 17;
+		for (Entry<String, Directory> entry : this.dirs.entrySet()) {
+			hash = 31 * hash + entry.getValue().getLockID().hashCode();
+		}
+		return hash;
 	}
 }
