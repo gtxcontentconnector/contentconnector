@@ -106,18 +106,27 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 	 * of the {@link IndexLocation} which fired the event
 	 */
 	public void processEvent(Event event) {
-		if (subscribeToIndexFinished
-				&& IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE
+		if (!subscribeToIndexFinished
+				|| !IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE
 						.equals(event.getType())) {
-			IndexLocation il = (IndexLocation) event.getData();
-			if (!reindexStrategy.skipReIndex(il)) {
-				AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(
-						config, il, this);
-				SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
-						il, job);
-				thread.start();
-			}
+			return;
 		}
+		
+		Object obj = event.getData();
+		LuceneIndexLocation callingLuceneLocation = (LuceneIndexLocation) callingIndexLocation;
+		
+		if(!callingLuceneLocation.equals(obj)) {
+			return;
+		}
+		
+		if (!reindexStrategy.skipReIndex(callingLuceneLocation)) {
+			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(
+					config, callingLuceneLocation, this);
+			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
+					callingLuceneLocation, job);
+			thread.start();
+		}
+
 	}
 
 	/*
