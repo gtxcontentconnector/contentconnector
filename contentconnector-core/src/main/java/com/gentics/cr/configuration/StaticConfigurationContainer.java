@@ -64,7 +64,16 @@ public final class StaticConfigurationContainer {
 
 		return config;
 	}
-	
+
+	/**
+	 * Used to set a config by putting it into the configmap.
+	 * @param key for storing the config in the internal configmap.
+	 * @param config Config to set.
+	 */
+	public static void setConfig(final String key, final CRConfigFileLoader config) {
+		configmap.put(key, config);
+	}
+
 	/**
 	 * Method to ensure that the container has been initialized.
 	 */
