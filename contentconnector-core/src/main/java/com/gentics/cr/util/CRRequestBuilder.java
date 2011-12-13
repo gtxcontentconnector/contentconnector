@@ -174,7 +174,7 @@ public class CRRequestBuilder {
 			this.start = (numberOfPage * intCount) + "";
 		}
 
-		//if filter is not set and contentid is => use contentid instad
+		//if filter is not set and contentid is => use contentid instead
 		if (("".equals(filter) || filter == null) && contentid != null
 				&& !contentid.equals("")) {
 			filter = "object.contentid == '" + contentid + "'";
@@ -478,7 +478,7 @@ public class CRRequestBuilder {
 				}
 			}
 		} else {
-			logger.error("Could net create ContentRepository instance. No Type is set to the RequestBuilder");
+			logger.error("Could not create ContentRepository instance. No Type is set to the RequestBuilder");
 		}
 		return cr;
 	}
