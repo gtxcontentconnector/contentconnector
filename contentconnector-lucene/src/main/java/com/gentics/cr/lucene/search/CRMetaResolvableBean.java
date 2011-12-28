@@ -19,6 +19,12 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 	 * Generated serialVersionUID.
 	 */
 	private static final long serialVersionUID = 5942419514161041700L;
+	
+	/**
+	 * Key for the value of the query parameter in the request wrapper to store
+	 * in the meta resolvable.
+	 */
+	public static final String QUERY_PARAMETER_KEY = "queryParameter";
 
 	/**
 	 * initialize the MetaResolvable for the search result.
@@ -34,6 +40,7 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 		set(LuceneRequestProcessor.META_START_KEY, start);
 		set(LuceneRequestProcessor.META_COUNT_KEY, count);
 		set(LuceneRequestProcessor.META_QUERY_KEY, request.getRequestFilter());
+		set(QUERY_PARAMETER_KEY, request.getRequestWrapper().getParameter("q"));
 		set(CRSearcher.RESULT_SUGGESTIONS_KEY, searchResult.get(CRSearcher.RESULT_SUGGESTIONS_KEY));
 		set(CRSearcher.RESULT_MAXSCORE_KEY, searchResult.get(CRSearcher.RESULT_MAXSCORE_KEY));
 		set(CRSearcher.RESULT_BESTQUERY_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERY_KEY));
