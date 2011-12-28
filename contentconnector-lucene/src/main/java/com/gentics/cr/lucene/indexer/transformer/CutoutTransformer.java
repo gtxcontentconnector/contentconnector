@@ -44,14 +44,11 @@ public class CutoutTransformer extends ContentTransformer{
 
 	@Override
 	public void processBean(CRResolvableBean bean) {
-		if(this.attribute!=null)
-		{
+		if(this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			if(obj!=null)
-			{
+			if(obj != null) {
 				String newString = getStringContents(obj);
-				if(newString!=null)
-				{
+				if (newString != null) {
 					bean.set(this.attribute, newString);
 				}
 			}
