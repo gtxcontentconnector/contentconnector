@@ -1,4 +1,4 @@
-package com.gentics.cr.lucene.indexer.transformer;
+package com.gentics.cr.util.velocity;
 
 import org.apache.velocity.tools.generic.AlternatorTool;
 import org.apache.velocity.tools.generic.DateTool;

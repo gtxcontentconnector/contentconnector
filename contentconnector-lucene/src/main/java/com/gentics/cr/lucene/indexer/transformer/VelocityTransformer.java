@@ -17,6 +17,7 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.template.StringTemplate;
+import com.gentics.cr.util.velocity.VelocityTools;
 
 /**
  * can be used in one of two ways:<br>

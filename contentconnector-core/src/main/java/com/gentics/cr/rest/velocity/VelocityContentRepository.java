@@ -22,11 +22,13 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRError;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.util.velocity.VelocityTools;
 import com.gentics.cr.rest.ContentRepository;
 import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.util.StringUtils;
+import com.gentics.portalnode.formatter.VelocityToolsImp;
 /**
  * VelocityContentRepository allows you to render the result of the
  * request to the ContentConnnector with velocity.
@@ -133,6 +135,11 @@ public class VelocityContentRepository extends ContentRepository {
 	 * successful.
 	 */
 	private boolean frameParsed = false;
+	
+	/**
+	 * {@link VelocityTools} to deploy into the template context.
+	 */
+	private VelocityTools tools = new VelocityTools();
 
 	/**
 	 * Create new Instance of VelocityContentRepository.
@@ -182,12 +189,14 @@ public class VelocityContentRepository extends ContentRepository {
 			loadTemplate();
 			templateManager.put("resolvables", this.resolvableColl);
 			putObjectsIntoTemplateManager(this.getAdditionalDeployableObjects());
-			GenericConfiguration variables = (GenericConfiguration) config.get(VARIABLES_KEY);
-			if(variables != null) {
+			GenericConfiguration variables =
+				(GenericConfiguration) config.get(VARIABLES_KEY);
+			if (variables != null) {
 				putObjectsIntoTemplateManager(variables.getProperties());
 			}
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding", encoding);
+			templateManager.put("tools", tools);
 			String output = templateManager.render(template.getKey(),
 					template.getSource());
 			stream.write(getHeader().getBytes());
