@@ -194,6 +194,8 @@ public class CRRequestBuilder {
 
 	/**
 	 * try to get the default parameters from the config.
+	 * TODO: this should be done in the same way as the
+	 * parameter initialisation in the constructor to avoid repeated code.
 	 */
 	private void getDefaultParameters() {
 		GenericConfiguration defaultparameters = null;
@@ -217,6 +219,9 @@ public class CRRequestBuilder {
 			}
 			if (filter == null) {
 				filter = defaultparameters.getString("filter");
+			}
+			if (wordmatch == null) {
+				wordmatch = defaultparameters.getString("wm");
 			}
 			if (this.attributes == null || this.attributes.length == 0) {
 				String defaultAttributes =
