@@ -196,21 +196,25 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		/** * Get results */
 
 		if (log.isDebugEnabled()) {
-			for (Object res : searchResult.values()) {
-				if (res instanceof LinkedHashMap) {
-					LinkedHashMap<Document, Float> documents =
-						(LinkedHashMap<Document, Float>) res;
-					if (documents != null) {
-						for (Entry<Document, Float> entry
-								: documents.entrySet()) {
-							Document doc = entry.getKey();
-							if (doc != null) {
-								log.debug("LuceneRequestProcessor.getObjects: " 
-									+ doc.getField("contentid").toString());
+			if(searchResult != null) {
+				for (Object res : searchResult.values()) {
+					if (res instanceof LinkedHashMap) {
+						LinkedHashMap<Document, Float> documents =
+							(LinkedHashMap<Document, Float>) res;
+						if (documents != null) {
+							for (Entry<Document, Float> entry
+									: documents.entrySet()) {
+								Document doc = entry.getKey();
+								if (doc != null) {
+									log.debug("LuceneRequestProcessor.getObjects: " 
+										+ doc.getField("contentid").toString());
+								}
 							}
 						}
 					}
 				}
+			} else {
+				log.debug("No results found.");
 			}
 		}
 		/**
