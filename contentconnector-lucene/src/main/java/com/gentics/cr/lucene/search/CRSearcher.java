@@ -35,6 +35,7 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.didyoumean.DidYouMeanProvider;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
@@ -300,12 +301,12 @@ public class CRSearcher {
 	}
 
 	public HashMap<String, Object> search(String query, String[] searchedAttributes, int count, int start,
-			boolean explain) throws IOException {
+			boolean explain) throws IOException, CRException {
 		return search(query, searchedAttributes, count, start, explain, null);
 	}
 
 	public HashMap<String, Object> search(String query, String[] searchedAttributes, int count, int start,
-			boolean explain, String[] sorting) throws IOException {
+			boolean explain, String[] sorting) throws IOException, CRException {
 		return search(query, searchedAttributes, count, start, explain, sorting, null);
 	}
 
@@ -323,11 +324,12 @@ public class CRSearcher {
 	 * @return HashMap&lt;String,Object&gt; with two entries. Entry "query" contains the parsed query and entry "result"
 	 *			contains a Collection of result documents.
 	 * @throws IOException TODO javadoc
+	 * @throws CRException in case maxclausecount is reached and failOnMaxClauses is enabled in the config object
 	 */
 	@SuppressWarnings("unchecked")
 	public final HashMap<String, Object> search(final String query, final String[] searchedAttributes, 
 			final int count, final int start, final boolean explain, final String[] sorting, 
-			final CRRequest request) throws IOException {
+			final CRRequest request) throws IOException, CRException {
 
 		Searcher searcher;
 		Analyzer analyzer;
@@ -409,8 +411,14 @@ public class CRSearcher {
 				}
 			}
 		} catch (Exception e) {
-			log.error("Error getting the results.", e);
-			result = null;
+			if (config.getBoolean("FAILONMAXCLAUSES")) {
+				log.debug("Error getting the results.", e);
+				throw new CRException(e);
+			} else {
+				log.error("Error getting the results.", e);
+				result = null;
+			}
+			
 		} finally {
 			indexAccessor.release(searcher);
 		}
