@@ -45,8 +45,8 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 		/* 4 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word5 minusinit with", "updatetimestamp:1311604678", "edittimestamp:1311604678", "node_id:3"))); //25.07.2011 16:37:58
 		/* 5 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word6", "updatetimestamp:1313160620", "edittimestamp:1313160620", "node_id:3"))); //12.08.2011 16:50:20
 		/* 6 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word7", "updatetimestamp:1314627329", "edittimestamp:1314627329", "node_id:3"))); //29.08.2011 16:15:29
-		/* 7 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word8", "updatetimestamp:1304510397", "edittimestamp:1304510397", "node_id:3"))); //04.05.2011 13:59:57
-		/* 8 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":newword", "node_id:11")));
+		/* 7 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":word8 01", "updatetimestamp:1304510397", "edittimestamp:1304510397", "node_id:3"))); //04.05.2011 13:59:57
+		/* 8 */ documents.add(new ComparableDocument(lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":newword 01/23456789", "node_id:11")));
 
 	}
 	
@@ -154,5 +154,22 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
 		Collection<Document> matchedDocuments = lucene.find(parser.parse("with\\-minusinit"));
 		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(3), documents.get(4)});
+	}
+	
+	public void testNumberWithSlashes() throws CorruptIndexException, IOException, ParseException {
+		Collection<Document> matchedDocuments = lucene.find(parser.parse("01/23456789"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(8)});
+	}
+	
+	public void testNumberWithSlashesAndWildcard() throws CorruptIndexException, IOException, ParseException {
+		Collection<Document> matchedDocuments = lucene.find(parser.parse("01/2*"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(8)});
+	}
+	
+	public void testNumberWithSlashesAndWildcards() throws CorruptIndexException, IOException, ParseException {
+		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
+		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
+		Collection<Document> matchedDocuments = lucene.find(parser.parse("01/23456789"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(8)});
 	}
 }

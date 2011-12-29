@@ -95,8 +95,14 @@ public class CRQueryParser extends QueryParser {
 	}
 	
 	
+	/**
+	 * the query is splitted and all special characters are replaced in a way as
+	 * if they where spaces before. So "content:a-b" becomes "content:a +content:b".
+	 * @param crQuery - query to search for special characters
+	 * @return query with replaced special characters
+	 */
 	private String replaceSpecialCharactersFromQuery(String crQuery) {
-		final String specialCharacters = "-";
+		final String specialCharacters = "-\\/";
 		StringBuffer newQuery = new StringBuffer();
 		Matcher valueMatcher = getValueMatcher(crQuery);
 		while (valueMatcher.find()) {
