@@ -88,8 +88,8 @@ public class CRQueryParser extends QueryParser {
 		if (attributesToSearchIn.size() > ONE) {
 			crQuery = addMultipleSearchedAttributes(crQuery);
 		}
-		crQuery = replaceSpecialCharactersFromQuery(crQuery);
 		crQuery = addWildcardsForWordmatchParameter(crQuery);
+		crQuery = replaceSpecialCharactersFromQuery(crQuery);
 		LOGGER.debug("parsed query: " + crQuery);
 		return super.parse(crQuery);
 	}

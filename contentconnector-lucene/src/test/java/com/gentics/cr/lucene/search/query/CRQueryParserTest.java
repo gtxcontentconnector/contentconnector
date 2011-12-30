@@ -171,5 +171,7 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
 		Collection<Document> matchedDocuments = lucene.find(parser.parse("01/23456789"));
 		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(8)});
+		matchedDocuments = lucene.find(parser.parse("01/23"));
+		containsAll(matchedDocuments, new ComparableDocument[]{documents.get(8)});
 	}
 }
