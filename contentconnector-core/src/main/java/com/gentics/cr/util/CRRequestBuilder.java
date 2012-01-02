@@ -176,14 +176,7 @@ public class CRRequestBuilder {
 		}
 		if (this.start == null && this.count != null) {
 			String numberOfPageStr = (String) requestWrapper.getParameter("np");
-			int numberOfPage;
-			if (numberOfPageStr != null) {
-				numberOfPage = Integer.parseInt(numberOfPageStr);
-			} else {
-				numberOfPage = 0;
-			}
-			int intCount = Integer.parseInt(this.count);
-			this.start = (numberOfPage * intCount) + "";
+			calcStartFromCount(numberOfPageStr);
 		}
 
 		// if filter is not set and contentid is => use contentid instead
@@ -202,6 +195,21 @@ public class CRRequestBuilder {
 		setRepositoryType(this.type);
 
 		getDefaultParameters();
+	}
+
+	/**
+	 * Calculates the start value from the number of pages * count per page.
+	 * @param numberOfPageStr
+	 */
+	private void calcStartFromCount(String numberOfPageStr) {
+		int numberOfPage;
+		if (numberOfPageStr != null) {
+			numberOfPage = Integer.parseInt(numberOfPageStr);
+		} else {
+			numberOfPage = 0;
+		}
+		int intCount = Integer.parseInt(this.count);
+		this.start = (numberOfPage * intCount) + "";
 	}
 
 	/**
@@ -234,6 +242,13 @@ public class CRRequestBuilder {
 			}
 			if (wordmatch == null) {
 				wordmatch = defaultparameters.getString("wm");
+			}
+			if (count == null) {
+				count = defaultparameters.getString("ps");
+			}
+			if (start == null && count != null) {
+				String numberOfPageStr = defaultparameters.getString("np");
+				calcStartFromCount(numberOfPageStr);
 			}
 			if (this.attributes == null || this.attributes.length == 0) {
 				String defaultAttributes = (String) defaultparameters
@@ -295,6 +310,10 @@ public class CRRequestBuilder {
 		return this.isDebug;
 	}
 
+	/**
+	 * Parameters for more advanced searches.
+	 * (and, or, not, group, filter)
+	 */
 	private void addAdvancedSearchParameters() {
 		if (filter == null || "".equals(filter)) {
 			if (query_and != null && !"".equals(query_and)) {
