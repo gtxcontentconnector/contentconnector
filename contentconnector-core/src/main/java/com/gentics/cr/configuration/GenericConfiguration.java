@@ -127,21 +127,50 @@ public class GenericConfiguration extends AccessibleBean
    * if there are no containing sub configs
    */
 	public final Hashtable<String, GenericConfiguration> getSubConfigs() {
-		return this.subconfigs;
+		return subconfigs;
 	}
 	
 	/**
 	 * Set the sub configurations for this configuration instance.
-	 * @param subcnf sub configurations
+	 * @param newSubConfigs sub configurations
 	 */
 	public final void setSubConfigs(final Hashtable<String, 
-			GenericConfiguration> subcnf) {
-		this.subconfigs = subcnf;
+			GenericConfiguration> newSubConfigs) {
+		subconfigs = newSubConfigs;
+	}
+	
+	/**
+	 * get the sub configuration with the specified key.
+	 * @param key - key of the sub configuration
+	 * @return sub configuration for the specified key
+	 * @throws NullPointerException - in case the key doesn't exist.
+	 */
+	public final GenericConfiguration getSubConfig(String key) throws NullPointerException {
+		return subconfigs.get(key);
+	}
+	
+	/**
+	 * Set a sub configuration
+	 * @param key - key to set for the sub configuration
+	 * @param config - sub configuration to add with the given key
+	 */
+	public void setSubConfig(String key, GenericConfiguration config) {
+		if(subconfigs == null) {
+			subconfigs = new Hashtable<String, GenericConfiguration>();
+		}
+		subconfigs.put(key, config);
+	}
+
+	/**
+	 * @param key - key of the sub configuration
+	 * @return true if the configuration has a sub configuration with the given key that is not null.
+	 */
+	public boolean hasSubConfig(String key) {
+		return key != null && subconfigs != null && subconfigs.containsKey(key) && subconfigs.get(key) != null;
 	}
   
   /**
    * Returns the containing sub configurations sorted by key.
-   *       
    * @return hashtable of configurations with keys or null 
    * if there are no containing sub configs
    */
@@ -381,7 +410,7 @@ public class GenericConfiguration extends AccessibleBean
 	 * @param key resolving key
 	 * @return <code>key</code> as upper case string
 	 */
-	private String convertKey(final String key) {
+	protected String convertKey(final String key) {
 		switch (this.keyHandling) {
 			case UPPER_CASE:
 				return key.toUpperCase();
