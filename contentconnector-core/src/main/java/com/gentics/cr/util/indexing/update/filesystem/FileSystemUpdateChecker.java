@@ -1,12 +1,14 @@
 package com.gentics.cr.util.indexing.update.filesystem;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.util.AccessibleBean;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
 public class FileSystemUpdateChecker extends IndexUpdateChecker {
@@ -15,9 +17,12 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 	
 	boolean ignorePubDir;
 	
+	List<String> files;
+	
 	public FileSystemUpdateChecker(GenericConfiguration config) {
 		directory = new File(config.getString("directory"));
 		ignorePubDir = config.getBoolean("ignorePubDir");
+		files = new ArrayList<String>(Arrays.asList(directory.list()));
 	}
 
 	@Override
@@ -36,6 +41,7 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 			assertNotNull("Bean " + bean.getContentid() + " has no attribute filename.", filename);
 			Integer updatetimestamp = (Integer) timestamp;
 			File file = new File(new File(directory, publicationDirectory), filename);
+			files.remove(publicationDirectory + filename);
 			if(file.exists() && file.isFile() && (file.lastModified() / 1000) >= updatetimestamp) {
 				return true;
 			}
@@ -43,6 +49,7 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 			//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
 			String publicationDirectory = bean.getString("pub_dir");
 			File file = new File(directory, publicationDirectory);
+			files.remove(publicationDirectory);
 			if (file.exists() && file.isDirectory()) {
 				return true;
 			}
@@ -60,7 +67,10 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 
 	@Override
 	public void deleteStaleObjects() {
-		// TODO Auto
+		for(String filename : files) {
+			File file = new File(directory, filename);
+			file.delete();
+		}
 	}
 
 }
