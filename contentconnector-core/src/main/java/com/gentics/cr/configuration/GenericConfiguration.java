@@ -146,7 +146,7 @@ public class GenericConfiguration extends AccessibleBean
 	 * @throws NullPointerException - in case the key doesn't exist.
 	 */
 	public final GenericConfiguration getSubConfig(String key) throws NullPointerException {
-		return subconfigs.get(key);
+		return subconfigs.get(convertKey(key));
 	}
 	
 	/**
@@ -166,7 +166,7 @@ public class GenericConfiguration extends AccessibleBean
 	 * @return true if the configuration has a sub configuration with the given key that is not null.
 	 */
 	public boolean hasSubConfig(String key) {
-		return key != null && subconfigs != null && subconfigs.containsKey(key) && subconfigs.get(key) != null;
+		return key != null && subconfigs != null && subconfigs.containsKey(convertKey(key)) && subconfigs.get(convertKey(key)) != null;
 	}
   
   /**
