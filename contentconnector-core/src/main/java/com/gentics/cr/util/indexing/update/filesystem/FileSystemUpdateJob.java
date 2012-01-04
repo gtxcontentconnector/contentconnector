@@ -26,7 +26,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	
 	public FileSystemUpdateJob(CRConfig config,
 			IndexLocation indexLoc,
-			Hashtable<String, CRConfigUtil> updateCheckerConfigmap) {
+			Hashtable<String, CRConfigUtil> updateCheckerConfigmap) throws FileNotFoundException {
 		super(config, indexLoc, updateCheckerConfigmap);
 		
 		try {
@@ -39,6 +39,14 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 		indexUpdateChecker = new FileSystemUpdateChecker(config.getSubConfig("updatejob"));
 		ignorePubDir = config.getBoolean("updatejob.ignorePubDir");
 		directory = new File(config.getString("updatejob.directory"));
+		if(config.getBoolean("updatejob.createNonExistentDirectory") && !directory.exists()) {
+			if(!directory.mkdirs()) {
+				throw new FileNotFoundException("The directory " + directory + " cannot be created.");
+			}
+		}
+		if(!directory.exists()) {
+			throw new FileNotFoundException("The directory " + directory + " cannot be found.");
+		}
 	}
 	
 	RequestProcessor rp;
