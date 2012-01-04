@@ -22,7 +22,12 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 	public FileSystemUpdateChecker(GenericConfiguration config) {
 		directory = new File(config.getString("directory"));
 		ignorePubDir = config.getBoolean("ignorePubDir");
-		files = new ArrayList<String>(Arrays.asList(directory.list()));
+		String[] existingFiles = directory.list();
+		if(existingFiles != null) {
+			files = new ArrayList<String>(Arrays.asList(directory.list()));
+		} else {
+			files = new ArrayList<String>(); 
+		}
 	}
 
 	@Override
