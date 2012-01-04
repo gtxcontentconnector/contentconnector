@@ -76,6 +76,9 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 						file.delete();
 					}
 					try {
+						if(!file.exists()) {
+							file.createNewFile();
+						}
 						FileWriter writer = new FileWriter(file);
 						String contentAttribute;
 						if("10007".equals(bean.getObj_type())) {
@@ -84,6 +87,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 							contentAttribute = "binarycontent";
 						}
 						writer.write(bean.getString(contentAttribute));
+						writer.close();
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
