@@ -246,6 +246,12 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		return false;
 	}
 	
+	/**
+	 * get the objects to update and update them in the index.
+	 * @param indexLocation - index location to update
+	 * @param config - configuration of the update job
+	 * @throws CRException in case something goes wrong please document in your implementation if you plan to throw an exception
+	 */
 	protected abstract void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException;
 	
 	

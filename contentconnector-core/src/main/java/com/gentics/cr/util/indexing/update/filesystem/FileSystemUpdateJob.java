@@ -16,14 +16,33 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
+import com.gentics.cr.util.indexing.DummyIndexLocation;
 import com.gentics.cr.util.indexing.IndexLocation;
 
+/**
+ * Update the files in a directory
+ * @author bigbear3001
+ *
+ */
 public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 
+	/**
+	 * directory to put the files in.
+	 */
 	File directory;
 	
+	/**
+	 * defines if we should ignore the pub_dir attribute of the resolvables. if <code>true</code> all files are put into one directory, therefore files with the same filename can override each other.
+	 */
 	boolean ignorePubDir;
 	
+	/**
+	 * Create a new FileSystemUpdateJob
+	 * @param config - configuration of the job.
+	 * @param indexLoc - index location in this case just a {@link DummyIndexLocation} as currently the directory is gotten from the config parameter "updatejob.directory"
+	 * @param updateCheckerConfigmap - map with all configured index parts
+	 * @throws FileNotFoundException in case the directory doesn't exist and creation of the directory is deactivated or the directory cannot be created.
+	 */
 	public FileSystemUpdateJob(CRConfig config,
 			IndexLocation indexLoc,
 			Hashtable<String, CRConfigUtil> updateCheckerConfigmap) throws FileNotFoundException {
@@ -49,12 +68,21 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 		}
 	}
 	
+	/**
+	 * RequestProcessor to get the objects from.
+	 */
 	RequestProcessor rp;
 	
+	/**
+	 * the update checker that checks if the file has to be updated in the directory
+	 */
 	FileSystemUpdateChecker indexUpdateChecker;
 	
 	
 
+	/**
+	 * get the objects to update and update them in the directory. deletion of old/stale objects is handled by the update checker 
+	 */
 	@Override
 	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
 			throws CRException {
@@ -62,12 +90,12 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 		try {
 			CRRequest req = new CRRequest();
 			req.setRequestFilter("1==1");
-			status.setCurrentStatusString("Get objects to update in the index ...");
+			status.setCurrentStatusString("Get objects to update in the directory ...");
 				objectsToIndex = getObjectsToUpdate(req, rp, false, indexUpdateChecker);
 			} catch (Exception e) {
 				log.error("ERROR while cleaning index", e);
 			}
-			
+			status.setCurrentStatusString("Update the objects in the directory ...");
 			for(CRResolvableBean bean : objectsToIndex) {
 				if(!"10002".equals(bean.getObj_type())) {
 					String publicationDirectory;
