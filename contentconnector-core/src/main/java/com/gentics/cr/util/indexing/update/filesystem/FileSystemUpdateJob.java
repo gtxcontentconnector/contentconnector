@@ -89,7 +89,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 		Collection<CRResolvableBean> objectsToIndex = null;
 		try {
 			CRRequest req = new CRRequest();
-			req.setRequestFilter("1==1");
+			req.setRequestFilter(config.getString("rule", "1==1"));
 			status.setCurrentStatusString("Get objects to update in the directory ...");
 				objectsToIndex = getObjectsToUpdate(req, rp, false, indexUpdateChecker);
 			} catch (Exception e) {
