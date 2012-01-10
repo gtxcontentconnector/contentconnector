@@ -1,10 +1,14 @@
 package com.gentics.cr.test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 import com.gentics.cr.RequestProcessor;
 
-public class PrefixHostRelativeLinksTest extends TestCase {
+public class PrefixHostRelativeLinksTest {
+	
+	@Test
 	public void testPrefixHostRelativeLinks() {
 		String source = "Prefixed:<a href=\"/asdf/blah\">hehe</a>\n";
 		source += "Ignored:<a href=\"http://meinhost/blahblah/xyz\">wargl</a>\n";

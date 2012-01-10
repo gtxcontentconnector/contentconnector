@@ -1,12 +1,15 @@
 package com.gentics.cr.util.file;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import com.gentics.cr.util.AccessibleBean;
 
-import junit.framework.TestCase;
-
-public class AccessibleBeanTest extends TestCase {
+public class AccessibleBeanTest {
 
 	private static HashMap<String, Object> attributes = new HashMap<String, Object>();
 	static {
@@ -16,11 +19,12 @@ public class AccessibleBeanTest extends TestCase {
 	
 	private AccessibleBean bean;
 	
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		bean = new MyAccessibleBean();
 	}
 	
+	@Test
 	public void testGetString() {
 		assertEquals("Cannot output byte array as string", "abc", bean.getString("byteArray"));
 		assertEquals("Cannot output string as string", "abc", bean.getString("string"));

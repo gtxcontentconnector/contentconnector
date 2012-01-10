@@ -1,14 +1,15 @@
 package com.gentics.cr.rendering.image.test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.rendering.image.ImageMimetypeMapper;
 
-public class ImageMimetypeMapperTest extends TestCase {
+public class ImageMimetypeMapperTest {
 	
 	
 	@Before
@@ -19,6 +20,7 @@ public class ImageMimetypeMapperTest extends TestCase {
 	 * Test for filename.
 	 * @throws Exception
 	 */
+	@Test
 	public void testTypePerFilename() throws Exception {
 		
 		CRResolvableBean bean = new CRResolvableBean();
@@ -32,6 +34,7 @@ public class ImageMimetypeMapperTest extends TestCase {
 	 * Test for mimetype.
 	 * @throws Exception
 	 */
+	@Test
 	public void testTypePerMimetype() throws Exception {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set("mimetype", "image/jpeg");
@@ -45,6 +48,7 @@ public class ImageMimetypeMapperTest extends TestCase {
 	 * Test for default.
 	 * @throws Exception
 	 */
+	@Test
 	public void testTypePerDefault() throws Exception {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set("mimetype", "somefrigginwrongthing");
