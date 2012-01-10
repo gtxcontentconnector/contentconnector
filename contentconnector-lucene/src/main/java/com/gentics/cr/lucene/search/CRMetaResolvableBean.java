@@ -40,7 +40,9 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 		set(LuceneRequestProcessor.META_START_KEY, start);
 		set(LuceneRequestProcessor.META_COUNT_KEY, count);
 		set(LuceneRequestProcessor.META_QUERY_KEY, request.getRequestFilter());
-		set(QUERY_PARAMETER_KEY, request.getRequestWrapper().getParameter("q"));
+		if (request.getRequestWrapper() != null) {
+			set(QUERY_PARAMETER_KEY, request.getRequestWrapper().getParameter("q"));
+		}
 		set(CRSearcher.RESULT_SUGGESTIONS_KEY, searchResult.get(CRSearcher.RESULT_SUGGESTIONS_KEY));
 		set(CRSearcher.RESULT_MAXSCORE_KEY, searchResult.get(CRSearcher.RESULT_MAXSCORE_KEY));
 		set(CRSearcher.RESULT_BESTQUERY_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERY_KEY));
