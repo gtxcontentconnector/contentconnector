@@ -7,9 +7,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import junit.framework.AssertionFailedError;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.internal.runners.statements.Fail;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
@@ -78,6 +81,32 @@ public class FileSystemUpdateCheckerTest {
 		checkUpToDate(upToDateFile);
 		checker.deleteStaleObjects();
 		assertFalse("Not checked remove file wasn't deleted in deleteStaleObjects()", removeFile.exists());
+	}
+	
+	@Test
+	public void testAssertNotNull() {
+		String notNull = "";
+		String isNull = null;
+		String nullMessage = "Object is null";
+		try {
+			FileSystemUpdateChecker.assertNotNull("assertNotNull should not return an exception for a not null object", notNull);
+		} catch (Throwable t) {
+			throw new AssertionError(t);
+		}
+		
+		boolean catched = false;
+		try {
+			FileSystemUpdateChecker.assertNotNull(nullMessage, isNull);
+		} catch (Throwable t) {
+			catched = true;
+			if(!t.getCause().getMessage().equals(nullMessage)) {
+				throw new AssertionError("The assertNotNull function didn't return the correct message.");
+			}
+		}
+		if(!catched) {
+			throw new AssertionError("The assertNotNull function didn't throw a throwable for a null object.");
+		}
+		
 	}
 	
 	
