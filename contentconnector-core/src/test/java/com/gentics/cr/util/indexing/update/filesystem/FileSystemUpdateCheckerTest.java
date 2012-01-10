@@ -7,12 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import junit.framework.AssertionFailedError;
-
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.internal.runners.statements.Fail;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
@@ -50,10 +46,12 @@ public class FileSystemUpdateCheckerTest {
 		config.set("directory", directory.getPath());
 		//TODO add test for ignorePubDir false
 		config.set("ignorePubDir", "true");
+		//This is important if you delete the filter the test may delete your .class files.
+		config.set("filter", ".*\\.file");
 		checker = new FileSystemUpdateChecker(config);
 		resolvable = new CRResolvableBean();
 	}
-	
+
 	@Test
 	public void testNewFile() {
 		

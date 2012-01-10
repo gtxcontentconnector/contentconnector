@@ -1,11 +1,13 @@
 package com.gentics.cr.util.indexing.update.filesystem;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.io.Perl5FilenameFilter;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
@@ -52,9 +54,18 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 	public FileSystemUpdateChecker(GenericConfiguration config) {
 		directory = new File(config.getString("directory"));
 		ignorePubDir = config.getBoolean("ignorePubDir");
-		String[] existingFiles = directory.list();
+		String filterExpression = config.getString("filter");
+		FilenameFilter filter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return true;
+			}
+		};
+		if (filterExpression != null) {
+			filter = new Perl5FilenameFilter(filterExpression);
+		}
+		String[] existingFiles = directory.list(filter);
 		if(existingFiles != null) {
-			files = new ArrayList<String>(Arrays.asList(directory.list()));
+			files = new ArrayList<String>(Arrays.asList(existingFiles));
 		} else {
 			files = new ArrayList<String>();
 		}
