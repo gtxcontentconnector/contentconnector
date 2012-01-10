@@ -88,14 +88,16 @@ public abstract class RequestProcessor {
 					+ "Therefore Velocity scripts will not work in the content.");
 		}
 
-		try {
-			cache = JCS.getInstance("gentics-cr-" + config.getName()
-					+ "-crcontent");
-			log.debug("Initialized cache zone for \"" + config.getName()
-					+ "-crcontent\".");
-		} catch (CacheException e) {
-			log.warn("Could not initialize Cache for PlinkProcessor.");
-			throw new CRException(e);
+		if(config.getBoolean("crcontentcache", true)) {
+			try {
+				cache = JCS.getInstance("gentics-cr-" + config.getName()
+						+ "-crcontent");
+				log.debug("Initialized cache zone for \"" + config.getName()
+						+ "-crcontent\".");
+			} catch (CacheException e) {
+				log.warn("Could not initialize Cache for PlinkProcessor.");
+				throw new CRException(e);
+			}
 		}
 
 	}
