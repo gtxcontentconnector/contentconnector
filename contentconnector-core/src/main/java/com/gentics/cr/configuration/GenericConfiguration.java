@@ -158,7 +158,7 @@ public class GenericConfiguration extends AccessibleBean
 		if(subconfigs == null) {
 			subconfigs = new Hashtable<String, GenericConfiguration>();
 		}
-		subconfigs.put(key, config);
+		subconfigs.put(convertKey(key), config);
 	}
 
 	/**
