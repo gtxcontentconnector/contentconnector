@@ -41,11 +41,12 @@ public abstract class IndexUpdateChecker {
 	/**
 	 * check if the given object is up to date in the index
 	 * @param identifyer - identifier of the object for fast comparisons
-	 * @param timestamp - date when the object was last changed in the index. this is a unix timestamp (seconds not milliseconds)
+	 * @param timestamp - date when the object was last changed in the index. this is a unix timestamp (seconds not milliseconds) 
 	 * @param timestampattribute - attribute in the resolvable holding the timestamp.
 	 * @param object - the resolvable with the current data
 	 * @return <code>true</code> if the object in the index is up to date, otherwise  <code>false</code> 
 	 */
+	//TODO check why the timestamp parameter is not an Integer and document this.
 	protected abstract boolean checkUpToDate(String identifyer,Object timestamp, String timestampattribute, Resolvable object);
 
 	/**

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -18,6 +20,11 @@ import com.gentics.cr.util.indexing.IndexUpdateChecker;
  */
 public class FileSystemUpdateChecker extends IndexUpdateChecker {
 
+	/**
+	 * log4j logger for error and debug messages
+	 */
+	private static final Logger logger = Logger.getLogger(FileSystemUpdateChecker.class);
+	
 	/**
 	 * directory containing the files
 	 */
@@ -49,7 +56,7 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 		if(existingFiles != null) {
 			files = new ArrayList<String>(Arrays.asList(directory.list()));
 		} else {
-			files = new ArrayList<String>(); 
+			files = new ArrayList<String>();
 		}
 	}
 
@@ -70,7 +77,13 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 			String filename = bean.getString("filename");
 			assertNotNull("Bean " + bean.getContentid() + " has no attribute pub_dir.", publicationDirectory);
 			assertNotNull("Bean " + bean.getContentid() + " has no attribute filename.", filename);
-			Integer updatetimestamp = (Integer) timestamp;
+			Integer updatetimestamp = null;
+			if (timestamp instanceof Integer) {
+				updatetimestamp = (Integer) timestamp;
+			} else if (timestamp instanceof Long) {
+				logger.warn("You are giving me a Long as updatetimestamp. The API at indexUpdateChecker#checkUpToDate says you shouldn't. This can lead to troubles. I'm assuming the timestamp is in milliseconds not in seconds.");
+				updatetimestamp = (int) ((Long) timestamp / 1000L);
+			}
 			File file = new File(new File(directory, publicationDirectory), filename);
 			files.remove(publicationDirectory + filename);
 			if(file.exists() && file.isFile() && (file.lastModified() / 1000) >= updatetimestamp) {
