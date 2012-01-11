@@ -13,6 +13,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.util.file.DirectoryScanner;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
 /**
@@ -55,20 +56,8 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 		directory = new File(config.getString("directory"));
 		ignorePubDir = config.getBoolean("ignorePubDir");
 		String filterExpression = config.getString("filter");
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return true;
-			}
-		};
-		if (filterExpression != null) {
-			filter = new Perl5FilenameFilter(filterExpression);
-		}
-		String[] existingFiles = directory.list(filter);
-		if(existingFiles != null) {
-			files = new ArrayList<String>(Arrays.asList(existingFiles));
-		} else {
-			files = new ArrayList<String>();
-		}
+		String[] existingFiles = DirectoryScanner.list(directory, filterExpression);
+		files = new ArrayList<String>(Arrays.asList(existingFiles));
 	}
 
 	/**
