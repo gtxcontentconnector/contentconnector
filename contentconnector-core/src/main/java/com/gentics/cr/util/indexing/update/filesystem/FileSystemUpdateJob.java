@@ -4,6 +4,7 @@ import static com.gentics.cr.util.indexing.update.filesystem.FileSystemUpdateChe
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -91,54 +92,51 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 			CRRequest req = new CRRequest();
 			req.setRequestFilter(config.getString("rule", "1==1"));
 			status.setCurrentStatusString("Get objects to update in the directory ...");
-				objectsToIndex = getObjectsToUpdate(req, rp, false, indexUpdateChecker);
-			} catch (Exception e) {
-				log.error("ERROR while cleaning index", e);
-			}
-			status.setCurrentStatusString("Update the objects in the directory ...");
-			for(CRResolvableBean bean : objectsToIndex) {
-				if(!"10002".equals(bean.getObj_type())) {
-					String publicationDirectory;
-					if (ignorePubDir) {
-						publicationDirectory = "";
-					} else {
-						publicationDirectory = bean.getString("pub_dir");
-					}
-					String filename = bean.getString("filename");
-					assertNotNull("Bean " + bean.getContentid() + " has no attribute pub_dir.", publicationDirectory);
-					assertNotNull("Bean " + bean.getContentid() + " has no attribute filename.", filename);
-					File file = new File(new File(directory, publicationDirectory), filename);
-					if(file.isDirectory()) {
-						file.delete();
-					}
-					try {
-						if(!file.exists()) {
-							file.createNewFile();
-						}
-						FileWriter writer = new FileWriter(file);
-						String contentAttribute;
-						if("10007".equals(bean.getObj_type())) {
-							contentAttribute = "content";
-						} else {
-							contentAttribute = "binarycontent";
-						}
-						writer.write(bean.getString(contentAttribute));
-						writer.close();
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				} else if(!ignorePubDir) {
-					//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
-					String publicationDirectory = bean.getString("pub_dir");
-					File file = new File(directory, publicationDirectory);
-					file.mkdirs();
+			objectsToIndex = getObjectsToUpdate(req, rp, false, indexUpdateChecker);
+		} catch (Exception e) {
+			log.error("ERROR while cleaning index", e);
+		}
+		status.setCurrentStatusString("Update the objects in the directory ...");
+		for(CRResolvableBean bean : objectsToIndex) {
+			if(!"10002".equals(bean.getObj_type())) {
+				String publicationDirectory;
+				if (ignorePubDir) {
+					publicationDirectory = "";
+				} else {
+					publicationDirectory = bean.getString("pub_dir");
 				}
+				String filename = bean.getString("filename");
+				assertNotNull("Bean " + bean.getContentid() + " has no attribute pub_dir.", publicationDirectory);
+				assertNotNull("Bean " + bean.getContentid() + " has no attribute filename.", filename);
+				File file = new File(new File(directory, publicationDirectory), filename);
+				if(file.isDirectory()) {
+					file.delete();
+				}
+				try {
+					if(!file.exists()) {
+						file.createNewFile();
+					}
+					if("10007".equals(bean.getObj_type())) {
+						FileWriter writer = new FileWriter(file);
+						writer.write(bean.getContent());
+						writer.close();
+					} else {
+						FileOutputStream os = new FileOutputStream(file);
+						//TODO use a stream to consume lower memory for large files
+						os.write(bean.getBinaryContent());
+						os.close();
+					}
+				} catch (Exception e) {
+					throw new CRException("Cannot update the index.", e);
+				}
+				
+			} else if(!ignorePubDir) {
+				//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
+				String publicationDirectory = bean.getString("pub_dir");
+				File file = new File(directory, publicationDirectory);
+				file.mkdirs();
 			}
+		}
 
 	}
 
