@@ -113,7 +113,7 @@
 		<dependency>
 			<groupId>contentconnector</groupId>
 			<artifactId>contentconnector-apihelper</artifactId>
-			<version>1.10.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jamon</groupId>

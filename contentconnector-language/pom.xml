@@ -72,7 +72,7 @@
     <dependency>
       <groupId>contentconnector</groupId>
       <artifactId>contentconnector-lucene</artifactId>
-      <version>1.10.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
