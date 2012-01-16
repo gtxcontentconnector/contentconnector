@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import org.apache.commons.io.output.FileWriterWithEncoding;
+
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
@@ -117,7 +119,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 						file.createNewFile();
 					}
 					if("10007".equals(bean.getObj_type())) {
-						FileWriter writer = new FileWriter(file);
+						FileWriterWithEncoding writer = new FileWriterWithEncoding(file, "UTF-8");
 						writer.write(bean.getContent());
 						writer.close();
 					} else {
