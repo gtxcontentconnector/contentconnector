@@ -1,5 +1,6 @@
 package com.gentics.cr.util;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.gentics.cr.rest.ContentRepository;
@@ -12,6 +13,14 @@ import com.gentics.cr.rest.ContentRepository;
  */
 public class RepositoryFactory {
 
+	
+	
+	/**
+	 * additional repositories that are registered by external classes.
+	 */
+	private static Hashtable<String, String> registeredClasses = new Hashtable<String, String>();
+	
+	
 	/**
 	 * Enumeration containing the values of the repository types.
 	 * @author bigbear3001
@@ -88,6 +97,9 @@ public class RepositoryFactory {
 		for (RepositoryType type : classmap.keySet()) {
 			result.put(type.name(), classmap.get(type).getName());
 		}
+		for (String type : registeredClasses.keySet()) {
+			result.put(type, registeredClasses.get(type));
+		}
 		return result;
 	}
 	
@@ -100,6 +112,15 @@ public class RepositoryFactory {
 			getContentRepositoryMap() {
 		init();
 		return classmap;
+	}
+	
+	/**
+	 * register the external repository class in the repository factory.
+	 * @param key - type of the repository to be registered
+	 * @param clazz - class of the repositor to be registered
+	 */
+	public static void registerAdditionalRepository(final String key, final String clazz) {
+		registeredClasses.put(key, clazz);
 	}
 	
 	/**
