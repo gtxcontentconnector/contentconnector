@@ -534,6 +534,10 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	public Object get(final String attribute) {
 		if ("contentid".equalsIgnoreCase(attribute)) {
 			return this.getContentid();
+		} else if ("obj_type".equals(attribute) && !attrMap.containsKey("obj_type")) {
+			return this.getObj_type();
+		} else if ("obj_id".equals(attribute) && !attrMap.containsKey("obj_id")) {
+			return this.getObj_type();
 		} else if (this.attrMap != null && this.attrMap.containsKey(attribute)) {
 			return this.attrMap.get(attribute);
 		} else if (this.resolvable != null) {
