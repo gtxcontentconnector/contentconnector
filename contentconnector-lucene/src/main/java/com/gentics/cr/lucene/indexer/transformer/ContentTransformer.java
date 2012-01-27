@@ -1,6 +1,7 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,12 @@ public abstract class ContentTransformer {
 	private static final String DEFAULT_TRANSFORMER_RULE="1==1";
 	
 	private String transformerkey="";
-	
+
+	/**
+	 * Parameters for the ContentTransformer which can be used for processing (e.g. the request could be set).
+	 */
+	protected Hashtable<String, Object> parameters = new Hashtable<String, Object>();
+
 	/**
 	 * Gets the Transformerkey of current Transformer
 	 * @return
@@ -173,5 +179,32 @@ public abstract class ContentTransformer {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Allow to set parameters.
+	 * @param key parameter key
+	 * @param value value of the parameter
+	 */
+	public final void setParameter(final String key, final Object value) {
+		parameters.put(key, value);
+	}
+
+	/**
+	 * Get a parameter from the parameters hashtable.
+	 * @param key Key used for retrieval.
+	 * @return Value stored as an object
+	 */
+	public final Object getParameter(final String key) {
+		return parameters.get(key);
+	}
+
+	/**
+	 * @see getParameter(String);
+	 * @param key Key used for retrieval.
+	 * @return Value stored as an object
+	 */
+	public final Object get(final String key) {
+		return getParameter(key);
 	}
 }
