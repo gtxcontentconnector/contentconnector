@@ -1,5 +1,8 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,6 +17,7 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.template.StringTemplate;
@@ -43,6 +47,9 @@ public class VelocityTransformer extends ContentTransformer {
 	private static final String TRANSFORMER_TEMPLATE_KEY =
 		"template";
 	
+	private static final String TRANSFORMER_TEMPLATE_PATH_KEY = 
+		"templatepath";
+	
 	
 	/**
 	 * optionally we can read the template form an attribute instead of a hardcoded template.
@@ -56,6 +63,12 @@ public class VelocityTransformer extends ContentTransformer {
 		"targetattribute";
 	
 	/**
+	 * Defines whether the parsed velocity should replace or be appended to the targetattribute.
+	 */
+	private static final String TRANSFORMER_APPEND_KEY = 
+		"append";
+	
+	/**
 	 * user can define additional contextvars in java properties format.
 	 */
 	private static final String TRANSFORMER_ADDITIONAL_CONTEXTVARS = "contextvars";
@@ -65,6 +78,12 @@ public class VelocityTransformer extends ContentTransformer {
 	 */
 	private String targetAttribute;
 	
+	/**
+	 * By default the parsed velocity is set onto the targetAttribute. 
+	 * Setting this option to "true" the parsed velocity can be appended to the end of the targetAttribute's value.
+	 */
+	private boolean appendToTargetAttribute = false;
+
 	/**
 	 * additional attributes.
 	 */
@@ -115,20 +134,39 @@ public class VelocityTransformer extends ContentTransformer {
 		}
 		configName = crConfigUtil.getName();
 		String template = (String) config.get(TRANSFORMER_TEMPLATE_KEY);
+		String templatePath = (String) config.get(TRANSFORMER_TEMPLATE_PATH_KEY);
 		targetAttribute = (String) config.get(TRANSFORMER_TARGETATTRIBUTE_KEY);
 		sourceAttribute = (String) config.get(TRANSFORMER_SOURCEATTRIBUTE_KEY);
+		String append = (String) config.get(TRANSFORMER_APPEND_KEY);
+		if (append.equals("1") || append.toLowerCase().equals("true")) {
+			appendToTargetAttribute = true;
+		}
 		
 		if (sourceAttribute != null) {
 			// we use the source attribute as template ...
-		} else if (template == null) {
-			logger.error("Please configure " + TRANSFORMER_TEMPLATE_KEY
-					+ " for my config.");
 		} else {
+			 if (template != null) {
+				logger.debug("Using template configured using var: " + TRANSFORMER_TEMPLATE_KEY + ".");
 				try {
 					tpl = new StringTemplate(template);
 				} catch (CRException e) {
 					e.printStackTrace();
 				}
+			} else if (templatePath != null) {
+				logger.debug("Using template: " + templatePath);
+				try {
+					tpl = getFileTemplate(templatePath);
+				} catch (FileNotFoundException e) {
+					logger.error("Could not find template (" + templatePath + ")", e);
+				} catch (CRException e) {
+					logger.error("Could not load template (" + templatePath + ")", e);
+				}
+			} else {
+				logger.error("Neither " + TRANSFORMER_TEMPLATE_KEY + " nor " + TRANSFORMER_TEMPLATE_PATH_KEY 
+						+ " nor " + TRANSFORMER_SOURCEATTRIBUTE_KEY + " are configured. "
+						+ "This transformer won't work correctly.");
+			}
+				
 		}
 		if (targetAttribute == null) {
 			if (sourceAttribute != null) {
@@ -140,9 +178,25 @@ public class VelocityTransformer extends ContentTransformer {
 		}
 		readAdditionalContextVars(config);
 	}
+	
+	/**
+	 * Load template from file.
+	 * @param templatePath Relative path of the template (CRConfigUtil.DEFAULT_TEMPLATE_PATH is prefixed).
+	 * @return FileTemplate
+	 * @throws FileNotFoundException file not found/accessible
+	 * @throws CRException Exception creating the FileTemplate
+	 */
+	private FileTemplate getFileTemplate(final String templatePath) throws FileNotFoundException, CRException {
+		File file = new File(templatePath);
+		if (!file.isAbsolute()) {
+			file = new File(CRConfigUtil.DEFAULT_TEMPLATE_PATH + File.separator + templatePath);
+		}
+		return new FileTemplate(new FileInputStream(file), file);
+	}
 
 	/**
 	 * read the additiona context vars from the configuration property.
+	 * @param config
 	 */
 	private void readAdditionalContextVars(final GenericConfiguration config) {
 		String additionalContextVars = (String) config
@@ -182,6 +236,7 @@ public class VelocityTransformer extends ContentTransformer {
 		ITemplateManager vtm = crConfigUtil.getTemplateManager();
 		vtm.put("page", bean);
 		vtm.put("tools", tools);
+		vtm.put("properties", parameters);
 		for (Iterator<Entry<String, Object>> i = additionalAttributes
 				.entrySet().iterator(); i.hasNext();) {
 			Entry<String, Object> entry = i.next();
@@ -194,14 +249,21 @@ public class VelocityTransformer extends ContentTransformer {
 			}
 			String output = vtm.render(tmpl.getKey(), tmpl.getSource());
 			if (output != null && targetAttribute != null) {
-				bean.set(targetAttribute, output);
+				if (appendToTargetAttribute) {
+					Object target = bean.get(targetAttribute);
+					if (target != null && target instanceof String) {
+						String mergedString = target.toString() + output;
+						bean.set(targetAttribute, mergedString);
+					}
+				} else {
+					bean.set(targetAttribute, output);
+				}
 			}
 		} catch (CRException e) {
 			logger.error("Error while rendering template " + configName
 					+ TRANSFORMER_TEMPLATE_KEY + " for bean "
 					+ bean.getContentid(), e);
 		}
-		
 	}
 
 	@Override
