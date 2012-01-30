@@ -138,7 +138,7 @@ public class VelocityTransformer extends ContentTransformer {
 		targetAttribute = (String) config.get(TRANSFORMER_TARGETATTRIBUTE_KEY);
 		sourceAttribute = (String) config.get(TRANSFORMER_SOURCEATTRIBUTE_KEY);
 		String append = (String) config.get(TRANSFORMER_APPEND_KEY);
-		if (append.equals("1") || append.toLowerCase().equals("true")) {
+		if (append != null && (append.equals("1") || append.toLowerCase().equals("true"))) {
 			appendToTargetAttribute = true;
 		}
 		
