@@ -80,6 +80,16 @@ public class CRRequest implements Cloneable, Serializable {
 		this(requestFilter, startString, countString, sortArray,
 				attributeArray, plinkAttributeArray, null);
 	}
+	
+	/**
+	 * Create a new instance of CRRequest.
+	 * 
+	 * @param requestFilter -
+	 *            Rule to fetch the objects
+	 */
+	public CRRequest(final String requestFilter) {
+		setRequestFilter(requestFilter);
+	}
 
 	/**
 	 * Create a new instance of CRRequest.
