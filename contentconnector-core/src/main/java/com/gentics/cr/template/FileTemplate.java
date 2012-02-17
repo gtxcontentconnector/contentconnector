@@ -1,5 +1,6 @@
 package com.gentics.cr.template;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -58,6 +59,23 @@ public class FileTemplate implements ITemplate {
 			throw new CRException(e);
 		}
 	}
+
+	/**
+	 * Creates a new instance of FileTemplate. (reads the file and generates a md5 key).
+	 * @param streamReader to read the template code
+	 * @throws CRException when we cannot read the stream or there was an error
+	 * generating the md5sum of the stream.
+	 */
+	public FileTemplate(final BufferedReader streamReader) throws CRException {
+		readSource(streamReader);
+		try {
+			MessageDigest digest = MessageDigest.getInstance("MD5");
+			digest.update(this.source.getBytes());
+			this.key = new String(digest.digest());
+		} catch (NoSuchAlgorithmException e) {
+			throw new CRException(e);
+		}
+	}
 	/**
 	 * Reads the given stream into the template source.
 	 * @param stream - stream to read
@@ -66,6 +84,19 @@ public class FileTemplate implements ITemplate {
 	private void readSource(final InputStream stream) throws CRException {
 		try {
 			this.source = slurp(stream);
+		} catch (IOException e) {
+			throw new CRException(e);
+		}
+	}
+
+	/**
+	 * Reads the content from the reader into the template source.
+	 * @param reader reader to read from
+	 * @throws CRException when the reader cannot access the content
+	 */
+	private void readSource(final BufferedReader reader) throws CRException {
+		try {
+			this.source = slurp(reader);
 		} catch (IOException e) {
 			throw new CRException(e);
 		}
@@ -96,6 +127,22 @@ public class FileTemplate implements ITemplate {
 		int n;
 		while ((n = in.read(b)) != -1) {
 			out.append(new String(b, 0, n));
+		}
+		return out.toString();
+	}
+
+	/**
+	 * Read a String from the given BufferedReader.
+	 * @param reader Reader to read the content from
+	 * @return String with the contents read from the reader.
+	 * @throws IOException when the reader cannot read the content
+	 */
+	private static String slurp(final BufferedReader reader) throws IOException {
+		StringBuffer out = new StringBuffer();
+		String line = "";
+		while ((line = reader.readLine()) != null) {
+			out.append(line);
+			out.append(System.getProperty("line.separator"));
 		}
 		return out.toString();
 	}

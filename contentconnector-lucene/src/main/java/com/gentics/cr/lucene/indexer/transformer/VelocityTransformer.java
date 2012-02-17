@@ -1,9 +1,12 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,11 +49,13 @@ public class VelocityTransformer extends ContentTransformer {
 	 */
 	private static final String TRANSFORMER_TEMPLATE_KEY =
 		"template";
-	
+
+	/**
+	 * Path to a velocity template to use for transformation.
+	 */
 	private static final String TRANSFORMER_TEMPLATE_PATH_KEY = 
 		"templatepath";
-	
-	
+
 	/**
 	 * optionally we can read the template form an attribute instead of a hardcoded template.
 	 */
@@ -160,6 +165,8 @@ public class VelocityTransformer extends ContentTransformer {
 					logger.error("Could not find template (" + templatePath + ")", e);
 				} catch (CRException e) {
 					logger.error("Could not load template (" + templatePath + ")", e);
+				} catch (UnsupportedEncodingException e) {
+					logger.error("Could not find encoding", e);
 				}
 			} else {
 				logger.error("Neither " + TRANSFORMER_TEMPLATE_KEY + " nor " + TRANSFORMER_TEMPLATE_PATH_KEY 
@@ -185,18 +192,24 @@ public class VelocityTransformer extends ContentTransformer {
 	 * @return FileTemplate
 	 * @throws FileNotFoundException file not found/accessible
 	 * @throws CRException Exception creating the FileTemplate
+	 * @throws UnsupportedEncodingException 
 	 */
-	private FileTemplate getFileTemplate(final String templatePath) throws FileNotFoundException, CRException {
+	private FileTemplate getFileTemplate(final String templatePath) throws FileNotFoundException, 
+					CRException, UnsupportedEncodingException {
 		File file = new File(templatePath);
 		if (!file.isAbsolute()) {
 			file = new File(CRConfigUtil.DEFAULT_TEMPLATE_PATH + File.separator + templatePath);
 		}
-		return new FileTemplate(new FileInputStream(file), file);
+		
+		FileInputStream inStream = new FileInputStream(file);
+		InputStreamReader streamReader = new InputStreamReader(inStream, "UTF-8");
+		BufferedReader bufferedReader = new BufferedReader(streamReader);
+		return new FileTemplate(bufferedReader);
 	}
 
 	/**
 	 * read the additiona context vars from the configuration property.
-	 * @param config
+	 * @param config needed for getting the context vars from the config.
 	 */
 	private void readAdditionalContextVars(final GenericConfiguration config) {
 		String additionalContextVars = (String) config
@@ -260,7 +273,7 @@ public class VelocityTransformer extends ContentTransformer {
 				}
 			}
 		} catch (CRException e) {
-			logger.error("Error while rendering template " + configName
+			logger.error("Error while rendering template " + configName + " - "
 					+ TRANSFORMER_TEMPLATE_KEY + " for bean "
 					+ bean.getContentid(), e);
 		}
