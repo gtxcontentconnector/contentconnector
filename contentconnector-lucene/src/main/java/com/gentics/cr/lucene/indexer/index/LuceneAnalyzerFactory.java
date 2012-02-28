@@ -157,19 +157,23 @@ public final class LuceneAnalyzerFactory {
 	 */
 	private static GenericConfiguration loadAnalyzerConfig(
 			final GenericConfiguration config) {
-		GenericConfiguration analyzerConfig = null;
-		String confpath = (String) config.get(ANALYZER_CONFIG_KEY);
-		if (confpath != null) {
-			analyzerConfig = new GenericConfiguration();
-			try {
-				CRConfigFileLoader.loadConfiguration(analyzerConfig,
-						confpath, null);
-			} catch (IOException e) {
-				LOGGER.error("Could not load analyzer configuration from " 
-						+ confpath, e);
+		if(config.hasSubConfig(ANALYZER_CONFIG_KEY)) {
+			return config.getSubConfig(ANALYZER_CONFIG_KEY);
+		} else {
+			GenericConfiguration analyzerConfig = null;
+			String confpath = config.getString(ANALYZER_CONFIG_KEY);
+			if (confpath != null) {
+				analyzerConfig = new GenericConfiguration();
+				try {
+					CRConfigFileLoader.loadConfiguration(analyzerConfig,
+							confpath, null);
+				} catch (IOException e) {
+					LOGGER.error("Could not load analyzer configuration from " 
+							+ confpath, e);
+				}
 			}
+			return analyzerConfig;
 		}
-		return analyzerConfig;
 	}
 
 	/**
