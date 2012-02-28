@@ -161,6 +161,19 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			final String path, final String webapproot) throws IOException {
 		Properties props = new Properties();
 		props.load(new FileInputStream(CRUtil.resolveSystemProperties(path)));
+		
+	}
+	
+	/**
+	 * Loads configuration properties into a GenericConfig instance and resolves
+	 * system variables.
+	 * @param emptyConfig - configuration to load the properties into.
+	 * @param properties - properties to load into the configuration
+	 * @param webapproot - root directory of the web application for resolving
+	 * ${webapproot} in property values.
+	 * @throws IOException - if configuration file cannot be read.
+	 */
+	public static void loadConfiguration(final GenericConfiguration emptyConfig, Properties props, final String webapproot) {
 		for (Entry<Object, Object> entry : props.entrySet()) {
 			Object value = entry.getValue();
 			Object key = entry.getKey();
