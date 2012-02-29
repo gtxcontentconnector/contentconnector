@@ -161,7 +161,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			final String path, final String webapproot) throws IOException {
 		Properties props = new Properties();
 		props.load(new FileInputStream(CRUtil.resolveSystemProperties(path)));
-		
+		loadConfiguration(emptyConfig, props, webapproot);
 	}
 	
 	/**
