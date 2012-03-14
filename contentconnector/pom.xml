@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.gentics</groupId>
+	<artifactId>contentconnector</artifactId>
+	<version>1.11.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>contentconnector</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<modules>
+		<module>contentconnector-core</module>
+		<module>contentconnector-apihelper</module>
+		<module>contentconnector-config-sample</module>
+		<module>contentconnector-http</module>
+		<module>contentconnector-json</module>
+		<module>contentconnector-jtidy</module>
+		<module>contentconnector-language</module>
+		<module>contentconnector-lucene</module>
+		<module>contentconnector-lucene-autocomplete</module>
+		<module>contentconnector-poi-transformer</module>
+		<module>contentconnector-portlet</module>
+		<module>contentconnector-servlet</module>
+		<module>contentconnector-servlet-sample</module>
+		<module>contentconnector-social-networking</module>
+	</modules>
+	<repositories>
+		<repository>
+			<id>asf-snapshot</id>
+			<name>ASF Maven Repository</name>
+			<layout>default</layout>
+			<url>
+				http://people.apache.org/maven-snapshot-repository
+			</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>com.gentics.public</id>
+			<name>Archiva Managed Public Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>com.gentics.public_snapshots</id>
+			<name>Archiva Managed Public Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+</project>
