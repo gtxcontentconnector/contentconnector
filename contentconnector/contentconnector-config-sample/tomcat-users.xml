@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+
+modified by Gentics Software GmbH, Vienna, Austria
+
+Date: 15.12.2005
+Autor: Haymo Meran
+
+added roles: manager and admin
+
+--><tomcat-users>
+  <role rolename="manager"/>
+  <role rolename="admin"/>
+  <role rolename="gentics"/>
+  <user password="gentics" roles="gentics" username="gentics"/>
+</tomcat-users>
