@@ -1,5 +1,0 @@
-This text file should be compressed.
-The text has to be a little longer to realy get the effect of compression.
-Otherwhise the overhead from the descriptions would be larger than the file itself.
-I definitly did not asume that this needs so much overhead. There seems to be no compression at all.
-We still have  at least 10 characters to go.
