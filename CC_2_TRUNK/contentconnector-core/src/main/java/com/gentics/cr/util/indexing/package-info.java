@@ -1,6 +1,0 @@
-/**
- * Package with generic function to allow differential indexing. Can be used to
- * monitor changes in a repository and send them to any implementation of
- * {@link AbstractUpdateCheckerJob}.
-**/
-package com.gentics.cr.util.indexing;
