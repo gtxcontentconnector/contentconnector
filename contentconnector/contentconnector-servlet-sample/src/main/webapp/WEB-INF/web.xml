@@ -19,8 +19,16 @@
 		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>velocity</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>autocomplete</servlet-name>
 		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>content</servlet-name>
+		<servlet-class>com.gentics.cr.servlet.CRServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>indexer</servlet-name>
@@ -31,7 +39,15 @@
 		<url-pattern>/search/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
+		<servlet-name>velocity</servlet-name>
+		<url-pattern>/velocity/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>autocomplete</servlet-name>
 		<url-pattern>/autocomplete/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>content</servlet-name>
+		<url-pattern>/content/*</url-pattern>
 	</servlet-mapping>
 </web-app>

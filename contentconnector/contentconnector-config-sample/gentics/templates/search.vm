@@ -1,0 +1,172 @@
+<html>
+<head
+	<title>Search Example</title>
+</head>
+<body>
+
+<div class="form">
+<form action="velocity" method="post">
+	Suche: <input type="text" name="filter"/> <input type="submit" name="submit" value="Go"/>
+</form>
+</div>
+<div class="result">
+#if($resolvables.get(0).contentid == "10001")
+##$metaresolvable contains search result meta information like total hits etc.; first resolvable in collection, can be configured in lucene properties
+#set($metaresolvable=$resolvables.remove(0))
+#end
+#set($start = ($metaresolvable.start + 1))
+#set($end = ($metaresolvable.start + $metaresolvable.count))
+#if($end > $metaresolvable.totalhits)
+	#set($end = $metaresolvable.totalhits)
+#end
+## had to pass originalquery and change it in paging links
+##set($originalquery = $request.parameters.query)
+#set($originalquery = $metaresolvable.query)
+#set($metaquery = $metaresolvable.query)
+#if($metaresolvable.suggestions)
+	Did you mean
+	#foreach($suggestion in $metaresolvable.suggestions.entrySet())
+		#foreach($query in $suggestion.getValue())
+			#set($q=$metaquery.replaceAll($suggestion.getKey(),$query))
+			<a href="velocity?filter=$q">$query</a> |
+		#end
+	#end
+	?
+#end
+#if($metaresolvable.totalhits>0)
+<p id="result_report">
+      Zeige $start - $end von $metaresolvable.totalhits Ergebnissen
+</p>
+#else
+<div id="result_report">Ihre Suche brachte keine Ergebnisse.</div>
+#end
+#if($metaresolvable.totalhits >= $metaresolvable.start + $resolvables.size())
+<ul id="results" class="tarn">
+#foreach($resolvable in $resolvables)
+	#if($metaresolvable.start)
+		#set($id = $metaresolvable.start + $velocityCount)
+	#else
+		#set($id = $velocityCount)
+	#end
+	#set($size = " - $!{resolvable.sizekb}kb")
+	#if($size==" - kb")
+		#set($size="")
+	#end
+	<li>
+			
+			<h4><a class="title highlight" href="content$resolvable.pub_dir$resolvable.filename">$resolvable.name</a></h4>
+			#set($content = "$!{resolvable.content}$!{resolvable.binarycontent}")
+			#if ($content.length() > 800)
+				#set($content = $content.substring(0,800)+"...")
+			#end
+			<p class="description">$!content
+			<br />
+			<a title="$resolvable.name" class="title" href="content$resolvable.pub_dir$resolvable.filename">content$resolvable.pub_dir$resolvable.filename</a>$!{size}
+			</p>
+	</li>
+#end
+	</ul>
+
+
+
+
+#if($metaresolvable.totalhits>0)
+<div id="other_pages">
+	Ergebnis Seite:
+## filter fuzzy search and *search
+#set($query = $metaresolvable.query.replaceFirst("~0.[0-9]?",""))
+## encode umlaute
+#set($query = $esc.url($query))
+		<!--	<strong><a href="?q=${query}&start=0">1</a></strong> / 	-->
+
+
+#set($count = $metaresolvable.count)
+#set($start = $metaresolvable.start)
+#set($hits = $metaresolvable.totalhits)
+
+#set($currpage = $start / $count)
+#set($maxpage = $hits / $count)
+#set($range = 1)
+
+#if($maxpage < 1)
+  #set($startpaging = 1)
+  #set($endpaging = $maxpage - 1)
+#else
+  #if(($currpage - $range) < 0 )
+    #set($startpaging = 1)
+    #set($endpaging = $currpage + $range + $range)
+  #elseif(($currpage + $range) > ( $maxpage - 1))
+    #set($startpaging = $currpage - $range)
+    #set($endpaging = $maxpage - 1)
+  #else
+    #set($startpaging = $currpage - $range)
+    #set($endpaging = $currpage + $range)
+  #end
+#end
+
+#if($startpaging < 1)
+#set($startpaging = 1)
+#end
+#if($endpaging >= $maxpage)
+#set($endpaging = $maxpage - 1)
+#end
+##startpaging: $startpaging<br>
+##endpaging:$endpaging<br>
+##currpage: $currpage<br>
+##maxpage: $maxpage<br>
+
+#if($currpage > 0)
+#set($start = ($currpage - 1) * $count)
+<a href="?query=$!{originalquery}&start=$!{start}&search=1" title="vorherige Ergenisseite anzeigen">Vorherige</a>
+#end
+
+
+#if($currpage == 0)
+1
+#else
+<a href="?query=$!{originalquery}&start=0&search=1" title="erste Ergenisseite anzeigen">1</a>
+#end
+#if($startpaging >1)
+...
+#end
+
+#if($endpaging >= $startpaging && $startpaging < $maxpage )
+#foreach($pageNumber in [$startpaging..$endpaging])
+#set($displayNumber = $pageNumber + 1)
+#set($start = $pageNumber * $count)
+#if($pageNumber == $currpage)
+<strong>$displayNumber</strong>
+#else
+  <a href="?query=$!{originalquery}&start=$!{start}&search=1">$displayNumber</a>
+#end
+
+#end
+#end
+#if($endpaging <= $maxpage && $maxpage > 0)
+#if($endpaging <($maxpage - 1))
+...
+#end
+#set($start = $maxpage * $count)
+#set($displayNumber = $maxpage + 1)
+#if($currpage == $maxpage)
+$displayNumber
+#else
+
+<a href="?query=$!{originalquery}&start=$!{start}&search=1" title="letzte Ergenisseite anzeigen">$displayNumber</a>
+#end
+#end
+
+
+#if($currpage < $maxpage)
+#set($start = ($currpage + 1) * $count)
+<a href="?query=$!{originalquery}&start=$!{start}&search=1" title="n&auml;chste Ergenisseite anzeigen">N&auml;chste</a> 
+#end
+
+
+
+</div>
+#end
+#end
+</div>
+</body>
+</html>

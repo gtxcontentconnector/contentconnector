@@ -1,0 +1,16 @@
+<html>
+<head
+	<title>Search Example</title>
+</head>
+<body>
+
+<div class="form">
+<form action="velocity" method="post">
+	Suche: <input type="text" name="filter"/> <input type="submit" name="submit" value="Go"/>
+</form>
+</div>
+
+<b>Ihre Suche konnte nicht ausgef&uuml;hrt werden.</b>
+
+</body>
+</html>
