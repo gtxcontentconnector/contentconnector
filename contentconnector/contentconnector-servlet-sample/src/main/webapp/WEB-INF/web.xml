@@ -12,9 +12,14 @@
 			Gentics .Node ContentConnector Indexer Application
 		</description>
 		<servlet-class>com.gentics.cr.lucene.IndexJobServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>search</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>autocomplete</servlet-name>
 		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
@@ -24,5 +29,9 @@
 	<servlet-mapping>
 		<servlet-name>search</servlet-name>
 		<url-pattern>/search/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>autocomplete</servlet-name>
+		<url-pattern>/autocomplete/*</url-pattern>
 	</servlet-mapping>
 </web-app>
