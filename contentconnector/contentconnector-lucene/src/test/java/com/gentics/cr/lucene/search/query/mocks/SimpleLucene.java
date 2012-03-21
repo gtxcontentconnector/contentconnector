@@ -9,7 +9,9 @@ import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.ParseException;
@@ -38,6 +40,10 @@ public class SimpleLucene {
 		index = new RAMDirectory();
 	}
 	
+	public IndexReader getReader() throws CorruptIndexException, IOException {
+		return IndexReader.open(index);
+	}
+	
 	public void add(Document document) throws CorruptIndexException, IOException {
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(
 					LuceneVersion.getVersion(),
@@ -50,7 +56,7 @@ public class SimpleLucene {
 	
 	public Document add(String text) throws CorruptIndexException, IOException {
 		Document document = new Document();
-		document.add(new Field(SimpleLucene.CONTENT_ATTRIBUTE, text, Field.Store.YES, Field.Index.ANALYZED));
+		document.add(new Field(SimpleLucene.CONTENT_ATTRIBUTE, text, Field.Store.YES, Field.Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
 		add(document);
 		return document;
 	}
@@ -58,7 +64,7 @@ public class SimpleLucene {
 	public Document add(Map<String, String> fields) throws CorruptIndexException, IOException {
 		Document document = new Document();
 		for(String fieldName : fields.keySet()) {
-			document.add(new Field(fieldName, fields.get(fieldName), Field.Store.YES, Field.Index.ANALYZED));
+			document.add(new Field(fieldName, fields.get(fieldName), Field.Store.YES, Field.Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
 		}
 		add(document);
 		return document;
@@ -69,7 +75,7 @@ public class SimpleLucene {
 		for(String field : fields) {
 			String name = field.replaceAll(":.*", "");
 			String value = field.substring(name.length() + 1);
-			document.add(new Field(name, value, Field.Store.YES, Field.Index.ANALYZED));
+			document.add(new Field(name, value, Field.Store.YES, Field.Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
 		}
 		add(document);
 		return document;
@@ -100,5 +106,9 @@ public class SimpleLucene {
 		}
 	}
 
+	public IndexSearcher getSearcher() throws CorruptIndexException, IOException {
+		initSearcher();
+		return searcher;
+	}
 
 }
