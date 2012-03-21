@@ -7,43 +7,34 @@
 		<version>1.11.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
+	<packaging>pom</packaging>
 	<artifactId>contentconnector-config-sample</artifactId>
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<encoding>UTF-8</encoding>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
 				<executions>
 					<execution>
-						<id>attach-javadocs</id>
+						<id>dist-package</id>
+
+						<phase>package</phase>
 						<goals>
-							<goal>jar</goal>
-							<goal>javadoc</goal>
+							<goal>single</goal>
 						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>false</appendAssemblyId>
+							<!-- finalName>V${project.parent.version}</finalName -->
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>src/main/assembly/package.xml</descriptor>
+							</descriptors>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
 		</plugins>
 	</build>
 </project>
