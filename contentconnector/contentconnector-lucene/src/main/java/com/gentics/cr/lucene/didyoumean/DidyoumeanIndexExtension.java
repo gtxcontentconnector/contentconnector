@@ -17,7 +17,6 @@ import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
-import com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation;
 import com.gentics.cr.util.indexing.AbstractIndexExtension;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IReIndexStrategy;
@@ -157,19 +156,19 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 	public void processEvent(Event event) {
 		if (!subscribeToIndexFinished
 				|| !IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE
-						.equals(event.getType())) {
+					.equals(event.getType())) {
 			return;
-		}		
+		}
 
 		Object obj = event.getData();
 		LuceneIndexLocation callingLuceneLocation = (LuceneIndexLocation) callingIndexLocation;
-		
+
 		if(!callingLuceneLocation.equals(obj)) {
 			return;
 		}
-		
+
 		if (!reindexStrategy.skipReIndex(callingLuceneLocation)) {
-			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new DidyoumeanIndexJob(
+			AbstractUpdateCheckerJob job = new DidyoumeanIndexJob(
 					config, callingLuceneLocation, this);
 			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
 					callingLuceneLocation, job);
@@ -249,13 +248,13 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 		}
 
 		if (REINDEX_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new DidyoumeanIndexJob(
+			AbstractUpdateCheckerJob job = new DidyoumeanIndexJob(
 					this.config, actualLocation, this);
 			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
 					actualLocation, job);
 			thread.run();
 		} else if (CLEAR_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new DidyoumeanIndexDeleteJob(
+			AbstractUpdateCheckerJob job = new DidyoumeanIndexDeleteJob(
 					config, actualLocation, this);
 			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
 					actualLocation, job);

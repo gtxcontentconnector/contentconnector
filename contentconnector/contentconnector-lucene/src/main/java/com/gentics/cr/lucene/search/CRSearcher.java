@@ -9,9 +9,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -46,7 +46,7 @@ import com.gentics.cr.util.StringUtils;
 import com.gentics.cr.util.generics.Instanciator;
 
 /**
- * CRSearcher. 
+ * CRSearcher.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 545 $
  * @author $Author: supnig@constantinopel.at $
@@ -166,7 +166,6 @@ public class CRSearcher {
 	 * @return
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
 	TopDocsCollector<?> createCollector(final Searcher searcher, final int hits, final String[] sorting,
 			final boolean computescores, final String[] userPermissions) throws IOException {
 		TopDocsCollector<?> coll = null;
@@ -327,8 +326,8 @@ public class CRSearcher {
 	 * @throws CRException in case maxclausecount is reached and failOnMaxClauses is enabled in the config object
 	 */
 	@SuppressWarnings("unchecked")
-	public final HashMap<String, Object> search(final String query, final String[] searchedAttributes, 
-			final int count, final int start, final boolean explain, final String[] sorting, 
+	public final HashMap<String, Object> search(final String query, final String[] searchedAttributes,
+			final int count, final int start, final boolean explain, final String[] sorting,
 			final CRRequest request) throws IOException, CRException {
 
 		Searcher searcher;
@@ -348,7 +347,7 @@ public class CRSearcher {
 		TopDocsCollector<?> collector = createCollector(searcher, hits, sorting, computescores, userPermissions);
 		HashMap<String, Object> result = null;
 		try {
-			analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) this.config);
+			analyzer = LuceneAnalyzerFactory.createAnalyzer(this.config);
 
 			if (searchedAttributes != null && searchedAttributes.length > 0 && query != null && !query.equals("")) {
 				QueryParser parser = CRQueryParserFactory.getConfiguredParser(searchedAttributes, analyzer, request,
@@ -418,7 +417,7 @@ public class CRSearcher {
 				log.error("Error getting the results.", e);
 				result = null;
 			}
-			
+
 		} finally {
 			indexAccessor.release(searcher);
 		}
@@ -484,7 +483,7 @@ public class CRSearcher {
 					Term[] suggestionsForTerm = e.getValue();
 					if (advanceddidyoumeanbestquery) {
 						TreeMap<Integer, HashMap<String, Object>> suggestionsResults =
-							new TreeMap<Integer, HashMap<String, Object>>(Collections.reverseOrder());
+								new TreeMap<Integer, HashMap<String, Object>>(Collections.reverseOrder());
 						for (Term suggestedTerm : suggestionsForTerm) {
 							Query newquery = BooleanQueryRewriter.replaceTerm(rwQuery, term, suggestedTerm);
 

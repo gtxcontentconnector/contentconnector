@@ -1,6 +1,7 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.io.File;
 import java.net.URL;
@@ -12,8 +13,6 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRUtil;
-
-import junit.framework.TestCase;
 
 public class CleanupTextTest {
 
