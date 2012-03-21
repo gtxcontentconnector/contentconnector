@@ -510,7 +510,8 @@ public class CRRequest implements Cloneable, Serializable {
 					+ config.getApplicationRule();
 		} else if (config.getApplicationRule() != null
 				&& !config.getApplicationRule().equals("")
-				&& (this.getRequestFilter() == null || this.getRequestFilter()
+				&& (this.getRequestFilter() == null
+				|| this.getRequestFilter()
 						.equals(""))) {
 			filter = config.getApplicationRule();
 		}
@@ -518,10 +519,12 @@ public class CRRequest implements Cloneable, Serializable {
 		expression = PortalConnectorFactory.createExpression(filter);
 
 		dsFilter = ds.createDatasourceFilter(expression);
-		Iterator<String> it = this.getObjectsToDeploy().keySet().iterator();
+		Iterator<String> it = this.getObjectsToDeploy()
+				.keySet().iterator();
 		while (it.hasNext()) {
 			String key = it.next();
-			dsFilter.addBaseResolvable(key, this.getObjectsToDeploy().get(key));
+			dsFilter.addBaseResolvable(key,
+					this.getObjectsToDeploy().get(key));
 		}
 		return (dsFilter);
 	}
@@ -529,10 +532,9 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * Sets if the RequestProcessor is to replace plinks in the configured
 	 * attributes (plink attributes).
-	 * 
-	 * @param doreplaceplinks
+	 * @param doreplaceplinks true if plinks should be replaced
 	 */
-	public void setDoReplacePlinks(boolean doreplaceplinks) {
+	public final void setDoReplacePlinks(final boolean doreplaceplinks) {
 		this.set("doreplaceplinks", new Boolean(doreplaceplinks));
 
 	}
@@ -540,10 +542,9 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * Gets if the RequestProcessor is to replace plinks in the configured
 	 * attributes (plink attributes).
-	 * 
 	 * @return boolean doreplaceplinks
 	 */
-	public boolean getDoReplacePlinks() {
+	public final boolean getDoReplacePlinks() {
 		Boolean doR = (Boolean) this.get("doreplaceplinks");
 		if (doR == null) {
 			return (false);
@@ -554,7 +555,6 @@ public class CRRequest implements Cloneable, Serializable {
 
 	/**
 	 * Sets if the RequestProcessor is to render velocity.
-	 * 
 	 * @param dovelocity
 	 */
 	public void setDoVelocity(boolean dovelocity) {
