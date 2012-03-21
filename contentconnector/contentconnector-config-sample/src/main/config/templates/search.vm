@@ -59,7 +59,7 @@
 #end
 #set($start = ($metaresolvable.start + 1))
 #set($end = ($metaresolvable.start + $metaresolvable.count))
-#if($end > $metaresolvable.totalhits)
+#if($end && $end > $metaresolvable.totalhits)
 	#set($end = $metaresolvable.totalhits)
 #end
 ## had to pass originalquery and change it in paging links
@@ -99,8 +99,9 @@
 			
 			<h4><a class="title highlight" href="content$resolvable.pub_dir$resolvable.filename">$resolvable.name</a></h4>
 			#set($content = "$!{resolvable.content}$!{resolvable.binarycontent}")
-			#if ($content.length() > 800)
-				#set($content = $content.substring(0,800)+"...")
+##if you are limiting the output size, be sure to not cut html-tags in two -> and configure the highlighter to have max the output you want
+			#if (false && $content.length() > 1300)
+				#set($content = $content.substring(0,1300)+"...")
 			#end
 			<p class="description">$!content
 			<br />
