@@ -63,19 +63,19 @@ public final class Instanciator {
 			try {
 				if (object == null) {
 					constructor =
-						getMatchingConstructor(clazz, parameterClasses);
+							getMatchingConstructor(clazz, parameterClasses);
 					if (constructor != null) {
 						object = constructor.newInstance(parameters);
 					}
 					break;
 				}
 			} catch (SecurityException e) {
-				logger.debug("Cannot instanciate object for class " + clazz 
-						+ " with parameters (" 
+				logger.debug("Cannot instanciate object for class " + clazz
+						+ " with parameters ("
 						+ getReadableStringFromClassArray(parameterClasses)
 						+ ").", e);
 			} catch (IllegalArgumentException e) {
-				logger.debug("Cannot instanciate object for class " + clazz 
+				logger.debug("Cannot instanciate object for class " + clazz
 						+ " with parameters ("
 						+ getReadableStringFromClassArray(parameterClasses)
 						+ ").", e);
@@ -86,7 +86,7 @@ public final class Instanciator {
 						+ ").", e);
 			} catch (IllegalAccessException e) {
 				logger.debug("Cannot instanciate object for class " + clazz
-						+ " with parameters (" 
+						+ " with parameters ("
 						+ getReadableStringFromClassArray(parameterClasses)
 						+ ").", e);
 			} catch (InvocationTargetException e) {
@@ -112,7 +112,7 @@ public final class Instanciator {
 			final Class<?>[] parameterTypes) {
 		for (Constructor<?> constructor : clazz.getConstructors()) {
 			Class<?>[] constructorParameterTypes =
-				constructor.getParameterTypes();
+					constructor.getParameterTypes();
 			if (parameterTypesMatch(constructorParameterTypes,
 					parameterTypes)) {
 				return constructor;
@@ -144,19 +144,19 @@ public final class Instanciator {
 					matches++;
 				} else if (targetParameterTypes[i].isPrimitive()) {
 					Class<?> primitiveParameterType =
-						getPrimitiveType(sourceParameterTypes[i]);
+							getPrimitiveType(sourceParameterTypes[i]);
 					if (primitiveParameterType != null
 							&& primitiveParameterType.equals(
 									targetParameterTypes[i])) {
-						 matches++;
+						matches++;
 					}
 				} else if (sourceParameterTypes[i].isPrimitive()) {
 					Class<?> primitiveParameterType =
-						getPrimitiveType(targetParameterTypes[i]);
+							getPrimitiveType(targetParameterTypes[i]);
 					if (primitiveParameterType != null
 							&& primitiveParameterType.equals(
 									sourceParameterTypes[i])) {
-						 matches++;
+						matches++;
 					}
 				}
 			}
@@ -172,7 +172,6 @@ public final class Instanciator {
 	 * @param clazz {@link Class} to get the primitive type from.
 	 * @return primitive type of the class if the class has one.
 	 */
-	@SuppressWarnings("unchecked")
 	private static Class<?> getPrimitiveType(final Class<?> clazz) {
 		try {
 			Field primitiveType = clazz.getField("TYPE");
@@ -196,7 +195,7 @@ public final class Instanciator {
 		Class<?>[] parameterClasses = new Class[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
 			if (parameters[i] != null) {
-			 parameterClasses[i] = parameters[i].getClass();
+				parameterClasses[i] = parameters[i].getClass();
 			}
 		}
 		return parameterClasses;

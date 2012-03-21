@@ -5,8 +5,6 @@ import static com.gentics.cr.util.indexing.update.filesystem.FileSystemUpdateChe
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Hashtable;
 
@@ -33,12 +31,12 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	 * directory to put the files in.
 	 */
 	File directory;
-	
+
 	/**
 	 * defines if we should ignore the pub_dir attribute of the resolvables. if <code>true</code> all files are put into one directory, therefore files with the same filename can override each other.
 	 */
 	boolean ignorePubDir;
-	
+
 	/**
 	 * Create a new FileSystemUpdateJob
 	 * @param config - configuration of the job.
@@ -50,14 +48,14 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 			IndexLocation indexLoc,
 			Hashtable<String, CRConfigUtil> updateCheckerConfigmap) throws FileNotFoundException {
 		super(config, indexLoc, updateCheckerConfigmap);
-		
+
 		try {
 			rp = config.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
-			log.error("Could not create RequestProcessor instance." 
+			log.error("Could not create RequestProcessor instance."
 					+ config.getName(), e);
 		}
-		
+
 		indexUpdateChecker = new FileSystemUpdateChecker(config.getSubConfig("updatejob"));
 		ignorePubDir = config.getBoolean("updatejob.ignorePubDir");
 		directory = new File(config.getString("updatejob.directory"));
@@ -70,21 +68,21 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 			throw new FileNotFoundException("The directory " + directory + " cannot be found.");
 		}
 	}
-	
+
 	/**
 	 * RequestProcessor to get the objects from.
 	 */
 	RequestProcessor rp;
-	
+
 	/**
 	 * the update checker that checks if the file has to be updated in the directory
 	 */
 	FileSystemUpdateChecker indexUpdateChecker;
-	
-	
+
+
 
 	/**
-	 * get the objects to update and update them in the directory. deletion of old/stale objects is handled by the update checker 
+	 * get the objects to update and update them in the directory. deletion of old/stale objects is handled by the update checker
 	 */
 	@Override
 	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
@@ -131,7 +129,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 				} catch (Exception e) {
 					throw new CRException("Cannot update the index.", e);
 				}
-				
+
 			} else if(!ignorePubDir) {
 				//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
 				String publicationDirectory = bean.getString("pub_dir");

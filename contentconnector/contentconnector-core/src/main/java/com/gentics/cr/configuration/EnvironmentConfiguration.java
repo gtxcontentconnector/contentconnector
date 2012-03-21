@@ -8,9 +8,7 @@ import java.util.Properties;
 import org.apache.jcs.engine.control.CompositeCacheManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.struts.config.ConfigRuleSet;
 
-import com.gentics.cr.CRConfig;
 import com.gentics.cr.util.CRUtil;
 
 /**
@@ -21,33 +19,32 @@ import com.gentics.cr.util.CRUtil;
  *
  */
 public final class EnvironmentConfiguration {
-	
-	
+
+
 	/**
 	 * Path were the configuration files are found
 	 */
-	private static String configurationPath = "${" + CRUtil.PORTALNODE_CONFPATH
-		+ "}";
-	
+	private static String configurationPath =
+			"${" + CRUtil.PORTALNODE_CONFPATH + "}";
+
 	/**
 	 * Path were the configuration files are found.
 	 * This variable is deprecated. Use {@link #getConfigPath()} instead.
 	 */
 	@Deprecated
 	public static final String CONFPATH = configurationPath;
-	
-	
+
 	/**
 	 * Path to the default log4j property file.
 	 */
 	private static String loggerFilePath =
-		configurationPath + "/nodelog.properties";
+			configurationPath + "/nodelog.properties";
 
 	/**
 	 * Path to the jcs configuration file.
 	 */
 	private static String cacheFilePath =
-		configurationPath + "/cache.ccf";
+			configurationPath + "/cache.ccf";
 
 
 	/**
@@ -55,7 +52,7 @@ public final class EnvironmentConfiguration {
 	 * Portal.Node.
 	 */
 	private static final String USE_PORTAL_CACHE_KEY =
-		"com.gentics.cr.useportalcaches";
+			"com.gentics.cr.useportalcaches";
 
 	/**
 	 * Default log4j logger.
@@ -125,8 +122,8 @@ public final class EnvironmentConfiguration {
 	 */
 	public static void loadCacheProperties() {
 		String errorMessage = "Could not load cache configuration. Perhaps you are "
-			+ "missing the file cache.ccf in " + CRUtil.resolveSystemProperties(
-					configurationPath + "/") + "!";
+				+ "missing the file cache.ccf in " + CRUtil.resolveSystemProperties(
+						configurationPath + "/") + "!";
 		try {
 			//LOAD CACHE CONFIGURATION
 			String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
@@ -139,7 +136,7 @@ public final class EnvironmentConfiguration {
 						+ "cache configured by portalnode instead.");
 			} else {
 				CompositeCacheManager cManager =
-					CompositeCacheManager.getUnconfiguredInstance();
+						CompositeCacheManager.getUnconfiguredInstance();
 				cManager.configure(cacheProps);
 			}
 		} catch (NullPointerException e) {
@@ -205,7 +202,7 @@ public final class EnvironmentConfiguration {
 	public static String getLoggerConfigPath() {
 		return loggerFilePath;
 	}
-	
+
 	/**
 	 * set a new logger configuration file path where the log4j properties file is located from .
 	 * @param newCacheFilePath - path for the log4j configuration file
@@ -213,7 +210,7 @@ public final class EnvironmentConfiguration {
 	public static void setLoggerConfigPath(String newLoggerFilePath) {
 		loggerFilePath = newLoggerFilePath;
 	}
-	
+
 	/**
 	 * set the path for the configuration files.
 	 * @param configLocation - directory which contains the configuration files
@@ -231,14 +228,14 @@ public final class EnvironmentConfiguration {
 	public static String getConfigPath() {
 		return configurationPath;
 	}
-	
+
 	/**
 	 * @return the current cache file path.
 	 */
 	public static String getCacheFilePath() {
 		return cacheFilePath;
 	}
-	
+
 	/**
 	 * set a new cache file path where the jcs cache.ccf is located.
 	 * @param newCacheFilePath - path for the jcs cache configuration file

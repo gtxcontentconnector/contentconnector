@@ -1,6 +1,5 @@
 package com.gentics.cr.util;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.gentics.cr.rest.ContentRepository;
@@ -13,14 +12,14 @@ import com.gentics.cr.rest.ContentRepository;
  */
 public class RepositoryFactory {
 
-	
-	
+
+
 	/**
 	 * additional repositories that are registered by external classes.
 	 */
 	private static Hashtable<String, String> registeredClasses = new Hashtable<String, String>();
-	
-	
+
+
 	/**
 	 * Enumeration containing the values of the repository types.
 	 * @author bigbear3001
@@ -28,22 +27,22 @@ public class RepositoryFactory {
 	public enum RepositoryType {
 
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.xml.XmlContentRepository}.
 		 */
 		XML,
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.json.JSONContentRepository}.
 		 */
 		JSON,
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.php.PHPContentRepository}.
 		 */
 		PHP,
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.javaxml.JavaXmlContentRepository}.
 		 */
 		JAVAXML,
@@ -52,22 +51,22 @@ public class RepositoryFactory {
 		 */
 		RSS,
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.xml.MnogosearchXmlContentRepository}.
 		 */
 		MNOGOSEARCHXML,
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.javabin.JavaBinContentRepository}.
 		 */
 		JAVABIN,
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.velocity.VelocityContentRepository}.
 		 */
 		VELOCITY,
 		/**
-		 * RepositoryType for 
+		 * RepositoryType for
 		 * {@link com.gentics.cr.rest.xml.CSSitemapContentRepository}.
 		 */
 		CSSITEMAP
@@ -76,7 +75,7 @@ public class RepositoryFactory {
 	 * private constructor to prevent instantiation.
 	 */
 	private RepositoryFactory() { }
-	
+
 	/**
 	 * {@link Hashtable} containing the assignment of the
 	 * {@link RepositoryType}s to their classes.
@@ -93,7 +92,7 @@ public class RepositoryFactory {
 	public static Hashtable<String, String> getStringClassMap() {
 		init();
 		Hashtable<String, String> result =
-			new Hashtable<String, String>(classmap.size());
+				new Hashtable<String, String>(classmap.size());
 		for (RepositoryType type : classmap.keySet()) {
 			result.put(type.name(), classmap.get(type).getName());
 		}
@@ -102,7 +101,7 @@ public class RepositoryFactory {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * get a {@link Hashtable} containing the assignment of
 	 * {@link RepositoryType}s to their implementation classes.
@@ -113,7 +112,7 @@ public class RepositoryFactory {
 		init();
 		return classmap;
 	}
-	
+
 	/**
 	 * register the external repository class in the repository factory.
 	 * @param key - type of the repository to be registered
@@ -122,7 +121,7 @@ public class RepositoryFactory {
 	public static void registerAdditionalRepository(final String key, final String clazz) {
 		registeredClasses.put(key, clazz);
 	}
-	
+
 	/**
 	 * initialize the HashMap containing the assignment of
 	 * {@link RepositoryType}s to the specific Repository classes.
@@ -148,7 +147,7 @@ public class RepositoryFactory {
 					com.gentics.cr.rest.xml.CSSitemapContentRepository.class);
 			classmap.put(RepositoryType.MNOGOSEARCHXML, com.gentics.cr.rest.xml
 					.MnogosearchXmlContentRepository.class);
-		
+
 		}
 	}
 }

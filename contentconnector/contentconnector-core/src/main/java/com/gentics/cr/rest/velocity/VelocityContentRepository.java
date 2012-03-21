@@ -22,13 +22,13 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRError;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.util.velocity.VelocityTools;
 import com.gentics.cr.rest.ContentRepository;
 import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.util.StringUtils;
-import com.gentics.portalnode.formatter.VelocityToolsImp;
+import com.gentics.cr.util.velocity.VelocityTools;
+
 /**
  * VelocityContentRepository allows you to render the result of the
  * request to the ContentConnnector with velocity.
@@ -39,7 +39,7 @@ import com.gentics.portalnode.formatter.VelocityToolsImp;
  */
 public class VelocityContentRepository extends ContentRepository {
 
-	
+
 	/**
 	 * Generated version identifier for serialization.
 	 */
@@ -59,7 +59,7 @@ public class VelocityContentRepository extends ContentRepository {
 	 * Velocity Template to use for rendering a sucessful response.
 	 */
 	private ITemplate template;
-	
+
 	/**
 	 * Velocity Template used for rendering the error response.
 	 */
@@ -75,13 +75,13 @@ public class VelocityContentRepository extends ContentRepository {
 	 * Key for the configuration of the template in the config.
 	 */
 	private static final String TEMPLATEPATH_KEY =
-		"cr.velocity.defaulttemplate";
+			"cr.velocity.defaulttemplate";
 
 	/**
 	 * Key for the configuration of the error template in the config.
 	 */
 	private static final String TEMPLATERELOADING_KEY =
-		"cr.velocity.templatereloading";
+			"cr.velocity.templatereloading";
 
 	/**
 	 * Configuration key for the frame url.
@@ -92,7 +92,7 @@ public class VelocityContentRepository extends ContentRepository {
 	 * Configuration key for the placeholder in the frame source.
 	 */
 	private static final String FRAMEPLACEHOLDER_KEY =
-		"cr.velocity.frameplaceholder";
+			"cr.velocity.frameplaceholder";
 
 	/**
 	 * Configuration key holding pre defined variables for velocity.
@@ -129,13 +129,13 @@ public class VelocityContentRepository extends ContentRepository {
 	 * footer to append after the rendered template.
 	 */
 	private String footer = "";
-	
+
 	/**
 	 * <code>true</code> if the frame is already parsed, regardless if this was
 	 * successful.
 	 */
 	private boolean frameParsed = false;
-	
+
 	/**
 	 * {@link VelocityTools} to deploy into the template context.
 	 */
@@ -176,7 +176,7 @@ public class VelocityContentRepository extends ContentRepository {
 			logger.error("Cannot succesfully respond with error template.", e);
 		}
 	}
-	
+
 	@Override
 	public final String getContentType() {
 		return config.getString(CONTENTTYPE_KEY, "text/html");
@@ -190,7 +190,7 @@ public class VelocityContentRepository extends ContentRepository {
 			templateManager.put("resolvables", this.resolvableColl);
 			putObjectsIntoTemplateManager(this.getAdditionalDeployableObjects());
 			GenericConfiguration variables =
-				(GenericConfiguration) config.get(VARIABLES_KEY);
+					(GenericConfiguration) config.get(VARIABLES_KEY);
 			if (variables != null) {
 				putObjectsIntoTemplateManager(variables.getProperties());
 			}
@@ -257,7 +257,7 @@ public class VelocityContentRepository extends ContentRepository {
 		if (!frameParsed) {
 			String framePath = config.getString(FRAME_KEY);
 			String framePlaceholder =
-				config.getString(FRAMEPLACEHOLDER_KEY);
+					config.getString(FRAMEPLACEHOLDER_KEY);
 			if (framePath != null && !framePath.equals("")
 					&& framePlaceholder != null
 					&& !framePlaceholder.equals("")) {
@@ -283,11 +283,11 @@ public class VelocityContentRepository extends ContentRepository {
 							logger.error("Error reading frame source"
 									+ framePath,
 									new CRException("Unknown response type ("
-									+ content.getClass() + ")"));
+											+ content.getClass() + ")"));
 						}
 						cache.put(framePath + HEADER_CACHE_KEY_SUFFIX, header);
 						cache.put(framePath + FOOTER_CACHE_KEY_SUFFIX, footer);
-						
+
 					}
 				} catch (MalformedURLException e) {
 					logger.error("Error reading frame source " + framePath, e);
@@ -296,7 +296,7 @@ public class VelocityContentRepository extends ContentRepository {
 				} catch (CacheException e) {
 					logger.error("Cannot initalize frame cache.", e);
 				}
-			} 
+			}
 			frameParsed = true;
 		}
 	}
@@ -342,7 +342,7 @@ public class VelocityContentRepository extends ContentRepository {
 					templatePath = fileName + ".error." + fileExtension;
 					if (directoryName != null) {
 						templatePath =
-							directoryName + File.separator + templatePath;
+								directoryName + File.separator + templatePath;
 					}
 					errorTemplate = getFileTemplate(templatePath);
 				} else {

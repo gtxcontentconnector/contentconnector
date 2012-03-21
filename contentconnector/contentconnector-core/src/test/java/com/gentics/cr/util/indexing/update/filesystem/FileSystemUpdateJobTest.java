@@ -17,9 +17,7 @@ import org.junit.Test;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.StaticObjectHolderRequestProcessor;
-import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.file.SimpleFileSystemRequestProcessor;
 import com.gentics.cr.util.StringUtils;
 import com.gentics.cr.util.file.DirectoryScanner;
 import com.gentics.cr.util.file.FileTypeDetector;
@@ -27,16 +25,16 @@ import com.gentics.cr.util.indexing.DummyIndexLocation;
 import com.gentics.cr.util.indexing.DummyIndexLocationFactory;
 
 public class FileSystemUpdateJobTest {
-	
+
 	static CRConfigUtil config = new CRConfigUtil();
 	static Hashtable<String, CRConfigUtil> configMap = new Hashtable<String, CRConfigUtil>();
-	
+
 	FileSystemUpdateJob job;
-	
+
 	DummyIndexLocation indexLocation;
-	
+
 	static File directory;
-	
+
 	String fileContent;
 
 	@BeforeClass
@@ -58,13 +56,13 @@ public class FileSystemUpdateJobTest {
 		config.set("updateattribute", "timestamp");
 		configMap.put("test", config);
 	}
-	
+
 	@Before
 	public void setUp() throws FileNotFoundException {
 		indexLocation = DummyIndexLocationFactory.getDummyIndexLocation(config);
 		job = new FileSystemUpdateJob(config, indexLocation, configMap);
 	}
-	
+
 	@Test
 	public void testUpdateFiles() throws CRException, FileNotFoundException {
 		Collection<CRResolvableBean> objects = listFileBeans(directory, ".*\\.file");
@@ -72,13 +70,14 @@ public class FileSystemUpdateJobTest {
 		job.indexCR(indexLocation, config);
 		File file = new File(directory, "outdated.file");
 		String newFileContent = StringUtils.streamToString(new FileInputStream(file));
-		assertEquals("The contents of the file do not match the content of the RequestProcessor. Therefore the file was not updated.", fileContent, newFileContent);
+		assertEquals("The contents of the file do not match the content of the RequestProcessor. Therefore the file was not updated.",
+				fileContent, newFileContent);
 	}
-	
+
 	public void testUpdatePages() {
 		//TODO add test that write a page file (*.html)
 	}
-	
+
 	private Collection<CRResolvableBean> listFileBeans(File directory, String filter) {
 		Vector<CRResolvableBean> beans = new Vector<CRResolvableBean>();
 		for(File file : DirectoryScanner.listFiles(directory, filter)) {

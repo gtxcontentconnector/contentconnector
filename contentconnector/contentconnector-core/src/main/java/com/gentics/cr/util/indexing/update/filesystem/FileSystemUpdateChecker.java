@@ -1,13 +1,11 @@
 package com.gentics.cr.util.indexing.update.filesystem;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.oro.io.Perl5FilenameFilter;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
@@ -27,24 +25,25 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 	 * log4j logger for error and debug messages
 	 */
 	private static final Logger logger = Logger.getLogger(FileSystemUpdateChecker.class);
-	
+
 	/**
 	 * directory containing the files
 	 */
 	File directory;
-	
+
 	/**
 	 * ignore the pub_dir attribute in the bean. if set to true this will put all the files and pages into one directory.
 	 */
 	boolean ignorePubDir;
-	
+
 	/**
 	 * list of files from the directory. this is used to delete files that are not existent in the source (were not checked till #deleteStaleObjects() is called)
 	 */
 	List<String> files;
-	
+
 	/**
-	 * Initialize a new FileSystemUpdateChecker. You'll have to initialize a new one every index run as the list of files to be deleted is generated at initialization and every checked file is removed from it. 
+	 * Initialize a new FileSystemUpdateChecker. You'll have to initialize a new one every index run as the list of files 
+	 * to be deleted is generated at initialization and every checked file is removed from it.
 	 * @param config - configuration of the FileSystemUpdateChecker.
 	 * At the moment the following configuration options are implemented:
 	 * <ul>
