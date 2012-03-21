@@ -76,14 +76,14 @@
 	#end
 	?
 #end
-#if($metaresolvable.totalhits>0)
+#if($metaresolvable.totalhits && $metaresolvable.totalhits > 0)
 <p id="result_report">
       Showing $start - $end of $metaresolvable.totalhits results
 </p>
 #else
 <div id="result_report">Sorry. We could not find what you where looking for. Try a different query!</div>
 #end
-#if($metaresolvable.totalhits >= $metaresolvable.start + $resolvables.size())
+#if($metaresolvable.totalhits && $metaresolvable.totalhits >= $metaresolvable.start + $resolvables.size())
 <ul id="results" class="tarn">
 #foreach($resolvable in $resolvables)
 	#if($metaresolvable.start)
