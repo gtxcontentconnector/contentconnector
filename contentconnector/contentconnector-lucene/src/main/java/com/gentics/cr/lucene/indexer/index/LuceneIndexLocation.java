@@ -1,6 +1,5 @@
 package com.gentics.cr.lucene.indexer.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -10,8 +9,6 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -36,7 +33,7 @@ public abstract class LuceneIndexLocation extends
 	// STATIC MEMBERS
 	protected static final Logger log = Logger
 			.getLogger(LuceneIndexLocation.class);
-	protected static final String RAM_IDENTIFICATION_KEY = "RAM";
+	
 
 	protected String name = null;
 
@@ -143,16 +140,6 @@ public abstract class LuceneIndexLocation extends
 		}
 	}
 
-	protected Directory createRAMDirectory() {
-		return createRAMDirectory(name);
-	}
-
-	protected static Directory createRAMDirectory(String name) {
-		Directory dir = new RAMDirectory();
-		log.debug("Creating RAM Directory for Index [" + name + "]");
-		return (dir);
-	}
-
 	protected static String getFirstIndexLocation(CRConfig config) {
 		String path = "";
 		GenericConfiguration locs = (GenericConfiguration) config
@@ -185,45 +172,16 @@ public abstract class LuceneIndexLocation extends
 	}
 
 	/**
-	 * Create a Lucene directory from a path
+	 * Create a Lucene directory from a path.
 	 * 
-	 * @param indexLocation
-	 * @return
+	 * @param indexLocation location
+	 * @return directory
 	 */
-	public static Directory createDirectory(String indexLocation) {
-		Directory dir;
-		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation)
-				|| indexLocation == null
-				|| indexLocation.startsWith(RAM_IDENTIFICATION_KEY)) {
-			dir = new RAMDirectory();
-
-		} else {
-			File indexLoc = new File(indexLocation);
-			try {
-				dir = createFSDirectory(indexLoc, indexLocation);
-				if (dir == null)
-					dir = createRAMDirectory(indexLocation);
-			} catch (IOException ioe) {
-				dir = createRAMDirectory(indexLocation);
-			}
-		}
-		return dir;
+	public static Directory createDirectory(final String indexLocation) {
+		return LuceneDirectoryFactory.getDirectory(indexLocation);
 	}
 
-	protected Directory createFSDirectory(File indexLoc) throws IOException {
-		return createFSDirectory(indexLoc, name);
-	}
-
-	protected static Directory createFSDirectory(File indexLoc, String name)
-			throws IOException {
-		if (!indexLoc.exists()) {
-			log.debug("Indexlocation did not exist. Creating directories...");
-			indexLoc.mkdirs();
-		}
-		Directory dir = FSDirectory.open(indexLoc);
-		log.debug("Creating FS Directory for Index [" + name + "]");
-		return (dir);
-	}
+	
 
 	/**
 	 * @return the directory used by this index location.

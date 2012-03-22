@@ -57,7 +57,7 @@ public abstract class IndexLocation {
 	 * periodical execution flag of the indexer.
 	 */
 	private static final String PERIODICALCLASS_KEY = "periodicalClass";
-	private static Hashtable<String, IndexLocation> indexmap;
+	private static Hashtable<Object, IndexLocation> indexmap;
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
 
 	/**
@@ -288,37 +288,11 @@ public abstract class IndexLocation {
 		return this.lockdetection;
 	}
 
-	/**
-	 * TODO javadoc.
-	 * 
-	 * @param config
-	 *            TODO javadoc
-	 * @return TODO javadoc
-	 */
-	protected static String getIndexLocationKey(final CRConfig config) {
-		String path = "";
-		GenericConfiguration locs = (GenericConfiguration) config
-				.get(INDEX_LOCATIONS_KEY);
-		if (locs != null) {
-			Map<String, GenericConfiguration> locationmap = locs
-					.getSortedSubconfigs();
-			if (locationmap != null) {
-				for (GenericConfiguration locconf : locationmap.values()) {
-					String p = locconf.getString(INDEX_PATH_KEY);
-					if (p != null && !"".equals(p)) {
-						path += p;
-					}
-				}
-			}
-		}
-		return path;
-	}
-
+	
 	/**
 	 * Gets the index location configured in config.
 	 * 
-	 * @param config
-	 *            if the config does not hold the param indexLocation or if
+	 * @param config if the config does not hold the param indexLocation or if
 	 *            indexLocation = "RAM", an RAM Directory will be created and
 	 *            returned
 	 * @return initialized IndexLocation
@@ -326,14 +300,14 @@ public abstract class IndexLocation {
 	public static synchronized IndexLocation getIndexLocation(
 			final CRConfig config) {
 		IndexLocation dir = null;
-		String key = getIndexLocationKey(config);
-		if (key == null || "".equals(key)) {
-			log.error("COULD NOT FIND CONFIG FOR INDEXLOCATION. check config @ "
-					+ config.getName());
+		Object key = config;
+		if (key == null) {
+			log.error("COULD NOT FIND CONFIG FOR INDEXLOCATION" 
+					+ ". check config @ ");
 			return null;
 		}
 		if (indexmap == null) {
-			indexmap = new Hashtable<String, IndexLocation>();
+			indexmap = new Hashtable<Object, IndexLocation>();
 			dir = createNewIndexLocation(config);
 			indexmap.put(key, dir);
 		} else {
@@ -781,7 +755,7 @@ public abstract class IndexLocation {
 				}
 			}
 		} else {
-			log.error("There are no crs configured for indexing. Config: "
+			log.debug("There are no crs configured for indexing. Config: "
 					+ config.getName());
 		}
 		return map;

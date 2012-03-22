@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -52,7 +51,7 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
           String path = locconf.getString(INDEX_PATH_KEY);
           if(path!=null && !"".equals(path))
           {
-            dirs.put(path,loadDirectory(path));
+            dirs.put(path, loadDirectory(path));
           }
         }
       }
@@ -63,25 +62,8 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
   
   private Directory loadDirectory(String indexLocation)
   {
-    Directory dir;
-    if(RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) || indexLocation==null || indexLocation.startsWith(RAM_IDENTIFICATION_KEY))
-    {
-      dir = new RAMDirectory();
-      
-    }
-    else
-    {
-      File indexLoc = new File(indexLocation);
-      try
-      {
-        dir = createFSDirectory(indexLoc);
-        if(dir==null) dir = createRAMDirectory();
-      }
-      catch(IOException ioe)
-      {
-        dir = createRAMDirectory();
-      }
-    }
+    Directory dir = createDirectory(indexLocation);
+   
     //Create index accessor
     IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
     if(!IAFactory.hasAccessor(dir)){

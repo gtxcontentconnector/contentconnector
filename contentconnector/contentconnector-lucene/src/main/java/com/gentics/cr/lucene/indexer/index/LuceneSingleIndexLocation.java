@@ -7,7 +7,6 @@ import java.util.Date;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
@@ -41,22 +40,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	public LuceneSingleIndexLocation(final CRConfig config) {
 		super(config);
 		indexLocation = getFirstIndexLocation(config);
-		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(indexLocation) 
-				|| indexLocation == null 
-				|| indexLocation.startsWith(RAM_IDENTIFICATION_KEY)) {
-			dir = new RAMDirectory();
-			
-		} else {
-			File indexLoc = new File(indexLocation);
-			try {
-				dir = createFSDirectory(indexLoc);
-				if (dir == null) {
-					dir = createRAMDirectory();
-				}
-			} catch (IOException ioe) {
-				dir = createRAMDirectory();
-			}
-		}
+		dir = createDirectory(indexLocation);
 		//Create index accessor
 		IndexAccessorFactory iAFactory = IndexAccessorFactory.getInstance();
 		if (!iAFactory.hasAccessor(dir)) {
@@ -73,9 +57,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	@Override
 	protected final IndexAccessor getAccessorInstance() {
 		Directory directory = this.getDirectory();
-		if (directory == null) {
-			directory = this.getDirectory();
-		}
+		
 		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance()
 						.getAccessor(directory);
 		return indexAccessor;
