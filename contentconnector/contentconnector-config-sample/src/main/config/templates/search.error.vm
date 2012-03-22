@@ -50,7 +50,8 @@
 	-->
 </script>
 </form>
-<p class="info">Try out querying with lucene. You can use the <a href="http://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">query syntax</a> in the field above. Also have a look at the <a href="indexer">indexer</a>.</p>
+<p class="info">Try out querying with lucene. You can use the <a href="http://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html" target="_blank">query syntax</a> in the field above. Also have a look at the <a href="indexer" target="_blank">indexer</a>.</p>
+<p class="info">Our <a href="http://code.google.com/p/gtxcontentconnector/wiki/A_STARTPAGE_WIKI?tm=6" target="_blank">wiki</a> will provide you with further information.</p>
 </div>
 #if("$!{request.parameters.query}$!{request.parameters.filter}"!="")
 <b>Sorry. We could not find what you where looking for. Try a different query!</b>
