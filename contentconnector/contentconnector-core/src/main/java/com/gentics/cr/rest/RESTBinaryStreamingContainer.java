@@ -19,6 +19,11 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.plink.PLinkOutputStream;
+import com.gentics.cr.plink.PlinkProcessor;
+import com.gentics.cr.plink.PlinkReplacer;
+import com.gentics.cr.rendering.ContentRendererFactory;
+import com.gentics.cr.rendering.IContentRenderer;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 
@@ -30,7 +35,7 @@ import com.gentics.cr.util.response.IResponseTypeSetter;
  * @author $Author: supnig@constantinopel.at $
  * 
  */
-public class RESTBinaryContainer {
+public class RESTBinaryStreamingContainer {
 
 	/**
 	 * Request processor.
@@ -50,7 +55,18 @@ public class RESTBinaryContainer {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(RESTBinaryContainer.class);
+	private static Logger log = Logger
+			.getLogger(RESTBinaryStreamingContainer.class);
+	
+	/**
+	 * Contentrenderer.
+	 */
+	private IContentRenderer contentRenderer;
+	
+	/**
+	 * PLinkprocessor.
+	 */
+	private PlinkProcessor plinkProcessor;
 	
 	/**
 	 * Config.
@@ -85,7 +101,7 @@ public class RESTBinaryContainer {
 	 * Create new instance.
 	 * @param config config
 	 */
-	public RESTBinaryContainer(final CRConfigUtil config) {
+	public RESTBinaryStreamingContainer(final CRConfigUtil config) {
 		this.responseEncoding = config.getEncoding();
 		this.crConf = config;
 		try {
@@ -95,6 +111,10 @@ public class RESTBinaryContainer {
 			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "
 					+ ex.getStringStackTrace());
 		}
+		contentRenderer = ContentRendererFactory
+				.getRendererInstance(crConf.getRequestProcessorConfig(1));
+		plinkProcessor = new PlinkProcessor(
+				crConf.getRequestProcessorConfig(1));
 	}
 
 	/**
@@ -138,6 +158,9 @@ public class RESTBinaryContainer {
 		CRRequest req;
 		try {
 			req = myReqBuilder.getBinaryRequest();
+			//The StreamingBinaryContainer will 
+			//not render velocity in the content
+			req.setDoVelocity(false);
 			// DEPLOY OBJECTS TO REQUEST
 			for (Iterator<Map.Entry<String, Resolvable>> 
 					i = wrappedObjectsToDeploy
@@ -162,18 +185,14 @@ public class RESTBinaryContainer {
 									+ reqList.get(index + 1).toString());
 						}
 					}
-
-					// contentid=request.getRequestURI().replaceFirst(request
-					//.getContextPath()+request.getServletPath()+"/","")
-					//.replaceAll("/","");
 				}
 			}
 			req.setAttributeArray(new String[] { "mimetype" });
 			// load by url if no contentid
 			if (req.isUrlRequest()) {
-				crBean = rp.getContentByUrl(req);
+				crBean = rp.getBeanByURL(req);
 			} else {
-				crBean = rp.getContent(req);
+				crBean = rp.getFirstMatchingResolvable(req);
 			}
 			if (crBean != null) {
 				// set mimetype.
@@ -203,23 +222,16 @@ public class RESTBinaryContainer {
 				responsetypesetter.setContentType(this.getContentType());
 				// output data.
 				if (crBean.isBinary()) {
-					log.debug("Size of content: "
-							+ crBean.getBinaryContent().length);
 					stream.write(crBean.getBinaryContent());
 
 				} else {
-					OutputStreamWriter wr = new OutputStreamWriter(stream,
+					
+					PLinkOutputStream plos = new PLinkOutputStream(stream,
+							new PlinkReplacer(plinkProcessor, req));
+					
+					OutputStreamWriter wr = new OutputStreamWriter(plos,
 							this.responseEncoding);
 					String content = crBean.getContent(this.responseEncoding);
-					if (Boolean.parseBoolean((String) crConf
-							.get(LIVEEDITORXHTML_KEY))) {
-						// Gentics Content.Node Liveeditor produces non XHTML
-						// brakes.
-						// Therefore we must replace them before we return the
-						// code
-						// TODO This is quite ugly => do this in a stream
-						content = content.replace("<BR>", "</ br>");
-					}
 					wr.write(content);
 					wr.flush();
 					wr.close();

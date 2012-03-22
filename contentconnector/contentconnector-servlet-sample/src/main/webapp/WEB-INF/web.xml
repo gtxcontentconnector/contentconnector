@@ -29,7 +29,7 @@
 	<!-- Binary servlet used to serve content -->
 	<servlet>
 		<servlet-name>content</servlet-name>
-		<servlet-class>com.gentics.cr.servlet.CRServlet</servlet-class>
+		<servlet-class>com.gentics.cr.servlet.CRStreamingServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>ccr</servlet-name>

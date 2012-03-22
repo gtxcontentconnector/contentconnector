@@ -183,7 +183,22 @@ public abstract class RequestProcessor {
 	 * @throws CRException 
 	 */
 	public CRResolvableBean getContentByUrl(CRRequest request) throws CRException {
-		Resolvable reso = null;
+		Resolvable reso = getBeanByURL(request);
+		if (reso == null) {
+			log.error("Cannot get Object for path '" + request.getUrl() + "'");
+			return null;
+		} else {
+			return getContent(new CRResolvableBean(reso), request);
+		}
+	}
+	
+	/**
+	 * Returns an object bean by url.
+	 * @param request request.
+	 * @return resolvable bean or null if not found.
+	 */
+	public final CRResolvableBean getBeanByURL(final CRRequest request) {
+		CRResolvableBean reso = null;
 		PathResolver pr = this.config.getPathResolver();
 
 		if (pr != null) {
@@ -192,12 +207,7 @@ public abstract class RequestProcessor {
 			log.warn("Could not get Pathresolver to resolve path '"
 					+ request.getUrl() + "'.");
 		}
-		if (reso == null) {
-			log.error("Cannot get Object for path '" + request.getUrl() + "'");
-			return null;
-		} else {
-			return getContent(new CRResolvableBean(reso), request);
-		}
+		return reso;
 	}
 
 	/**
