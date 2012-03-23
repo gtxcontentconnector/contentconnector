@@ -57,4 +57,11 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>at.gv.brz.portalnode.igor.snapshots</id>
+			<name>igor-snapshots</name>
+			<url>http://igor:8080/archiva/repository/at.gv.brz.portalnode.igor.snapshots/</url>
+		</repository>
+	</distributionManagement>
 </project>
