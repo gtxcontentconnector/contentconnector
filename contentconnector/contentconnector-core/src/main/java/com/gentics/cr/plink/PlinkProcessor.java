@@ -40,7 +40,10 @@ public class PlinkProcessor {
 
 	private static JCS plinkCache;
 	
-	private static String PLINK_CACHE_ACTIVATION_KEY="plinkcache";
+	/**
+	 * configuration key to enable (default) or disable the JCS cache for resolving PLinks.
+	 */
+	public static String PLINK_CACHE_ACTIVATION_KEY="plinkcache";
 	
 	private boolean plinkcache = true;
 	

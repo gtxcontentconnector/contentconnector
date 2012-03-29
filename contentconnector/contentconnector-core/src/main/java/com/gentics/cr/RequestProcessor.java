@@ -30,6 +30,11 @@ import com.gentics.cr.template.ITemplateManager;
  */
 public abstract class RequestProcessor {
 
+	/**
+	 * configuration key for enabling (default) or disabling the JCS content cache in a RequestProcessor.
+	 */
+	protected static final String CONTENTCACHE_KEY = "crcontentcache";
+
 	protected HashMap<String, Resolvable> resolvables = null;
 
 	protected CRConfig config = null;
@@ -84,7 +89,7 @@ public abstract class RequestProcessor {
 					+ "Therefore Velocity scripts will not work in the content.");
 		}
 
-		if(config.getBoolean("crcontentcache", true)) {
+		if(config.getBoolean(CONTENTCACHE_KEY, true)) {
 			try {
 				cache = JCS.getInstance("gentics-cr-" + config.getName()
 						+ "-crcontent");

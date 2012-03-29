@@ -37,10 +37,12 @@ public class XMLRequestProcessor extends RequestProcessor{
 	 */
 	public XMLRequestProcessor(CRConfig config) throws CRException {
 		super(config);
-		try {
-			cache = JCS.getInstance("gentics-cr-" + config.getName()+ "-content");
-		} catch (CacheException e) {
-			log.error("Cannot instanciate cache region.", e);
+		if (config.getBoolean(RequestProcessor.CONTENTCACHE_KEY, true)) {
+			try {
+				cache = JCS.getInstance("gentics-cr-" + config.getName()+ "-content");
+			} catch (CacheException e) {
+				log.error("Cannot instanciate cache region.", e);
+			}
 		}
 	}
 
