@@ -1,7 +1,3 @@
-/**
- * RequestProcessor is the base class for all RequestProcessors.
- * @author GTX Christopher Supnig
- */
 package com.gentics.cr;
 
 import java.sql.Timestamp;
