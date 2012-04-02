@@ -6,78 +6,64 @@ import com.gentics.cr.configuration.GenericConfiguration;
 
 public class MonitorFactory {
 
-	private static boolean monitorenabled = false;
-	private static final String MONITOR_ENABLE_KEY="monitoring";
-	
-	public static synchronized void init(GenericConfiguration config)
-	{
-		String s_mon = config.getString(MONITOR_ENABLE_KEY);
-		if(s_mon!=null)
-		{
-			monitorenabled = Boolean.parseBoolean(s_mon);
+	private static boolean monitoringEnabled = false;
+	private static final String MONITOR_ENABLE_KEY = "monitoring";
+
+	public static synchronized void init(GenericConfiguration config) {
+		String enabled = config.getString(MONITOR_ENABLE_KEY);
+		if (enabled != null) {
+			monitoringEnabled = Boolean.parseBoolean(enabled);
 		}
 	}
-	
-	public static UseCase startUseCase(String identifyer)
-	{
-		if(monitorenabled)
-		{
-			return new UseCase(com.jamonapi.MonitorFactory.start(identifyer),monitorenabled);
+
+	public static UseCase startUseCase(String identifyer) {
+		if (monitoringEnabled) {
+			return new UseCase(com.jamonapi.MonitorFactory.start(identifyer), monitoringEnabled);
 		}
-		return new UseCase(null,monitorenabled);
-		
+		return new UseCase(null, monitoringEnabled);
+
 	}
-	
-	public static String getSimpleReport()
-	{
+
+	public static String getSimpleReport() {
 		String ret = "<table class=\"report_table\">";
-		if(monitorenabled)
-		{
-			int max_field = 7;
-			
+		if (monitoringEnabled) {
+			int maxField = 7;
+
 			String[] header = com.jamonapi.MonitorFactory.getHeader();
-			if(header!=null)
-			{
-				ret+="<tr>";
-				for(int i=0;i<=max_field;i++)
-				{
-					ret+="<th>"+header[i]+"</th>";
+			if (header != null) {
+				ret += "<tr>";
+				for (int i = 0; i <= maxField; i++) {
+					ret += "<th>" + header[i] + "</th>";
 				}
-				ret+="</tr>";
+				ret += "</tr>";
 			}
 			Object[][] data = com.jamonapi.MonitorFactory.getData();
-			
+
 			DecimalFormat output = new DecimalFormat("#0.00");
-			if(data!=null)
-			{
-				for(int j=0;j<data.length;j++)
-				{
-					if((j%2) == 0)
-						ret+="<tr class=\"even\">";
-					else
-						ret+="<tr class=\"odd\">";
-					for(int i=0;i<=max_field;i++)
-					{
+			if (data != null) {
+				for (int j = 0; j < data.length; j++) {
+					if (j % 2 == 0) {
+						ret += "<tr class=\"even\">";
+					} else {
+						ret += "<tr class=\"odd\">";
+					}
+					for (int i = 0; i <= maxField; i++) {
 						Object obj = data[j][i];
-						
-						if(obj instanceof Double)
-						{
-							obj = output.format(((Double)obj));
+
+						if (obj instanceof Double) {
+							obj = output.format(obj);
 						}
-						if(i>0)
-						{
-							ret+="<td class=\"value\">"+obj.toString()+"</td>";
-						}
-						else
-						{
-							ret+="<td>"+obj.toString()+"</td>";
+						if (i > 0) {
+							ret += "<td class=\"value\">" + obj.toString() + "</td>";
+						} else {
+							ret += "<td>" + obj.toString() + "</td>";
 						}
 					}
-					ret+="</tr>";
+					ret += "</tr>";
 				}
 			}
 		}
-		ret+="</table>";
+		ret += "</table>";
 		return ret;
 	}
 }
