@@ -44,6 +44,10 @@ public class NavObject{
 	{
 		this.bean = bean;
 		this.path = path;
+		if (this.path == null && bean != null) {
+			this.path = new Vector<String>();
+			this.path.add(bean.getContentid());
+		}
 		this.conf = conf;
 		this.level = level;
 		this.template = template;
