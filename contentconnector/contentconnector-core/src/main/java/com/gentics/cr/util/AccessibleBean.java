@@ -153,6 +153,24 @@ public abstract class AccessibleBean {
 		}
 		
 		/**
+		 * Get configuration key as long.
+		 * @param key configuration key to get
+		 * @param defaultValue value to return if we cannot parse the long
+		 * @return configuration key as long, 
+		 * if it cannot be parsed the default
+		 * value is returned.
+		 */
+		public final long getLong(final String key,
+				final long defaultValue) {
+			String stringValue = getString(key);
+			if (stringValue != null) {
+				return Long.parseLong(stringValue);
+			} else {
+				return defaultValue;
+			}
+		}
+		
+		/**
 		 * Get configuration key as float.
 		 * @param key configuration key to get
 		 * @param defaultValue value to return if we cannot parse the float
