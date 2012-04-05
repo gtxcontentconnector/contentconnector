@@ -106,7 +106,7 @@ public class YoungestTimestampContentRepository extends ContentRepository {
 	 * @return updatetimestamp of the youngest element
 	 */
 	private final long getYoungestFromCollection(
-			final Collection<CRResolvableBean> beanCollection){
+			final Collection<CRResolvableBean> beanCollection) {
 		long youngest = 0;
 		if (beanCollection != null) {
 			for (CRResolvableBean bean: beanCollection) {
