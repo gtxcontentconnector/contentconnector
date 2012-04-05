@@ -129,16 +129,27 @@ public class YoungestTimestampContentRepository extends ContentRepository {
 	}
 	
 	/**
+	 * Returns the update timestamp of the 
+	 * youngest element in the contentrepository.
+	 * @return timestamp
+	 */
+	public final long getYoungestTimestamp() {
+		long youngest = 0;
+		if (this.resolvableColl != null 
+				&& !this.resolvableColl.isEmpty()) {
+			youngest = getYoungestFromCollection(this.resolvableColl);
+		}
+		return youngest;
+	}
+	
+	/**
 	 * Writes Data to the specified stream.
 	 * @param stream 
 	 * @throws CRException 
 	 * 
 	 */
 	public final void toStream(final OutputStream stream) throws CRException {
-		long youngest = 0;
-		if (!this.resolvableColl.isEmpty()) {
-			youngest = getYoungestFromCollection(this.resolvableColl);
-		}
+		long youngest =  getYoungestTimestamp();
 		PrintWriter pw = new PrintWriter(stream);
 		pw.write(Long.toString(youngest));
 		pw.flush();
