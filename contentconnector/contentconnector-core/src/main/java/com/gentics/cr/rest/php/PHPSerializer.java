@@ -140,7 +140,7 @@ public class PHPSerializer{
             result.put(":{");
             Object[] o = (Object[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
@@ -150,7 +150,7 @@ public class PHPSerializer{
             result.put(":{");
             Boolean[] o = (Boolean[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
@@ -160,7 +160,7 @@ public class PHPSerializer{
             result.put(":{");
             int[] o = (int[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
@@ -170,7 +170,7 @@ public class PHPSerializer{
             result.put(":{");
             long[] o = (long[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
@@ -180,7 +180,7 @@ public class PHPSerializer{
             result.put(":{");
             byte[] o = (byte[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
@@ -190,7 +190,7 @@ public class PHPSerializer{
             result.put(":{");
             short[] o = (short[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
@@ -200,7 +200,7 @@ public class PHPSerializer{
             result.put(":{");
             double[] o = (double[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
@@ -210,7 +210,7 @@ public class PHPSerializer{
             result.put(":{");
             float[] o = (float[])object;
 			for (int i = 0; i < o.length; i++) {
-                doSerialize(i++,result);
+                doSerialize(i,result);
                 doSerialize(o[i],result);
             }
             result.put("}");
