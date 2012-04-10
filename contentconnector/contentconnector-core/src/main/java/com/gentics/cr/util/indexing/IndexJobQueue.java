@@ -116,6 +116,8 @@ public class IndexJobQueue {
 		indexJobQueueWorkerDaemon.setName("IndexJobQueueWorker-"
 				+ config.getName());
 		indexJobQueueWorkerDaemon.setDaemon(true);
+		LOGGER.debug("Created IndexJobQueue-WorkerThread for "
+				+ config.getName());
 	}
 	
 	/**
