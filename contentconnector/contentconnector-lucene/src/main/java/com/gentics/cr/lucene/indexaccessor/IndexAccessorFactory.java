@@ -113,12 +113,12 @@ public class IndexAccessorFactory {
 	 */
 	private synchronized void close() {
 		if (!wasClosed) {
-			synchronized (indexAccessors) {
-				for (IndexAccessor accessor : indexAccessors.values()) {
+			for (IndexAccessor accessor : indexAccessors.values()) {
+				if (accessor.isOpen()) {
 					accessor.close();
 				}
-				indexAccessors.clear();
 			}
+			indexAccessors.clear();
 			wasClosed = true;
 			if(logger.isDebugEnabled()) {
 				try {
