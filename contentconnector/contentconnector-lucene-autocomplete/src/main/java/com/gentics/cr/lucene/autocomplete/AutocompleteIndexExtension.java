@@ -18,7 +18,6 @@ import com.gentics.cr.util.indexing.IReIndexStrategy;
 import com.gentics.cr.util.indexing.IndexExtension;
 import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
-import com.gentics.cr.util.indexing.SimpleIndexJobAdderThread;
 
 /**
  * This {@link IndexExtension} creates and maintains an autocomplete-index. The
@@ -122,9 +121,7 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 		if (!reindexStrategy.skipReIndex(callingLuceneLocation)) {
 			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(
 					config, callingLuceneLocation, this);
-			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
-					callingLuceneLocation, job);
-			thread.start();
+			callingLuceneLocation.getQueue().addJob(job);
 		}
 
 	}
@@ -197,15 +194,11 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 		if (REINDEX_JOB.equalsIgnoreCase(name)) {
 			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(
 					this.config, actualLocation, this);			
-			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
-					actualLocation, job);
-				thread.run();
+			actualLocation.getQueue().addJob(job);
 		} else if (CLEAR_JOB.equalsIgnoreCase(name)) {
 			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexDeleteJob(
 					this.config, actualLocation, this);
-			SimpleIndexJobAdderThread thread = new SimpleIndexJobAdderThread(
-					actualLocation, job);
-				thread.run();
+			actualLocation.getQueue().addJob(job);
 		} else {
 			throw new NoSuchMethodException("No Job-Method by the name: "
 					+ name);
