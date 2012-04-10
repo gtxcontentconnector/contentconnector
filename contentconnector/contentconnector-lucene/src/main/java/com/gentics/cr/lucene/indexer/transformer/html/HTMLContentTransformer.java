@@ -19,7 +19,7 @@ import com.gentics.cr.util.CRUtil;
  */
 public class HTMLContentTransformer extends ContentTransformer{
 
-	private static PLinkStripper stripper;
+	private static final PLinkStripper stripper = new PLinkStripper();;
 	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
 	private String attribute="";
 	
@@ -31,7 +31,6 @@ public class HTMLContentTransformer extends ContentTransformer{
 	{
 		super(config);
 		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
-		stripper = new PLinkStripper();
 	}
 	
 	/**
