@@ -257,7 +257,7 @@ public class CRSearcher {
 
 			TopDocs tdocs = collector.topDocs(start, count);
 
-			Float maxScoreReturn = tdocs.getMaxScore();
+			float maxScoreReturn = tdocs.getMaxScore();
 			log.debug("maxScoreReturn: " + maxScoreReturn);
 
 			ScoreDoc[] hits = tdocs.scoreDocs;
@@ -306,7 +306,7 @@ public class CRSearcher {
 
 	public HashMap<String, Object> search(String query, String[] searchedAttributes, int count, int start,
 			boolean explain, String[] sorting) throws IOException, CRException {
-		return search(query, searchedAttributes, count, start, explain, sorting, null);
+		return search(query, searchedAttributes, count, start, explain, sorting, new CRRequest());
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class CRSearcher {
 				}
 				if (ret != null) {
 					LinkedHashMap<Document, Float> coll = (LinkedHashMap<Document, Float>) ret.get(RESULT_RESULT_KEY);
-					Float maxScore = (Float) ret.get(RESULT_MAXSCORE_KEY);
+					float maxScore = (Float) ret.get(RESULT_MAXSCORE_KEY);
 					result.put(RESULT_RESULT_KEY, coll);
 					int totalhits = collector.getTotalHits();
 
@@ -387,12 +387,11 @@ public class CRSearcher {
 					// PLUG IN DIDYOUMEAN
 					boolean didyoumeanEnabledForRequest = StringUtils.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY),
 							true);
-
 					if (start == 0
 							&& didyoumeanenabled
 							&& didyoumeanEnabledForRequest
 							&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1
-									|| maxScore == Float.NaN || maxScore < this.didyoumeanminscore)) {
+							|| maxScore < this.didyoumeanminscore)) {
 
 						HashMap<String, Object> didyoumeanResult = didyoumean(query, parsedQuery, indexAccessor,
 								parser, searcher, sorting, userPermissions);
