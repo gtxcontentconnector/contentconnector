@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
+import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.portalnode.PortalNodeInteractor;
 /**
  * The datasource factory manages the gentics content repository datasources.
@@ -98,6 +99,26 @@ public final class CRDatabaseFactory {
    */
   public static boolean destroy() {
     return getInstance().destroyFactory();
+  }
+  
+  /**
+   * Clears all cache contents for the object with the given contentid.
+   * @param datasource datasource object on that the cache clear should
+   * 		be performed on.
+   * @param contentId id of the object that should be removed from the cache.
+   */
+  public static void clearCache(final Datasource datasource, 
+		  final String contentId) {
+	  PortalConnectorHelper.clearCache(datasource, contentId);
+  }
+  
+  /**
+   * Clears all cache contents for the given datasource.
+   * @param datasource datasource object on that the cache clear should
+   * 		be performed on.
+   */
+  public static void clearCache(final Datasource datasource) {
+	  PortalConnectorHelper.clearCache(datasource);
   }
 
   /**

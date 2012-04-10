@@ -50,12 +50,12 @@
 		<dependency>
 			<groupId>gentics-portalnode</groupId>
 			<artifactId>gentics-portalnode</artifactId>
-			<version>4_build_10113</version>
+			<version>4_build_12000</version>
 		</dependency>
 		<dependency>
 			<groupId>gentics-portalnode</groupId>
 			<artifactId>gentics-portalnode-api</artifactId>
-			<version>4_build_10113</version>
+			<version>4_build_12000</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.portlet</groupId>
