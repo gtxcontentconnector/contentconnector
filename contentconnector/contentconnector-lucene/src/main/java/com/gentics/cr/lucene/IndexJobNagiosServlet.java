@@ -70,11 +70,14 @@ public class IndexJobNagiosServlet extends HttpServlet {
 					response.getWriter().write("WorkerThread:NOK\n");
 				}
 				response.getWriter().write("ObjectsInIndex:" + loc.getDocCount() + "\n");
-				AbstractUpdateCheckerJob j = queue.getCurrentJob();
-				if (j != null) {
-					response.getWriter().write("CurrentJobObjectsToIndex:"
-							+ j.getObjectsToIndex() + "\n");
+				if (queue != null) {
+					AbstractUpdateCheckerJob j = queue.getCurrentJob();
+					if (j != null) {
+						response.getWriter().write("CurrentJobObjectsToIndex:"
+								+ j.getObjectsToIndex() + "\n");
+					}
 				}
+				
 			}
 		}
 	}
