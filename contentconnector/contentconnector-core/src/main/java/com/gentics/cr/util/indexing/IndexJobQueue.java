@@ -294,7 +294,7 @@ public class IndexJobQueue {
 	 * @return <code>true</code> if job was added, otherwhise it returns
 	 * <code>false</code>
 	 */
-	public final synchronized boolean addJob(final AbstractUpdateCheckerJob job) {
+	public final boolean addJob(final AbstractUpdateCheckerJob job) {
 		if (!queue.contains(job)) {
 			return queue.offer(job);
 		}
