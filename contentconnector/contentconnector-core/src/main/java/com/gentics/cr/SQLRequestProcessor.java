@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.generics.Lists;
+
 /**
  * {@link SQLRequestProcessor} fetches data from a mysql table
  * @author bigbear3001
@@ -52,51 +53,49 @@ public class SQLRequestProcessor extends RequestProcessor {
 	 * @see #mergeOnIdColumn
 	 */
 	private static final String MERGE_ON_IDCOLUMN_KEY = "merge_on_idcolumn";
-	
+
 	private String dshDriverClass = "";
 	private String dshUrl = "";
 	private String table = "";
-	private String[] columns = new String[]{};
-	private String idcolumn="";
-	
+	private String[] columns = new String[] {};
+	private String idcolumn = "";
+
 	/**
 	 * defines whetever multiple rows with the same id should be merged into one
 	 * resolvable. if <code>false</code> the last row overrides all previous
 	 * rows in the result. this is the default behaviour.
 	 */
 	private boolean mergeOnIdColumn = false;
-	
-	
+
 	/**
 	* Create a new instance of SQLRequestProcessor
 	* @param config
 	* @throws CRException
 	*/
-	public SQLRequestProcessor (CRConfig config) throws CRException {
+	public SQLRequestProcessor(CRConfig config) throws CRException {
 		super(config);
-		
+
 		Properties dshprop = ((CRConfigUtil) config).getDatasourceHandleProperties();
 		dshDriverClass = dshprop.getProperty(DSHDRIVERCLASS_KEY);
 		dshUrl = dshprop.getProperty(DSHURL_KEY);
-		
+
 		Properties dsprops = ((CRConfigUtil) config).getDatasourceProperties();
 		table = dsprops.getProperty(TABLEATTRIBUTE_KEY);
-		
+
 		String colatt = dsprops.getProperty(COLUMNATTRIBUTE_KEY);
 		if (colatt != null) {
 			columns = colatt.split(",");
 		}
-		 
-		idcolumn = dsprops.getProperty(IDCOLUMN_KEY);
-		
-		mergeOnIdColumn =
-			config.getBoolean(MERGE_ON_IDCOLUMN_KEY, mergeOnIdColumn);
-	}
-	
-	private static final Pattern CONTAINSONEOFPATTERN = Pattern.compile("object\\.([a-zA-Z0-9_]*)[ ]*CONTAINSONEOF[ ]*\\[(.*)\\]");
 
-	private String translate(String requestFilter)
-	{
+		idcolumn = dsprops.getProperty(IDCOLUMN_KEY);
+
+		mergeOnIdColumn = config.getBoolean(MERGE_ON_IDCOLUMN_KEY, mergeOnIdColumn);
+	}
+
+	private static final Pattern CONTAINSONEOFPATTERN = Pattern
+			.compile("object\\.([a-zA-Z0-9_]*)[ ]*CONTAINSONEOF[ ]*\\[(.*)\\]");
+
+	private String translate(String requestFilter) {
 		//TANSLATE CONTAINSONEOF
 		Matcher matcher = CONTAINSONEOFPATTERN.matcher(requestFilter);
 
@@ -108,15 +107,13 @@ public class SQLRequestProcessor extends RequestProcessor {
 		}
 		matcher.appendTail(buf);
 		requestFilter = buf.toString();
-		
+
 		return requestFilter.replaceAll("==", "=").replaceAll("\"", "'");
 	}
 
-	private String getStatement(String requestFilter, String[] attributes)
-	{
+	private String getStatement(String requestFilter, String[] attributes) {
 		String statement = new String();
-		if (attributes == null || attributes.length == 0
-				|| columns.length == 0) {
+		if (attributes == null || attributes.length == 0 || columns.length == 0) {
 			statement = "*";
 		} else {
 			if (!Arrays.asList(attributes).contains(idcolumn)) {
@@ -130,14 +127,12 @@ public class SQLRequestProcessor extends RequestProcessor {
 					statement += att;
 				}
 			}
-			
-			
+
 		}
-		statement = "SELECT " + statement + " FROM " + this.table + " WHERE "
-				+ translate(requestFilter);
+		statement = "SELECT " + statement + " FROM " + this.table + " WHERE " + translate(requestFilter);
 		return statement;
 	}
-	
+
 	/**
 	*
 	* getObjects 
@@ -153,8 +148,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 		Statement stmt = null;
 		ResultSet rset = null;
 		Connection conn = null;
-		String statementString = getStatement(request.getRequestFilter(),
-				request.getAttributeArray(idcolumn));
+		String statementString = getStatement(request.getRequestFilter(), request.getAttributeArray(idcolumn));
 		try {
 			Class.forName(this.dshDriverClass);
 			conn = DriverManager.getConnection(this.dshUrl);
@@ -162,8 +156,6 @@ public class SQLRequestProcessor extends RequestProcessor {
 			stmt = conn.createStatement();
 			logger.debug("Using statement: " + statementString);
 			rset = stmt.executeQuery(statementString);
-
-
 
 			if (mergeOnIdColumn) {
 				result = getMergedObjectsFromResultSet(rset);
@@ -177,9 +169,21 @@ public class SQLRequestProcessor extends RequestProcessor {
 			logger.error("Datasource driver not found.", e);
 			throw new CRException(e);
 		} finally {
-			try { if (rset != null) rset.close(); } catch(SQLException e) { }
-			try { if (stmt != null) stmt.close(); } catch(SQLException e) { }
-			try { if (conn != null) conn.close(); } catch(SQLException e) { }
+			try {
+				if (rset != null)
+					rset.close();
+			} catch (SQLException e) {
+			}
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+			}
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+			}
 		}
 		return result;
 	}
@@ -201,10 +205,11 @@ public class SQLRequestProcessor extends RequestProcessor {
 			}
 		} catch (SQLException e) {
 			logger.error("Error getting metadata from result.", e);
-			return new String[]{};
+			return new String[] {};
 		}
 		return colnames;
 	}
+
 	/**
 	 * Get merged objects as {@link CRResolvableBean}s from ResultSet. If we got more
 	 * than one row from.
@@ -212,8 +217,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 	 * @return list of {@link CRResolvableBean}s, <code>null</code> in case of
 	 * an error.
 	 */
-	private ArrayList<CRResolvableBean> getMergedObjectsFromResultSet(
-			final ResultSet rset) {
+	private ArrayList<CRResolvableBean> getMergedObjectsFromResultSet(final ResultSet rset) {
 		ArrayList<CRResolvableBean> objects = new ArrayList<CRResolvableBean>();
 		String[] colnames = getColumnNamesFromResultSet(rset);
 		try {
@@ -221,7 +225,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 				CRResolvableBean bean = new ComparableBean();
 				int idcolumnId = Arrays.asList(colnames).indexOf(idcolumn);
 				if (idcolumnId != -1) {
-					String id =  rset.getObject(idcolumnId + 1).toString();
+					String id = rset.getObject(idcolumnId + 1).toString();
 					bean.setContentid(id);
 					int indexOfBeanInObjects = objects.indexOf(bean);
 					if (indexOfBeanInObjects != -1) {
@@ -235,13 +239,11 @@ public class SQLRequestProcessor extends RequestProcessor {
 					if (rset.getObject(i) != null) {
 						Object attributeValue = rset.getObject(i);
 						Object oldattributeValue = bean.get(attributeName);
-						if (oldattributeValue != null 
-								&& !oldattributeValue.equals(attributeValue)) {
+						if (oldattributeValue != null && !oldattributeValue.equals(attributeValue)) {
 							List<Object> values;
 							if (oldattributeValue instanceof List) {
-								values = Lists.toSpecialList(oldattributeValue,
-										Object.class);
-								
+								values = Lists.toSpecialList(oldattributeValue, Object.class);
+
 							} else {
 								values = new Vector<Object>();
 								values.add(oldattributeValue);
@@ -266,8 +268,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 	 * @return list of {@link CRResolvableBean}s, <code>null</code> in case of
 	 * an error.
 	 */
-	private ArrayList<CRResolvableBean> getObjectsFromResultSet(
-			final ResultSet rset) {
+	private ArrayList<CRResolvableBean> getObjectsFromResultSet(final ResultSet rset) {
 		ArrayList<CRResolvableBean> objects = new ArrayList<CRResolvableBean>();
 		String[] colnames = getColumnNamesFromResultSet(rset);
 

@@ -180,8 +180,7 @@ public abstract class IndexLocation {
 
 		periodicalIndexConfig = initPeriodicalIndexConfig(config);
 
-		periodical_interval = config.getInteger(PERIODICAL_INTERVAL_KEY,
-				periodical_interval);
+		periodical_interval = config.getInteger(PERIODICAL_INTERVAL_KEY, periodical_interval);
 		String reopenString = config.getString(REOPEN_CHECK_KEY);
 		if (REOPEN_CHECK_TIMESTAMP.equals(reopenString)) {
 			reopencheck = true;
@@ -204,19 +203,16 @@ public abstract class IndexLocation {
 	 * @return configclass
 	 * @param config
 	 */
-	private IPeriodicalIndexConfig initPeriodicalIndexConfig(
-			final CRConfig config) {
+	private IPeriodicalIndexConfig initPeriodicalIndexConfig(final CRConfig config) {
 		String className = config.getString(PERIODICALCLASS_KEY);
 
 		if (className != null && className.length() != 0) {
 			try {
 				Class<?> clazz = Class.forName(className);
-				Constructor<?> constructor = clazz
-						.getConstructor(CRConfig.class);
+				Constructor<?> constructor = clazz.getConstructor(CRConfig.class);
 				return (IPeriodicalIndexConfig) constructor.newInstance(config);
 			} catch (Exception e) {
-				log.warn("Cound not init configured " + PERIODICALCLASS_KEY
-						+ ": " + className, e);
+				log.warn("Cound not init configured " + PERIODICALCLASS_KEY + ": " + className, e);
 			}
 		}
 		return new PeriodicalIndexStandardConfig(config);
@@ -230,8 +226,7 @@ public abstract class IndexLocation {
 		Hashtable<String, CRConfigUtil> indexParts = getCRMap();
 		for (String indexPartName : indexParts.keySet()) {
 			CRConfigUtil indexPartConfig = indexParts.get(indexPartName);
-			int interval = indexPartConfig.getInteger(PERIODICAL_INTERVAL_KEY,
-					-1);
+			int interval = indexPartConfig.getInteger(PERIODICAL_INTERVAL_KEY, -1);
 			if (interval != -1) {
 				if (indexIntervals == null) {
 					indexIntervals = new HashMap<String, Integer>();
@@ -251,9 +246,7 @@ public abstract class IndexLocation {
 					boolean interrupted = false;
 
 					try {
-						Thread.sleep(periodicalIndexConfig
-								.getFirstJobStartDelay()
-								* Constants.MILLISECONDS_IN_A_SECOND);
+						Thread.sleep(periodicalIndexConfig.getFirstJobStartDelay() * Constants.MILLISECONDS_IN_A_SECOND);
 					} catch (InterruptedException ex) {
 						interrupted = true;
 					}
@@ -262,8 +255,7 @@ public abstract class IndexLocation {
 							&& !Thread.currentThread().isInterrupted()) {
 						try {
 							createAllCRIndexJobs();
-							Thread.sleep(periodical_interval
-									* Constants.MILLISECONDS_IN_A_SECOND);
+							Thread.sleep(periodical_interval * Constants.MILLISECONDS_IN_A_SECOND);
 
 						} catch (InterruptedException ex) {
 							interrupted = true;
@@ -288,7 +280,6 @@ public abstract class IndexLocation {
 		return this.lockdetection;
 	}
 
-	
 	/**
 	 * Gets the index location configured in config.
 	 * 
@@ -297,13 +288,11 @@ public abstract class IndexLocation {
 	 *            returned
 	 * @return initialized IndexLocation
 	 */
-	public static synchronized IndexLocation getIndexLocation(
-			final CRConfig config) {
+	public static synchronized IndexLocation getIndexLocation(final CRConfig config) {
 		IndexLocation dir = null;
 		Object key = config;
 		if (key == null) {
-			log.error("COULD NOT FIND CONFIG FOR INDEXLOCATION" 
-					+ ". check config @ ");
+			log.error("COULD NOT FIND CONFIG FOR INDEXLOCATION" + ". check config @ ");
 			return null;
 		}
 		if (indexmap == null) {
@@ -334,60 +323,46 @@ public abstract class IndexLocation {
 		try {
 			Constructor<? extends IndexLocation> indexLocationConstructor = indexLocationClass
 					.getDeclaredConstructor(new Class[] { CRConfig.class });
-			IndexLocation instance = indexLocationConstructor
-					.newInstance(config);
+			IndexLocation instance = indexLocationConstructor.newInstance(config);
 			// Start worker threads on created indexLocation
 			instance.initializeQueue();
 			return instance;
 		} catch (SecurityException e) {
-			log.error(
-					"Cannot get Constructor(CRConfig) for IndexLocation class \""
-							+ indexLocationClass.getName() + "\"", e);
+			log.error("Cannot get Constructor(CRConfig) for IndexLocation class \"" + indexLocationClass.getName()
+					+ "\"", e);
 		} catch (NoSuchMethodException e) {
-			log.error(
-					"Cannot get Constructor(CRConfig) for IndexLocation class \""
-							+ indexLocationClass.getName() + "\"", e);
+			log.error("Cannot get Constructor(CRConfig) for IndexLocation class \"" + indexLocationClass.getName()
+					+ "\"", e);
 		} catch (IllegalArgumentException e) {
-			log.error("Cannot invoke Constructor for IndexLocation class \""
-					+ indexLocationClass.getName() + "\"", e);
+			log.error("Cannot invoke Constructor for IndexLocation class \"" + indexLocationClass.getName() + "\"", e);
 		} catch (InstantiationException e) {
-			log.error("Cannot invoke Constructor for IndexLocation class \""
-					+ indexLocationClass.getName() + "\"", e);
+			log.error("Cannot invoke Constructor for IndexLocation class \"" + indexLocationClass.getName() + "\"", e);
 		} catch (IllegalAccessException e) {
-			log.error("Cannot invoke Constructor for IndexLocation class \""
-					+ indexLocationClass.getName() + "\"", e);
+			log.error("Cannot invoke Constructor for IndexLocation class \"" + indexLocationClass.getName() + "\"", e);
 		} catch (InvocationTargetException e) {
-			log.error("Cannot invoke Constructor for IndexLocation class \""
-					+ indexLocationClass.getName() + "\"", e);
+			log.error("Cannot invoke Constructor for IndexLocation class \"" + indexLocationClass.getName() + "\"", e);
 		}
 		return new DefaultIndexLocation(config);
 	}
 
-	private static Class<? extends IndexLocation> getIndexLocationClass(
-			final CRConfig config) {
-		String indexLocationClassName = config
-				.getString(INDEX_LOCATION_CLASS_KEY);
+	private static Class<? extends IndexLocation> getIndexLocationClass(final CRConfig config) {
+		String indexLocationClassName = config.getString(INDEX_LOCATION_CLASS_KEY);
 		Class<? extends IndexLocation> indexLocationClass = null;
 		if (indexLocationClassName == null) {
 			Object indexesObject = config.get(CRConfig.CR_KEY);
-			if (indexesObject != null
-					&& indexesObject instanceof GenericConfiguration) {
-				GenericConfiguration indexes = (GenericConfiguration) config
-						.get(CRConfig.CR_KEY);
-				for (Entry<String, GenericConfiguration> subConfigEntry : indexes
-						.getSubConfigs().entrySet()) {
+			if (indexesObject != null && indexesObject instanceof GenericConfiguration) {
+				GenericConfiguration indexes = (GenericConfiguration) config.get(CRConfig.CR_KEY);
+				for (Entry<String, GenericConfiguration> subConfigEntry : indexes.getSubConfigs().entrySet()) {
 					String subConfigKey = subConfigEntry.getKey();
 					GenericConfiguration subConfig = subConfigEntry.getValue();
 					Class<? extends AbstractUpdateCheckerJob> subConfigClass = getUpdateJobImplementationClass(new CRConfigUtil(
 							subConfig, config.getName() + "." + subConfigKey));
 					try {
-						String nextIndexLocationClassName = subConfigClass
-								.getField("INDEXLOCATIONCLASS")
+						String nextIndexLocationClassName = subConfigClass.getField("INDEXLOCATIONCLASS")
 								.get(subConfigClass).toString();
 						if (indexLocationClassName == null) {
 							indexLocationClassName = nextIndexLocationClassName;
-						} else if (!indexLocationClassName
-								.equals(nextIndexLocationClassName)) {
+						} else if (!indexLocationClassName.equals(nextIndexLocationClassName)) {
 							// TODO add advanced error handling. e.g. different
 							// classes can be
 							// valid if they are subclasses of each other. In
@@ -398,39 +373,29 @@ public abstract class IndexLocation {
 									+ " same value in the field \"INDEXLOCATIONCLASS\".");
 						}
 					} catch (NoSuchFieldException e) {
-						log.error(subConfigClass.getName()
-								+ " has no field named "
-								+ "\"INDEXLOCATIONCLASS\"", e);
+						log.error(subConfigClass.getName() + " has no field named " + "\"INDEXLOCATIONCLASS\"", e);
 					} catch (SecurityException e) {
-						log.error(
-								"Cannot access Field \"INDEXLOCATIONCLASS\" on "
-										+ subConfigClass.getName() + ".", e);
+						log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on " + subConfigClass.getName() + ".", e);
 					} catch (IllegalArgumentException e) {
 						log.error(
-								"Error getting static Field \"INDEXLOCATIONLCASS\" of"
-										+ " class " + subConfigClass.getName(),
-								e);
+							"Error getting static Field \"INDEXLOCATIONLCASS\" of" + " class "
+									+ subConfigClass.getName(),
+							e);
 					} catch (IllegalAccessException e) {
-						log.error(
-								"Cannot access Field \"INDEXLOCATIONCLASS\" on "
-										+ subConfigClass.getName() + ".", e);
+						log.error("Cannot access Field \"INDEXLOCATIONCLASS\" on " + subConfigClass.getName() + ".", e);
 					}
 				}
 			}
 		}
 		if (indexLocationClassName != null) {
 			try {
-				Class<?> indexLocationClassGeneric = Class
-						.forName(indexLocationClassName);
-				indexLocationClass = indexLocationClassGeneric
-						.asSubclass(IndexLocation.class);
+				Class<?> indexLocationClassGeneric = Class.forName(indexLocationClassName);
+				indexLocationClass = indexLocationClassGeneric.asSubclass(IndexLocation.class);
 			} catch (ClassNotFoundException e) {
-				log.error(
-						"Cannot find class the IndexLocationClass defined in the"
-								+ " config or your UpdateJobImplementation. Therefore i cannot"
-								+ " create a specific IndexLocation for the configured"
-								+ " AbstractUpdateCheckerJob implementation.",
-						e);
+				log.error("Cannot find class the IndexLocationClass defined in the"
+						+ " config or your UpdateJobImplementation. Therefore i cannot"
+						+ " create a specific IndexLocation for the configured"
+						+ " AbstractUpdateCheckerJob implementation.", e);
 			}
 		}
 		if (indexLocationClass == null) {
@@ -447,19 +412,16 @@ public abstract class IndexLocation {
 	 *            {@link CRConfig} to
 	 * @return
 	 */
-	private static Class<? extends AbstractUpdateCheckerJob> getDeleteJobImplementationClass(
-			CRConfig config) {
+	private static Class<? extends AbstractUpdateCheckerJob> getDeleteJobImplementationClass(CRConfig config) {
 		Class<?> deletejobImplementationClassGeneric;
 		Class<? extends AbstractUpdateCheckerJob> deletejobImplementationClass;
-		String deletejobimplementationClassName = config
-				.getString(DELETEJOBCLASS_KEY);
+		String deletejobimplementationClassName = config.getString(DELETEJOBCLASS_KEY);
 		if (deletejobimplementationClassName == null) {
 			deletejobimplementationClassName = DEFAULT_DELETEJOBCLASS;
 		}
 
 		try {
-			deletejobImplementationClassGeneric = Class
-					.forName(deletejobimplementationClassName);
+			deletejobImplementationClassGeneric = Class.forName(deletejobimplementationClassName);
 			deletejobImplementationClass = deletejobImplementationClassGeneric
 					.asSubclass(AbstractUpdateCheckerJob.class);
 			return deletejobImplementationClass;
@@ -476,19 +438,16 @@ public abstract class IndexLocation {
 	 *            {@link CRConfig} to
 	 * @return
 	 */
-	private static Class<? extends AbstractUpdateCheckerJob> getOptimizeJobImplementationClass(
-			CRConfig config) {
+	private static Class<? extends AbstractUpdateCheckerJob> getOptimizeJobImplementationClass(CRConfig config) {
 		Class<?> optimizejobImplementationClassGeneric;
 		Class<? extends AbstractUpdateCheckerJob> optimizejobImplementationClass;
-		String optimizejobimplementationClassName = config
-				.getString(OPTIMIZEJOBCLASS_KEY);
+		String optimizejobimplementationClassName = config.getString(OPTIMIZEJOBCLASS_KEY);
 		if (optimizejobimplementationClassName == null) {
 			optimizejobimplementationClassName = DEFAULT_OPTIMIZEJOBCLASS;
 		}
 
 		try {
-			optimizejobImplementationClassGeneric = Class
-					.forName(optimizejobimplementationClassName);
+			optimizejobImplementationClassGeneric = Class.forName(optimizejobimplementationClassName);
 			optimizejobImplementationClass = optimizejobImplementationClassGeneric
 					.asSubclass(AbstractUpdateCheckerJob.class);
 			return optimizejobImplementationClass;
@@ -505,19 +464,16 @@ public abstract class IndexLocation {
 	 *            {@link CRConfig} to
 	 * @return
 	 */
-	private static Class<? extends AbstractUpdateCheckerJob> getUpdateJobImplementationClass(
-			CRConfig config) {
+	private static Class<? extends AbstractUpdateCheckerJob> getUpdateJobImplementationClass(CRConfig config) {
 		Class<?> updatejobImplementationClassGeneric;
 		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass;
-		String updatejobimplementationClassName = config
-				.getString(UPDATEJOBCLASS_KEY);
+		String updatejobimplementationClassName = config.getString(UPDATEJOBCLASS_KEY);
 		if (updatejobimplementationClassName == null) {
 			updatejobimplementationClassName = DEFAULT_UPDATEJOBCLASS;
 		}
 
 		try {
-			updatejobImplementationClassGeneric = Class
-					.forName(updatejobimplementationClassName);
+			updatejobImplementationClassGeneric = Class.forName(updatejobimplementationClassName);
 			updatejobImplementationClass = updatejobImplementationClassGeneric
 					.asSubclass(AbstractUpdateCheckerJob.class);
 			return updatejobImplementationClass;
@@ -561,22 +517,18 @@ public abstract class IndexLocation {
 	 * @param configmap
 	 * @return
 	 */
-	public boolean createCRIndexJob(CRConfig config,
-			Hashtable<String, CRConfigUtil> configmap) {
+	public boolean createCRIndexJob(CRConfig config, Hashtable<String, CRConfigUtil> configmap) {
 		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass = getUpdateJobImplementationClass(config);
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
 			Constructor<? extends AbstractUpdateCheckerJob> updatejobImplementationClassConstructor = updatejobImplementationClass
-					.getConstructor(new Class[] { CRConfig.class,
-							IndexLocation.class, Hashtable.class });
-			Object indexJobObject = updatejobImplementationClassConstructor
-					.newInstance(config, this, configmap);
+					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, Hashtable.class });
+			Object indexJobObject = updatejobImplementationClassConstructor.newInstance(config, this, configmap);
 			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
 			updateIndexJobCreationTime(config);
 			return queue.addJob(indexJob);
 		} catch (ClassCastException e) {
-			log.error("Please configure an implementation of "
-					+ AbstractUpdateCheckerJob.class + " ", e);
+			log.error("Please configure an implementation of " + AbstractUpdateCheckerJob.class + " ", e);
 		} catch (SecurityException e) {
 			log.error("Cannot load class for creating a new IndexJob", e);
 		} catch (NoSuchMethodException e) {
@@ -631,14 +583,12 @@ public abstract class IndexLocation {
 			int partInterval = getInterval(partName);
 			boolean createJob = true;
 			if (currentJob != null && currentJob.identifyer.equals(partName)) {
-				log.debug("skipping creation of " + partName
-						+ " because its already running.");
+				log.debug("skipping creation of " + partName + " because its already running.");
 				createJob = false;
 			} else if (partInterval != -1) {
 				long now = new Date().getTime();
 				if (indexJobCreationTimes.containsKey(partName)) {
-					long lastRun = indexJobCreationTimes.get(partName)
-							.getTime();
+					long lastRun = indexJobCreationTimes.get(partName).getTime();
 					long intervalMilliseconds = (partInterval * Constants.MILLISECONDS_IN_A_SECOND);
 					if (now - lastRun < intervalMilliseconds) {
 						createJob = false;
@@ -646,8 +596,7 @@ public abstract class IndexLocation {
 				}
 			}
 			if (createJob) {
-				createCRIndexJob(new CRConfigUtil(indexJobConfiguration,
-						partName), configs);
+				createCRIndexJob(new CRConfigUtil(indexJobConfiguration, partName), configs);
 			}
 
 		}
@@ -664,15 +613,12 @@ public abstract class IndexLocation {
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
 			Constructor<? extends AbstractUpdateCheckerJob> deletejobImplementationClassConstructor = deletejobImplementationClass
-					.getConstructor(new Class[] { CRConfig.class,
-							IndexLocation.class, Hashtable.class });
-			Object indexJobObject = deletejobImplementationClassConstructor
-					.newInstance(config, this, null);
+					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, Hashtable.class });
+			Object indexJobObject = deletejobImplementationClassConstructor.newInstance(config, this, null);
 			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
 			return this.queue.addJob(indexJob);
 		} catch (ClassCastException e) {
-			log.error("Please configure an implementation of "
-					+ AbstractUpdateCheckerJob.class + " ", e);
+			log.error("Please configure an implementation of " + AbstractUpdateCheckerJob.class + " ", e);
 		} catch (SecurityException e) {
 			log.error("Cannot load class for creating a new IndexJob", e);
 		} catch (NoSuchMethodException e) {
@@ -699,15 +645,12 @@ public abstract class IndexLocation {
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
 			Constructor<? extends AbstractUpdateCheckerJob> optimizejobImplementationClassConstructor = optimizejobImplementationClass
-					.getConstructor(new Class[] { CRConfig.class,
-							IndexLocation.class, Hashtable.class });
-			Object indexJobObject = optimizejobImplementationClassConstructor
-					.newInstance(config, this, null);
+					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, Hashtable.class });
+			Object indexJobObject = optimizejobImplementationClassConstructor.newInstance(config, this, null);
 			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
 			return this.queue.addJob(indexJob);
 		} catch (ClassCastException e) {
-			log.error("Please configure an implementation of "
-					+ AbstractUpdateCheckerJob.class + " ", e);
+			log.error("Please configure an implementation of " + AbstractUpdateCheckerJob.class + " ", e);
 		} catch (SecurityException e) {
 			log.error("Cannot load class for creating a new IndexJob", e);
 		} catch (NoSuchMethodException e) {
@@ -729,17 +672,14 @@ public abstract class IndexLocation {
 	 */
 	public final Hashtable<String, CRConfigUtil> getCRMap() {
 		Hashtable<String, CRConfigUtil> map = new Hashtable<String, CRConfigUtil>();
-		GenericConfiguration crConfigs = (GenericConfiguration) config
-				.get(CR_KEY);
+		GenericConfiguration crConfigs = (GenericConfiguration) config.get(CR_KEY);
 		if (crConfigs != null) {
-			Hashtable<String, GenericConfiguration> configs = crConfigs
-					.getSubConfigs();
+			Hashtable<String, GenericConfiguration> configs = crConfigs.getSubConfigs();
 
 			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				try {
-					map.put(config.getName() + "." + e.getKey(),
-							new CRConfigUtil(e.getValue(), config.getName()
-									+ "." + e.getKey()));
+					map.put(config.getName() + "." + e.getKey(), new CRConfigUtil(e.getValue(), config.getName() + "."
+							+ e.getKey()));
 				} catch (Exception ex) {
 					String name = "<no config name>";
 					String key = "<no key>";
@@ -750,13 +690,11 @@ public abstract class IndexLocation {
 					if (config != null && config.getName() != null) {
 						name = config.getName();
 					}
-					log.error("Error while creating cr map for " + name + "."
-							+ key + " - " + cex.getMessage(), cex);
+					log.error("Error while creating cr map for " + name + "." + key + " - " + cex.getMessage(), cex);
 				}
 			}
 		} else {
-			log.debug("There are no crs configured for indexing. Config: "
-					+ config.getName());
+			log.debug("There are no crs configured for indexing. Config: " + config.getName());
 		}
 		return map;
 	}
@@ -828,36 +766,29 @@ public abstract class IndexLocation {
 	 */
 	private void registerExtensions(CRConfig config) {
 		HashMap<String, IndexExtension> extensionMap = new HashMap<String, IndexExtension>();
-		GenericConfiguration extensionConfiguration = (GenericConfiguration) config
-				.get(INDEX_EXTENSIONS_KEY);
+		GenericConfiguration extensionConfiguration = (GenericConfiguration) config.get(INDEX_EXTENSIONS_KEY);
 		if (extensionConfiguration != null) {
-			Hashtable<String, GenericConfiguration> configs = extensionConfiguration
-					.getSubConfigs();
+			Hashtable<String, GenericConfiguration> configs = extensionConfiguration.getSubConfigs();
 
 			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				String indexExtensionName = e.getKey();
 				IndexExtension instance = null;
-				CRConfig extensionConfig = new CRConfigUtil(e.getValue(),
-						INDEX_EXTENSIONS_KEY + "." + indexExtensionName);
+				CRConfig extensionConfig = new CRConfigUtil(e.getValue(), INDEX_EXTENSIONS_KEY + "."
+						+ indexExtensionName);
 				try {
 					Class<?> extensionClassGeneric = Class
-							.forName(extensionConfig
-									.getString(INDEX_EXTENSION_CLASS_KEY));
+							.forName(extensionConfig.getString(INDEX_EXTENSION_CLASS_KEY));
 					Class<? extends IndexExtension> extensionClass = extensionClassGeneric
 							.asSubclass(IndexExtension.class);
 					Constructor<? extends IndexExtension> extensionConstructor = extensionClass
-							.getDeclaredConstructor(new Class[] {
-									CRConfig.class, IndexLocation.class });
-					instance = extensionConstructor.newInstance(new Object[] {
-							extensionConfig, this });
+							.getDeclaredConstructor(new Class[] { CRConfig.class, IndexLocation.class });
+					instance = extensionConstructor.newInstance(new Object[] { extensionConfig, this });
 				} catch (Exception ex) {
-					log.error("Could not create instance of IndexExtension for "
-							+ indexExtensionName);
+					log.error("Could not create instance of IndexExtension for " + indexExtensionName);
 				}
 
 				if (instance == null) {
-					log.error("Cannot get index location for "
-							+ indexExtensionName);
+					log.error("Cannot get index location for " + indexExtensionName);
 				} else {
 					extensionMap.put(indexExtensionName, instance);
 				}

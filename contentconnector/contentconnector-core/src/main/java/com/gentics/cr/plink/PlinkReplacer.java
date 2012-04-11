@@ -18,6 +18,7 @@ public class PlinkReplacer implements PLinkReplacer {
 
 	protected PlinkProcessor plinkProc;
 	protected CRRequest request;
+
 	/**
 	 * Create instance
 	 * @param proc {@link PlinkProcessor} to handle the PLinks
@@ -28,12 +29,12 @@ public class PlinkReplacer implements PLinkReplacer {
 		this.plinkProc.deployObjects(request.getObjectsToDeploy());
 		this.request = request;
 	}
-	
+
 	/**
 	 * Create an instance without a request
 	 * @param proc {@link PlinkProcessor} to handle the PLinks
 	 */
-	public PlinkReplacer(PlinkProcessor proc){
+	public PlinkReplacer(PlinkProcessor proc) {
 		this.plinkProc = proc;
 	}
 
@@ -43,6 +44,6 @@ public class PlinkReplacer implements PLinkReplacer {
 	 * @return 
 	 */
 	public String replacePLink(PLinkInformation plink) {
-		return this.plinkProc.getLink(plink,request);
+		return this.plinkProc.getLink(plink, request);
 	}
 }

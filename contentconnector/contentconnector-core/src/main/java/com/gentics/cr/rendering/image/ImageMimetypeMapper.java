@@ -29,10 +29,13 @@ public final class ImageMimetypeMapper {
 	 * Filenameattribute.
 	 */
 	private static final String FILENAME_ATTRIBUTE = "filename";
+
 	/**
 	 * private constructor to prevent instantiation.
 	 */
-	private ImageMimetypeMapper() { }
+	private ImageMimetypeMapper() {
+	}
+
 	/**
 	 * Mimetypemap.
 	 */
@@ -41,23 +44,22 @@ public final class ImageMimetypeMapper {
 	 * Extensionmap.
 	 */
 	private static Properties extmap = new Properties();
-	
+
 	static {
 		//Load mimemap
 		try {
-			mimemap.load(ImageMimetypeMapper.class.getResourceAsStream(
-					"mimemap.properties"));
+			mimemap.load(ImageMimetypeMapper.class.getResourceAsStream("mimemap.properties"));
 		} catch (IOException e) {
 			log.error("Error while loading mimemap.", e);
 		}
 		//Load extmap
 		try {
-			extmap.load(ImageMimetypeMapper.class.getResourceAsStream(
-						"extmap.properties"));
+			extmap.load(ImageMimetypeMapper.class.getResourceAsStream("extmap.properties"));
 		} catch (IOException e) {
 			log.error("Error while loading extmap.", e);
 		}
 	}
+
 	/**
 	 * Maps the image mimetype to the image type.
 	 * @param mimetype mime
@@ -70,6 +72,7 @@ public final class ImageMimetypeMapper {
 			return DEFAULT_IMAGE_TYPE;
 		}
 	}
+
 	/**
 	 * Maps the filename to the image type.
 	 * @param filename filename
@@ -78,13 +81,13 @@ public final class ImageMimetypeMapper {
 	public static String getTypeFromFilename(final String filename) {
 		if (filename != null) {
 			int dot = filename.lastIndexOf('.');
-		    String ext = filename.substring(dot + 1);
-		    return extmap.getProperty(ext, DEFAULT_IMAGE_TYPE);
+			String ext = filename.substring(dot + 1);
+			return extmap.getProperty(ext, DEFAULT_IMAGE_TYPE);
 		} else {
 			return DEFAULT_IMAGE_TYPE;
 		}
 	}
-	
+
 	/**
 	 * Maps the beans mimetype or filename (whatever is present) to the image
 	 * type.
@@ -105,7 +108,7 @@ public final class ImageMimetypeMapper {
 			}
 		}
 		return type;
-		
+
 	}
 
 }

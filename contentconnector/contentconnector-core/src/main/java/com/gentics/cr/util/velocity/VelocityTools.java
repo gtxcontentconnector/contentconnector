@@ -10,6 +10,7 @@ import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.tools.generic.RenderTool;
 import org.apache.velocity.tools.generic.ResourceTool;
 import org.apache.velocity.tools.generic.SortTool;
+
 /**
  * Generic velocity tools in a bean that can be accessed by velocity.
  * @author bigbear3001
@@ -57,7 +58,7 @@ public class VelocityTools {
 	 * Velocity date tool from velocity tools.
 	 */
 	private static IteratorTool iterator = new IteratorTool();
-	
+
 	//getters for the tools
 	/**
 	 * @return the date tool
@@ -65,54 +66,63 @@ public class VelocityTools {
 	public DateTool getDate() {
 		return date;
 	}
+
 	/**
 	 * @return the math tool
 	 */
 	public MathTool getMath() {
 		return math;
 	}
+
 	/**
 	 * @return the number tool
 	 */
 	public NumberTool getNumber() {
 		return number;
 	}
+
 	/**
 	 * @return the render tool
 	 */
 	public RenderTool getRender() {
 		return render;
 	}
+
 	/**
 	 * @return the escape tool
 	 */
 	public EscapeTool getEsc() {
 		return esc;
 	}
+
 	/**
 	 * @return the resource tool
 	 */
 	public ResourceTool getResource() {
 		return resource;
 	}
+
 	/**
 	 * @return the alternator tool
 	 */
 	public AlternatorTool getAlternator() {
 		return alternator;
 	}
+
 	/**
 	 * @return the list tool
 	 */
 	public ListTool getList() {
 		return list;
 	}
+
 	/**
 	 * @return the sort tool
 	 */
 	public SortTool getSort() {
 		return sort;
 	}
+
 	/**
 	 * @return the iterator tool
 	 */

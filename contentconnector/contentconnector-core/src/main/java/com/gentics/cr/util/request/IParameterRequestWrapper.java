@@ -1,4 +1,5 @@
 package com.gentics.cr.util.request;
+
 /**
  * This Class can be used to implement wrappers to wrap ServletRequests and PortletRequests to fetch the request parameters
  * 
@@ -9,9 +10,9 @@ package com.gentics.cr.util.request;
  *
  */
 public interface IParameterRequestWrapper {
-	
+
 	public Object getParameter(String key);
-	
+
 	public String[] getParameterValues(String key);
 
 }

@@ -18,9 +18,10 @@ public class ArchiveUtilTest {
 		ArchiverUtil.generateGZippedTar(stream, textFile);
 		byte[] result = stream.toByteArray();
 		long unCompressedFileSize = FileUtils.sizeOf(textFile);
-		assertTrue("the compressed file is larger (" +result.length + ") than the original file (" + unCompressedFileSize +  ")", unCompressedFileSize > result.length);
+		assertTrue("the compressed file is larger (" + result.length + ") than the original file ("
+				+ unCompressedFileSize + ")", unCompressedFileSize > result.length);
 	}
-	
+
 	@Test
 	public void testCompressionFullDirectory() throws IOException, URISyntaxException {
 		File directory = new File(getClass().getResource("").toURI());
@@ -28,6 +29,7 @@ public class ArchiveUtilTest {
 		ArchiverUtil.generateGZippedTar(stream, directory);
 		byte[] result = stream.toByteArray();
 		long unCompressedFileSize = FileUtils.sizeOfDirectory(directory);
-		assertTrue("the compressed file is larger (" +result.length + ") than the original file (" + unCompressedFileSize +  ")", unCompressedFileSize > result.length);
+		assertTrue("the compressed file is larger (" + result.length + ") than the original file ("
+				+ unCompressedFileSize + ")", unCompressedFileSize > result.length);
 	}
 }

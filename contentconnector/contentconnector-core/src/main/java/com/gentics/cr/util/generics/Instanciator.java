@@ -22,7 +22,8 @@ public final class Instanciator {
 	/**
 	 * private constructor so the utility class couldn't be instantiated.
 	 */
-	private Instanciator() { }
+	private Instanciator() {
+	}
 
 	/**
 	 * try to get an instance of a class with multiple parameter variations.
@@ -32,8 +33,7 @@ public final class Instanciator {
 	 * @param prioritizedParameters array with arrays with parameters
 	 * @return instantiated object of given class, null in case of an error.
 	 */
-	public static Object getInstance(final String className,
-			final Object[][] prioritizedParameters) {
+	public static Object getInstance(final String className, final Object[][] prioritizedParameters) {
 		if (className != null) {
 			try {
 				Class<?> clazz = Class.forName(className);
@@ -46,6 +46,7 @@ public final class Instanciator {
 			return null;
 		}
 	}
+
 	/**
 	 * try to get an instance of a class with multiple parameter variations.
 	 * <br />
@@ -54,46 +55,34 @@ public final class Instanciator {
 	 * @param prioritizedParameters array with arrays with parameters
 	 * @return instantiated object of given class, null in case of an error.
 	 */
-	public static Object getInstance(final Class<?> clazz,
-			final Object[][] prioritizedParameters) {
+	public static Object getInstance(final Class<?> clazz, final Object[][] prioritizedParameters) {
 		Object object = null;
 		for (Object[] parameters : prioritizedParameters) {
 			Constructor<?> constructor;
 			Class<?>[] parameterClasses = getParameterClasses(parameters);
 			try {
 				if (object == null) {
-					constructor =
-							getMatchingConstructor(clazz, parameterClasses);
+					constructor = getMatchingConstructor(clazz, parameterClasses);
 					if (constructor != null) {
 						object = constructor.newInstance(parameters);
 					}
 					break;
 				}
 			} catch (SecurityException e) {
-				logger.debug("Cannot instanciate object for class " + clazz
-						+ " with parameters ("
-						+ getReadableStringFromClassArray(parameterClasses)
-						+ ").", e);
+				logger.debug("Cannot instanciate object for class " + clazz + " with parameters ("
+						+ getReadableStringFromClassArray(parameterClasses) + ").", e);
 			} catch (IllegalArgumentException e) {
-				logger.debug("Cannot instanciate object for class " + clazz
-						+ " with parameters ("
-						+ getReadableStringFromClassArray(parameterClasses)
-						+ ").", e);
+				logger.debug("Cannot instanciate object for class " + clazz + " with parameters ("
+						+ getReadableStringFromClassArray(parameterClasses) + ").", e);
 			} catch (InstantiationException e) {
-				logger.debug("Cannot instanciate object for class " + clazz
-						+ " with parameters ("
-						+ getReadableStringFromClassArray(parameterClasses)
-						+ ").", e);
+				logger.debug("Cannot instanciate object for class " + clazz + " with parameters ("
+						+ getReadableStringFromClassArray(parameterClasses) + ").", e);
 			} catch (IllegalAccessException e) {
-				logger.debug("Cannot instanciate object for class " + clazz
-						+ " with parameters ("
-						+ getReadableStringFromClassArray(parameterClasses)
-						+ ").", e);
+				logger.debug("Cannot instanciate object for class " + clazz + " with parameters ("
+						+ getReadableStringFromClassArray(parameterClasses) + ").", e);
 			} catch (InvocationTargetException e) {
-				logger.debug("Cannot instanciate object for class " + clazz
-						+ " with parameters ("
-						+ getReadableStringFromClassArray(parameterClasses)
-						+ ").", e);
+				logger.debug("Cannot instanciate object for class " + clazz + " with parameters ("
+						+ getReadableStringFromClassArray(parameterClasses) + ").", e);
 			}
 		}
 		return object;
@@ -108,13 +97,10 @@ public final class Instanciator {
 	 * @return the {@link Constructor} for the parameter types. null in case no
 	 * matching constructor is found.
 	 */
-	public static Constructor<?> getMatchingConstructor(final Class<?> clazz,
-			final Class<?>[] parameterTypes) {
+	public static Constructor<?> getMatchingConstructor(final Class<?> clazz, final Class<?>[] parameterTypes) {
 		for (Constructor<?> constructor : clazz.getConstructors()) {
-			Class<?>[] constructorParameterTypes =
-					constructor.getParameterTypes();
-			if (parameterTypesMatch(constructorParameterTypes,
-					parameterTypes)) {
+			Class<?>[] constructorParameterTypes = constructor.getParameterTypes();
+			if (parameterTypesMatch(constructorParameterTypes, parameterTypes)) {
 				return constructor;
 			}
 		}
@@ -131,31 +117,23 @@ public final class Instanciator {
 	 * @return true if you can call the constructor with the target parameters
 	 * with the source parameters.
 	 */
-	public static boolean parameterTypesMatch(
-			final Class<?>[] targetParameterTypes,
+	public static boolean parameterTypesMatch(final Class<?>[] targetParameterTypes,
 			final Class<?>[] sourceParameterTypes) {
 		if (targetParameterTypes.length == sourceParameterTypes.length) {
 			int matches = 0;
 			for (int i = 0; i < targetParameterTypes.length; i++) {
 				if (sourceParameterTypes[i] == null) {
 					matches++;
-				} else if (targetParameterTypes[i].isAssignableFrom(
-						sourceParameterTypes[i])) {
+				} else if (targetParameterTypes[i].isAssignableFrom(sourceParameterTypes[i])) {
 					matches++;
 				} else if (targetParameterTypes[i].isPrimitive()) {
-					Class<?> primitiveParameterType =
-							getPrimitiveType(sourceParameterTypes[i]);
-					if (primitiveParameterType != null
-							&& primitiveParameterType.equals(
-									targetParameterTypes[i])) {
+					Class<?> primitiveParameterType = getPrimitiveType(sourceParameterTypes[i]);
+					if (primitiveParameterType != null && primitiveParameterType.equals(targetParameterTypes[i])) {
 						matches++;
 					}
 				} else if (sourceParameterTypes[i].isPrimitive()) {
-					Class<?> primitiveParameterType =
-							getPrimitiveType(targetParameterTypes[i]);
-					if (primitiveParameterType != null
-							&& primitiveParameterType.equals(
-									sourceParameterTypes[i])) {
+					Class<?> primitiveParameterType = getPrimitiveType(targetParameterTypes[i]);
+					if (primitiveParameterType != null && primitiveParameterType.equals(sourceParameterTypes[i])) {
 						matches++;
 					}
 				}
@@ -186,6 +164,7 @@ public final class Instanciator {
 		}
 		return null;
 	}
+
 	/**
 	 * Get an array with classes of the objects in the given array.
 	 * @param parameters array with objects
@@ -206,8 +185,7 @@ public final class Instanciator {
 	 * @param classes array with classes
 	 * @return comma separated {@link String} with class names
 	 */
-	public static String getReadableStringFromClassArray(
-			final Class<?>[] classes) {
+	public static String getReadableStringFromClassArray(final Class<?>[] classes) {
 		StringBuffer returnString = new StringBuffer();
 		for (Class<?> clazz : classes) {
 			if (returnString.length() != 0) {

@@ -11,7 +11,7 @@ import com.gentics.cr.CRResolvableBean;
  *
  */
 public final class BreadcrumbHelper {
-	
+
 	/**
 	 * default name of the folderattribute, used when no explicit attributename
 	 * was given.
@@ -21,8 +21,9 @@ public final class BreadcrumbHelper {
 	/**
 	 * Private Constructor to prevent initialization.
 	 */
-	private BreadcrumbHelper() { }
-	
+	private BreadcrumbHelper() {
+	}
+
 	/**
 	 * Get all parents of the given resolvable using
 	 * {@value #DEFAULT_FOLDERATTRIBUTE} as attribute to get the parent element.
@@ -32,8 +33,7 @@ public final class BreadcrumbHelper {
 	 * [..] => Folders<br>
 	 * [n]  => Page<br>
 	 */
-	public static List<CRResolvableBean> getParents(
-			final CRResolvableBean resolvable) {
+	public static List<CRResolvableBean> getParents(final CRResolvableBean resolvable) {
 		return getParents(resolvable, DEFAULT_FOLDERATTRIBUTE);
 	}
 
@@ -46,17 +46,15 @@ public final class BreadcrumbHelper {
 	 * [..] => Folders<br>
 	 * [n]  => Page<br>
 	 */
-	public static List<CRResolvableBean> getParents(
-			final CRResolvableBean resolvable, final String folderattribute) {
+	public static List<CRResolvableBean> getParents(final CRResolvableBean resolvable, final String folderattribute) {
 		Vector<CRResolvableBean> parents = new Vector<CRResolvableBean>();
 		CRResolvableBean parent;
 		CRResolvableBean current = resolvable;
-		while ((parent = (CRResolvableBean) current.get(folderattribute))
-				!= null) {
+		while ((parent = (CRResolvableBean) current.get(folderattribute)) != null) {
 			parents.add(0, parent);
 			current = parent;
 		}
 		return parents;
 	};
-	
+
 }

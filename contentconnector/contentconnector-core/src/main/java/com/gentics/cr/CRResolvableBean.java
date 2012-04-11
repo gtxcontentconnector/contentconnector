@@ -60,7 +60,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * generated unique serial version id.
 	 */
 	private static final long serialVersionUID = -8743515908056719834L;
-	
+
 	/**
 	 * Log4j logger.
 	 */
@@ -178,8 +178,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 *            The attributenames as an array of strings that should be
 	 *            fetched from the Resolveable
 	 */
-	public CRResolvableBean(final Resolvable resolvable,
-			final String[] attributeNames) {
+	public CRResolvableBean(final Resolvable resolvable, final String[] attributeNames) {
 		init(resolvable, attributeNames);
 	}
 
@@ -192,8 +191,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * @param attributeNames
 	 *            TODO javadoc
 	 */
-	private void init(final Resolvable givenResolvable,
-			final String[] attributeNames) {
+	private void init(final Resolvable givenResolvable, final String[] attributeNames) {
 		if (givenResolvable != null) {
 			this.resolvable = givenResolvable;
 			this.childRepository = new Vector<CRResolvableBean>();
@@ -206,26 +204,20 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 				this.obj_type = givenResolvable.get("obj_type").toString();
 			}
 			if (givenResolvable.get("mother_obj_id") != null) {
-				this.mother_id = givenResolvable.get("mother_obj_id")
-						.toString();
+				this.mother_id = givenResolvable.get("mother_obj_id").toString();
 			}
 			if (givenResolvable.get("mother_obj_type") != null) {
-				this.mother_type = givenResolvable.get("mother_obj_type")
-						.toString();
+				this.mother_type = givenResolvable.get("mother_obj_type").toString();
 			}
 
 			this.attrMap = new Hashtable<String, Object>();
 			if (attributeNames != null) {
-				ArrayList<String> attributeList = new ArrayList<String>(Arrays
-						.asList(attributeNames));
-				String[] cleanedAttributeNames = attributeList
-						.toArray(attributeNames);
+				ArrayList<String> attributeList = new ArrayList<String>(Arrays.asList(attributeNames));
+				String[] cleanedAttributeNames = attributeList.toArray(attributeNames);
 				if (attributeList.contains("binarycontenturl")) {
-					this.attrMap.put("binarycontenturl", "ccr_bin?contentid="
-							+ this.contentid);
+					this.attrMap.put("binarycontenturl", "ccr_bin?contentid=" + this.contentid);
 					attributeList.remove("binarycontenturl");
-					cleanedAttributeNames = attributeList
-							.toArray(attributeNames);
+					cleanedAttributeNames = attributeList.toArray(attributeNames);
 				}
 
 				for (int i = 0; i < cleanedAttributeNames.length; i++) {
@@ -235,15 +227,14 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 					try {
 						// THE FOLLOWING CALL DOES NOT THROW AN EXCEPTION
 						// WHEN THE DB CONNECTION IS LOST
-						Object o = inspectResolvableAttribute(PropertyResolver
-								.resolve(givenResolvable,
-										cleanedAttributeNames[i]));
+						Object o = inspectResolvableAttribute(PropertyResolver.resolve(
+							givenResolvable,
+							cleanedAttributeNames[i]));
 						if (o != null) {
 							this.attrMap.put(cleanedAttributeNames[i], o);
 						}
 					} catch (UnknownPropertyException e) {
-						Object o = inspectResolvableAttribute(givenResolvable
-								.get(cleanedAttributeNames[i]));
+						Object o = inspectResolvableAttribute(givenResolvable.get(cleanedAttributeNames[i]));
 						if (o != null) {
 							this.attrMap.put(cleanedAttributeNames[i], o);
 						}
@@ -271,20 +262,17 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 			// and therefore we quit if the first Object in the Collection is
 			// not a Resolvable
 			ArrayList<CRResolvableBean> newAttributeObject = new ArrayList<CRResolvableBean>();
-			for (Iterator<Object> it = ((Collection<Object>) resolvableAttribute)
-					.iterator(); it.hasNext();) {
+			for (Iterator<Object> it = ((Collection<Object>) resolvableAttribute).iterator(); it.hasNext();) {
 				Object object = it.next();
 				if (object instanceof Resolvable) {
-					newAttributeObject.add(new CRResolvableBean(
-							(Resolvable) object, new String[] {}));
+					newAttributeObject.add(new CRResolvableBean((Resolvable) object, new String[] {}));
 				} else {
 					return resolvableAttribute;
 				}
 			}
 			return newAttributeObject;
 		} else if (resolvableAttribute instanceof Resolvable) {
-			return new CRResolvableBean((Resolvable) resolvableAttribute,
-					new String[] {});
+			return new CRResolvableBean((Resolvable) resolvableAttribute, new String[] {});
 		} else {
 			return resolvableAttribute;
 		}
@@ -349,15 +337,13 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 		try {
 			GenticsContentObjectImpl r = (GenticsContentObjectImpl) resolvable;
 			Datasource datasource = r.getDatasource();
-			DatasourceFilter filter = 
-				ExpressionParserHelper.createDatasourceFilter(
-						"object.contentid == \"10002." + mother_id + "\"" 
-						+ " && object.obj_type == 10002", datasource);
+			DatasourceFilter filter = ExpressionParserHelper.createDatasourceFilter("object.contentid == \"10002."
+					+ mother_id + "\"" + " && object.obj_type == 10002", datasource);
 			Collection<?> parentFolder = datasource.getResult(filter, new String[] { "contentid" });
 			return (GenticsContentObjectImpl) (parentFolder.iterator().next());
 		} catch (Exception e) {
-			LOGGER.error("Could not retreive mother folder (" + mother_type
-					+ "." + mother_id + ") of current bean: " + contentid);
+			LOGGER.error("Could not retreive mother folder (" + mother_type + "." + mother_id + ") of current bean: "
+					+ contentid);
 			return null;
 		}
 	}
@@ -432,8 +418,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public boolean isBinary() {
 		// TODO this is ugly => make more beautiful
-		if (this.attrMap.containsKey("binarycontent")
-				&& this.attrMap.get("binarycontent") != null) {
+		if (this.attrMap.containsKey("binarycontent") && this.attrMap.get("binarycontent") != null) {
 			return (true);
 		} else if (DEFAULT_FILE_TYPE.equals(this.getObj_type())) {
 			return true;

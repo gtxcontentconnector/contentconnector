@@ -21,12 +21,12 @@ import com.gentics.cr.template.ITemplateManager;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class ContentRenderer implements IContentRenderer{
+public class ContentRenderer implements IContentRenderer {
 	/**
 	 * configuration
 	 */
 	protected CRConfig config = null;
-	
+
 	//private static Logger log = Logger.getLogger(ContentRenderer.class);
 
 	/**
@@ -59,17 +59,21 @@ public class ContentRenderer implements IContentRenderer{
 	 * @throws CRException
 	 * @throws IOException 
 	 */
-	public void renderContent(Writer writer, CRResolvableBean bean,
-			String contentAttribute, boolean doReplacePLinks,
-			PLinkReplacer plinkReplacer, boolean doRenderVelocity,
-			HashMap<String, Resolvable> resolvables) throws CRException, IOException {
+	public void renderContent(Writer writer, CRResolvableBean bean, String contentAttribute, boolean doReplacePLinks,
+			PLinkReplacer plinkReplacer, boolean doRenderVelocity, HashMap<String, Resolvable> resolvables)
+			throws CRException, IOException {
 		// get the content (raw)
-		String rendered = this.renderContent(bean, contentAttribute, doReplacePLinks, plinkReplacer, doRenderVelocity, resolvables);
-		if(rendered!=null)
-		{
+		String rendered = this.renderContent(
+			bean,
+			contentAttribute,
+			doReplacePLinks,
+			plinkReplacer,
+			doRenderVelocity,
+			resolvables);
+		if (rendered != null) {
 			writer.write(rendered);
 		}
-		
+
 	}
 
 	/**
@@ -84,9 +88,8 @@ public class ContentRenderer implements IContentRenderer{
 	 * @throws CRException
 	 * @throws IOException
 	 */
-	public String renderContent(CRResolvableBean bean, String contentAttribute,
-			boolean doReplacePLinks, PLinkReplacer plinkReplacer,
-			boolean doRenderVelocity, HashMap<String, Resolvable> resolvables)
+	public String renderContent(CRResolvableBean bean, String contentAttribute, boolean doReplacePLinks,
+			PLinkReplacer plinkReplacer, boolean doRenderVelocity, HashMap<String, Resolvable> resolvables)
 			throws CRException, IOException {
 		// get the content (raw)
 		Object contentValue = bean.getProperty(contentAttribute);
@@ -95,20 +98,17 @@ public class ContentRenderer implements IContentRenderer{
 
 			// replace plinks (if configured to do so)
 			if (doReplacePLinks && plinkReplacer != null) {
-				content = PortalConnectorHelper.replacePLinks(content,
-						plinkReplacer);
+				content = PortalConnectorHelper.replacePLinks(content, plinkReplacer);
 			}
 
 			if (doRenderVelocity && !config.getPortalNodeCompMode()) {
-				
+
 				// Initialize Velocity Context
-				ITemplateManager myTemplateManager = config
-						.getTemplateManager();
+				ITemplateManager myTemplateManager = config.getTemplateManager();
 
 				// enrich template context
 				if (resolvables != null) {
-					for (Iterator<Map.Entry<String, Resolvable>> it = resolvables
-							.entrySet().iterator(); it.hasNext();) {
+					for (Iterator<Map.Entry<String, Resolvable>> it = resolvables.entrySet().iterator(); it.hasNext();) {
 						Map.Entry<String, Resolvable> entry = it.next();
 						myTemplateManager.put(entry.getKey(), entry.getValue());
 					}

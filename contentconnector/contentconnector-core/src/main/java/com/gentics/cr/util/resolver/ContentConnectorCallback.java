@@ -18,23 +18,22 @@ import com.gentics.cr.util.StringUtils;
  * @author bigbear3001
  */
 public class ContentConnectorCallback implements Callback {
-	
+
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
 	private Logger logger = Logger.getLogger(ContentConnectorCallback.class);
-	
+
 	/**
 	 * configuration cache.
 	 */
-	private Map<String, CRConfigUtil> configs =
-		new Hashtable<String, CRConfigUtil>();
-	
+	private Map<String, CRConfigUtil> configs = new Hashtable<String, CRConfigUtil>();
+
 	/**
 	 * List to prevent recursions when resolving.
 	 */
 	private List<String> initConfigs = new Vector<String>();
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -46,12 +45,11 @@ public class ContentConnectorCallback implements Callback {
 			config = getConfig(propertyFileName);
 			return config.getString(propertyName);
 		} catch (CRException e) {
-			logger.error("Erro while getting configuration. Maybe you got"
-					+ " recursive property definitions.", e);
+			logger.error("Erro while getting configuration. Maybe you got" + " recursive property definitions.", e);
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @param configName - configuration name
 	 * @return configuration with the specified name
@@ -69,8 +67,7 @@ public class ContentConnectorCallback implements Callback {
 			initConfigs.remove(configName);
 		} else {
 			CRException e = new CRException();
-			e.setMessage("Recursion in content connector properties detected. "
-					+ "Configs currently initialising: "
+			e.setMessage("Recursion in content connector properties detected. " + "Configs currently initialising: "
 					+ StringUtils.getCollectionSummary(initConfigs));
 			throw e;
 		}

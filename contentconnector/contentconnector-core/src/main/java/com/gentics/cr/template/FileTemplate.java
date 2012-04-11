@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.Constants;
+
 /**
  * loads a template from a file usint an input stream.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -76,6 +77,7 @@ public class FileTemplate implements ITemplate {
 			throw new CRException(e);
 		}
 	}
+
 	/**
 	 * Reads the given stream into the template source.
 	 * @param stream - stream to read
@@ -109,8 +111,7 @@ public class FileTemplate implements ITemplate {
 	 * @throws CRException when we cannot read the stream or there was an error
 	 * generating the md5sum of the stream.
 	 */
-	public FileTemplate(final FileInputStream stream, final File file)
-			throws CRException {
+	public FileTemplate(final FileInputStream stream, final File file) throws CRException {
 		readSource(stream);
 		this.key = file.getAbsolutePath();
 	}

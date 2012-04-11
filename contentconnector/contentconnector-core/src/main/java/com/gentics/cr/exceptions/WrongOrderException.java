@@ -13,7 +13,7 @@ public class WrongOrderException extends CRException {
 	 * 
 	 */
 	private static final long serialVersionUID = 5604529440335377742L;
-	
+
 	/**
 	 * Create new WrongOrderException.
 	 * Creates a wrapped {@link CRException} with the parameters
@@ -21,9 +21,7 @@ public class WrongOrderException extends CRException {
 	 *  CRException.ERRORTYPE.FATAL_ERROR)
 	 */
 	public WrongOrderException() {
-		super("WRONGORDER", 
-				"The checked objects have to be ascending order", 
-				CRException.ERRORTYPE.FATAL_ERROR);
+		super("WRONGORDER", "The checked objects have to be ascending order", CRException.ERRORTYPE.FATAL_ERROR);
 	}
 
 }

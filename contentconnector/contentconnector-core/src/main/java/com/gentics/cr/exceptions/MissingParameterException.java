@@ -19,11 +19,9 @@ public class MissingParameterException extends ConfigurationException {
 	 * @param missingParameterName name of the missing parameter as String
 	 * @param config {@link CRConfig} where the parameter is missing
 	 */
-	public MissingParameterException(final String missingParameterName, 
-			final CRConfig config) {
-		super("MISSINGPARAMETER", "The parameter with the name " 
-				+ config.getName() + missingParameterName 
+	public MissingParameterException(final String missingParameterName, final CRConfig config) {
+		super("MISSINGPARAMETER", "The parameter with the name " + config.getName() + missingParameterName
 				+ " is missing.", CRException.ERRORTYPE.FATAL_ERROR);
 	}
-	
+
 }

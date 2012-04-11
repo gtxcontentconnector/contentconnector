@@ -10,7 +10,7 @@ import com.gentics.cr.CRConfig;
  * @author Sebastian Vogel <s.vogel@gentics.com> * 
  */
 public abstract class AbstractIndexExtension implements IndexExtension {
-	
+
 	protected CRConfig config;
 	protected IndexLocation callingIndexLocation;
 
@@ -29,30 +29,25 @@ public abstract class AbstractIndexExtension implements IndexExtension {
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.IndexExtension#stop()
 	 */
 	public abstract void stop();
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.IndexExtension#addJob(java.lang.String)
 	 */
 	public abstract void addJob(String name) throws NoSuchMethodException;
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.IndexExtension#addJob(java.lang.String,
 	 * com.gentics.cr.util.indexing.IndexLocation)
 	 */
-	public abstract void addJob(String name, IndexLocation indexLocation)
-			throws NoSuchMethodException;
+	public abstract void addJob(String name, IndexLocation indexLocation) throws NoSuchMethodException;
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.IndexExtension#getJobs()
 	 */
 	public abstract String[] getJobs();

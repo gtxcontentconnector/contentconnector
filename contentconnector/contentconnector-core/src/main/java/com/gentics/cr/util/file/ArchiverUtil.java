@@ -20,7 +20,9 @@ public final class ArchiverUtil {
 	/**
 	 * private constructor to prevent instanziation.
 	 */
-	private ArchiverUtil() { }
+	private ArchiverUtil() {
+	}
+
 	/**
 	 * Adds a file or directory to an TarArchiveOutputStream.
 	 * @param stream - stream to pack the file(s) into
@@ -29,8 +31,8 @@ public final class ArchiverUtil {
 	 * (you don't want to show your local server paths in the generated files)
 	 * @throws IOException - in case a file cannot be read
 	 */
-	public static void addFileToTar(final TarArchiveOutputStream stream,
-			final File file, final String name) throws IOException {
+	public static void addFileToTar(final TarArchiveOutputStream stream, final File file, final String name)
+			throws IOException {
 		TarArchiveEntry tarEntry = new TarArchiveEntry(file, name);
 		stream.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 		stream.putArchiveEntry(tarEntry);
@@ -53,6 +55,7 @@ public final class ArchiverUtil {
 			}
 		}
 	}
+
 	/**
 	 * generate a gnu zipped tar archive from the given file/directory.
 	 * @param outputStream - output stream to save the compressed archive
@@ -60,8 +63,7 @@ public final class ArchiverUtil {
 	 * @throws IOException - in case we cannot read a file or generate the
 	 * archive successfully
 	 */
-	public static void generateGZippedTar(final OutputStream outputStream,
-			final File file) throws IOException {
+	public static void generateGZippedTar(final OutputStream outputStream, final File file) throws IOException {
 		BufferedOutputStream bOut = null;
 		GzipCompressorOutputStream gzOut = null;
 		TarArchiveOutputStream tOut = null;
@@ -75,16 +77,16 @@ public final class ArchiverUtil {
 				addFileToTar(tOut, file, file.getName());
 			}
 		} finally {
-				if (tOut != null) {
-					tOut.finish();
-					tOut.close();
-				}
-				if (gzOut != null) {
-					gzOut.close();
-				}
-				if (bOut != null) {
-					bOut.close();
-				}
+			if (tOut != null) {
+				tOut.finish();
+				tOut.close();
+			}
+			if (gzOut != null) {
+				gzOut.close();
+			}
+			if (bOut != null) {
+				bOut.close();
+			}
 		}
 	}
 }

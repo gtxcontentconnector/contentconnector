@@ -21,53 +21,53 @@ import com.gentics.cr.util.AccessibleBean;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class GenericConfiguration extends AccessibleBean 
-	implements Serializable {
-  
-  /**
-   * Version ID for Serialization.
-   */
-  private static final long serialVersionUID = 2984152538932729448L;
-  
-  /**
-   * Properties container.
-   */
-  private Properties properties;
+public class GenericConfiguration extends AccessibleBean implements Serializable {
 
-  /**
-   * Defines how the keys in the configuration should be converted (default = uppercase).
-   */
-  public enum KeyConversion {
-    /**
-     * These are the values which a key can be converted to.
-     */
-    UPPER_CASE, LOWER_CASE, UNCHANGED
-  };
-  
-  /**
-   * Defines how the key-values are stored in the configuration.
-   */
-  private KeyConversion keyHandling = KeyConversion.UPPER_CASE; 
+	/**
+	 * Version ID for Serialization.
+	 */
+	private static final long serialVersionUID = 2984152538932729448L;
 
-  /**
-   * Container for subconfigs.
-   */
-  private Hashtable<String, GenericConfiguration> subconfigs;
-  
-  /**
-   * Create new instance of Generic Configuration.
-   */
-	public GenericConfiguration() { }
-  
-  /**
-   * Returns the containing properties as flat Properties class.
-   *       - will not resolve to sub configurations
-   * @return properties or null if there are no containing properties
-   */
+	/**
+	 * Properties container.
+	 */
+	private Properties properties;
+
+	/**
+	 * Defines how the keys in the configuration should be converted (default = uppercase).
+	 */
+	public enum KeyConversion {
+		/**
+		 * These are the values which a key can be converted to.
+		 */
+		UPPER_CASE, LOWER_CASE, UNCHANGED
+	};
+
+	/**
+	 * Defines how the key-values are stored in the configuration.
+	 */
+	private KeyConversion keyHandling = KeyConversion.UPPER_CASE;
+
+	/**
+	 * Container for subconfigs.
+	 */
+	private Hashtable<String, GenericConfiguration> subconfigs;
+
+	/**
+	 * Create new instance of Generic Configuration.
+	 */
+	public GenericConfiguration() {
+	}
+
+	/**
+	 * Returns the containing properties as flat Properties class.
+	 *       - will not resolve to sub configurations
+	 * @return properties or null if there are no containing properties
+	 */
 	public final Properties getProperties() {
 		return (this.properties);
 	}
-	
+
 	/**
 	 * Sets the properties of this configuration instance.
 	 * @param props as <code>Properties</code>
@@ -91,10 +91,10 @@ public class GenericConfiguration extends AccessibleBean
 		}
 	}
 
-  /**
-   * Returns rebuilt property tree as flat property file.
-   * @return flattened property file
-   */
+	/**
+	 * Returns rebuilt property tree as flat property file.
+	 * @return flattened property file
+	 */
 	public final Properties getRebuiltPropertyTree() {
 		Properties ret = new Properties();
 		if (this.properties != null) {
@@ -103,42 +103,38 @@ public class GenericConfiguration extends AccessibleBean
 			}
 		}
 		if (this.subconfigs != null) {
-			for (Entry<String, GenericConfiguration> e 
-					: this.subconfigs.entrySet()) {
+			for (Entry<String, GenericConfiguration> e : this.subconfigs.entrySet()) {
 				String subConfKey = e.getKey();
 				GenericConfiguration subVal = e.getValue();
-				
-				for (Entry<Object, Object> se 
-						: ((GenericConfiguration) subVal)
-						.getRebuiltPropertyTree().entrySet()) {
+
+				for (Entry<Object, Object> se : ((GenericConfiguration) subVal).getRebuiltPropertyTree().entrySet()) {
 					String key = subConfKey + "." + se.getKey();
 					ret.put(key, se.getValue());
 				}
-				
+
 			}
 		}
 		return (ret);
 	}
-  
-  /**
-   * Returns the containing sub configurations.
-   *       
-   * @return hashtable of configurations with keys or null 
-   * if there are no containing sub configs
-   */
+
+	/**
+	 * Returns the containing sub configurations.
+	 *       
+	 * @return hashtable of configurations with keys or null 
+	 * if there are no containing sub configs
+	 */
 	public final Hashtable<String, GenericConfiguration> getSubConfigs() {
 		return subconfigs;
 	}
-	
+
 	/**
 	 * Set the sub configurations for this configuration instance.
 	 * @param newSubConfigs sub configurations
 	 */
-	public final void setSubConfigs(final Hashtable<String, 
-			GenericConfiguration> newSubConfigs) {
+	public final void setSubConfigs(final Hashtable<String, GenericConfiguration> newSubConfigs) {
 		subconfigs = newSubConfigs;
 	}
-	
+
 	/**
 	 * get the sub configuration with the specified key.
 	 * @param key - key of the sub configuration
@@ -148,14 +144,14 @@ public class GenericConfiguration extends AccessibleBean
 	public final GenericConfiguration getSubConfig(String key) throws NullPointerException {
 		return subconfigs.get(convertKey(key));
 	}
-	
+
 	/**
 	 * Set a sub configuration
 	 * @param key - key to set for the sub configuration
 	 * @param config - sub configuration to add with the given key
 	 */
 	public void setSubConfig(String key, GenericConfiguration config) {
-		if(subconfigs == null) {
+		if (subconfigs == null) {
 			subconfigs = new Hashtable<String, GenericConfiguration>();
 		}
 		subconfigs.put(convertKey(key), config);
@@ -166,23 +162,20 @@ public class GenericConfiguration extends AccessibleBean
 	 * @return true if the configuration has a sub configuration with the given key that is not null.
 	 */
 	public boolean hasSubConfig(String key) {
-		return key != null && subconfigs != null && subconfigs.containsKey(convertKey(key)) && subconfigs.get(convertKey(key)) != null;
+		return key != null && subconfigs != null && subconfigs.containsKey(convertKey(key))
+				&& subconfigs.get(convertKey(key)) != null;
 	}
-  
-  /**
-   * Returns the containing sub configurations sorted by key.
-   * @return hashtable of configurations with keys or null 
-   * if there are no containing sub configs
-   */
-	public final synchronized Map<String, GenericConfiguration> 
-		getSortedSubconfigs() {
+
+	/**
+	 * Returns the containing sub configurations sorted by key.
+	 * @return hashtable of configurations with keys or null 
+	 * if there are no containing sub configs
+	 */
+	public final synchronized Map<String, GenericConfiguration> getSortedSubconfigs() {
 		Map<String, GenericConfiguration> ret = null;
 
 		if (this.subconfigs != null) {
-			ret = Collections
-					.synchronizedMap(new LinkedHashMap<String, 
-							GenericConfiguration>(
-							this.subconfigs.size()));
+			ret = Collections.synchronizedMap(new LinkedHashMap<String, GenericConfiguration>(this.subconfigs.size()));
 
 			Vector<String> v = new Vector<String>(this.subconfigs.keySet());
 			Collections.sort(v);
@@ -236,12 +229,10 @@ public class GenericConfiguration extends AccessibleBean
 	 * @return collection of properties or null if no properties set or resolved
 	 *         object is not able to contain properties
 	 */
-	public final ArrayList<String> 
-		getPropertiesAsSortedCollection(final String key) {
+	public final ArrayList<String> getPropertiesAsSortedCollection(final String key) {
 		Object obj = get(key);
 		if (obj != null && obj instanceof GenericConfiguration) {
-			return ((GenericConfiguration) obj)
-					.getPropertiesAsSortedCollection();
+			return ((GenericConfiguration) obj).getPropertiesAsSortedCollection();
 		}
 		return (null);
 	}
@@ -254,8 +245,7 @@ public class GenericConfiguration extends AccessibleBean
 	@SuppressWarnings("unchecked")
 	public final ArrayList<String> getPropertiesAsSortedCollection() {
 		if (this.properties != null) {
-			ArrayList<String> ret = new ArrayList<String>(this.properties
-					.size());
+			ArrayList<String> ret = new ArrayList<String>(this.properties.size());
 			Vector v = new Vector(this.properties.keySet());
 			Collections.sort(v);
 			for (Object k : v) {
@@ -287,8 +277,7 @@ public class GenericConfiguration extends AccessibleBean
 		String key = convertKey(resolvingKey);
 		if (isSubKey(key)) {
 			if (this.subconfigs != null) {
-				GenericConfiguration subConf = this.subconfigs
-						.get(getSubConfigKey(key));
+				GenericConfiguration subConf = this.subconfigs.get(getSubConfigKey(key));
 				if (subConf != null) {
 					return (subConf.get(getSubKey(key)));
 				}
@@ -305,7 +294,6 @@ public class GenericConfiguration extends AccessibleBean
 		}
 		return null;
 	}
-
 
 	/**
 	 * Sets the property value to the given key.<br />

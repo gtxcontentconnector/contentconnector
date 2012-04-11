@@ -6,7 +6,6 @@ import com.gentics.cr.CachedCRRequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.Constants;
 
-
 /**
  * Operates as an Interface between the servlet and the Indexer Engine.
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
@@ -15,28 +14,27 @@ import com.gentics.cr.util.Constants;
  *
  */
 public abstract class ReloadableConfiguration {
-	
+
 	/**
 	* Log4j logger for error and debug messages.
 	*/
-	private static Logger logger =
-		Logger.getLogger(CachedCRRequestProcessor.class);
-	
+	private static Logger logger = Logger.getLogger(CachedCRRequestProcessor.class);
+
 	/**
 	 * Interval for checking for new jobs.
 	 */
 	private static final int CHECK_INTERVAL = 5;
-	
+
 	/**
 	 * Listener that will be executed on a config change.
 	 */
 	private ReloadListener listener;
-	
+
 	/**
 	 * Thread that checks the configuration for changes.
 	 */
 	private Thread reloadChecker;
-	
+
 	/**
 	 * Object for synchronizing method blocks.
 	 */
@@ -51,7 +49,7 @@ public abstract class ReloadableConfiguration {
 			this.checkInterval = interval;
 		}
 	}
-	
+
 	/**
 	 * Gets the current check interval.
 	 * @return Interval in seconds
@@ -63,12 +61,12 @@ public abstract class ReloadableConfiguration {
 		}
 		return i;
 	}
-	
+
 	/**
 	 * Set the default value of checkInterval to CHECK_INTERVAL.
 	 */
 	private int checkInterval = CHECK_INTERVAL;
-	
+
 	/**
 	 * Creates a new instance of ReloadableContainer.
 	 * @param reloadListener ReloadListener that will be executed if the config
@@ -77,7 +75,7 @@ public abstract class ReloadableConfiguration {
 	public ReloadableConfiguration(final ReloadListener reloadListener) {
 		this.listener = reloadListener;
 	}
-	
+
 	/**
 	 * Reloads the current configuration.
 	 * It is recommended that this method is implemented 
@@ -85,15 +83,14 @@ public abstract class ReloadableConfiguration {
 	 * @return newly loaded configuration
 	 */
 	public abstract GenericConfiguration reloadConfiguration();
-	
+
 	/**
 	 * Checks if the current configuration has been changed.
 	 * @return true if the configuration has been changed 
 	 * and should be reloaded.
 	 */
 	public abstract boolean hasConfigChanged();
-	
-	
+
 	/**
 	 * This Method has to be called after the first time 
 	 * the configuration has finishd loading.
@@ -104,8 +101,7 @@ public abstract class ReloadableConfiguration {
 			public void run() {
 				while (!Thread.currentThread().isInterrupted()) {
 					try {
-						Thread.sleep(getCheckInterval()
-								* Constants.MILLISECONDS_IN_A_SECOND);
+						Thread.sleep(getCheckInterval() * Constants.MILLISECONDS_IN_A_SECOND);
 						if (hasConfigChanged()) {
 							if (listener != null) {
 								listener.onBeforeReload();
@@ -114,7 +110,7 @@ public abstract class ReloadableConfiguration {
 							if (listener != null) {
 								listener.onReloadFinished(c);
 							}
-						}	
+						}
 					} catch (InterruptedException e) {
 						logger.debug(e.getMessage(), e);
 					}
@@ -123,7 +119,7 @@ public abstract class ReloadableConfiguration {
 
 		});
 	}
-	
+
 	/**
 	 * This Method should be called right before the application stops.
 	 * It will stop the reload checker Thread.
@@ -140,6 +136,5 @@ public abstract class ReloadableConfiguration {
 			}
 		}
 	}
-	
-	
+
 }

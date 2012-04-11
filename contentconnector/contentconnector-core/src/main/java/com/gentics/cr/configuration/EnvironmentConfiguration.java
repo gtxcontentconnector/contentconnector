@@ -20,12 +20,10 @@ import com.gentics.cr.util.CRUtil;
  */
 public final class EnvironmentConfiguration {
 
-
 	/**
 	 * Path were the configuration files are found
 	 */
-	private static String configurationPath =
-			"${" + CRUtil.PORTALNODE_CONFPATH + "}";
+	private static String configurationPath = "${" + CRUtil.PORTALNODE_CONFPATH + "}";
 
 	/**
 	 * Path were the configuration files are found.
@@ -37,22 +35,18 @@ public final class EnvironmentConfiguration {
 	/**
 	 * Path to the default log4j property file.
 	 */
-	private static String loggerFilePath =
-			configurationPath + "/nodelog.properties";
+	private static String loggerFilePath = configurationPath + "/nodelog.properties";
 
 	/**
 	 * Path to the jcs configuration file.
 	 */
-	private static String cacheFilePath =
-			configurationPath + "/cache.ccf";
-
+	private static String cacheFilePath = configurationPath + "/cache.ccf";
 
 	/**
 	 * Configuration key if we should use the same caches as Gentics
 	 * Portal.Node.
 	 */
-	private static final String USE_PORTAL_CACHE_KEY =
-			"com.gentics.cr.useportalcaches";
+	private static final String USE_PORTAL_CACHE_KEY = "com.gentics.cr.useportalcaches";
 
 	/**
 	 * Default log4j logger.
@@ -74,7 +68,8 @@ public final class EnvironmentConfiguration {
 	/**
 	 * private constructor to prevent initializing of the utility class.
 	 */
-	private EnvironmentConfiguration() { }
+	private EnvironmentConfiguration() {
+	}
 
 	/**
 	 * Load Environment Properties.
@@ -121,22 +116,19 @@ public final class EnvironmentConfiguration {
 	 * Load Property file for JCS cache.
 	 */
 	public static void loadCacheProperties() {
-		String errorMessage = "Could not load cache configuration. Perhaps you are "
-				+ "missing the file cache.ccf in " + CRUtil.resolveSystemProperties(
-						configurationPath + "/") + "!";
+		String errorMessage = "Could not load cache configuration. Perhaps you are " + "missing the file cache.ccf in "
+				+ CRUtil.resolveSystemProperties(configurationPath + "/") + "!";
 		try {
 			//LOAD CACHE CONFIGURATION
 			String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
 			Properties cacheProps = new Properties();
 			cacheProps.load(new FileInputStream(confpath));
 			if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY)
-					&& Boolean.parseBoolean(cacheProps.getProperty(USE_PORTAL_CACHE_KEY)))
-			{
+					&& Boolean.parseBoolean(cacheProps.getProperty(USE_PORTAL_CACHE_KEY))) {
 				logDebug("Will not initialize ContentConnector Cache - Using the "
 						+ "cache configured by portalnode instead.");
 			} else {
-				CompositeCacheManager cManager =
-						CompositeCacheManager.getUnconfiguredInstance();
+				CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
 				cManager.configure(cacheProps);
 			}
 		} catch (NullPointerException e) {

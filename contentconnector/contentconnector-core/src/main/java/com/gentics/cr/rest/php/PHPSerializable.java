@@ -14,11 +14,11 @@ package com.gentics.cr.rest.php;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public interface PHPSerializable{
-    
-    /**
-     * Called by PHPSerializer when the objet is serialized
-     * @return serialized data
-     */
-    public String phpSerialize();
+public interface PHPSerializable {
+
+	/**
+	 * Called by PHPSerializer when the objet is serialized
+	 * @return serialized data
+	 */
+	public String phpSerialize();
 }

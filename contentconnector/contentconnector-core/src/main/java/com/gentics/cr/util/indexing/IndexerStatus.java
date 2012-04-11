@@ -1,6 +1,7 @@
 package com.gentics.cr.util.indexing;
 
 import java.util.Date;
+
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:24:17 +0200 (Do, 01 Apr 2010) $
@@ -9,23 +10,23 @@ import java.util.Date;
  *
  */
 public class IndexerStatus {
-	
-	private boolean running=false;
-	
+
+	private boolean running = false;
+
 	private int objectCount = 0;
-	
+
 	private int objectsDone = 0;
-	
+
 	private Date startTime = null;
-	
+
 	private long lastRunDuration = 0;
-	
-	private String currStatusString="";
-	
+
+	private String currStatusString = "";
+
 	private boolean error = false;
-	
+
 	private String errorMessage = "";
-	
+
 	/**
 	 * set the error message.
 	 * @param message error message
@@ -34,6 +35,7 @@ public class IndexerStatus {
 		error = true;
 		errorMessage = message;
 	}
+
 	/**
 	 * Check if job had an error.
 	 * @return true if error.
@@ -41,7 +43,7 @@ public class IndexerStatus {
 	public final boolean hasError() {
 		return error;
 	}
-	
+
 	/**
 	 * Fetch error message.
 	 * @return error message if set.
@@ -54,26 +56,24 @@ public class IndexerStatus {
 	 * Get current Status String
 	 * @return
 	 */
-	public String getCurrentStatusString()
-	{
-		String stat ="";
-		synchronized(this)
-		{
-			stat =  this.currStatusString;
+	public String getCurrentStatusString() {
+		String stat = "";
+		synchronized (this) {
+			stat = this.currStatusString;
 		}
 		return stat;
 	}
+
 	/**
 	 * Set current Status string
 	 * @param statusstring
 	 */
-	public void setCurrentStatusString(String statusstring)
-	{
-		synchronized(this)
-		{
-			this.currStatusString=statusstring;
+	public void setCurrentStatusString(String statusstring) {
+		synchronized (this) {
+			this.currStatusString = statusstring;
 		}
 	}
+
 	/**
 	 * Duration of last run in ms
 	 * @return
@@ -153,16 +153,15 @@ public class IndexerStatus {
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-	
+
 	/**
 	 * resets the status object
 	 */
-	public void reset()
-	{
-		this.objectCount=0;
-		this.objectsDone=0;
+	public void reset() {
+		this.objectCount = 0;
+		this.objectsDone = 0;
 		this.setRunning(false);
-		
+
 	}
-		
+
 }

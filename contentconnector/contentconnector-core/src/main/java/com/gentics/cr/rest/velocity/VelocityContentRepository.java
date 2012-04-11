@@ -39,7 +39,6 @@ import com.gentics.cr.util.velocity.VelocityTools;
  */
 public class VelocityContentRepository extends ContentRepository {
 
-
 	/**
 	 * Generated version identifier for serialization.
 	 */
@@ -74,14 +73,12 @@ public class VelocityContentRepository extends ContentRepository {
 	/**
 	 * Key for the configuration of the template in the config.
 	 */
-	private static final String TEMPLATEPATH_KEY =
-			"cr.velocity.defaulttemplate";
+	private static final String TEMPLATEPATH_KEY = "cr.velocity.defaulttemplate";
 
 	/**
 	 * Key for the configuration of the error template in the config.
 	 */
-	private static final String TEMPLATERELOADING_KEY =
-			"cr.velocity.templatereloading";
+	private static final String TEMPLATERELOADING_KEY = "cr.velocity.templatereloading";
 
 	/**
 	 * Configuration key for the frame url.
@@ -91,8 +88,7 @@ public class VelocityContentRepository extends ContentRepository {
 	/**
 	 * Configuration key for the placeholder in the frame source.
 	 */
-	private static final String FRAMEPLACEHOLDER_KEY =
-			"cr.velocity.frameplaceholder";
+	private static final String FRAMEPLACEHOLDER_KEY = "cr.velocity.frameplaceholder";
 
 	/**
 	 * Configuration key holding pre defined variables for velocity.
@@ -113,7 +109,6 @@ public class VelocityContentRepository extends ContentRepository {
 	 * Cache key suffix for the footer parsed from the frame.
 	 */
 	private static final String FOOTER_CACHE_KEY_SUFFIX = ".footer";
-
 
 	/**
 	 * Log4j logger to log errors and debug.
@@ -148,17 +143,15 @@ public class VelocityContentRepository extends ContentRepository {
 	 * @param options TODO javadoc
 	 * @param configUtil TODO javadoc
 	 */
-	public VelocityContentRepository(final String[] attr, final String encoding,
-			final String[] options, final CRConfigUtil configUtil) {
+	public VelocityContentRepository(final String[] attr, final String encoding, final String[] options,
+		final CRConfigUtil configUtil) {
 		super(attr, encoding, options);
 		config = configUtil;
-		templateReloading = Boolean.parseBoolean(
-				(String) config.get(TEMPLATERELOADING_KEY));
+		templateReloading = Boolean.parseBoolean((String) config.get(TEMPLATERELOADING_KEY));
 	}
 
 	@Override
-	public final void respondWithError(final OutputStream stream,
-			final CRException ex, final boolean isDebug) {
+	public final void respondWithError(final OutputStream stream, final CRException ex, final boolean isDebug) {
 		logger.error("Error getting result.", ex);
 		ensureTemplateManager();
 		try {
@@ -167,8 +160,7 @@ public class VelocityContentRepository extends ContentRepository {
 			templateManager.put("debug", isDebug);
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding", encoding);
-			String output = templateManager.render(errorTemplate.getKey(),
-					errorTemplate.getSource());
+			String output = templateManager.render(errorTemplate.getKey(), errorTemplate.getSource());
 			stream.write(getHeader().getBytes());
 			stream.write(output.getBytes(encoding));
 			stream.write(getFooter().getBytes());
@@ -189,16 +181,14 @@ public class VelocityContentRepository extends ContentRepository {
 			loadTemplate();
 			templateManager.put("resolvables", this.resolvableColl);
 			putObjectsIntoTemplateManager(this.getAdditionalDeployableObjects());
-			GenericConfiguration variables =
-					(GenericConfiguration) config.get(VARIABLES_KEY);
+			GenericConfiguration variables = (GenericConfiguration) config.get(VARIABLES_KEY);
 			if (variables != null) {
 				putObjectsIntoTemplateManager(variables.getProperties());
 			}
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding", encoding);
 			templateManager.put("tools", tools);
-			String output = templateManager.render(template.getKey(),
-					template.getSource());
+			String output = templateManager.render(template.getKey(), template.getSource());
 			stream.write(getHeader().getBytes());
 			stream.write(output.getBytes(encoding));
 			stream.write(getFooter().getBytes());
@@ -213,8 +203,7 @@ public class VelocityContentRepository extends ContentRepository {
 	 * Insert objects to deploy into the templateManger.
 	 * @param additionalDeployableObjects HashMap with objects to deploy.
 	 */
-	private void putObjectsIntoTemplateManager(
-			final HashMap<String, Object> additionalDeployableObjects) {
+	private void putObjectsIntoTemplateManager(final HashMap<String, Object> additionalDeployableObjects) {
 		if (additionalDeployableObjects != null) {
 			for (Entry<String, Object> e : additionalDeployableObjects.entrySet()) {
 				templateManager.put(e.getKey().toString(), e.getValue());
@@ -226,8 +215,7 @@ public class VelocityContentRepository extends ContentRepository {
 	 * Insert objects to deploy into the templateManager.
 	 * @param additionalDeployableObjects Map with objects to deploy.
 	 */
-	private void putObjectsIntoTemplateManager(
-			final Map<Object, Object> additionalDeployableObjects) {
+	private void putObjectsIntoTemplateManager(final Map<Object, Object> additionalDeployableObjects) {
 		if (additionalDeployableObjects != null) {
 			for (Entry<Object, Object> e : additionalDeployableObjects.entrySet()) {
 				templateManager.put(e.getKey().toString(), e.getValue());
@@ -250,40 +238,29 @@ public class VelocityContentRepository extends ContentRepository {
 		initFrame();
 		return header;
 	}
+
 	/**
 	 * initialize the frame template given in the configuration.
 	 */
 	private void initFrame() {
 		if (!frameParsed) {
 			String framePath = config.getString(FRAME_KEY);
-			String framePlaceholder =
-					config.getString(FRAMEPLACEHOLDER_KEY);
-			if (framePath != null && !framePath.equals("")
-					&& framePlaceholder != null
-					&& !framePlaceholder.equals("")) {
+			String framePlaceholder = config.getString(FRAMEPLACEHOLDER_KEY);
+			if (framePath != null && !framePath.equals("") && framePlaceholder != null && !framePlaceholder.equals("")) {
 				try {
-					JCS cache = JCS.getInstance(
-							VelocityContentRepository.class.getSimpleName()
-							+ ".famecache");
-					footer = (String) cache.get(
-							framePath + FOOTER_CACHE_KEY_SUFFIX);
-					header = (String) cache.get(
-							framePath + HEADER_CACHE_KEY_SUFFIX);
+					JCS cache = JCS.getInstance(VelocityContentRepository.class.getSimpleName() + ".famecache");
+					footer = (String) cache.get(framePath + FOOTER_CACHE_KEY_SUFFIX);
+					header = (String) cache.get(framePath + HEADER_CACHE_KEY_SUFFIX);
 					if (header == null || footer == null) {
 						URL frameURL = new URL(framePath);
 						URLConnection conn = frameURL.openConnection();
 						Object content = conn.getContent();
 						if (content instanceof InputStream) {
-							header = StringUtils.readUntil(
-									(InputStream) content,
-									framePlaceholder);
-							footer = StringUtils.streamToString(
-									(InputStream) content);
+							header = StringUtils.readUntil((InputStream) content, framePlaceholder);
+							footer = StringUtils.streamToString((InputStream) content);
 						} else {
-							logger.error("Error reading frame source"
-									+ framePath,
-									new CRException("Unknown response type ("
-											+ content.getClass() + ")"));
+							logger.error("Error reading frame source" + framePath, new CRException(
+									"Unknown response type (" + content.getClass() + ")"));
 						}
 						cache.put(framePath + HEADER_CACHE_KEY_SUFFIX, header);
 						cache.put(framePath + FOOTER_CACHE_KEY_SUFFIX, footer);
@@ -325,10 +302,8 @@ public class VelocityContentRepository extends ContentRepository {
 	 * @param loadErrorTemplate TODO javadoc
 	 * @throws CRException TODO javadoc
 	 */
-	private void loadTemplate(final boolean loadErrorTemplate)
-			throws CRException {
-		if ((template == null && !loadErrorTemplate)
-				|| (errorTemplate == null && loadErrorTemplate)
+	private void loadTemplate(final boolean loadErrorTemplate) throws CRException {
+		if ((template == null && !loadErrorTemplate) || (errorTemplate == null && loadErrorTemplate)
 				|| templateReloading) {
 			String templatePath = config.getString(TEMPLATEPATH_KEY);
 			try {
@@ -341,25 +316,21 @@ public class VelocityContentRepository extends ContentRepository {
 					fileName = fileName.replaceAll("(.*)\\..*", "$1");
 					templatePath = fileName + ".error." + fileExtension;
 					if (directoryName != null) {
-						templatePath =
-								directoryName + File.separator + templatePath;
+						templatePath = directoryName + File.separator + templatePath;
 					}
 					errorTemplate = getFileTemplate(templatePath);
 				} else {
 					template = getFileTemplate(templatePath);
 				}
 			} catch (Exception e) {
-				log.error("Failed to load velocity template from " + template,
-						e);
+				log.error("Failed to load velocity template from " + template, e);
 			}
 		}
 		if (template == null && !loadErrorTemplate) {
-			throw new CRException(new CRError("ERROR",
-					"The template " + template + " cannot be found."));
+			throw new CRException(new CRError("ERROR", "The template " + template + " cannot be found."));
 		}
 		if (errorTemplate == null && loadErrorTemplate) {
-			throw new CRException(new CRError("ERROR",
-					"The template " + template + " cannot be found."));
+			throw new CRException(new CRError("ERROR", "The template " + template + " cannot be found."));
 		}
 	}
 
@@ -370,12 +341,10 @@ public class VelocityContentRepository extends ContentRepository {
 	 * @throws FileNotFoundException TODO javadoc
 	 * @throws CRException TODO javadoc
 	 */
-	private FileTemplate getFileTemplate(final String templatePath)
-			throws FileNotFoundException, CRException {
+	private FileTemplate getFileTemplate(final String templatePath) throws FileNotFoundException, CRException {
 		File file = new File(templatePath);
 		if (!file.isAbsolute()) {
-			file = new File(CRConfigUtil.DEFAULT_TEMPLATE_PATH + File.separator
-					+ templatePath);
+			file = new File(CRConfigUtil.DEFAULT_TEMPLATE_PATH + File.separator + templatePath);
 		}
 		return new FileTemplate(new FileInputStream(file), file);
 	}

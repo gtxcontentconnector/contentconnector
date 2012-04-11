@@ -33,16 +33,14 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	protected static Logger log =
-		Logger.getLogger(AbstractUpdateCheckerJob.class);
+	protected static Logger log = Logger.getLogger(AbstractUpdateCheckerJob.class);
 
 	/**
 	 * Name of class to use for IndexLocation, must extend
 	 * {@link com.gentics.cr.util.indexing.IndexLocation}.
 	 */
-	public static final String INDEXLOCATIONCLASS =
-		"com.gentics.cr.util.indexing.IndexLocation";
-	
+	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.util.indexing.IndexLocation";
+
 	/**
 	 * Configuration key for the attribute containing the id.
 	 * @see #idAttribute
@@ -55,7 +53,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * @see #timestampAttribute
 	 */
 	private static final String TIMESTAMP_ATTR_KEY = "updateattribute";
-	
+
 	/**
 	 * Configuration of the UpdateCheckerJob.
 	 */
@@ -68,39 +66,38 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * Status of the Indexer.
 	 */
 	protected IndexerStatus status;
-	
+
 	/**
 	 * Name of the attribute identifying the beans.
 	 */
 	protected String idAttribute = "contentid";
-	
+
 	/**
 	 * Name of the attribute indicating if the object has changed. This
 	 * attribute should change whenever the object is changed in the repository.
 	 */
 	protected String timestampAttribute = "";
-	
+
 	/**
 	 * TODO javadoc.
 	 */
 	private Hashtable<String, CRConfigUtil> configmap;
-	
+
 	/**
 	 * index location to compare the objects with.
 	 */
 	protected IndexLocation indexLocation;
-	
+
 	/**
 	 * marker for saving the duration in milliseconds.
 	 */
 	private long duration = 0;
-	
+
 	/**
 	 * start time of the job as timestamp.
 	 */
 	private long start = 0;
-	
-	
+
 	/**
 	 * Initialises the default values for any implementation of the
 	 * {@link AbstractUpdateCheckerJob}.
@@ -108,9 +105,8 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * @param indexLoc index location to compare with the repository
 	 * @param updateCheckerConfigmap TODO javadoc
 	 */
-	public AbstractUpdateCheckerJob(final CRConfig updateCheckerConfig,
-			final IndexLocation indexLoc, 
-			final Hashtable<String, CRConfigUtil> updateCheckerConfigmap) {
+	public AbstractUpdateCheckerJob(final CRConfig updateCheckerConfig, final IndexLocation indexLoc,
+		final Hashtable<String, CRConfigUtil> updateCheckerConfigmap) {
 		config = updateCheckerConfig;
 		configmap = updateCheckerConfigmap;
 		if (configmap == null) {
@@ -119,12 +115,10 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		identifyer = (String) updateCheckerConfig.getName();
 		indexLocation = indexLoc;
 		status = new IndexerStatus();
-		idAttribute =
-			updateCheckerConfig.getString(ID_ATTRIBUTE_KEY, idAttribute);
-		timestampAttribute = updateCheckerConfig
-				.getString(TIMESTAMP_ATTR_KEY, timestampAttribute);
+		idAttribute = updateCheckerConfig.getString(ID_ATTRIBUTE_KEY, idAttribute);
+		timestampAttribute = updateCheckerConfig.getString(TIMESTAMP_ATTR_KEY, timestampAttribute);
 	}
-	
+
 	/**
 	 * Gets the config for this UpdateCheckerJob.
 	 * 
@@ -133,7 +127,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final CRConfig getConfig() {
 		return config;
 	}
-	
+
 	/**
 	 * Gets the Job Identifyer. In most cases this is the CR id.
 	 * @return identifyer as string
@@ -141,7 +135,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final String getIdentifyer() {
 		return identifyer;
 	}
-	
+
 	/**
 	 * Get job duration in milliseconds.
 	 * @return duration of the job in milliseconds
@@ -149,7 +143,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final long getDuration() {
 		return duration;
 	}
-	
+
 	/**
 	 * Get the job's start time as timestamp.
 	 * @return start time of the job as timestamp
@@ -157,7 +151,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final long getStart() {
 		return this.start;
 	}
-	
+
 	/**
 	 * Get the job's start time as date.
 	 * @return start time of the job as date
@@ -165,7 +159,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final Date getStartDate() {
 		return new Date(getStart());
 	}
-	
+
 	/**
 	 * Get total count of objects to index.
 	 * @return object count as int.
@@ -212,7 +206,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final String getStatusString() {
 		return status.getCurrentStatusString();
 	}
-	
+
 	/**
 	 * Check if job had an error.
 	 * @return true if error.
@@ -220,7 +214,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final boolean hasError() {
 		return status.hasError();
 	}
-	
+
 	/**
 	 * Get the current error message if set.
 	 * @return error message.
@@ -228,7 +222,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	public final String getErrorMessage() {
 		return status.getErrorMessage();
 	}
-	
+
 	/**
 	 * Tests if a {@link AbstractUpdateCheckerJob} has the same identifier as
 	 * the given object being an instance of {@link AbstractUpdateCheckerJob}.
@@ -238,14 +232,13 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj instanceof AbstractUpdateCheckerJob) {
-			if (this.identifyer.equalsIgnoreCase(
-					((AbstractUpdateCheckerJob) obj).getIdentifyer())) {
+			if (this.identifyer.equalsIgnoreCase(((AbstractUpdateCheckerJob) obj).getIdentifyer())) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * get the objects to update and update them in the index.
 	 * @param indexLocation - index location to update
@@ -253,8 +246,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * @throws CRException in case something goes wrong please document in your implementation if you plan to throw an exception
 	 */
 	protected abstract void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException;
-	
-	
+
 	/**
 	 * get all objects that are not up to date.
 	 * @param forceFullUpdate - boolean use to force a full update in the index
@@ -267,44 +259,36 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * com.gentics.api.lib.resolving.Resolvable)
 	 * @see IndexUpdateChecker#deleteStaleObjects()
 	 */
-	protected Collection<CRResolvableBean> getObjectsToUpdate(
-			final CRRequest request, final RequestProcessor rp,
-			final boolean forceFullUpdate,
-			final IndexUpdateChecker indexUpdateChecker) { 
-		Collection<CRResolvableBean> updateObjects =
-			new Vector<CRResolvableBean>();
-		
-		UseCase objectsToUpdateCase = MonitorFactory.startUseCase(
-				"AbstractUpdateCheck.getObjectsToUpdate(" + request.get("CRID")
-				+ ")");
+	protected Collection<CRResolvableBean> getObjectsToUpdate(final CRRequest request, final RequestProcessor rp,
+			final boolean forceFullUpdate, final IndexUpdateChecker indexUpdateChecker) {
+		Collection<CRResolvableBean> updateObjects = new Vector<CRResolvableBean>();
+
+		UseCase objectsToUpdateCase = MonitorFactory.startUseCase("AbstractUpdateCheck.getObjectsToUpdate("
+				+ request.get("CRID") + ")");
 		try {
 			if (forceFullUpdate || "".equals(timestampAttribute)) {
 				try {
-					updateObjects = (Collection<CRResolvableBean>)
-						rp.getObjects(request);
+					updateObjects = (Collection<CRResolvableBean>) rp.getObjects(request);
 				} catch (CRException e) {
-					String message = "Error getting objects to full index from "
-						+ "RequestProcessor. " + e.getMessage();
+					String message = "Error getting objects to full index from " + "RequestProcessor. "
+							+ e.getMessage();
 					log.error(message, e);
 					status.setError(message);
-				} 
+				}
 			} else {
 				//Sorted (by the idAttribute) list of Resolvables to check for
 				//Updates.
 				Collection<CRResolvableBean> objectsToIndex;
 				try {
 					defaultizeRequest(request);
-					objectsToIndex = (Collection<CRResolvableBean>)
-						rp.getObjects(request);
+					objectsToIndex = (Collection<CRResolvableBean>) rp.getObjects(request);
 				} catch (CRException e) {
-					String message = "Error getting objects to index from "
-						+ "RequestProcessor. " + e.getMessage();
+					String message = "Error getting objects to index from " + "RequestProcessor. " + e.getMessage();
 					log.error(message, e);
 					status.setError(message);
 					return null;
 				}
-				Iterator<CRResolvableBean> resolvableIterator =
-					objectsToIndex.iterator();
+				Iterator<CRResolvableBean> resolvableIterator = objectsToIndex.iterator();
 				try {
 					while (resolvableIterator.hasNext()) {
 						CRResolvableBean crElement = resolvableIterator.next();
@@ -313,19 +297,18 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 							log.error("IDAttribute is null!");
 						}
 						String crElementID = crElementIDObject.toString();
-						Object crElementTimestamp =
-							crElement.get(timestampAttribute);
-						if (!indexUpdateChecker.isUpToDate(crElementID,
-								crElementTimestamp, timestampAttribute,
-								crElement)) {
+						Object crElementTimestamp = crElement.get(timestampAttribute);
+						if (!indexUpdateChecker.isUpToDate(
+							crElementID,
+							crElementTimestamp,
+							timestampAttribute,
+							crElement)) {
 							updateObjects.add(crElement);
 						}
 					}
 				} catch (WrongOrderException e) {
-					log.error("Got the objects from the datasource in the wrong"
-							+ "order.", e);
-					status.setError("Got the objects from the datasource in the"
-							+ "wrong order.");
+					log.error("Got the objects from the datasource in the wrong" + "order.", e);
+					status.setError("Got the objects from the datasource in the" + "wrong order.");
 					return null;
 				}
 			}
@@ -341,15 +324,14 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	private void defaultizeRequest(CRRequest request) {
 		String[] prefill = request.getAttributeArray(idAttribute);
 		List<String> prefillList = Arrays.asList(prefill);
-		if(!"".equals(timestampAttribute) && !prefillList.contains(timestampAttribute))
-		{
+		if (!"".equals(timestampAttribute) && !prefillList.contains(timestampAttribute)) {
 			ArrayList<String> pf = new ArrayList<String>(prefillList);
 			pf.add(timestampAttribute);
 			request.setAttributeArray(pf.toArray(prefill));
 		}
 		String[] sorting = request.getSortArray();
 		if (sorting == null) {
-			request.setSortArray(new String[]{idAttribute + ":asc"});
+			request.setSortArray(new String[] { idAttribute + ":asc" });
 		} else if (!Arrays.asList(sorting).contains(idAttribute + ":asc")) {
 			ArrayList<String> sf = new ArrayList<String>(Arrays.asList(sorting));
 			sf.add(idAttribute + ":asc");

@@ -32,7 +32,7 @@ public class CRException extends Exception implements Serializable {
 	 * Type as Enum.
 	 */
 	private ERRORTYPE errType = ERRORTYPE.GENERAL_ERROR;
-	
+
 	/**
 	 * String stacktrace for serializeable transfers.
 	 */
@@ -55,7 +55,7 @@ public class CRException extends Exception implements Serializable {
 	public final ERRORTYPE getErrorType() {
 		return (errType);
 	}
-	
+
 	/**
 	 * gets the error message.
 	 * @return message
@@ -63,7 +63,7 @@ public class CRException extends Exception implements Serializable {
 	public final String getMessage() {
 		return (message);
 	}
-	
+
 	/**
 	 * gets the error type as string.
 	 * @return type
@@ -71,7 +71,7 @@ public class CRException extends Exception implements Serializable {
 	public final String getType() {
 		return (type);
 	}
-	
+
 	/**
 	 * Set the error message.
 	 * @param newmessage message.
@@ -79,7 +79,7 @@ public class CRException extends Exception implements Serializable {
 	public final void setMessage(final String newmessage) {
 		this.message = newmessage;
 	}
-	
+
 	/**
 	 * Set the error type as string.
 	 * @param newType type.
@@ -87,14 +87,14 @@ public class CRException extends Exception implements Serializable {
 	public final void setType(final String newType) {
 		this.type = newType;
 	}
-	
+
 	/**
 	 * default constructor to create a new CRException.
 	 */
 	public CRException() {
 		super();
 	}
-	
+
 	/**
 	 * Create new CRException from CRError.
 	 * @param err error
@@ -106,7 +106,7 @@ public class CRException extends Exception implements Serializable {
 		this.stringStack = err.getStringStackTrace();
 		this.errType = err.getErrorType();
 	}
-	
+
 	/**
 	 * Create a new instance.
 	 * @param newtype type
@@ -122,8 +122,7 @@ public class CRException extends Exception implements Serializable {
 	 * @param newmessage message
 	 * @param etype type as enum
 	 */
-	public CRException(final String newtype, final String newmessage,
-			final ERRORTYPE etype) {
+	public CRException(final String newtype, final String newmessage, final ERRORTYPE etype) {
 		super(newmessage);
 		this.message = newmessage;
 		this.type = newtype;
@@ -144,7 +143,7 @@ public class CRException extends Exception implements Serializable {
 		type = ex.getClass().getSimpleName();
 		setStackTrace(ex.getStackTrace());
 	}
-	
+
 	/**
 	 * Creates a new CRException from an Exception.
 	 * @param ex Exception to wrap
@@ -178,14 +177,15 @@ public class CRException extends Exception implements Serializable {
 		}
 		return stringStack;
 	}
-		
+
 	/**
 	 * sets the stacktrace as string that is returned by getStringStackTrace().
 	 * @param str string
 	 */
 	public final void setStringStackTrace(final String str) {
-			this.stringStack = str;
+		this.stringStack = str;
 	}
+
 	/**
 	 * has to be called before serialization.
 	 * DEPRICATED => USE CRError to serialize an Error

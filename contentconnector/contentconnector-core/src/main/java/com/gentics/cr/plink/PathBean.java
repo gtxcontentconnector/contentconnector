@@ -29,8 +29,7 @@ public class PathBean extends ResolvableBean {
 		if (url != null) {
 			int lastindex = url.lastIndexOf('/');
 			this.filename = url.substring(lastindex + 1);
-			if(lastindex>-1)
-			{
+			if (lastindex > -1) {
 				this.path = url.substring(0, url.lastIndexOf('/'));
 			}
 		}

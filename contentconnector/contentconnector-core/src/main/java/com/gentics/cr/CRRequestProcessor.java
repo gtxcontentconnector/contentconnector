@@ -24,11 +24,11 @@ import com.gentics.cr.util.ArrayHelper;
  *
  */
 public class CRRequestProcessor extends RequestProcessor {
-	
+
 	private static Logger logger = Logger.getLogger(CRRequestProcessor.class);
 
 	private HashMap<String, Resolvable> resolvables = null;
-	
+
 	/**
 	 * Create a new instance of CRRequestProcessor.
 	 * @param config
@@ -46,8 +46,8 @@ public class CRRequestProcessor extends RequestProcessor {
 	 * @return resulting objects
 	 * @throws CRException TODO javadocs
 	 */
-	public Collection<CRResolvableBean> getObjects(final CRRequest request,
-			final boolean doNavigation) throws CRException {
+	public Collection<CRResolvableBean> getObjects(final CRRequest request, final boolean doNavigation)
+			throws CRException {
 		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
@@ -64,29 +64,26 @@ public class CRRequestProcessor extends RequestProcessor {
 
 				// add base resolvables
 				if (this.resolvables != null) {
-					for (Iterator<String> it = this.resolvables.keySet()
-							.iterator(); it.hasNext();) {
+					for (Iterator<String> it = this.resolvables.keySet().iterator(); it.hasNext();) {
 						String name = it.next();
-						dsFilter.addBaseResolvable(name,
-								this.resolvables.get(name));
+						dsFilter.addBaseResolvable(name, this.resolvables.get(name));
 					}
 				}
 
 				String[] prefillAttributes = request.getAttributeArray();
 				prefillAttributes = ArrayHelper.removeElements(prefillAttributes, "contentid", "updatetimestamp");
 				// do the query
-				Collection<Resolvable> col = this.toResolvableCollection(
-						ds.getResult(dsFilter, prefillAttributes,
-								request.getStart().intValue(),
-								request.getCount().intValue(),
-								request.getSorting()));
+				Collection<Resolvable> col = this.toResolvableCollection(ds.getResult(
+					dsFilter,
+					prefillAttributes,
+					request.getStart().intValue(),
+					request.getCount().intValue(),
+					request.getSorting()));
 
 				// convert all objects to serializeable beans
 				if (col != null) {
-					for (Iterator<Resolvable> it = col.iterator(); it.hasNext();
-							) {
-						CRResolvableBean crBean = new CRResolvableBean(
-								it.next(), request.getAttributeArray());
+					for (Iterator<Resolvable> it = col.iterator(); it.hasNext();) {
+						CRResolvableBean crBean = new CRResolvableBean(it.next(), request.getAttributeArray());
 						if (config.getFolderType().equals(crBean.getObj_type()) && doNavigation) {
 							//Process child elements
 							String fltr = "object.folder_id=='" + crBean.getContentid() + "'";

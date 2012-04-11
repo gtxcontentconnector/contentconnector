@@ -74,13 +74,11 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param plinkAttributeArray -
 	 *            Attributes to perform plink replacement within
 	 */
-	public CRRequest(final String requestFilter, final String startString,
-			final String countString, final String[] sortArray,
-			final String[] attributeArray, final String[] plinkAttributeArray) {
-		this(requestFilter, startString, countString, sortArray,
-				attributeArray, plinkAttributeArray, null);
+	public CRRequest(final String requestFilter, final String startString, final String countString,
+		final String[] sortArray, final String[] attributeArray, final String[] plinkAttributeArray) {
+		this(requestFilter, startString, countString, sortArray, attributeArray, plinkAttributeArray, null);
 	}
-	
+
 	/**
 	 * Create a new instance of CRRequest.
 	 * 
@@ -109,10 +107,9 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param childFilter -
 	 *            Rule to fetch the child elements (Navigation)
 	 */
-	public CRRequest(final String requestFilter, final String startString,
-			final String countString, final String[] sortArray,
-			final String[] attributeArray, final String[] plinkAttributeArray,
-			final String childFilter) {
+	public CRRequest(final String requestFilter, final String startString, final String countString,
+		final String[] sortArray, final String[] attributeArray, final String[] plinkAttributeArray,
+		final String childFilter) {
 
 		setRequestFilter(requestFilter);
 		setStartString(startString);
@@ -442,8 +439,7 @@ public class CRRequest implements Cloneable, Serializable {
 		Iterator<String> it = this.objectsToDeploy.keySet().iterator();
 		while (it.hasNext()) {
 			String key = it.next();
-			ret.addObjectForFilterDeployment(key, this.getObjectsToDeploy()
-					.get(key));
+			ret.addObjectForFilterDeployment(key, this.getObjectsToDeploy().get(key));
 		}
 		return (ret);
 	}
@@ -458,8 +454,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @throws ParserException
 	 * @throws ExpressionParserException
 	 */
-	public DatasourceFilter getPreparedFilter(CRConfig config)
-			throws ParserException, ExpressionParserException {
+	public DatasourceFilter getPreparedFilter(CRConfig config) throws ParserException, ExpressionParserException {
 		return getPreparedFilter(config, null);
 	}
 
@@ -476,55 +471,42 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @throws ParserException
 	 * @throws ExpressionParserException
 	 */
-	public DatasourceFilter getPreparedFilter(CRConfig config, Datasource ds)
-			throws ParserException, ExpressionParserException {
+	public DatasourceFilter getPreparedFilter(CRConfig config, Datasource ds) throws ParserException,
+			ExpressionParserException {
 		DatasourceFilter dsFilter;
 		String filter = "";
 		if (ds == null) {
 			ds = config.getDatasource();
 		}
 
-		if ((this.getRequestFilter() == null || this.getRequestFilter().equals(
-				""))
-				&& this.getContentid() != null
+		if ((this.getRequestFilter() == null || this.getRequestFilter().equals("")) && this.getContentid() != null
 				&& !this.getContentid().equals("")) {
-			this.setRequestFilter("object.contentid=='" + this.getContentid()
-					+ "'");
+			this.setRequestFilter("object.contentid=='" + this.getContentid() + "'");
 		}
 
 		// TEST IF REQUEST FILTER IS SAVE
-		Expression expression = PortalConnectorFactory.createExpression(this
-				.getRequestFilter());
+		Expression expression = PortalConnectorFactory.createExpression(this.getRequestFilter());
 		// IF NO EXCEPTION IS THROWN IN THE ABOVE STATEMENT, FILTER IS
 		// CONSIDERED TO BE SAVE
 
 		// ADD APPLICATION RULE IF IT IS SET
-		if (config.getApplicationRule() == null
-				|| config.getApplicationRule().equals("")) {
+		if (config.getApplicationRule() == null || config.getApplicationRule().equals("")) {
 			filter = this.getRequestFilter();
-		} else if (config.getApplicationRule() != null
-				&& !config.getApplicationRule().equals("")
-				&& this.getRequestFilter() != null
-				&& !this.getRequestFilter().equals("")) {
-			filter = "(" + this.getRequestFilter() + ") AND "
-					+ config.getApplicationRule();
-		} else if (config.getApplicationRule() != null
-				&& !config.getApplicationRule().equals("")
-				&& (this.getRequestFilter() == null
-				|| this.getRequestFilter()
-						.equals(""))) {
+		} else if (config.getApplicationRule() != null && !config.getApplicationRule().equals("")
+				&& this.getRequestFilter() != null && !this.getRequestFilter().equals("")) {
+			filter = "(" + this.getRequestFilter() + ") AND " + config.getApplicationRule();
+		} else if (config.getApplicationRule() != null && !config.getApplicationRule().equals("")
+				&& (this.getRequestFilter() == null || this.getRequestFilter().equals(""))) {
 			filter = config.getApplicationRule();
 		}
 		log.debug("Using rule: " + filter);
 		expression = PortalConnectorFactory.createExpression(filter);
 
 		dsFilter = ds.createDatasourceFilter(expression);
-		Iterator<String> it = this.getObjectsToDeploy()
-				.keySet().iterator();
+		Iterator<String> it = this.getObjectsToDeploy().keySet().iterator();
 		while (it.hasNext()) {
 			String key = it.next();
-			dsFilter.addBaseResolvable(key,
-					this.getObjectsToDeploy().get(key));
+			dsFilter.addBaseResolvable(key, this.getObjectsToDeploy().get(key));
 		}
 		return (dsFilter);
 	}
@@ -616,8 +598,7 @@ public class CRRequest implements Cloneable, Serializable {
 	public boolean isUrlRequest() {
 		boolean urlrequest = false;
 		if ((this.getContentid() == null || this.getContentid().equals(""))
-				&& (this.getRequestFilter() == null || this.getRequestFilter()
-						.equals(""))
+				&& (this.getRequestFilter() == null || this.getRequestFilter().equals(""))
 				&& (this.getUrl() != null && !this.getUrl().equals("")))
 			urlrequest = true;
 		return urlrequest;
@@ -722,8 +703,7 @@ public class CRRequest implements Cloneable, Serializable {
 			return false;
 		}
 		CRRequest req = (CRRequest) obj;
-		return this.params.equals(req.params)
-				&& this.objectsToDeploy.equals(req.objectsToDeploy);
+		return this.params.equals(req.params) && this.objectsToDeploy.equals(req.objectsToDeploy);
 	}
 
 }

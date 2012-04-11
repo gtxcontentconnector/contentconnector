@@ -11,9 +11,9 @@ public final class Lists {
 	/**
 	 * private constructor to prevent instantiation.
 	 */
-	private Lists() { }
-	
-	
+	private Lists() {
+	}
+
 	/**
 	 * Convert a list of objects into a specified list of objects.
 	 * @param <T> - Type of objects in target list
@@ -22,8 +22,7 @@ public final class Lists {
 	 * @return list of objects of type T, <code>null</code> in case list is not
 	 * a List
 	 */
-	public static <T> List<T> toSpecialList(final Object list,
-			final Class<T> clazz) {
+	public static <T> List<T> toSpecialList(final Object list, final Class<T> clazz) {
 		if (list instanceof List) {
 			List<?> givenList = (List<?>) list;
 			List<T> result = new ArrayList<T>(givenList.size());
@@ -37,7 +36,7 @@ public final class Lists {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Convert a list of objects into a specified list of objects.
 	 * @param <T> - Type of objects in target list
@@ -46,8 +45,7 @@ public final class Lists {
 	 * @param clazz - Class to cast elements into
 	 * @return list of objects of type T
 	 */
-	public static <S, T extends S> List<T> toSpecialList(
-			final Collection<S> list, final Class<T> clazz) {
+	public static <S, T extends S> List<T> toSpecialList(final Collection<S> list, final Class<T> clazz) {
 		List<T> result = new ArrayList<T>(list.size());
 		for (S listElement : list) {
 			if (clazz.isInstance(listElement)) {

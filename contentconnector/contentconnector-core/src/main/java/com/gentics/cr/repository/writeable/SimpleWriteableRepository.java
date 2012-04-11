@@ -14,8 +14,7 @@ import com.gentics.cr.exceptions.CRException;
  * @author bigbear3001
  *
  */
-public abstract class SimpleWriteableRepository extends RequestProcessor implements
-		WriteableRepository {
+public abstract class SimpleWriteableRepository extends RequestProcessor implements WriteableRepository {
 
 	/**
 	 * Initializes a {@link SimpleWriteableRepository}.
@@ -30,8 +29,7 @@ public abstract class SimpleWriteableRepository extends RequestProcessor impleme
 	public abstract void finalize();
 
 	@Override
-	public abstract Collection<CRResolvableBean> getObjects(CRRequest request,
-			boolean doNavigation) throws CRException;
+	public abstract Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException;
 
 	public abstract CRResolvableBean createNewResolvable();
 

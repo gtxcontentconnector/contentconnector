@@ -20,30 +20,30 @@ public final class EventManager {
 	 * Event receiver collection.
 	 */
 	private Vector<IEventReceiver> receivers;
-	
+
 	/**
 	 * Singleton instance of the EventManager.
 	 */
 	private static EventManager instance;
-	
+
 	/**
 	 * Private constructor prevents instantiation.
 	 */
 	private EventManager() {
-		
+
 	}
-	
+
 	/**
 	 * Get the singleton instance of eventmanager.
 	 * @return singleton instance of EventManager.
 	 */
 	public static EventManager getInstance() {
-		if (instance == null)  {
+		if (instance == null) {
 			instance = new EventManager();
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Fire a event to the registered receivers.
 	 * @param event fired event
@@ -55,7 +55,7 @@ public final class EventManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Register a eventreiceiver with the event manager.
 	 * @param receiver to register
@@ -66,7 +66,7 @@ public final class EventManager {
 		}
 		this.receivers.add(receiver);
 	}
-	
+
 	/**
 	 * Unregister a eventreceiver with the event manager.
 	 * @param receiver to unregister

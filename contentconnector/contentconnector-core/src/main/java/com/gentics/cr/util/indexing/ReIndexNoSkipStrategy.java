@@ -14,5 +14,5 @@ public class ReIndexNoSkipStrategy implements IReIndexStrategy {
 
 	public boolean skipReIndex(IndexLocation indexLocation) {
 		return false;
-	}		
+	}
 }

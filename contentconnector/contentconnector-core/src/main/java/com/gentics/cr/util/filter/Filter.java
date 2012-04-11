@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import com.gentics.api.lib.resolving.Resolvable;
+
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:30 +0200 (Do, 01 Apr 2010) $
@@ -24,5 +25,5 @@ public interface Filter<T extends Resolvable> {
 	 * @return returns a Collection of Resolvables. We suggest to return the modified Collection objects
 	 */
 	public Collection<T> apply(Collection<T> objects, HashMap<String, Object> params);
-	
+
 }

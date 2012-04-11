@@ -16,7 +16,7 @@ public class StaticObjectHolderRequestProcessor extends RequestProcessor {
 	 * Collection of resolvables that we return in {@link #getObjects(CRRequest, boolean)}
 	 */
 	public static Collection<CRResolvableBean> objects = new Vector<CRResolvableBean>();
-	
+
 	/**
 	 * Initialize a new StaticObjectHolderRequestProcessor
 	 * @param config - configuration of the RequestProcessor
@@ -24,21 +24,20 @@ public class StaticObjectHolderRequestProcessor extends RequestProcessor {
 	 * be initialized.
 	 * @see {@link RequestProcessor} as we just put the configuration thru
 	 */
-	public StaticObjectHolderRequestProcessor(CRConfig config)
-			throws CRException {
+	public StaticObjectHolderRequestProcessor(CRConfig config) throws CRException {
 		super(config);
 	}
 
 	@Override
-	public Collection<CRResolvableBean> getObjects(CRRequest request,
-			boolean doNavigation) throws CRException {
+	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
 		//TODO add the possibility to filter the objects with the request
 		return objects;
 	}
 
 	@Override
-	public void finalize() { }
-	
+	public void finalize() {
+	}
+
 	/**
 	 * @param newObjects - collection of resolvables that should be returned, as this one is used in all threads it should be thread safe if you plan to manipulate in any way.
 	 */

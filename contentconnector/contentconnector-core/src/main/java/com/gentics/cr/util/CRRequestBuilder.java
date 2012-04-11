@@ -52,7 +52,7 @@ public class CRRequestBuilder {
 	protected Object response;
 
 	private static final String REPOSITORIES_KEY = "cr";
-	
+
 	protected GenericConfiguration config;
 
 	private static Logger logger = Logger.getLogger(CRRequestBuilder.class);
@@ -87,8 +87,7 @@ public class CRRequestBuilder {
 	 * @param requestBuilderConfiguration
 	 *            configuration for the request builder
 	 */
-	public CRRequestBuilder(final PortletRequest portletRequest,
-			final GenericConfiguration requestBuilderConfiguration) {
+	public CRRequestBuilder(final PortletRequest portletRequest, final GenericConfiguration requestBuilderConfiguration) {
 		this(new RequestWrapper(portletRequest), requestBuilderConfiguration);
 	}
 
@@ -111,8 +110,7 @@ public class CRRequestBuilder {
 	 *            configuration for the request builder where we get the default
 	 *            parameters from.
 	 */
-	public CRRequestBuilder(final HttpServletRequest servletRequest,
-			final GenericConfiguration conf) {
+	public CRRequestBuilder(final HttpServletRequest servletRequest, final GenericConfiguration conf) {
 		this(new RequestWrapper(servletRequest), conf);
 	}
 
@@ -125,8 +123,7 @@ public class CRRequestBuilder {
 	 * @param requestBuilderConfiguration
 	 *            configuration for the request builder
 	 */
-	public CRRequestBuilder(final RequestWrapper requestWrapper,
-			final GenericConfiguration requestBuilderConfiguration) {
+	public CRRequestBuilder(final RequestWrapper requestWrapper, final GenericConfiguration requestBuilderConfiguration) {
 
 		this.config = requestBuilderConfiguration;
 		this.request = requestWrapper;
@@ -135,19 +132,15 @@ public class CRRequestBuilder {
 		this.count = requestWrapper.getParameter("count");
 		this.start = (String) requestWrapper.getParameter("start");
 		this.sorting = requestWrapper.getParameterValues("sorting");
-		this.attributes = prepareAttributesArray(requestWrapper
-				.getParameterValues("attributes"));
-		this.plinkattributes = requestWrapper
-				.getParameterValues("plinkattributes");
+		this.attributes = prepareAttributesArray(requestWrapper.getParameterValues("attributes"));
+		this.plinkattributes = requestWrapper.getParameterValues("plinkattributes");
 		this.permissions = requestWrapper.getParameterValues("permissions");
 		this.options = requestWrapper.getParameterValues("options");
 		this.type = requestWrapper.getParameter("type");
-		this.isDebug = (requestWrapper.getParameter("debug") != null && requestWrapper
-				.getParameter("debug").equals("true"));
-		this.metaresolvable = Boolean.parseBoolean(requestWrapper
-				.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
-		this.highlightquery = requestWrapper
-				.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
+		this.isDebug = (requestWrapper.getParameter("debug") != null && requestWrapper.getParameter("debug").equals(
+			"true"));
+		this.metaresolvable = Boolean.parseBoolean(requestWrapper.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
+		this.highlightquery = requestWrapper.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
 		this.node_id = requestWrapper.getParameterValues("node");
 		this.query_and = requestWrapper.getParameter("q_and");
 		this.query_or = requestWrapper.getParameter("q_or");
@@ -155,11 +148,9 @@ public class CRRequestBuilder {
 		this.query_group = requestWrapper.getParameter("q_group");
 		this.wordmatch = requestWrapper.getParameter("wm");
 		if (config != null) {
-			String addPermissionsToRuleConfig = config
-					.getString(ADD_PERMISSIONS_TO_RULE_KEY);
+			String addPermissionsToRuleConfig = config.getString(ADD_PERMISSIONS_TO_RULE_KEY);
 			if (addPermissionsToRuleConfig != null) {
-				this.addPermissionsToRule = Boolean
-						.parseBoolean(addPermissionsToRuleConfig);
+				this.addPermissionsToRule = Boolean.parseBoolean(addPermissionsToRuleConfig);
 			}
 		}
 
@@ -180,8 +171,7 @@ public class CRRequestBuilder {
 		}
 
 		// if filter is not set and contentid is => use contentid instead
-		if (("".equals(filter) || filter == null) && contentid != null
-				&& !contentid.equals("")) {
+		if (("".equals(filter) || filter == null) && contentid != null && !contentid.equals("")) {
 			filter = "object.contentid == '" + contentid + "'";
 		}
 
@@ -220,8 +210,7 @@ public class CRRequestBuilder {
 	private void getDefaultParameters() {
 		GenericConfiguration defaultparameters = null;
 		if (this.config != null) {
-			defaultparameters = (GenericConfiguration) this.config
-					.get(DEFAULPARAMETERS_KEY);
+			defaultparameters = (GenericConfiguration) this.config.get(DEFAULPARAMETERS_KEY);
 		}
 		if (defaultparameters != null) {
 			if (this.type == null) {
@@ -251,8 +240,7 @@ public class CRRequestBuilder {
 				calcStartFromCount(numberOfPageStr);
 			}
 			if (this.attributes == null || this.attributes.length == 0) {
-				String defaultAttributes = (String) defaultparameters
-						.get("attributes");
+				String defaultAttributes = (String) defaultparameters.get("attributes");
 				if (defaultAttributes != null) {
 					this.attributes = defaultAttributes.split(",[ ]*");
 				}
@@ -370,8 +358,7 @@ public class CRRequestBuilder {
 			}
 
 		}
-		if ((filter != null && !"".equals(filter)) && this.node_id != null
-				&& this.node_id.length != 0
+		if ((filter != null && !"".equals(filter)) && this.node_id != null && this.node_id.length != 0
 				&& !filter.matches("(.+[ (])?node_id\\:[0-9]+.*")) {
 			String nodeFilter = "";
 			for (int i = 0; i < node_id.length; i++) {
@@ -396,8 +383,7 @@ public class CRRequestBuilder {
 	 * @return created CRRequest
 	 */
 	public final CRRequest getCRRequest() {
-		CRRequest req = new CRRequest(filter, start, count, sorting,
-				attributes, plinkattributes);
+		CRRequest req = new CRRequest(filter, start, count, sorting, attributes, plinkattributes);
 		req.setContentid(this.contentid);
 		req.setRequest(this.request);
 		req.setResponse(this.response);
@@ -428,17 +414,14 @@ public class CRRequestBuilder {
 	 *            TODO javadoc
 	 * @return TODO javadoc
 	 */
-	protected final String createPermissionsRule(final String objectFilter,
-			final String[] userPermissions) {
+	protected final String createPermissionsRule(final String objectFilter, final String[] userPermissions) {
 		String ret = objectFilter;
 		if ((userPermissions != null) && (userPermissions.length > 0)) {
 			if ((objectFilter != null) && (!objectFilter.equals(""))) {
-				ret = "(" + objectFilter
-						+ ") AND object.permissions CONTAINSONEOF "
+				ret = "(" + objectFilter + ") AND object.permissions CONTAINSONEOF "
 						+ CRUtil.prepareParameterArrayForRule(userPermissions);
 			} else {
-				ret = "object.permissions CONTAINSONEOF "
-						+ CRUtil.prepareParameterArrayForRule(userPermissions);
+				ret = "object.permissions CONTAINSONEOF " + CRUtil.prepareParameterArrayForRule(userPermissions);
 			}
 		}
 		return ret;
@@ -482,8 +465,7 @@ public class CRRequestBuilder {
 	 */
 	private Hashtable<String, String> getRepositoryClassMap() {
 
-		Hashtable<String, String> classmap = RepositoryFactory
-				.getStringClassMap();
+		Hashtable<String, String> classmap = RepositoryFactory.getStringClassMap();
 
 		// values from other projects
 		// TODO this should be moved to the packages adding additional
@@ -514,8 +496,7 @@ public class CRRequestBuilder {
 	 * @return ContentRepository with the given settings.
 	 */
 
-	public ContentRepository getContentRepository(String encoding,
-			CRConfigUtil configUtil) {
+	public ContentRepository getContentRepository(String encoding, CRConfigUtil configUtil) {
 		ContentRepository cr = null;
 
 		Hashtable<String, String> classmap = getRepositoryClassMap();
@@ -524,34 +505,28 @@ public class CRRequestBuilder {
 		if (cls != null) {
 			// XmlContentRepository(String[] attr, String encoding)
 			try {
-				cr = (ContentRepository) Class.forName(cls).getConstructor(
-						new Class[] { String[].class, String.class })
+				cr = (ContentRepository) Class.forName(cls)
+						.getConstructor(new Class[] { String[].class, String.class })
 						.newInstance(this.getAttributeArray(), encoding);
 			} catch (Exception e) {
 				try {
-					cr = (ContentRepository) Class.forName(cls).getConstructor(
-							new Class[] { String[].class, String.class,
-									CRConfigUtil.class }).newInstance(
-							this.getAttributeArray(), encoding, configUtil);
+					cr = (ContentRepository) Class.forName(cls)
+							.getConstructor(new Class[] { String[].class, String.class, CRConfigUtil.class })
+							.newInstance(this.getAttributeArray(), encoding, configUtil);
 				} catch (Exception ex) {
 					try {
-						cr = (ContentRepository) Class.forName(cls)
+						cr = (ContentRepository) Class
+								.forName(cls)
 								.getConstructor(
-										new Class[] { String[].class,
-												String.class, String[].class,
-												CRConfigUtil.class })
-								.newInstance(this.getAttributeArray(),
-										encoding, null, configUtil);
+									new Class[] { String[].class, String.class, String[].class, CRConfigUtil.class })
+								.newInstance(this.getAttributeArray(), encoding, null, configUtil);
 					} catch (Exception exc) {
-						logger.error(
-								"Could not create ContentRepository instance from class: "
-										+ cls, exc);
+						logger.error("Could not create ContentRepository instance from class: " + cls, exc);
 					}
 				}
 			}
 		} else {
-			logger
-					.error("Could not create ContentRepository instance. No Type is set to the RequestBuilder");
+			logger.error("Could not create ContentRepository instance. No Type is set to the RequestBuilder");
 		}
 		return cr;
 	}

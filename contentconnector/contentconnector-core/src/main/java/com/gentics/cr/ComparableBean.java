@@ -24,7 +24,7 @@ public class ComparableBean extends CRResolvableBean {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public final int hashCode() {
 		return 0;

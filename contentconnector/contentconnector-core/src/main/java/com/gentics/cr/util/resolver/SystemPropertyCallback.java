@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
  * @author bigbear3001
  */
 public class SystemPropertyCallback implements Callback {
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

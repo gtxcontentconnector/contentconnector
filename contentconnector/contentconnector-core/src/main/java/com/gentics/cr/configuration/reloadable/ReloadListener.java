@@ -10,12 +10,12 @@ import com.gentics.cr.configuration.GenericConfiguration;
  *
  */
 public interface ReloadListener {
-	
+
 	/**
 	 * This Method will be executed by the configuration before it reloads.
 	 */
 	void onBeforeReload();
-	
+
 	/**
 	 * This Method will be executed by the configuration 
 	 * after it finished reloading.

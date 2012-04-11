@@ -11,12 +11,12 @@ public class IntegerValidator implements Validator {
 	 * integer must be larger or equal to this.
 	 */
 	private int minValid;
-	
+
 	/**
 	 * integer must be smaller or equal to this.
 	 */
 	private int maxValid;
-	
+
 	/**
 	 * initialize an {@link IntegerValidator} to validate an object as integer
 	 * within specified limits.
@@ -27,14 +27,14 @@ public class IntegerValidator implements Validator {
 		minValid = min;
 		maxValid = max;
 	}
+
 	/**
 	 * initialize an {@link IntegerValidator} to validate an object as integer.
 	 */
 	public IntegerValidator() {
 		this(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -46,6 +46,7 @@ public class IntegerValidator implements Validator {
 		}
 		return false;
 	}
+
 	/**
 	 * validate a string.
 	 * @param integerString - string to validate as an integer
@@ -59,7 +60,7 @@ public class IntegerValidator implements Validator {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * validate an integer.
 	 * @param integer - integer to validate

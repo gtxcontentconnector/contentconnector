@@ -37,7 +37,8 @@ public final class StringUtils {
 	/**
 	 * private constructor as all methods of this class are static.
 	 */
-	private StringUtils() { }
+	private StringUtils() {
+	}
 
 	/**
 	 * Get the md5sum of a {@link String} in hex code.
@@ -71,8 +72,7 @@ public final class StringUtils {
 	 * @return hex code for bytes
 	 */
 	public static String toHex(final byte[] bytes) {
-		char[] hexCodes = new char[]{'0', '1', '2', '3', '4', '5', '6', '7',
-				'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+		char[] hexCodes = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 		StringBuffer hexCode = new StringBuffer(bytes.length * 2);
 		//Somehow byte to int conversion creates signed ints
 		//all values below 0 have to be corrected by +256
@@ -84,11 +84,11 @@ public final class StringUtils {
 			}
 			int x = i % Constants.HEX_BASE;
 			int y = (i - x) / Constants.HEX_BASE;
-			hexCode.append(new char[]{hexCodes[y], hexCodes[x]});
+			hexCode.append(new char[] { hexCodes[y], hexCodes[x] });
 		}
 		return hexCode.toString();
 	}
-	
+
 	/**
 	 * Converts an object to a String. Usefull if you don't want to check for
 	 * null before string conversion.
@@ -104,7 +104,7 @@ public final class StringUtils {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Read an {@link InputStream} into a String.
 	 * @param is - InputStream to read the String from.
@@ -115,8 +115,7 @@ public final class StringUtils {
 			char[] buffer = new char[Constants.KILOBYTE];
 			StringBuffer result = new StringBuffer();
 			try {
-				Reader reader =
-					new BufferedReader(new InputStreamReader(is, "UTF-8"));
+				Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 				int readBytes;
 				while ((readBytes = reader.read(buffer)) != -1) {
 					result.append(buffer, 0, readBytes);
@@ -139,8 +138,7 @@ public final class StringUtils {
 	 * @return {@link Boolean} representing the {@link Object}, defaultValue if
 	 * the object cannot be parsed.
 	 */
-	public static Boolean getBoolean(final Object parameter,
-			final boolean defaultValue) {
+	public static Boolean getBoolean(final Object parameter, final boolean defaultValue) {
 		if (parameter == null) {
 			return defaultValue;
 		} else if (parameter instanceof Boolean) {
@@ -161,7 +159,7 @@ public final class StringUtils {
 	public static String getCollectionSummary(final Collection<?> collection) {
 		return getCollectionSummary(collection, ",");
 	}
-	
+
 	/**
 	 * Create a summary of a collection of objects.
 	 * they are seperated by the provided seperator.
@@ -170,8 +168,7 @@ public final class StringUtils {
 	 * @return String of seperated values of the collection.
 	 */
 	public static String getCollectionSummary(final Collection<?> collection, final String seperator) {
-		StringBuilder result =
-			new StringBuilder(collection.size() * AVERAGE_WORD_LENGTH);
+		StringBuilder result = new StringBuilder(collection.size() * AVERAGE_WORD_LENGTH);
 		for (Object object : collection) {
 			if (result.length() != 0) {
 				result.append(seperator);
@@ -181,7 +178,7 @@ public final class StringUtils {
 		}
 		return result.toString();
 	}
-	
+
 	/**
 	 * Serialize the given object into a byte array.
 	 * @param object - object to serialize into the byte array.
@@ -207,7 +204,7 @@ public final class StringUtils {
 	public static String serialize(final Serializable object) {
 		return new String(serializeToByteArray(object));
 	}
-	
+
 	/**
 	 * Deserialize an object from a given string.
 	 * @param objectString - string containing a serialized object
@@ -219,7 +216,7 @@ public final class StringUtils {
 			return deserialize(objectString.getBytes());
 		}
 		return null;
-		
+
 	}
 
 	/**
@@ -231,20 +228,19 @@ public final class StringUtils {
 	public static Object deserialize(final byte[] objectBytes) {
 		if (objectBytes != null && objectBytes.length > 0) {
 			try {
-				ByteArrayInputStream bais =
-					new ByteArrayInputStream(objectBytes);
+				ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
 				ObjectInputStream ois = new ObjectInputStream(bais);
 				return ois.readObject();
 			} catch (IOException e) {
 				logger.error("Error while deserializing object.", e);
 			} catch (ClassNotFoundException e) {
 				logger.error("Cannot deserialize object because the class of "
-						+ "the object or one of its dependencies is not known "
-						+ "on this system.", e);
+						+ "the object or one of its dependencies is not known " + "on this system.", e);
 			}
 		}
 		return null;
 	}
+
 	/**
 	 * Converts a folder name into a Gentics Content.Node compatible folder
 	 * name.
@@ -264,15 +260,9 @@ public final class StringUtils {
 	 * </ul>
 	 */
 	public static String toCMSFolder(final String folderPubDir) {
-		return folderPubDir.replace("&", "und")
-			.replace("\u00DF", "ss")
-			.replace("\u00FC", "ue")
-			.replace("\u00DC", "Ue")
-			.replace("\u00F6", "oe")
-			.replace("\u00D6", "Oe")
-			.replace("\u00E4", "ae")
-			.replace("\u00C4", "Ae")
-			.replaceAll("[^a-zA-Z0-9._/-]", "_");
+		return folderPubDir.replace("&", "und").replace("\u00DF", "ss").replace("\u00FC", "ue").replace("\u00DC", "Ue")
+				.replace("\u00F6", "oe").replace("\u00D6", "Oe").replace("\u00E4", "ae").replace("\u00C4", "Ae")
+				.replaceAll("[^a-zA-Z0-9._/-]", "_");
 	}
 
 	/**
@@ -285,11 +275,10 @@ public final class StringUtils {
 	 * InputStream to the position where the end String starts.
 	 * @throws IOException - if there was an error reading the input stream.
 	 */
-	public static String readUntil(final InputStream is, final String end)
-			throws IOException {
+	public static String readUntil(final InputStream is, final String end) throws IOException {
 		return readUntil(is, end.getBytes());
 	}
-	
+
 	/**
 	 * Read from InputStream into String until the given byte sequence is
 	 * matched. The end byte sequence is already read from the InputStream when
@@ -300,8 +289,7 @@ public final class StringUtils {
 	 * InputStream to the position where the end byte sequence starts.
 	 * @throws IOException - if there was an error reading the input stream.
 	 */
-	public static String readUntil(final InputStream is, final byte[] end)
-			throws IOException {
+	public static String readUntil(final InputStream is, final byte[] end) throws IOException {
 		StringBuilder result = new StringBuilder();
 		int matchposition = 0;
 		byte read;

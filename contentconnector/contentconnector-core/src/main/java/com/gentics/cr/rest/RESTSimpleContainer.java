@@ -17,6 +17,7 @@ import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
+
 /**
  * Processes simple rest requests.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -26,120 +27,115 @@ import com.gentics.cr.util.response.IResponseTypeSetter;
  */
 public class RESTSimpleContainer {
 
-  /**
-   * RequestProcessor.
-   */
-  private RequestProcessor rp;
-  /**
-   * Encoding.
-   */
-  private String responseEncoding;
-  /**
-   * Contenttype.
-   */
-  private String contenttype = "";
-  /**
-   * Logger instance.
-   */
-  private static final Logger LOG = Logger.getLogger(RESTSimpleContainer.class);
-  /**
-   * Configuration.
-   */
-  private CRConfigUtil config;
-  
-  /**
-   * Get the content type as String.
-   * @return contettype as String.
-   */
-  public final String getContentType() {
-    return (this.contenttype + "; charset=" + this.responseEncoding);
-  }
-  
-  /**
-   * Create new instance.
-   * @param crConf configuration.
-   */
-  public RESTSimpleContainer(final CRConfigUtil crConf) {
-    this.responseEncoding = crConf.getEncoding();
-    this.config = crConf;
-    try {
-      this.rp = crConf.getNewRequestProcessorInstance(1);
-    } catch (CRException e) {
-    	LOG.error("FAILED TO INITIALIZE REQUEST PROCESSOR... " 
-    		  + e.getStringStackTrace());
-    }
-  }
-  
-  /**
-   * Finalize the Container.
-   */
-  public final void finalize() {
-    if (this.rp != null) {
-    	this.rp.finalize();
-    }
-  }
-  
-  /**
-   * Process the whole service.
-   * @param reqBuilder reqBuilder
-   * @param wrappedObjectsToDeploy objects
-   * @param stream stream
-   * @param responsetypesetter responsetypesetter.
-   */
-  public final void processService(final CRRequestBuilder reqBuilder, 
-		  final Map<String, Resolvable> wrappedObjectsToDeploy, 
-		  final OutputStream stream, 
-		  final IResponseTypeSetter responsetypesetter) {
-    Collection<CRResolvableBean> coll;
-    CRRequestBuilder myReqBuilder = reqBuilder;
-    ContentRepository cr = null;
-    try {
-      cr = myReqBuilder.getContentRepository(this.responseEncoding, 
-    		  this.config);
-      this.contenttype = cr.getContentType();
-      if (responsetypesetter != null) {
-        responsetypesetter.setContentType(this.getContentType());
-      }
-      CRRequest req = myReqBuilder.getCRRequest();
-      boolean deployMetaresolvable = Boolean.parseBoolean((String) 
-    		  config.get(ContentRepository.DEPLOYMETARESOLVABLE_KEY));
-      if (deployMetaresolvable) {
-        req.set(RequestProcessor.META_RESOLVABLE_KEY, true);
-      }
-      //DEPLOY OBJECTS TO REQUEST AND TO RENDERER
-      for (Entry<String, Resolvable> entry : wrappedObjectsToDeploy
-    		  .entrySet()) {
-        req.addObjectForFilterDeployment(entry.getKey(), 
-        		entry.getValue());
-        cr.addAdditionalDeployableObject(entry.getKey(), entry.getValue());
-      }
-      // Query the Objects from RequestProcessor
-      coll = rp.getObjects(req);
-      // add the objects to repository as serializeable beans
-      if (coll != null) {
-        for (Iterator<CRResolvableBean> it = coll.iterator(); it.hasNext();) {
-          cr.addObject(it.next());
-        }
-      }
-      cr.toStream(stream);
-    } catch (CRException ex) {
-      //CR Error Handling
-      //CRException is passed down from methods that want to post
-      //the occured error to the client
-      cr.respondWithError((OutputStream) stream, ex, myReqBuilder.isDebug());
-      LOG.error(ex.getMessage(), ex);
-    } catch (Exception ex) {
-      CRException crex = new CRException(ex);
-      LOG.error("" + myReqBuilder + stream, crex);
-      cr.respondWithError((OutputStream) stream, crex, myReqBuilder.isDebug());
-      LOG.error(ex.getMessage(), crex);
-    } finally {
-      try {
-        stream.flush();
-        stream.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-  }
+	/**
+	 * RequestProcessor.
+	 */
+	private RequestProcessor rp;
+	/**
+	 * Encoding.
+	 */
+	private String responseEncoding;
+	/**
+	 * Contenttype.
+	 */
+	private String contenttype = "";
+	/**
+	 * Logger instance.
+	 */
+	private static final Logger LOG = Logger.getLogger(RESTSimpleContainer.class);
+	/**
+	 * Configuration.
+	 */
+	private CRConfigUtil config;
+
+	/**
+	 * Get the content type as String.
+	 * @return contettype as String.
+	 */
+	public final String getContentType() {
+		return (this.contenttype + "; charset=" + this.responseEncoding);
+	}
+
+	/**
+	 * Create new instance.
+	 * @param crConf configuration.
+	 */
+	public RESTSimpleContainer(final CRConfigUtil crConf) {
+		this.responseEncoding = crConf.getEncoding();
+		this.config = crConf;
+		try {
+			this.rp = crConf.getNewRequestProcessorInstance(1);
+		} catch (CRException e) {
+			LOG.error("FAILED TO INITIALIZE REQUEST PROCESSOR... " + e.getStringStackTrace());
+		}
+	}
+
+	/**
+	 * Finalize the Container.
+	 */
+	public final void finalize() {
+		if (this.rp != null) {
+			this.rp.finalize();
+		}
+	}
+
+	/**
+	 * Process the whole service.
+	 * @param reqBuilder reqBuilder
+	 * @param wrappedObjectsToDeploy objects
+	 * @param stream stream
+	 * @param responsetypesetter responsetypesetter.
+	 */
+	public final void processService(final CRRequestBuilder reqBuilder,
+			final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
+			final IResponseTypeSetter responsetypesetter) {
+		Collection<CRResolvableBean> coll;
+		CRRequestBuilder myReqBuilder = reqBuilder;
+		ContentRepository cr = null;
+		try {
+			cr = myReqBuilder.getContentRepository(this.responseEncoding, this.config);
+			this.contenttype = cr.getContentType();
+			if (responsetypesetter != null) {
+				responsetypesetter.setContentType(this.getContentType());
+			}
+			CRRequest req = myReqBuilder.getCRRequest();
+			boolean deployMetaresolvable = Boolean.parseBoolean((String) config
+					.get(ContentRepository.DEPLOYMETARESOLVABLE_KEY));
+			if (deployMetaresolvable) {
+				req.set(RequestProcessor.META_RESOLVABLE_KEY, true);
+			}
+			//DEPLOY OBJECTS TO REQUEST AND TO RENDERER
+			for (Entry<String, Resolvable> entry : wrappedObjectsToDeploy.entrySet()) {
+				req.addObjectForFilterDeployment(entry.getKey(), entry.getValue());
+				cr.addAdditionalDeployableObject(entry.getKey(), entry.getValue());
+			}
+			// Query the Objects from RequestProcessor
+			coll = rp.getObjects(req);
+			// add the objects to repository as serializeable beans
+			if (coll != null) {
+				for (Iterator<CRResolvableBean> it = coll.iterator(); it.hasNext();) {
+					cr.addObject(it.next());
+				}
+			}
+			cr.toStream(stream);
+		} catch (CRException ex) {
+			//CR Error Handling
+			//CRException is passed down from methods that want to post
+			//the occured error to the client
+			cr.respondWithError((OutputStream) stream, ex, myReqBuilder.isDebug());
+			LOG.error(ex.getMessage(), ex);
+		} catch (Exception ex) {
+			CRException crex = new CRException(ex);
+			LOG.error("" + myReqBuilder + stream, crex);
+			cr.respondWithError((OutputStream) stream, crex, myReqBuilder.isDebug());
+			LOG.error(ex.getMessage(), crex);
+		} finally {
+			try {
+				stream.flush();
+				stream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

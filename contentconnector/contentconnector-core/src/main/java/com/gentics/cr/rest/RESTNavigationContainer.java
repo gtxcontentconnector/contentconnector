@@ -14,6 +14,7 @@ import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
+
 /**
  * TODO javadoc.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -27,7 +28,7 @@ public class RESTNavigationContainer {
 	 * {@link RequestProcessor} to get the objects from.
 	 */
 	private RequestProcessor rp;
-	
+
 	/**
 	 * Encoding of the reponse.
 	 */
@@ -44,6 +45,7 @@ public class RESTNavigationContainer {
 	 * TODO javadoc.
 	 */
 	private CRConfigUtil conf;
+
 	/**
 	 * Create new instance.
 	 * @param crConf TODO javadoc
@@ -58,7 +60,7 @@ public class RESTNavigationContainer {
 			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... ", ex);
 		}
 	}
-	
+
 	/**
 	 * Get the content type to set for the stream.
 	 * @return TODO javadoc
@@ -66,7 +68,7 @@ public class RESTNavigationContainer {
 	public final String getContentType() {
 		return this.contenttype + "; charset=" + this.responseEncoding;
 	}
-	
+
 	/**
 	 * Finalize the Container.
 	 */
@@ -83,10 +85,8 @@ public class RESTNavigationContainer {
 	 * @param stream TODO javadoc
 	 * @param responsetypesetter TODO javadoc
 	 */
-	public final void processService(
-			final CRNavigationRequestBuilder reqBuilder,
-			final Map<String, Resolvable> wrappedObjectsToDeploy,
-			final OutputStream stream,
+	public final void processService(final CRNavigationRequestBuilder reqBuilder,
+			final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
 			final IResponseTypeSetter responsetypesetter) {
 		Collection<CRResolvableBean> coll;
 		CRNavigationRequestBuilder myReqBuilder = reqBuilder;
@@ -97,10 +97,8 @@ public class RESTNavigationContainer {
 			responsetypesetter.setContentType(getContentType());
 			CRRequest req = myReqBuilder.getNavigationRequest();
 			//DEPLOY OBJECTS TO REQUEST
-			for (Map.Entry<String, Resolvable> entry
-					: wrappedObjectsToDeploy.entrySet()) {
-				req.addObjectForFilterDeployment(entry.getKey(),
-						entry.getValue());
+			for (Map.Entry<String, Resolvable> entry : wrappedObjectsToDeploy.entrySet()) {
+				req.addObjectForFilterDeployment(entry.getKey(), entry.getValue());
 			}
 			// Query the Objects from RequestProcessor
 			coll = rp.getNavigation(req);
@@ -115,23 +113,19 @@ public class RESTNavigationContainer {
 			//CR Error Handling
 			//CRException is passed down from methods that want to post 
 			//the occured error to the client
-			cr.respondWithError((OutputStream) stream, e1,
-					myReqBuilder.isDebug());
+			cr.respondWithError((OutputStream) stream, e1, myReqBuilder.isDebug());
 			log.debug(e1.getMessage(), e1);
 		} catch (Exception ex) {
 			CRException crex = new CRException(ex);
 			if (cr != null) {
-				cr.respondWithError((OutputStream) stream, crex,
-						myReqBuilder.isDebug());
+				cr.respondWithError((OutputStream) stream, crex, myReqBuilder.isDebug());
 				log.debug(ex.getMessage(), ex);
 			} else {
 				log.error("Cannot initialize ContentRepository", ex);
 			}
-			
+
 		}
-		
+
 	}
-	
-	
 
 }

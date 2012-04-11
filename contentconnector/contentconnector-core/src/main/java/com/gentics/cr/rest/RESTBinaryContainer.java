@@ -36,22 +36,22 @@ public class RESTBinaryContainer {
 	 * Request processor.
 	 */
 	private RequestProcessor rp;
-	
+
 	/**
 	 * Response encoding.
 	 */
 	private String responseEncoding;
-	
+
 	/**
 	 * contenttype.
 	 */
 	private String contenttype = "";
-	
+
 	/**
 	 * Logger.
 	 */
 	private static Logger log = Logger.getLogger(RESTBinaryContainer.class);
-	
+
 	/**
 	 * Config.
 	 */
@@ -60,8 +60,7 @@ public class RESTBinaryContainer {
 	/**
 	 * Key for br replacements.
 	 */
-	private static final String LIVEEDITORXHTML_KEY 
-		= "container.liveeditorXHTML";
+	private static final String LIVEEDITORXHTML_KEY = "container.liveeditorXHTML";
 
 	/**
 	 * get conten type as string.
@@ -92,8 +91,7 @@ public class RESTBinaryContainer {
 			this.rp = crConf.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
 			CRException ex = new CRException(e);
-			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "
-					+ ex.getStringStackTrace());
+			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... " + ex.getStringStackTrace());
 		}
 	}
 
@@ -103,16 +101,13 @@ public class RESTBinaryContainer {
 	 * @param ex exception
 	 * @param debug true if we have to write the stackstrace
 	 */
-	private void respondWithError(final OutputStream stream,
-			final CRException ex,
-			final boolean debug) {
+	private void respondWithError(final OutputStream stream, final CRException ex, final boolean debug) {
 		String ret = "" + ex.getMessage();
 		if (debug) {
 			ret += " - " + ex.getStringStackTrace();
 		}
 		try {
-			OutputStreamWriter wr = new OutputStreamWriter(stream,
-					this.responseEncoding);
+			OutputStreamWriter wr = new OutputStreamWriter(stream, this.responseEncoding);
 			wr.write(ret);
 			wr.flush();
 			wr.close();
@@ -130,8 +125,7 @@ public class RESTBinaryContainer {
 	 * @param responsetypesetter responsetypesetter
 	 */
 	public final void processService(final CRBinaryRequestBuilder reqBuilder,
-			final Map<String, Resolvable> wrappedObjectsToDeploy,
-			final OutputStream stream,
+			final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
 			final IResponseTypeSetter responsetypesetter) {
 		CRBinaryRequestBuilder myReqBuilder = reqBuilder;
 		CRResolvableBean crBean = null;
@@ -139,27 +133,19 @@ public class RESTBinaryContainer {
 		try {
 			req = myReqBuilder.getBinaryRequest();
 			// DEPLOY OBJECTS TO REQUEST
-			for (Iterator<Map.Entry<String, Resolvable>> 
-					i = wrappedObjectsToDeploy
-					.entrySet().iterator(); i.hasNext();) {
-				Map.Entry<String, Resolvable> entry = 
-						(Entry<String, Resolvable>) i.next();
-				req.addObjectForFilterDeployment((String) entry.getKey(),
-						entry.getValue());
+			for (Iterator<Map.Entry<String, Resolvable>> i = wrappedObjectsToDeploy.entrySet().iterator(); i.hasNext();) {
+				Map.Entry<String, Resolvable> entry = (Entry<String, Resolvable>) i.next();
+				req.addObjectForFilterDeployment((String) entry.getKey(), entry.getValue());
 			}
 			if (this.crConf.usesContentidUrl()) {
 				if (req.getContentid() == null) {
 					Object obj = reqBuilder.getRequest();
 					if (obj instanceof HttpServletRequest) {
-						String[] reqURI = ((HttpServletRequest) obj)
-								.getRequestURI().split("/");
-						ArrayList<String> reqList = new ArrayList<String>(
-								Arrays.asList(reqURI));
-						int index = reqList.indexOf(((HttpServletRequest) obj)
-								.getServletPath().replaceAll("/", ""));
+						String[] reqURI = ((HttpServletRequest) obj).getRequestURI().split("/");
+						ArrayList<String> reqList = new ArrayList<String>(Arrays.asList(reqURI));
+						int index = reqList.indexOf(((HttpServletRequest) obj).getServletPath().replaceAll("/", ""));
 						if (reqList.size() >= index + 1) {
-							req.setRequestFilter("object.contentid=="
-									+ reqList.get(index + 1).toString());
+							req.setRequestFilter("object.contentid==" + reqList.get(index + 1).toString());
 						}
 					}
 
@@ -181,38 +167,29 @@ public class RESTBinaryContainer {
 
 					CRConfigUtil rpConf = crConf.getRequestProcessorConfig(1);
 					if (crBean.getObj_type().equals(rpConf.getPageType())) {
-						this.contenttype = "text/html; charset="
-								+ this.responseEncoding;
+						this.contenttype = "text/html; charset=" + this.responseEncoding;
 						log.info("Responding with mimetype: text/html");
 					} else {
-						log.info("Mimetype has not been set, using "
-								+ "standard instead. ("
-								+ crBean.getObj_type()
-								+ "!="
-								+ rpConf.getPageType() + ")");
+						log.info("Mimetype has not been set, using " + "standard instead. (" + crBean.getObj_type()
+								+ "!=" + rpConf.getPageType() + ")");
 					}
 				} else {
 
-					this.contenttype = crBean.getMimetype() + "; charset="
-							+ this.responseEncoding;
+					this.contenttype = crBean.getMimetype() + "; charset=" + this.responseEncoding;
 
-					log.info("Responding with mimetype: "
-							+ crBean.getMimetype());
+					log.info("Responding with mimetype: " + crBean.getMimetype());
 				}
 
 				responsetypesetter.setContentType(this.getContentType());
 				// output data.
 				if (crBean.isBinary()) {
-					log.debug("Size of content: "
-							+ crBean.getBinaryContent().length);
+					log.debug("Size of content: " + crBean.getBinaryContent().length);
 					stream.write(crBean.getBinaryContent());
 
 				} else {
-					OutputStreamWriter wr = new OutputStreamWriter(stream,
-							this.responseEncoding);
+					OutputStreamWriter wr = new OutputStreamWriter(stream, this.responseEncoding);
 					String content = crBean.getContent(this.responseEncoding);
-					if (Boolean.parseBoolean((String) crConf
-							.get(LIVEEDITORXHTML_KEY))) {
+					if (Boolean.parseBoolean((String) crConf.get(LIVEEDITORXHTML_KEY))) {
 						// Gentics Content.Node Liveeditor produces non XHTML
 						// brakes.
 						// Therefore we must replace them before we return the
@@ -225,8 +202,7 @@ public class RESTBinaryContainer {
 					wr.close();
 				}
 			} else {
-				CRException crex = new CRException("NoDataFound",
-						"Data could not be found.");
+				CRException crex = new CRException("NoDataFound", "Data could not be found.");
 				this.respondWithError(stream, crex, myReqBuilder.isDebug());
 			}
 			stream.flush();
@@ -236,8 +212,7 @@ public class RESTBinaryContainer {
 			respondWithError((OutputStream) stream, e1, myReqBuilder.isDebug());
 			e1.printStackTrace();
 		} catch (Exception e) {
-			log.error("Error while processing service "
-					+ "(RESTBinaryContainer)", e);
+			log.error("Error while processing service " + "(RESTBinaryContainer)", e);
 			CRException crex = new CRException(e);
 			this.respondWithError(stream, crex, myReqBuilder.isDebug());
 		}

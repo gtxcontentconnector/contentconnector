@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.gentics.cr.exceptions.CRException;
+
 /**
  * {@link RPMergerRequestProcessor} initializes 2 child
  * {@link RequestProcessor}s and enriches the objects from the first
@@ -53,18 +54,14 @@ public class RPMergerRequestProcessor extends RequestProcessor {
 		super(config);
 		rp1 = config.getNewRequestProcessorInstance(1);
 		rp2 = config.getNewRequestProcessorInstance(2);
-		mergeattribute =
-			config.getString(MERGE_ATTRIBUTE_KEY, MERGE_ATTRIBUTE_DEFAULT);
+		mergeattribute = config.getString(MERGE_ATTRIBUTE_KEY, MERGE_ATTRIBUTE_DEFAULT);
 	}
 
-
-
 	@Override
-	public final Collection<CRResolvableBean> getObjects(final CRRequest request,
-			final boolean doNavigation) throws CRException {
+	public final Collection<CRResolvableBean> getObjects(final CRRequest request, final boolean doNavigation)
+			throws CRException {
 		ArrayList<CRResolvableBean> coll = null;
-		coll = (ArrayList<CRResolvableBean>) RequestProcessorMerger
-				.merge(mergeattribute, rp1, rp2, request);
+		coll = (ArrayList<CRResolvableBean>) RequestProcessorMerger.merge(mergeattribute, rp1, rp2, request);
 		return coll;
 	}
 
@@ -76,6 +73,5 @@ public class RPMergerRequestProcessor extends RequestProcessor {
 		rp1.finalize();
 		rp2.finalize();
 	}
-
 
 }

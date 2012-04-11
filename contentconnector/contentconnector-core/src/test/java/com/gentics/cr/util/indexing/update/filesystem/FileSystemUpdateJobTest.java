@@ -40,7 +40,7 @@ public class FileSystemUpdateJobTest {
 	@BeforeClass
 	public static void initClass() throws URISyntaxException {
 		directory = new File(FileSystemUpdateJobTest.class.getResource("outdated.file").toURI()).getParentFile();
-		CRConfigUtil updateJobConfig  = new CRConfigUtil();
+		CRConfigUtil updateJobConfig = new CRConfigUtil();
 		updateJobConfig.set("directory", directory.getPath());
 		//TODO add test for ignorePubDir false
 		updateJobConfig.set("ignorePubDir", "true");
@@ -70,8 +70,10 @@ public class FileSystemUpdateJobTest {
 		job.indexCR(indexLocation, config);
 		File file = new File(directory, "outdated.file");
 		String newFileContent = StringUtils.streamToString(new FileInputStream(file));
-		assertEquals("The contents of the file do not match the content of the RequestProcessor. Therefore the file was not updated.",
-				fileContent, newFileContent);
+		assertEquals(
+			"The contents of the file do not match the content of the RequestProcessor. Therefore the file was not updated.",
+			fileContent,
+			newFileContent);
 	}
 
 	public void testUpdatePages() {
@@ -80,12 +82,12 @@ public class FileSystemUpdateJobTest {
 
 	private Collection<CRResolvableBean> listFileBeans(File directory, String filter) {
 		Vector<CRResolvableBean> beans = new Vector<CRResolvableBean>();
-		for(File file : DirectoryScanner.listFiles(directory, filter)) {
+		for (File file : DirectoryScanner.listFiles(directory, filter)) {
 			CRResolvableBean bean = new CRResolvableBean();
 			bean.set("filename", file.getName());
 			bean.set("pub_dir", directory.toURI().relativize(file.toURI()));
 			bean.set("obj_type", FileTypeDetector.getObjType(file));
-			if(file.getName().equals("outdated.file")) {
+			if (file.getName().equals("outdated.file")) {
 				fileContent = "" + Math.random();
 				bean.set("binarycontent", fileContent);
 				bean.set("timestamp", new Integer((int) ((file.lastModified() / 1000) + 1000)));

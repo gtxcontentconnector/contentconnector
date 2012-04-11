@@ -14,13 +14,13 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
 
 public class FileSystemUpdateCheckerTest {
-	
+
 	File directory;
-	
+
 	CRConfigUtil config;
-	
+
 	FileSystemUpdateChecker checker;
-	
+
 	CRResolvableBean resolvable;
 
 	private File newFile;
@@ -28,9 +28,8 @@ public class FileSystemUpdateCheckerTest {
 	private File outdatedFile;
 
 	private File upToDateFile;
-	
+
 	private File removeFile;
-	
 
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
@@ -54,24 +53,26 @@ public class FileSystemUpdateCheckerTest {
 
 	@Test
 	public void testNewFile() {
-		
+
 		boolean result = checkUpToDate(newFile);
-		assertFalse("the filesystem update checker didn't return false for a nonexistant file (" + newFile.getPath() + ")", result);
+		assertFalse("the filesystem update checker didn't return false for a nonexistant file (" + newFile.getPath()
+				+ ")", result);
 	}
-	
+
 	@Test
 	public void testOutdatedFile() {
 		boolean result = checkUpToDate(outdatedFile, 100);
-		assertFalse("the filesystem update checker didn't return false for an outdated file (" + outdatedFile.getPath() + ")", result);
+		assertFalse("the filesystem update checker didn't return false for an outdated file (" + outdatedFile.getPath()
+				+ ")", result);
 	}
-	
+
 	@Test
 	public void testUpToDateFile() {
 		boolean result = checkUpToDate(upToDateFile, -100);
-		assertTrue("the filesystem update checker didn't return true for an up to date file (" + upToDateFile.getPath() + ")", result);
+		assertTrue("the filesystem update checker didn't return true for an up to date file (" + upToDateFile.getPath()
+				+ ")", result);
 	}
-	
-	
+
 	@Test
 	public void testRemoveFile() {
 		assertTrue("Remove file doesn't exist, therefore it can't be removed.", removeFile.exists());
@@ -80,34 +81,34 @@ public class FileSystemUpdateCheckerTest {
 		checker.deleteStaleObjects();
 		assertFalse("Not checked remove file wasn't deleted in deleteStaleObjects()", removeFile.exists());
 	}
-	
+
 	@Test
 	public void testAssertNotNull() {
 		String notNull = "";
 		String isNull = null;
 		String nullMessage = "Object is null";
 		try {
-			FileSystemUpdateChecker.assertNotNull("assertNotNull should not return an exception for a not null object", notNull);
+			FileSystemUpdateChecker.assertNotNull(
+				"assertNotNull should not return an exception for a not null object",
+				notNull);
 		} catch (Throwable t) {
 			throw new AssertionError(t);
 		}
-		
+
 		boolean catched = false;
 		try {
 			FileSystemUpdateChecker.assertNotNull(nullMessage, isNull);
 		} catch (Throwable t) {
 			catched = true;
-			if(!t.getCause().getMessage().equals(nullMessage)) {
+			if (!t.getCause().getMessage().equals(nullMessage)) {
 				throw new AssertionError("The assertNotNull function didn't return the correct message.");
 			}
 		}
-		if(!catched) {
+		if (!catched) {
 			throw new AssertionError("The assertNotNull function didn't throw a throwable for a null object.");
 		}
-		
+
 	}
-	
-	
 
 	/**
 	 * Check if the file is up to date with the {@link #checker}

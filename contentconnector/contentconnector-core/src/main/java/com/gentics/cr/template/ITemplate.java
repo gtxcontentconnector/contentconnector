@@ -1,4 +1,5 @@
 package com.gentics.cr.template;
+
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -12,7 +13,7 @@ public interface ITemplate {
 	 * @return key
 	 */
 	public String getKey();
-	
+
 	/**
 	 * gets the source of the template
 	 * @return source

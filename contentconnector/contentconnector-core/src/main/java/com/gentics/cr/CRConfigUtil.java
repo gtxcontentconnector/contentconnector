@@ -64,7 +64,7 @@ public class CRConfigUtil extends CRConfig {
 	private static final String RP_CLASS_KEY = "RPCLASS";
 	private static final String ENCODING_KEY = "RESPONSE-CHARSET";
 	private static final String XML_URL_KEY = "XMLURL";
-	
+
 	private String name = null;
 
 	/**
@@ -419,8 +419,6 @@ public class CRConfigUtil extends CRConfig {
 		return (String) this.get(CONTENTID_REGEX_KEY);
 	}
 
-	
-
 	/**
 	 * Gets the applications filterchain.
 	 * @return filterchain or null if no filterchain is set
@@ -440,8 +438,7 @@ public class CRConfigUtil extends CRConfig {
 			if (requestProcessorsConfigs != null) {
 				Hashtable<String, GenericConfiguration> requestProcessorTable = requestProcessorsConfigs
 						.getSubConfigs();
-				if (requestProcessorTable != null
-						&& !requestProcessorTable.isEmpty()) {
+				if (requestProcessorTable != null && !requestProcessorTable.isEmpty()) {
 					return requestProcessorTable.keySet();
 				}
 			}
@@ -479,11 +476,11 @@ public class CRConfigUtil extends CRConfig {
 		Object obj = get(REQUEST_PROCESSOR_KEY + "." + requestProcessorId);
 
 		if (obj != null && obj instanceof GenericConfiguration) {
-			return new CRConfigUtil((GenericConfiguration) obj, this.getName()
-					+ "." + REQUEST_PROCESSOR_KEY + "." + requestProcessorId);
+			return new CRConfigUtil((GenericConfiguration) obj, this.getName() + "." + REQUEST_PROCESSOR_KEY + "."
+					+ requestProcessorId);
 		} else {
 			log.fatal("RequestProcessor" + requestProcessorId
-				+ " cannot be found. Maybe your config cannot be initialized correctly.");
+					+ " cannot be found. Maybe your config cannot be initialized correctly.");
 			return null;
 		}
 	}
@@ -495,8 +492,7 @@ public class CRConfigUtil extends CRConfig {
 	 * @return RequestProcessor RequestProcessor from configuration
 	 * @throws CRException when the RequestProcessor cannot be created
 	 */
-	public final RequestProcessor getNewRequestProcessorInstance(
-			final int requestProcessorId) throws CRException {
+	public final RequestProcessor getNewRequestProcessorInstance(final int requestProcessorId) throws CRException {
 		return getNewRequestProcessorInstance("" + requestProcessorId);
 	}
 
@@ -507,26 +503,18 @@ public class CRConfigUtil extends CRConfig {
 	 * @return RequestProcessor RequestProcessor from configuration
 	 * @throws CRException when the RequestProcessor cannot be created
 	 */
-	public final RequestProcessor getNewRequestProcessorInstance(
-			final String requestProcessorName) throws CRException {
-		CRConfigUtil requestProcessorConfig = this
-				.getRequestProcessorConfig(requestProcessorName);
+	public final RequestProcessor getNewRequestProcessorInstance(final String requestProcessorName) throws CRException {
+		CRConfigUtil requestProcessorConfig = this.getRequestProcessorConfig(requestProcessorName);
 		if (requestProcessorConfig == null) {
-			log.error("Cannot initialize RequestProcessor "
-					+ requestProcessorName);
-			throw new ConfigurationException("config", "We cannot get the "
-					+ "configuration for the RequestProcessor",
+			log.error("Cannot initialize RequestProcessor " + requestProcessorName);
+			throw new ConfigurationException("config", "We cannot get the " + "configuration for the RequestProcessor",
 					CRException.ERRORTYPE.FATAL_ERROR);
 		}
-		String requestProcessorClass = requestProcessorConfig
-				.getRequestProcessorClass();
-		log.debug("Instanciate RequestProcessor" + requestProcessorName
-				+ " from class " + requestProcessorClass);
+		String requestProcessorClass = requestProcessorConfig.getRequestProcessorClass();
+		log.debug("Instanciate RequestProcessor" + requestProcessorName + " from class " + requestProcessorClass);
 		try {
-			RequestProcessor rp = (RequestProcessor) Class.forName(
-					requestProcessorClass).getConstructor(
-					new Class[] { CRConfig.class }).newInstance(
-					requestProcessorConfig);
+			RequestProcessor rp = (RequestProcessor) Class.forName(requestProcessorClass)
+					.getConstructor(new Class[] { CRConfig.class }).newInstance(requestProcessorConfig);
 			return rp;
 		} catch (Exception e) {
 			throw new CRException(e);
@@ -558,9 +546,9 @@ public class CRConfigUtil extends CRConfig {
 		if (!this.getPortalNodeCompMode()) {
 			ITemplateManager tmplManager = null;
 			try {
-				tmplManager = VelocityTemplateManagerFactory
-						.getConfiguredVelocityTemplateManagerInstance(this
-								.getEncoding(), DEFAULT_TEMPLATE_PATH);
+				tmplManager = VelocityTemplateManagerFactory.getConfiguredVelocityTemplateManagerInstance(
+					this.getEncoding(),
+					DEFAULT_TEMPLATE_PATH);
 			} catch (Exception e) {
 				CRException ex = new CRException(e);
 				log.error(ex.getMessage(), ex);
@@ -605,8 +593,7 @@ public class CRConfigUtil extends CRConfig {
 	public Properties getDatasourceProperties() {
 		Object obj = get(DATASOURCE_PROPS_KEY);
 		if (obj != null && obj instanceof GenericConfiguration) {
-			Properties dsprops = ((GenericConfiguration) obj)
-					.getRebuiltPropertyTree();
+			Properties dsprops = ((GenericConfiguration) obj).getRebuiltPropertyTree();
 			Properties ret = new Properties();
 			//DATASOURCE PROPERTY KEYS NEED TO BE LOWERCASE IN ORDER TO BE UNDERSTOOD BY THE DRIVER
 			//DATASOURCE PROPERTIES NEED TO BE RESOLVED AND REBUILT
@@ -626,8 +613,7 @@ public class CRConfigUtil extends CRConfig {
 	public Properties getDatasourceHandleProperties() {
 		Object obj = get(DATASOURCE_HANDLE_KEY);
 		if (obj != null && obj instanceof GenericConfiguration) {
-			Properties dsprops = ((GenericConfiguration) obj)
-					.getRebuiltPropertyTree();
+			Properties dsprops = ((GenericConfiguration) obj).getRebuiltPropertyTree();
 			Properties ret = new Properties();
 			//DATASOURCE PROPERTY KEYS NEED TO BE LOWERCASE IN ORDER TO BE UNDERSTOOD BY THE DRIVER
 			for (Entry<Object, Object> e : dsprops.entrySet()) {

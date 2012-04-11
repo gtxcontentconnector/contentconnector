@@ -21,17 +21,16 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 
 	private GenticsPortlet portlet;
 	private HashMap<String, Object> contextObjects;
-	
+
 	/**
 	 * Create Instance
 	 * @param portlet
 	 */
-	public PortalNodeTemplateManager(GenticsPortlet portlet)
-	{
+	public PortalNodeTemplateManager(GenticsPortlet portlet) {
 		this.portlet = portlet;
-		this.contextObjects = new HashMap<String,Object>();
+		this.contextObjects = new HashMap<String, Object>();
 	}
-	
+
 	/**
 	 * @see com.gentics.cr.template.ITemplateManager#put(java.lang.String, java.lang.Object)
 	 */
@@ -44,14 +43,13 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 	 * @see com.gentics.cr.template.ITemplateManager#render(java.lang.String, java.lang.String, java.lang.Object, java.lang.Object)
 	 */
 	public String render(String templatename, String templatesource) throws CRException {
-		String renderedTemplate=null;
-		
+		String renderedTemplate = null;
+
 		TemplateProcessor processor = PortalNodeInteractor.getPortletTemplateProcessor(this.portlet);
-		
+
 		try {
 			Iterator<String> it = this.contextObjects.keySet().iterator();
-			while(it.hasNext())
-			{
+			while (it.hasNext()) {
 				String key = it.next();
 				processor.put(key, this.contextObjects.get(key));
 			}
@@ -60,14 +58,10 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 			throw new CRException(e);
 		} catch (PrivateKeyException e) {
 			throw new CRException(e);
-		}
-		finally
-		{
+		} finally {
 			this.portlet.getGenticsPortletContext().returnTemplateProcessor(processor);
 		}
-		
-		
-		
+
 		return renderedTemplate;
 	}
 

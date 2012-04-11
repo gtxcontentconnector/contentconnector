@@ -34,26 +34,26 @@ public class JavaXmlContentRepository extends ContentRepository {
 	 * @param attr
 	 */
 	public JavaXmlContentRepository(String[] attr) {
-		
+
 		super(attr);
 
 		this.setResponseEncoding("UTF-8");
-		
+
 	}
-	
+
 	/**
 	 * Create instance
 	 * @param attr
 	 * @param encoding
 	 */
 	public JavaXmlContentRepository(String[] attr, String encoding) {
-		
+
 		super(attr);
 
 		this.setResponseEncoding(encoding);
-		
+
 	}
-	
+
 	/**
 	 * Create instance
 	 * @param attr
@@ -61,13 +61,13 @@ public class JavaXmlContentRepository extends ContentRepository {
 	 * @param options
 	 */
 	public JavaXmlContentRepository(String[] attr, String encoding, String[] options) {
-		
-		super(attr,encoding,options);
+
+		super(attr, encoding, options);
 
 		//this.setResponseEncoding(encoding);
-		
+
 	}
-	
+
 	/**
 	 * Returns "text/xml"
 	 * @return 
@@ -75,7 +75,7 @@ public class JavaXmlContentRepository extends ContentRepository {
 	public String getContentType() {
 		return "text/xml";
 	}
-	
+
 	/**
 	 * Responds with Error
 	 * 		Serialized CRError Class
@@ -84,38 +84,33 @@ public class JavaXmlContentRepository extends ContentRepository {
 	 * @param isDebug 
 	 * 
 	 */
-	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
+	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
 
 		CRError e = new CRError(ex);
-		if(!isDebug)
-		{
+		if (!isDebug) {
 			e.setStringStackTrace(null);
 		}
-	
+
 		XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(stream));
-		
+
 		enc.writeObject(e);
-		
+
 		enc.close();
-		
+
 	}
-	
-	private void preprocessingNoByteArray(Collection<CRResolvableBean> coll)
-	{
+
+	private void preprocessingNoByteArray(Collection<CRResolvableBean> coll) {
 		Iterator<CRResolvableBean> it = coll.iterator();
-		while(it.hasNext())
-		{
+		while (it.hasNext()) {
 			CRResolvableBean bean = it.next();
-			HashMap<String,Object> attributes = (HashMap<String,Object>)bean.getAttrMap();
-			if(attributes.containsKey("binarycontent"))
-			{
-				String ccr_bin_url="ccr_bin?contentid="+bean.getContentid();
+			HashMap<String, Object> attributes = (HashMap<String, Object>) bean.getAttrMap();
+			if (attributes.containsKey("binarycontent")) {
+				String ccr_bin_url = "ccr_bin?contentid=" + bean.getContentid();
 				attributes.remove("binarycontent");
-				attributes.put("binarycontenturl",ccr_bin_url);
+				attributes.put("binarycontenturl", ccr_bin_url);
 				bean.setAttrMap(attributes);
 			}
-			if(!bean.getChildRepository().isEmpty())
-			{
+			if (!bean.getChildRepository().isEmpty()) {
 				preprocessingNoByteArray(bean.getChildRepository());
 			}
 		}
@@ -128,32 +123,26 @@ public class JavaXmlContentRepository extends ContentRepository {
 	 * 
 	 */
 	public void toStream(OutputStream stream) throws CRException {
-		
-		if(this.resolvableColl.isEmpty())
-		{
+
+		if (this.resolvableColl.isEmpty()) {
 			//No Data Found
-			throw new CRException("NoDataFound","Data could not be found.",CRException.ERRORTYPE.NO_DATA_FOUND);
-		}
-		else
-		{
+			throw new CRException("NoDataFound", "Data could not be found.", CRException.ERRORTYPE.NO_DATA_FOUND);
+		} else {
 			//Elements found/status ok
 			XMLEncoder e = new XMLEncoder(new BufferedOutputStream(stream));
 			String[] options = this.getOptionsArray();
-			if(options!=null)
-			{
+			if (options != null) {
 				ArrayList<String> optArr = new ArrayList<String>(Arrays.asList(options));
-				
-				if(optArr.contains("nobytearray"))
-				{
+
+				if (optArr.contains("nobytearray")) {
 					this.preprocessingNoByteArray(this.resolvableColl);
 				}
 			}
-			
+
 			e.writeObject(this.resolvableColl);
 			e.close();
 		}
-		
-		
+
 	}
 
 }

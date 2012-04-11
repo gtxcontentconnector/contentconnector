@@ -44,27 +44,25 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	 * @param updateCheckerConfigmap - map with all configured index parts
 	 * @throws FileNotFoundException in case the directory doesn't exist and creation of the directory is deactivated or the directory cannot be created.
 	 */
-	public FileSystemUpdateJob(CRConfig config,
-			IndexLocation indexLoc,
-			Hashtable<String, CRConfigUtil> updateCheckerConfigmap) throws FileNotFoundException {
+	public FileSystemUpdateJob(CRConfig config, IndexLocation indexLoc,
+		Hashtable<String, CRConfigUtil> updateCheckerConfigmap) throws FileNotFoundException {
 		super(config, indexLoc, updateCheckerConfigmap);
 
 		try {
 			rp = config.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
-			log.error("Could not create RequestProcessor instance."
-					+ config.getName(), e);
+			log.error("Could not create RequestProcessor instance." + config.getName(), e);
 		}
 
 		indexUpdateChecker = new FileSystemUpdateChecker(config.getSubConfig("updatejob"));
 		ignorePubDir = config.getBoolean("updatejob.ignorePubDir");
 		directory = new File(config.getString("updatejob.directory"));
-		if(config.getBoolean("updatejob.createNonExistentDirectory") && !directory.exists()) {
-			if(!directory.mkdirs()) {
+		if (config.getBoolean("updatejob.createNonExistentDirectory") && !directory.exists()) {
+			if (!directory.mkdirs()) {
 				throw new FileNotFoundException("The directory " + directory + " cannot be created.");
 			}
 		}
-		if(!directory.exists()) {
+		if (!directory.exists()) {
 			throw new FileNotFoundException("The directory " + directory + " cannot be found.");
 		}
 	}
@@ -79,14 +77,11 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	 */
 	FileSystemUpdateChecker indexUpdateChecker;
 
-
-
 	/**
 	 * get the objects to update and update them in the directory. deletion of old/stale objects is handled by the update checker
 	 */
 	@Override
-	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
-			throws CRException {
+	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException {
 		Collection<CRResolvableBean> objectsToIndex = null;
 		try {
 			CRRequest req = new CRRequest();
@@ -97,8 +92,8 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 			log.error("ERROR while cleaning index", e);
 		}
 		status.setCurrentStatusString("Update the objects in the directory ...");
-		for(CRResolvableBean bean : objectsToIndex) {
-			if(!"10002".equals(bean.getObj_type())) {
+		for (CRResolvableBean bean : objectsToIndex) {
+			if (!"10002".equals(bean.getObj_type())) {
 				String publicationDirectory;
 				if (ignorePubDir) {
 					publicationDirectory = "";
@@ -109,14 +104,14 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 				assertNotNull("Bean " + bean.getContentid() + " has no attribute pub_dir.", publicationDirectory);
 				assertNotNull("Bean " + bean.getContentid() + " has no attribute filename.", filename);
 				File file = new File(new File(directory, publicationDirectory), filename);
-				if(file.isDirectory()) {
+				if (file.isDirectory()) {
 					file.delete();
 				}
 				try {
-					if(!file.exists()) {
+					if (!file.exists()) {
 						file.createNewFile();
 					}
-					if("10007".equals(bean.getObj_type())) {
+					if ("10007".equals(bean.getObj_type())) {
 						FileWriterWithEncoding writer = new FileWriterWithEncoding(file, "UTF-8");
 						writer.write(bean.getContent());
 						writer.close();
@@ -130,7 +125,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 					throw new CRException("Cannot update the index.", e);
 				}
 
-			} else if(!ignorePubDir) {
+			} else if (!ignorePubDir) {
 				//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
 				String publicationDirectory = bean.getString("pub_dir");
 				File file = new File(directory, publicationDirectory);

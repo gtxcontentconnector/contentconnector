@@ -8,12 +8,12 @@ import com.gentics.cr.CRConfig;
  *
  */
 public class PeriodicalIndexStandardConfig implements IPeriodicalIndexConfig {
-	
+
 	/**
 	 * Configuration key for periodical indexer jobs.
 	 */
 	public static final String PERIODICAL_KEY = "PERIODICAL";
-	
+
 	/**
 	 * Configuration key of the delay before first index job is triggered
 	 */
@@ -23,12 +23,12 @@ public class PeriodicalIndexStandardConfig implements IPeriodicalIndexConfig {
 	 * configured value for periodical indexer execution.
 	 */
 	private boolean periodical;
-	
+
 	/**
 	 * delay before first index job is triggered
 	 */
 	private long firstJobStartDelay;
-	
+
 	/**
 	 * 
 	 * @param config
@@ -41,19 +41,19 @@ public class PeriodicalIndexStandardConfig implements IPeriodicalIndexConfig {
 			firstJobStartDelay = PERIODICAL_FIRSTJOBSTARTDELAY;
 		}
 	}
-	
+
 	/**
 	 * @return configured value for periodical indexer execution.
 	 */
 	public boolean isPeriodical() {
 		return periodical;
 	}
-	
+
 	/**
 	 * @return delay before first index job is triggered
 	 */
 	public long getFirstJobStartDelay() {
 		return firstJobStartDelay;
 	}
-	
+
 }

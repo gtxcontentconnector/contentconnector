@@ -11,32 +11,33 @@ import java.util.Vector;
  */
 public final class ArrayHelper {
 
-  /**
-   * private constructor for utility class.
-   */
-  private ArrayHelper() { }
+	/**
+	 * private constructor for utility class.
+	 */
+	private ArrayHelper() {
+	}
 
-  /**
-   * Remove one ore more elements from an Array.
-   * @param <T> Object
-   * @param array array to remove the element from
-   * @param elements elements to remove from the array
-   * @return Array without the element.
-   */
-  @SuppressWarnings("unchecked")
-  public static <T> T[] removeElements(final T[] array, final T... elements) {
-    if (array.length > 0) {
-      Vector<T> newArray = new Vector<T>();
-      for (int i = 0; i < array.length; i++) {
-        int elementFound = Arrays.binarySearch(elements, array[i]);
-        if (elementFound < 0) {
-          newArray.add(array[i]);
-        }
-      }
-      T[] emptyArray = (T[]) Array.newInstance(array[0].getClass(), 0);
-      return newArray.toArray(emptyArray);
-    } else {
-      return array;
-    }
-  }
+	/**
+	 * Remove one ore more elements from an Array.
+	 * @param <T> Object
+	 * @param array array to remove the element from
+	 * @param elements elements to remove from the array
+	 * @return Array without the element.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] removeElements(final T[] array, final T... elements) {
+		if (array.length > 0) {
+			Vector<T> newArray = new Vector<T>();
+			for (int i = 0; i < array.length; i++) {
+				int elementFound = Arrays.binarySearch(elements, array[i]);
+				if (elementFound < 0) {
+					newArray.add(array[i]);
+				}
+			}
+			T[] emptyArray = (T[]) Array.newInstance(array[0].getClass(), 0);
+			return newArray.toArray(emptyArray);
+		} else {
+			return array;
+		}
+	}
 }

@@ -1,4 +1,5 @@
 package com.gentics.cr.rest.php;
+
 /**
  * BadFormatException.java
  *
@@ -12,8 +13,8 @@ package com.gentics.cr.rest.php;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class BadFormatException extends Exception{
-    /**
+public class BadFormatException extends Exception {
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 00006L;
@@ -22,7 +23,7 @@ public class BadFormatException extends Exception{
 	 * Create new instance
 	 * @param message
 	 */
-	public BadFormatException(String message){
-        super(message);
-    }
+	public BadFormatException(String message) {
+		super(message);
+	}
 }

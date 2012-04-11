@@ -11,17 +11,17 @@ import org.apache.oro.io.Perl5FilenameFilter;
  *
  */
 public class DirectoryScanner {
-	
+
 	/**
 	 * since there is no way arrays can be manipulated we don't have to generate lots of empty arrays.
 	 */
-	private static final File[] EMPTY_RESULT = new File[]{};
-	
+	private static final File[] EMPTY_RESULT = new File[] {};
+
 	/**
 	 * since there is no way arrays can be manipulated we don't have to generate lots of empty arrays.
 	 */
-	private static final String[] EMPTY_STRING_RESULT = new String[]{};
-	
+	private static final String[] EMPTY_STRING_RESULT = new String[] {};
+
 	/**
 	 * Helper method that doesn't return null if no files where found. instead it returns an empty array which makes it easier to handle.
 	 * @param directory - directory to scan for files.
@@ -30,7 +30,7 @@ public class DirectoryScanner {
 	 */
 	public static File[] listFiles(File directory, String filterExpression) {
 		File[] files = directory.listFiles(generateFilter(filterExpression));
-		if(files != null) {
+		if (files != null) {
 			return files;
 		}
 		return EMPTY_RESULT;
@@ -44,12 +44,12 @@ public class DirectoryScanner {
 	 */
 	public static String[] list(File directory, String filterExpression) {
 		String[] files = directory.list(generateFilter(filterExpression));
-		if(files != null) {
+		if (files != null) {
 			return files;
 		}
 		return EMPTY_STRING_RESULT;
 	}
-	
+
 	/**
 	 * @param filterExpression - expression that we should generate the filename filter for.
 	 * @return FilenameFilter for the expression, in case the expression was null a filter that matches all files is returned.

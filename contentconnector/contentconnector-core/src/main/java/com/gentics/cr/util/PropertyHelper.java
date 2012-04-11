@@ -13,17 +13,18 @@ import org.apache.log4j.Logger;
  *
  */
 public final class PropertyHelper {
-	
+
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
 	private static Logger logger = Logger.getLogger(PropertyHelper.class);
-	
+
 	/**
 	 * private constructor to prevent instantiation.
 	 */
-	private PropertyHelper() { }
-	
+	private PropertyHelper() {
+	}
+
 	/**
 	 * initialize a {@link Properties} object from a string.
 	 * @param string - string to get the properties from

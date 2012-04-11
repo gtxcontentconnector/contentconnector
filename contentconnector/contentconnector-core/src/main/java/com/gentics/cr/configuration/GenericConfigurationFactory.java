@@ -18,8 +18,9 @@ public final class GenericConfigurationFactory {
 	/**
 	 * Prevent instantiation.
 	 */
-	private GenericConfigurationFactory() { }
-	
+	private GenericConfigurationFactory() {
+	}
+
 	/**
 	 * Creates a <code>GenericConfiguration</code> instance from a Map.
 	 * 
@@ -27,10 +28,8 @@ public final class GenericConfigurationFactory {
 	 *            Map that will be used.
 	 * @return created GenericConfiguration instance
 	 */
-	public static GenericConfiguration createFromMap(
-			final Map<String, String> configMap) {
-		return GenericConfigurationFactory
-				.createFromMap(configMap, null);
+	public static GenericConfiguration createFromMap(final Map<String, String> configMap) {
+		return GenericConfigurationFactory.createFromMap(configMap, null);
 	}
 
 	/**
@@ -43,8 +42,7 @@ public final class GenericConfigurationFactory {
 	 *            configuration.
 	 * @return created GenericConfiguration instance
 	 */
-	public static GenericConfiguration createFromMap(
-			final Map<String, String> configMap,
+	public static GenericConfiguration createFromMap(final Map<String, String> configMap,
 			final GenericConfiguration.KeyConversion keyHandling) {
 		GenericConfiguration conf = new GenericConfiguration();
 		if (keyHandling != null) {
@@ -57,7 +55,7 @@ public final class GenericConfigurationFactory {
 		}
 		return conf;
 	}
-	
+
 	/**
 	 * Creates a <code>GenericConfiguration</code> instance from
 	 * <code>Properties</code>.
@@ -66,8 +64,7 @@ public final class GenericConfigurationFactory {
 	 *            Map that will be used.
 	 * @return created GenericConfiguration instance
 	 */
-	public static GenericConfiguration createFromProperties(final 
-			Properties props) {
+	public static GenericConfiguration createFromProperties(final Properties props) {
 		return GenericConfigurationFactory.createFromProperties(props, null);
 	}
 
@@ -82,17 +79,15 @@ public final class GenericConfigurationFactory {
 	 *            configuration.
 	 * @return created GenericConfiguration instance
 	 */
-	public static GenericConfiguration createFromProperties(final 
-			Properties props,
+	public static GenericConfiguration createFromProperties(final Properties props,
 			final GenericConfiguration.KeyConversion keyHandling) {
 		GenericConfiguration conf = new GenericConfiguration();
 		if (keyHandling != null) {
 			conf.setKeyConversion(keyHandling);
 		}
-		
+
 		for (Entry<Object, Object> e : props.entrySet()) {
-			String value = CRUtil
-				.resolveSystemProperties((String) e.getValue());
+			String value = CRUtil.resolveSystemProperties((String) e.getValue());
 			conf.set((String) e.getKey(), value);
 		}
 		return conf;
@@ -107,11 +102,10 @@ public final class GenericConfigurationFactory {
 	 * @throws IOException
 	 *             if no stream could be created from the String
 	 */
-	public static GenericConfiguration createFromString(final String 
-			configurationString) throws IOException {
+	public static GenericConfiguration createFromString(final String configurationString) throws IOException {
 		return GenericConfigurationFactory.createFromString(configurationString, null);
 	}
-	
+
 	/**
 	 * Creates a <code>GenericConfiguration</code> instance from a String.
 	 * 
@@ -124,13 +118,12 @@ public final class GenericConfigurationFactory {
 	 * @throws IOException
 	 *             if no stream could be created from the String
 	 */
-	public static GenericConfiguration createFromString(final String 
-			configurationString, final GenericConfiguration.KeyConversion keyHandling) throws IOException {
+	public static GenericConfiguration createFromString(final String configurationString,
+			final GenericConfiguration.KeyConversion keyHandling) throws IOException {
 		if (configurationString != null) {
 			Properties props = new Properties();
-			props.load(new ByteArrayInputStream(
-						configurationString.getBytes()));
-			
+			props.load(new ByteArrayInputStream(configurationString.getBytes()));
+
 			return createFromProperties(props, keyHandling);
 		}
 		return null;

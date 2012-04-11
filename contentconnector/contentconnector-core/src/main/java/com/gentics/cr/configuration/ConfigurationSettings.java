@@ -10,17 +10,17 @@ import com.gentics.cr.util.CRUtil;
  *
  */
 public final class ConfigurationSettings {
-	
+
 	/**
 	 * Prevents instantiation.
 	 */
-	private ConfigurationSettings() { }
-	
+	private ConfigurationSettings() {
+	}
+
 	/**
 	 * Key to determine the current configuration mode.
 	 */
-	private static final String CONFIGURATION_PROPERTY_NAME = 
-		"com.gentics.portalnode.confmode";
+	private static final String CONFIGURATION_PROPERTY_NAME = "com.gentics.portalnode.confmode";
 
 	/**
 	 * Gets the configuration path set for this environment.
@@ -37,15 +37,14 @@ public final class ConfigurationSettings {
 		}
 		return ("");
 	}
-	
+
 	/**
 	 * Gets the configuration mode set for this environment.
 	 * @return configuration mode as String
 	 */
 	public static String getConfigurationMode() {
 		String mode = "";
-		mode = CRUtil.resolveSystemProperties("${"
-				+ CONFIGURATION_PROPERTY_NAME + "}");
+		mode = CRUtil.resolveSystemProperties("${" + CONFIGURATION_PROPERTY_NAME + "}");
 		return (mode);
 	}
 }

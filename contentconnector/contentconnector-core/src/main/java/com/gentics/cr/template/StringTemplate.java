@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import com.gentics.cr.exceptions.CRException;
+
 /**
  * loads a template from a string.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -12,17 +13,17 @@ import com.gentics.cr.exceptions.CRException;
  *
  */
 public class StringTemplate implements ITemplate {
-	
+
 	/**
 	 * Template source.
 	 */
 	private String source;
-	
+
 	/**
 	 * Template key.
 	 */
 	private String key;
-	
+
 	/**
 	 * gets the key of the template. usually a md5 hash
 	 * @return key
@@ -30,6 +31,7 @@ public class StringTemplate implements ITemplate {
 	public final String getKey() {
 		return this.key;
 	}
+
 	/**
 	 * gets the source of the template.
 	 * @return source
@@ -37,7 +39,7 @@ public class StringTemplate implements ITemplate {
 	public final String getSource() {
 		return this.source;
 	}
-	
+
 	/**
 	 * Creates a new instance of FileTemplate.
 	 * @param template - velocity code of the template

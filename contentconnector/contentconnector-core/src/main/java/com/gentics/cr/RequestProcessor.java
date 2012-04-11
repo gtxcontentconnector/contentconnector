@@ -79,8 +79,7 @@ public abstract class RequestProcessor {
 		this.plinkProc = new PlinkProcessor(config);
 
 		if (config == null) {
-			throw new CRException("CONFIG",
-					"Config is NULL => overthink your config!",
+			throw new CRException("CONFIG", "Config is NULL => overthink your config!",
 					CRException.ERRORTYPE.FATAL_ERROR);
 		}
 		if (config.getPortalNodeCompMode()) {
@@ -89,12 +88,10 @@ public abstract class RequestProcessor {
 					+ "Therefore Velocity scripts will not work in the content.");
 		}
 
-		if(config.getBoolean(CONTENTCACHE_KEY, true)) {
+		if (config.getBoolean(CONTENTCACHE_KEY, true)) {
 			try {
-				cache = JCS.getInstance("gentics-cr-" + config.getName()
-						+ "-crcontent");
-				log.debug("Initialized cache zone for \"" + config.getName()
-						+ "-crcontent\".");
+				cache = JCS.getInstance("gentics-cr-" + config.getName() + "-crcontent");
+				log.debug("Initialized cache zone for \"" + config.getName() + "-crcontent\".");
 			} catch (CacheException e) {
 				log.warn("Could not initialize Cache for PlinkProcessor.");
 				throw new CRException(e);
@@ -109,17 +106,16 @@ public abstract class RequestProcessor {
 	 * @param request
 	 * @return CRResolvableBean with replaced Plinks
 	 */
-	public CRResolvableBean replacePlinks(CRResolvableBean crBean,
-			CRRequest request) {
+	public CRResolvableBean replacePlinks(CRResolvableBean crBean, CRRequest request) {
 		String[] plinkAttrArray = request.getPlinkAttributeArray();
 		if (plinkAttrArray != null) {
 
 			for (int i = 0; i < plinkAttrArray.length; i++) {
 				Object attr = crBean.get(plinkAttrArray[i]);
 				if (attr instanceof String) {
-					crBean.set(plinkAttrArray[i], PortalConnectorHelper
-							.replacePLinks((String) attr, new PlinkReplacer(
-									this.plinkProc, request)));
+					crBean.set(
+						plinkAttrArray[i],
+						PortalConnectorHelper.replacePLinks((String) attr, new PlinkReplacer(this.plinkProc, request)));
 				}
 			}
 		}
@@ -132,8 +128,7 @@ public abstract class RequestProcessor {
 	 * @return first matching object
 	 * @throws CRException
 	 */
-	public CRResolvableBean getFirstMatchingResolvable(CRRequest request)
-			throws CRException {
+	public CRResolvableBean getFirstMatchingResolvable(CRRequest request) throws CRException {
 		request.setCountString("1");
 		Collection<CRResolvableBean> coll = getObjects(request);
 		if (coll != null && !coll.isEmpty()) {
@@ -152,8 +147,7 @@ public abstract class RequestProcessor {
 	 * @return Collection of CRResolvableBeans
 	 * @throws CRException
 	 */
-	public Collection<CRResolvableBean> getObjects(CRRequest request)
-			throws CRException {
+	public Collection<CRResolvableBean> getObjects(CRRequest request) throws CRException {
 		return (this.getObjects(request, false));
 	}
 
@@ -164,8 +158,7 @@ public abstract class RequestProcessor {
 	 * @return Collection of CRResolvableBeans
 	 * @throws CRException TODO javadoc
 	 */
-	public abstract Collection<CRResolvableBean> getObjects(CRRequest request, 
-			boolean doNavigation) throws CRException;
+	public abstract Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException;
 
 	/**
 	 * Get the matching objects and sub objects using the given CRRequest.
@@ -192,7 +185,7 @@ public abstract class RequestProcessor {
 			return getContent(new CRResolvableBean(reso), request);
 		}
 	}
-	
+
 	/**
 	 * Returns an object bean by url.
 	 * @param request request.
@@ -205,8 +198,7 @@ public abstract class RequestProcessor {
 		if (pr != null) {
 			reso = pr.getObject(request);
 		} else {
-			log.warn("Could not get Pathresolver to resolve path '"
-					+ request.getUrl() + "'.");
+			log.warn("Could not get Pathresolver to resolve path '" + request.getUrl() + "'.");
 		}
 		return reso;
 	}
@@ -235,13 +227,13 @@ public abstract class RequestProcessor {
 	 * @param doVelocity
 	 * @return
 	 */
-	private CRResolvableBean getContent(Resolvable reso, CRRequest request)
-			throws CRException {
+	private CRResolvableBean getContent(Resolvable reso, CRRequest request) throws CRException {
 
 		//TODO Use content renderer provided by NOPs
 		boolean doReplacePlinks = request.getDoReplacePlinks();
-		String prefixHostRelativeLinks = ObjectTransformer.getString(config
-				.get(CRRequest.PREFIX_HOST_RELATIVE_LINKS), null);
+		String prefixHostRelativeLinks = ObjectTransformer.getString(
+			config.get(CRRequest.PREFIX_HOST_RELATIVE_LINKS),
+			null);
 		boolean doVelocity = request.getDoVelocity();
 
 		CRResolvableBean crBean = null;
@@ -281,8 +273,7 @@ public abstract class RequestProcessor {
 				}
 
 				// When attribute is specified return as binary.
-				crBean = new CRResolvableBean(reso, new String[] { attribute,
-						mimetypeAttribute });
+				crBean = new CRResolvableBean(reso, new String[] { attribute, mimetypeAttribute });
 				log.debug("Can't load from cache => direct access");
 			}
 
@@ -303,29 +294,25 @@ public abstract class RequestProcessor {
 						long start = new Date().getTime();
 
 						// replace plinks
-						s = PortalConnectorHelper.replacePLinks(s,
-								new PlinkReplacer(this.plinkProc, request));
+						s = PortalConnectorHelper.replacePLinks(s, new PlinkReplacer(this.plinkProc, request));
 
 						// endtime
 						long end = new Date().getTime();
-						log.debug("plink parsing time for attribute "
-								+ attribute + " of " + contentid + ": "
+						log.debug("plink parsing time for attribute " + attribute + " of " + contentid + ": "
 								+ (end - start));
 					}
 
 					if (doVelocity && !config.getPortalNodeCompMode()) {
 						// Initialize Velocity Context
-						ITemplateManager myTemplateManager = config
-								.getTemplateManager();
+						ITemplateManager myTemplateManager = config.getTemplateManager();
 						myTemplateManager.put("connector", "Gentics REST API");
 
 						// enrich template context
 						if (this.resolvables != null) {
-							for (Iterator<Map.Entry<String, Resolvable>> it = this.resolvables
-									.entrySet().iterator(); it.hasNext();) {
+							for (Iterator<Map.Entry<String, Resolvable>> it = this.resolvables.entrySet().iterator(); it
+									.hasNext();) {
 								Map.Entry<String, Resolvable> entry = it.next();
-								myTemplateManager.put(entry.getKey(), entry
-										.getValue());
+								myTemplateManager.put(entry.getKey(), entry.getValue());
 							}
 						}
 						s = myTemplateManager.render("attribute", s);
@@ -344,8 +331,7 @@ public abstract class RequestProcessor {
 						cache.put(contentid, crBean);
 					}
 				} catch (CacheException e) {
-					log.warn("Could not add crBean object "
-							+ crBean.getContentid() + " to cache", e);
+					log.warn("Could not add crBean object " + crBean.getContentid() + " to cache", e);
 					throw new CRException(e);
 				}
 			}
@@ -402,8 +388,7 @@ public abstract class RequestProcessor {
 		if (col instanceof Collection) {
 			return (Collection<Resolvable>) col;
 		}
-		throw new IllegalArgumentException(
-				"You have to pass an instance of Collection containing Resolvables");
+		throw new IllegalArgumentException("You have to pass an instance of Collection containing Resolvables");
 	}
 
 	/**
@@ -413,14 +398,12 @@ public abstract class RequestProcessor {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected Collection<CRResolvableBean> toCRResolvableBeanCollection(
-			Object col) {
+	protected Collection<CRResolvableBean> toCRResolvableBeanCollection(Object col) {
 		if (col instanceof Collection) {
 			return (Collection<CRResolvableBean>) col;
 		}
 
-		throw new IllegalArgumentException(
-				"You have to pass an instance of Collection containing CRResolvableBeans");
+		throw new IllegalArgumentException("You have to pass an instance of Collection containing CRResolvableBeans");
 	}
 
 	/**
@@ -429,8 +412,7 @@ public abstract class RequestProcessor {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected Collection<CRResolvableBean> toCRResolvableBeanCollection(
-			Collection col) {
+	protected Collection<CRResolvableBean> toCRResolvableBeanCollection(Collection col) {
 		return (Collection<CRResolvableBean>) col;
 	}
 
@@ -441,8 +423,8 @@ public abstract class RequestProcessor {
 	 * @param idAttribute 
 	 * @throws CRException 
 	 */
-	public void fillAttributes(Collection<CRResolvableBean> col,
-			CRRequest request, String idAttribute) throws CRException {
+	public void fillAttributes(Collection<CRResolvableBean> col, CRRequest request, String idAttribute)
+			throws CRException {
 		RequestProcessorMerger.fillAttributes(this, col, request, idAttribute);
 	}
 
@@ -452,8 +434,7 @@ public abstract class RequestProcessor {
 	 * @param request
 	 * @throws CRException 
 	 */
-	public void fillAttributes(Collection<CRResolvableBean> col,
-			CRRequest request) throws CRException {
+	public void fillAttributes(Collection<CRResolvableBean> col, CRRequest request) throws CRException {
 		fillAttributes(col, request, "contentid");
 	}
 

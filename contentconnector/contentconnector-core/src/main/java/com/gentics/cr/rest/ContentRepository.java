@@ -39,7 +39,7 @@ public abstract class ContentRepository implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3367665528658725618L;
-	
+
 	/**
 	 * property name for config to define if the metaresolvable should be deployed to the repository
 	 */
@@ -52,7 +52,7 @@ public abstract class ContentRepository implements Serializable {
 	protected Vector<CRResolvableBean> resolvableColl;
 
 	protected String response_encoding;
-	
+
 	/**
 	 * Holds objects that can later be deployed in the render context.
 	 */
@@ -62,27 +62,25 @@ public abstract class ContentRepository implements Serializable {
 	 * Adds objects that can be deployed in the render context.
 	 * @param objects objects to deploy
 	 */
-	public final void addAdditionalDeployableObjects(final 
-			Map<String, Object> objects) {
+	public final void addAdditionalDeployableObjects(final Map<String, Object> objects) {
 		if (additinalDeployableObjects == null) {
 			additinalDeployableObjects = new HashMap<String, Object>();
 		}
 		additinalDeployableObjects.putAll(objects);
 	}
-	
+
 	/**
 	 * Add object that can be deployed in the render context.
 	 * @param key key for deployment
 	 * @param value deployed object
 	 */
-	public final void addAdditionalDeployableObject(final String key,
-			final Object value) {
+	public final void addAdditionalDeployableObject(final String key, final Object value) {
 		if (additinalDeployableObjects == null) {
 			additinalDeployableObjects = new HashMap<String, Object>();
 		}
 		additinalDeployableObjects.put(key, value);
 	}
-	
+
 	/**
 	 * Returns all objects that were deployed to be put in the render context.
 	 * @return objects
@@ -90,7 +88,7 @@ public abstract class ContentRepository implements Serializable {
 	public final HashMap<String, Object> getAdditionalDeployableObjects() {
 		return additinalDeployableObjects;
 	}
-	
+
 	/**
 	 * Get responce encoding. Defaults to utf-8
 	 * 
@@ -99,7 +97,7 @@ public abstract class ContentRepository implements Serializable {
 	public final String getResponseEncoding() {
 		if (this.response_encoding == null) {
 			return "utf-8";
-			
+
 		} else {
 			return (this.response_encoding);
 		}
@@ -236,8 +234,7 @@ public abstract class ContentRepository implements Serializable {
 	 * @param ex
 	 * @param isDebug
 	 */
-	public abstract void respondWithError(OutputStream stream, CRException ex,
-			boolean isDebug);
+	public abstract void respondWithError(OutputStream stream, CRException ex, boolean isDebug);
 
 	/**
 	 * Apply Filters on the ContentRepository
@@ -266,15 +263,12 @@ public abstract class ContentRepository implements Serializable {
 				HashMap<String, Object> filterParameters = new HashMap<String, Object>();
 				filterParameters.put("crConf", crConf);
 				filterParameters.put("request", request);
-				filter = (Filter<CRResolvableBean>) Class.forName(
-						filterClassName).getConstructor().newInstance();
-				Collection<CRResolvableBean> returnedObjects = filter.apply(
-						getObjects(), filterParameters);
+				filter = (Filter<CRResolvableBean>) Class.forName(filterClassName).getConstructor().newInstance();
+				Collection<CRResolvableBean> returnedObjects = filter.apply(getObjects(), filterParameters);
 				if (returnedObjects == null) {
-					log
-							.error("Filter "
-									+ filterClassName
-									+ " doesn't return a valid result. The result was null.\nTo prevent from errors the result of the filter is not saved.");
+					log.error("Filter "
+							+ filterClassName
+							+ " doesn't return a valid result. The result was null.\nTo prevent from errors the result of the filter is not saved.");
 					return false;
 				}
 				setObjects(returnedObjects);
@@ -338,24 +332,21 @@ public abstract class ContentRepository implements Serializable {
 	public final CRResolvableBean getObject(final int index) {
 		return resolvableColl.get(index);
 	}
-	
+
 	/**
 	 * @return objects contained in the ContentRepository
 	 */
 	public Collection<CRResolvableBean> getObjects() {
 		return (Collection<CRResolvableBean>) resolvableColl;
 	}
-	
-	
-	
+
 	/**
 	 * @return number of objects contained in the ContentRepository
 	 */
 	public final int getSize() {
 		return resolvableColl.size();
 	}
-	
-	
+
 	/**
 	 * Remove the object with the given index from the ContentRepository.
 	 * @param index - index of the object to remove
@@ -373,7 +364,7 @@ public abstract class ContentRepository implements Serializable {
 	public final void setObject(final int index, final CRResolvableBean resolvableBean) {
 		this.resolvableColl.add(resolvableBean);
 	}
-	
+
 	/**
 	 * Replaces objects in the ContentRepository with the objects in the given
 	 * collection.
@@ -385,10 +376,8 @@ public abstract class ContentRepository implements Serializable {
 	 */
 	private void setObjects(final Collection<CRResolvableBean> objects) {
 		if (objects == null) {
-			log
-					.error("Cannot set objects when i get a null value in setObjects(Collection objects)");
-			throw new NullPointerException(
-					"Cannot set objects when i get a null value");
+			log.error("Cannot set objects when i get a null value in setObjects(Collection objects)");
+			throw new NullPointerException("Cannot set objects when i get a null value");
 		}
 		resolvableColl = (Vector<CRResolvableBean>) objects;
 

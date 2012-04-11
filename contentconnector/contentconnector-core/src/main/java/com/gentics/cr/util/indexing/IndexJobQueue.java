@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfig;
+
 /**
  * JobQueue worker class.
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
@@ -14,17 +15,17 @@ import com.gentics.cr.CRConfig;
  *
  */
 public class IndexJobQueue {
-	
+
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
 	private static final Logger LOGGER = Logger.getLogger(IndexJobQueue.class);
-	
+
 	/**
 	 * Miliseconds in a second.
 	 */
 	private static final int MILISECONDS_IN_A_SECOND = 1000;
-	
+
 	/**
 	 * Default interval.
 	 */
@@ -45,12 +46,11 @@ public class IndexJobQueue {
 	 */
 	private static final String SIZE_KEY = "LASTJOBS_SIZE";
 
-
 	/**
 	 * Queue containing the jobs to do. 
 	 */
 	private LinkedBlockingQueue<AbstractUpdateCheckerJob> queue;
-	
+
 	/**
 	 * Daemon that run one job at a time from {@link #queue}.
 	 */
@@ -75,28 +75,28 @@ public class IndexJobQueue {
 	 * the corrent job.
 	 */
 	private AbstractUpdateCheckerJob currentJI;
-	
+
 	/**
 	 * Array containing the last jobs for statistics.
 	 */
 	private ArrayList<AbstractUpdateCheckerJob> lastJobs;
-	
+
 	/**
 	 * sets if we only save jobs that actually did something. (not only
 	 * performing an update check)
 	 */
 	private boolean hideEmptyJobs = false;
-	
+
 	/**
 	 * size of lastjobs array.
 	 */
 	private int lastJobsSize = 3;
-	
+
 	/**
 	 * PauseMonitor.
 	 */
 	private Object pauseMonitor = new Object();
-	
+
 	/**
 	 * Create new instance of JobQueue.
 	 * @param config configuration of the job queue
@@ -105,7 +105,7 @@ public class IndexJobQueue {
 		interval = config.getInteger(INTERVAL_KEY, interval);
 		lastJobsSize = config.getInteger(SIZE_KEY, lastJobsSize);
 		hideEmptyJobs = config.getBoolean(HIDE_EMPTY_JOBS_KEY, hideEmptyJobs);
-		
+
 		queue = new LinkedBlockingQueue<AbstractUpdateCheckerJob>();
 		lastJobs = new ArrayList<AbstractUpdateCheckerJob>(lastJobsSize);
 		indexJobQueueWorkerDaemon = new Thread(new Runnable() {
@@ -113,22 +113,19 @@ public class IndexJobQueue {
 				workQueue();
 			}
 		});
-		indexJobQueueWorkerDaemon.setName("IndexJobQueueWorker-"
-				+ config.getName());
+		indexJobQueueWorkerDaemon.setName("IndexJobQueueWorker-" + config.getName());
 		indexJobQueueWorkerDaemon.setDaemon(true);
-		LOGGER.debug("Created IndexJobQueue-WorkerThread for "
-				+ config.getName());
+		LOGGER.debug("Created IndexJobQueue-WorkerThread for " + config.getName());
 	}
-	
+
 	/**
 	 * Returns true if the worker is running and processing the queue.
 	 * @return <code>true</code> if the worker is running.
 	 */
 	public final boolean isRunning() {
-		return (!this.paused && !this.stop 
-				&& this.indexJobQueueWorkerDaemon.isAlive());
+		return (!this.paused && !this.stop && this.indexJobQueueWorkerDaemon.isAlive());
 	}
-	
+
 	/**
 	 * Get an ArrayList with the three last jobs. If there where no jobs the
 	 * list is going to be empty.
@@ -137,7 +134,7 @@ public class IndexJobQueue {
 	public final ArrayList<AbstractUpdateCheckerJob> getLastJobs() {
 		return this.lastJobs;
 	}
-	
+
 	/**
 	 * Add a Job to the list of finished jobs. Always keeps as much jobs as
 	 * configured in {@link #lastJobsSize}. Default is 3.
@@ -152,7 +149,7 @@ public class IndexJobQueue {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns current Index job or null if none is being processed
 	 * at the moment.
@@ -161,7 +158,7 @@ public class IndexJobQueue {
 	public final AbstractUpdateCheckerJob getCurrentJob() {
 		return this.currentJI;
 	}
-	
+
 	/**
 	 * Check the queue for new jobs each <interval> seconds.
 	 */
@@ -181,8 +178,7 @@ public class IndexJobQueue {
 					synchronized (IndexJobQueue.this) {
 						currentJI = j;
 						currentJob = new Thread(j);
-						currentJob.setName("Current Index Job - " 
-								+ j.getIdentifyer());
+						currentJob.setName("Current Index Job - " + j.getIdentifyer());
 						currentJob.setDaemon(true);
 						currentJob.start();
 						if (currentJob.isAlive()) {
@@ -206,7 +202,7 @@ public class IndexJobQueue {
 		}
 		this.stop = true;
 	}
-	
+
 	/**
 	 * Stops all working Jobs and ends the worker queue.
 	 * This method has to be called before program can exit
@@ -217,28 +213,28 @@ public class IndexJobQueue {
 				currentJob.interrupt();
 			}
 		}
-		
+
 		//END CURRENT JOB
 		synchronized (IndexJobQueue.this) {
 			//WAIT FOR CURRENT JOB TO END
 			if (currentJob != null) {
 				try {
-						if (currentJob.isAlive()) {
-							//INTERRUPT IF A NEW JOB HAS BEEN CREATED
-							if (!currentJob.isInterrupted()) {
-								currentJob.interrupt();
-							}
-							currentJob.join();
+					if (currentJob.isAlive()) {
+						//INTERRUPT IF A NEW JOB HAS BEEN CREATED
+						if (!currentJob.isInterrupted()) {
+							currentJob.interrupt();
 						}
-						
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						currentJob.join();
 					}
+
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			//TODO Clear queue and stop each queued job
 			this.queue.clear();
 			//END WORKER THREAD
-			if (indexJobQueueWorkerDaemon != null) { 
+			if (indexJobQueueWorkerDaemon != null) {
 				if (indexJobQueueWorkerDaemon.isAlive()) {
 					indexJobQueueWorkerDaemon.interrupt();
 					try {
@@ -250,7 +246,7 @@ public class IndexJobQueue {
 			}
 		}
 	}
-	
+
 	/**
 	 * Starts the worker that is processing the Indexer Queue.
 	 */
@@ -258,7 +254,7 @@ public class IndexJobQueue {
 		this.indexJobQueueWorkerDaemon.start();
 		this.stop = false;
 	}
-	
+
 	/**
 	 * Stops the queue worker. The worker cannot be resumed afterwards.
 	 */
@@ -271,7 +267,7 @@ public class IndexJobQueue {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sets the worker in a paused state. The worker can be resumed afterwards.
 	 */
@@ -280,33 +276,31 @@ public class IndexJobQueue {
 			paused = true;
 		}
 	}
-	
+
 	/**
 	 * Resumes the worker from a paused state. If the worker is not in a
 	 * paused state, nothing will happen.
 	 */
 	public final void resumeWorker() {
 		synchronized (this.pauseMonitor) {
-	        paused = false;
-	        this.pauseMonitor.notify();
-	    }
+			paused = false;
+			this.pauseMonitor.notify();
+		}
 	}
-	
-	
+
 	/**
 	 * Adds a CRIndexJob to the Job Queue.
 	 * @param job job to add to teh queue
 	 * @return <code>true</code> if job was added, otherwhise it returns
 	 * <code>false</code>
 	 */
-	public final synchronized boolean addJob(final 
-			AbstractUpdateCheckerJob job) {
+	public final synchronized boolean addJob(final AbstractUpdateCheckerJob job) {
 		if (!queue.contains(job)) {
 			return queue.offer(job);
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Get Number of Jobs in the Queue.
 	 * @return size of the queue
@@ -314,8 +308,7 @@ public class IndexJobQueue {
 	public final int getSize() {
 		return this.queue.size();
 	}
-	
-		
+
 	/**
 	 * Returns configured interval for checking the queue for new jobs.
 	 * @return interval
@@ -323,5 +316,5 @@ public class IndexJobQueue {
 	public final int getInterval() {
 		return this.interval;
 	}
-		
+
 }

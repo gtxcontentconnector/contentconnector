@@ -19,7 +19,6 @@ import com.gentics.cr.util.file.FileTypeDetector;
  */
 public class SimpleFileSystemRequestProcessor extends RequestProcessor {
 
-	
 	/**
 	 * Initialize a new instance
 	 * @param config - configuration for the request processor. these properties are required in the config:
@@ -34,14 +33,13 @@ public class SimpleFileSystemRequestProcessor extends RequestProcessor {
 	}
 
 	@Override
-	public Collection<CRResolvableBean> getObjects(CRRequest request,
-			boolean doNavigation) throws CRException {
+	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
 		File directory = new File(config.getString("directory"));
 		String filterExpression = config.getString("filter");
 		File[] files = DirectoryScanner.listFiles(directory, filterExpression);
-		if(files != null) {
+		if (files != null) {
 			ArrayList<CRResolvableBean> result = new ArrayList<CRResolvableBean>();
-			for(File file : files) {
+			for (File file : files) {
 				CRResolvableBean bean = new CRResolvableBean();
 				bean.set("filename", file.getName());
 				bean.set("pub_dir", directory.toURI().relativize(file.toURI()));
@@ -55,6 +53,7 @@ public class SimpleFileSystemRequestProcessor extends RequestProcessor {
 	}
 
 	@Override
-	public void finalize() { }
+	public void finalize() {
+	}
 
 }

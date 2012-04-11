@@ -33,20 +33,20 @@ import com.gentics.cr.template.ITemplateManager;
 public class PlinkProcessor {
 
 	private CRConfig config;
-	
-	Map<String,Resolvable> contextObjects;
+
+	Map<String, Resolvable> contextObjects;
 
 	private static Logger log = Logger.getLogger(PlinkProcessor.class);
 
 	private static JCS plinkCache;
-	
+
 	/**
 	 * configuration key to enable (default) or disable the JCS cache for resolving PLinks.
 	 */
-	public static String PLINK_CACHE_ACTIVATION_KEY="plinkcache";
-	
+	public static String PLINK_CACHE_ACTIVATION_KEY = "plinkcache";
+
 	private boolean plinkcache = true;
-	
+
 	/**
 	 * Create new instance of plink processor
 	 * @param config
@@ -54,55 +54,47 @@ public class PlinkProcessor {
 	public PlinkProcessor(CRConfig config) {
 
 		this.config = config;
-		contextObjects = new HashMap<String,Resolvable>();
-		if(config != null && config.getPortalNodeCompMode())
-		{
+		contextObjects = new HashMap<String, Resolvable>();
+		if (config != null && config.getPortalNodeCompMode()) {
 			//Servlet will run in portal.node compatibility mode => no velocity available
 			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
 		}
 		String s_plinkcache = null;
-		if(config != null) {
+		if (config != null) {
 			s_plinkcache = config.getString(PLINK_CACHE_ACTIVATION_KEY);
 		}
-		if(s_plinkcache!=null && !"".equals(s_plinkcache))
-		{
+		if (s_plinkcache != null && !"".equals(s_plinkcache)) {
 			plinkcache = Boolean.parseBoolean(s_plinkcache);
 		}
-		
-		if(plinkcache)
-		{
+
+		if (plinkcache) {
 			try {
 				String configName = "shared";
-				if(config != null){
-					configName=config.getName();
-				}
-				else{
+				if (config != null) {
+					configName = config.getName();
+				} else {
 					log.error("Attention i'm using a shared plinkcache because i'm missing my config.");
 				}
 				plinkCache = JCS.getInstance("gentics-cr-" + configName + "-plinks");
-				log.debug("Initialized cache zone for \""+ configName + "-plinks\".");
-	
+				log.debug("Initialized cache zone for \"" + configName + "-plinks\".");
+
 			} catch (CacheException e) {
-	
+
 				log.warn("Could not initialize Cache for PlinkProcessor.");
-	
+
 			}
-		}
-		else
-		{
-			plinkCache=null;
+		} else {
+			plinkCache = null;
 		}
 	}
-	
+
 	/**
 	 * Deploy objects to the velocity context
 	 * @param map
 	 */
-	public void deployObjects(Map<String,Resolvable> map)
-	{
+	public void deployObjects(Map<String, Resolvable> map) {
 		Iterator<String> it = map.keySet().iterator();
-		while(it.hasNext())
-		{
+		while (it.hasNext()) {
 			String key = it.next();
 			this.contextObjects.put(key, map.get(key));
 		}
@@ -122,7 +114,7 @@ public class PlinkProcessor {
 		String link = "";
 		String contentid = plink.getContentId();
 		String cacheKey = contentid;
-		
+
 		String type = "";
 		if (request.getRequest() != null && request.getRequest() instanceof HttpServletRequest) {
 			type = ((HttpServletRequest) request.getRequest()).getParameter("format");
@@ -148,60 +140,53 @@ public class PlinkProcessor {
 		}
 
 		// no cache object so try to prepare a link
-		if (("".equals(link) || link == null )&& !config.getPortalNodeCompMode()) {
-			
+		if (("".equals(link) || link == null) && !config.getPortalNodeCompMode()) {
 
-				// Render Content with contentid as template name
-				Resolvable plinkObject;
+			// Render Content with contentid as template name
+			Resolvable plinkObject;
 
-				try {
-					plinkObject = PortalConnectorFactory.getContentObject(contentid, this.config.getDatasource());
-				
-				
-					ITemplateManager myTemplateEngine = this.config.getTemplateManager();
-									// Put objects in the plink template
-					myTemplateEngine.put("plink", plinkObject);
-					//Deploy predefined Objects to the context
-					Iterator<String> it = this.contextObjects.keySet().iterator();
-					while(it.hasNext())
-					{
-						String key = it.next();
-						myTemplateEngine.put(key, this.contextObjects.get(key));
-					}
-					// as url is a special object put it also in the templates
-					if (this.config.getPathResolver() != null) {
-						String url = this.config.getPathResolver().getPath(
-								plinkObject);
-						if (url != null) {
-							myTemplateEngine.put("url", url);
-						}
-					}
-					
-					link = myTemplateEngine.render("link", this.config.getPlinkTemplate());
+			try {
+				plinkObject = PortalConnectorFactory.getContentObject(contentid, this.config.getDatasource());
 
-				} catch (DatasourceNotAvailableException e) {
-					CRException ex = new CRException(e);
-					log.error(ex.getMessage() + ex.getStringStackTrace());
-				} catch (CRException ex) {
-					log.error(ex.getMessage() + ex.getStringStackTrace());
+				ITemplateManager myTemplateEngine = this.config.getTemplateManager();
+				// Put objects in the plink template
+				myTemplateEngine.put("plink", plinkObject);
+				//Deploy predefined Objects to the context
+				Iterator<String> it = this.contextObjects.keySet().iterator();
+				while (it.hasNext()) {
+					String key = it.next();
+					myTemplateEngine.put(key, this.contextObjects.get(key));
 				}
+				// as url is a special object put it also in the templates
+				if (this.config.getPathResolver() != null) {
+					String url = this.config.getPathResolver().getPath(plinkObject);
+					if (url != null) {
+						myTemplateEngine.put("url", url);
+					}
+				}
+
+				link = myTemplateEngine.render("link", this.config.getPlinkTemplate());
+
+			} catch (DatasourceNotAvailableException e) {
+				CRException ex = new CRException(e);
+				log.error(ex.getMessage() + ex.getStringStackTrace());
+			} catch (CRException ex) {
+				log.error(ex.getMessage() + ex.getStringStackTrace());
+			}
 			// endtime
 			long end = new Date().getTime();
 
-			log.debug("plink generationtime for link " + contentid + ": "
-					+ (end - start));
+			log.debug("plink generationtime for link " + contentid + ": " + (end - start));
 
 		}
 
 		// If velocity template parsing and caching does not work for any
 		// reason use a dynamic link
 		if ("".equals(link) || link == null) {
-			
-			if("true".equals(this.config.get(CRConfig.ADVPLR_KEY))){
+
+			if ("true".equals(this.config.get(CRConfig.ADVPLR_KEY))) {
 				link = this.config.getPathResolver().getDynamicUrl(contentid, config, request);
-			}
-			else
-			{
+			} else {
 				link = this.config.getPathResolver().getDynamicUrl(contentid);
 			}
 		}
@@ -215,8 +200,7 @@ public class PlinkProcessor {
 
 		} catch (CacheException e) {
 
-			log.warn("Could not add link to object " + contentid
-					+ " to cache");
+			log.warn("Could not add link to object " + contentid + " to cache");
 		}
 
 		return link;

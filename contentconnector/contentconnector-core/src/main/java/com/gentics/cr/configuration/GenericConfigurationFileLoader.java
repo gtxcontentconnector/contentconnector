@@ -23,14 +23,14 @@ public final class GenericConfigurationFileLoader {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(
-			GenericConfigurationFileLoader.class);
-	
+	private static Logger log = Logger.getLogger(GenericConfigurationFileLoader.class);
+
 	/**
 	 * Prevent instantiation.
 	 */
-	private GenericConfigurationFileLoader() { }
-	
+	private GenericConfigurationFileLoader() {
+	}
+
 	/**
 	 * Loads the contents of a Properties file that is located in the rest 
 	 * directory to the passed GenericConfiguration.
@@ -39,11 +39,9 @@ public final class GenericConfigurationFileLoader {
 	 * 						e.g.: ${com.gentics.portalnode.confpath}
 	 * /rest/<servletname>.properties
 	 */
-	public static void loadPerServletname(final GenericConfiguration config, 
-			final String servletname) {
-		String path = CRUtil.resolveSystemProperties(
-				"${com.gentics.portalnode.confpath}/rest/"
-				+ servletname + ".properties");
+	public static void loadPerServletname(final GenericConfiguration config, final String servletname) {
+		String path = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/" + servletname
+				+ ".properties");
 		try {
 			load(config, path);
 		} catch (FileNotFoundException e) {
@@ -52,7 +50,7 @@ public final class GenericConfigurationFileLoader {
 			log.error("Could not load configuration from " + path, e);
 		}
 	}
-	
+
 	/**
 	 * Loads the contents of a Properties file 
 	 * to the passed GenericConfiguration.
@@ -61,8 +59,7 @@ public final class GenericConfigurationFileLoader {
 	 * Can contain environment variables.
 	 * @throws IOException - if an error occurred reading the file.
 	 */
-	public static void load(final GenericConfiguration config, 
-			final String path) throws IOException {
+	public static void load(final GenericConfiguration config, final String path) throws IOException {
 		Properties props = new Properties();
 		props.load(new FileInputStream(CRUtil.resolveSystemProperties(path)));
 		for (Entry<Object, Object> entry : props.entrySet()) {
@@ -71,18 +68,17 @@ public final class GenericConfigurationFileLoader {
 			setProperty(config, (String) key, (String) value);
 		}
 	}
-	
+
 	/**
 	 * Set a property to a generic configuration.
 	 * @param config configuration where the property should be set
 	 * @param key resolving key
 	 * @param value value
 	 */
-	private static void setProperty(final GenericConfiguration config,
-			final String key, final String value) {
+	private static void setProperty(final GenericConfiguration config, final String key, final String value) {
 		//Resolve system properties, so that they can be used in config values
 		String val = CRUtil.resolveSystemProperties((String) value);
-				
+
 		//Set the property
 		config.set(key, val);
 	}

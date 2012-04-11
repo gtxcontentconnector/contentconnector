@@ -41,7 +41,6 @@ import com.gentics.cr.util.Constants;
  */
 public class CSSitemapContentRepository extends ContentRepository {
 
-	
 	/**
 	 * generated serial version unique id.
 	 */
@@ -67,28 +66,28 @@ public class CSSitemapContentRepository extends ContentRepository {
 	 * @param attr Attributes to write into the stream for each object.
 	 */
 	public CSSitemapContentRepository(final String[] attr) {
-		
+
 		this(attr, "utf-8");
 
 	}
+
 	/**
 	 * Initialize a new {@link CSSitemapContentRepository}.
 	 * @param attr Attributes to write into the stream for each object.
 	 * @param encoding Encoding to use for the stream.
 	 */
-	public CSSitemapContentRepository(final String[] attr,
-			final String encoding) {
+	public CSSitemapContentRepository(final String[] attr, final String encoding) {
 		this(attr, encoding, null);
 
 	}
+
 	/**
 	 * Initialize a new {@link CSSitemapContentRepository}.
 	 * @param attr Attributes to write into the stream for each object.
 	 * @param encoding Encoding to use for the stream.
 	 * @param options Options array TODO javadoc
 	 */
-	public CSSitemapContentRepository(final String[] attr,
-			final String encoding, final String[] options) {
+	public CSSitemapContentRepository(final String[] attr, final String encoding, final String[] options) {
 		super(attr, encoding, options);
 
 		// Create XML Document
@@ -96,17 +95,16 @@ public class CSSitemapContentRepository extends ContentRepository {
 		DocumentBuilder builder;
 		//this.setResponseEncoding(encoding);
 		try {
-			
+
 			builder = factory.newDocumentBuilder();
 			this.doc = builder.newDocument();
-		
+
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
-		
+
 		this.src = new DOMSource(doc);
 	}
-	
 
 	/**
 	 * returns text/xml as contenttype.
@@ -115,14 +113,14 @@ public class CSSitemapContentRepository extends ContentRepository {
 	public final String getContentType() {
 		return "text/xml";
 	}
-	
+
 	/**
 	 * clear the given element from all attributes.
 	 */
 	private void clearElement(Element elem) {
 		if (elem != null) {
 			NodeList list = elem.getChildNodes();
-		
+
 			//int len = list.getLength();
 			for (int i = 0; i < list.getLength(); i++) {
 				elem.removeChild(list.item(i));
@@ -134,7 +132,7 @@ public class CSSitemapContentRepository extends ContentRepository {
 			}
 		}
 	}
-	
+
 	/**
 	 * Write an error to the specified stream.
 	 * @param stream Stream to write the error into
@@ -142,8 +140,7 @@ public class CSSitemapContentRepository extends ContentRepository {
 	 * @param isDebug specifies if debug is enabled (e.g. Output the stacktrace)
 	 */
 	@Override
-	public final void respondWithError(final OutputStream stream,
-			final CRException ex, final boolean isDebug) {
+	public final void respondWithError(final OutputStream stream, final CRException ex, final boolean isDebug) {
 		// Create Root Element
 		this.rootElement = doc.createElement("Contentrepository");
 		doc.appendChild(rootElement);
@@ -157,15 +154,14 @@ public class CSSitemapContentRepository extends ContentRepository {
 			stackTrace.appendChild(text);
 			errElement.appendChild(stackTrace);
 		}
-		
+
 		this.rootElement.setAttribute("status", "error");
 		this.rootElement.appendChild(errElement);
-		
+
 		StreamResult strRes = new StreamResult(stream);
 		try {
-			
-			TransformerFactory.newInstance().newTransformer().transform(
-					this.src, strRes);
+
+			TransformerFactory.newInstance().newTransformer().transform(this.src, strRes);
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
 		} catch (TransformerException e) {
@@ -173,7 +169,7 @@ public class CSSitemapContentRepository extends ContentRepository {
 		} catch (TransformerFactoryConfigurationError e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -189,14 +185,12 @@ public class CSSitemapContentRepository extends ContentRepository {
 			rootElement = processElement(resolvableColl.get(0));
 			doc.appendChild(rootElement);
 		}
-		
+
 		try {
-			OutputStreamWriter wr =
-				new OutputStreamWriter(stream, this.getResponseEncoding());
-									
+			OutputStreamWriter wr = new OutputStreamWriter(stream, this.getResponseEncoding());
+
 			StreamResult strRes = new StreamResult(wr);
-			Transformer xmlTransformer =
-				TransformerFactory.newInstance().newTransformer();
+			Transformer xmlTransformer = TransformerFactory.newInstance().newTransformer();
 			xmlTransformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			xmlTransformer.transform(this.src, strRes);
 			wr.flush();
@@ -223,8 +217,7 @@ public class CSSitemapContentRepository extends ContentRepository {
 	 */
 	private Element processElement(final CRResolvableBean crBean) {
 		Element objElement = doc.createElement("folder");
-		
-		
+
 		objElement.setAttribute("id", "" + crBean.getObj_id());
 		Map<String, Object> attributes = crBean.getAttrMap();
 		if (attributes != null && (!attributes.isEmpty())) {
@@ -241,8 +234,7 @@ public class CSSitemapContentRepository extends ContentRepository {
 									value = new String(getBytes(bValue));
 								} catch (IOException e) {
 									value = bValue.toString();
-									log.debug("Error converting binary to"
-											+ "String", e);
+									log.debug("Error converting binary to" + "String", e);
 								}
 							}
 						} else if (attributeName.equals("updatetimestamp")) {
@@ -254,13 +246,10 @@ public class CSSitemapContentRepository extends ContentRepository {
 							} else {
 								timestamp = Long.parseLong(bValue.toString());
 							}
-							Date updatetime = new Date(timestamp
-									* Constants.MILLISECONDS_IN_A_SECOND);
-							SimpleDateFormat dateFormat =
-								new SimpleDateFormat("dd.MM.yyy HH:mm:ss");
+							Date updatetime = new Date(timestamp * Constants.MILLISECONDS_IN_A_SECOND);
+							SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyy HH:mm:ss");
 							value = dateFormat.format(updatetime);
-						} else if (bValue.getClass().isArray()
-										|| bValue instanceof Collection) {
+						} else if (bValue.getClass().isArray() || bValue instanceof Collection) {
 							Object[] arr;
 							if (bValue instanceof Collection) {
 								arr = ((Collection<?>) bValue).toArray();
@@ -274,9 +263,7 @@ public class CSSitemapContentRepository extends ContentRepository {
 									try {
 										value = new String(getBytes(bValue));
 									} catch (IOException e) {
-										log.error("Error reading bytes for"
-												+ " attribute "
-												+ attributeName, e);
+										log.error("Error reading bytes for" + " attribute " + attributeName, e);
 									}
 								}
 							}

@@ -35,7 +35,6 @@ import com.gentics.cr.rest.ContentRepository;
  */
 public class XmlContentRepository extends ContentRepository {
 
-	
 	/**
 	 * 
 	 */
@@ -55,7 +54,7 @@ public class XmlContentRepository extends ContentRepository {
 	public XmlContentRepository(final String[] attr) {
 		this(attr, "UTF-8");
 	}
-	
+
 	/**
 	 * TODO javadoc.
 	 * @param attr TODO javadoc
@@ -64,6 +63,7 @@ public class XmlContentRepository extends ContentRepository {
 	public XmlContentRepository(final String[] attr, final String encoding) {
 		this(attr, encoding, null);
 	}
+
 	/**
 	 * 
 	 * @param attr
@@ -78,22 +78,21 @@ public class XmlContentRepository extends ContentRepository {
 		DocumentBuilder builder;
 		//this.setResponseEncoding(encoding);
 		try {
-			
+
 			builder = factory.newDocumentBuilder();
 			this.doc = builder.newDocument();
-		
+
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
-		
+
 		this.src = new DOMSource(doc);
-		
+
 		// Create Root Element
 		this.rootElement = doc.createElement("Contentrepository");
 		doc.appendChild(rootElement);
 
 	}
-	
 
 	/**
 	 * returns text/xml
@@ -102,27 +101,23 @@ public class XmlContentRepository extends ContentRepository {
 	public String getContentType() {
 		return "text/xml";
 	}
-	
-	private void clearElement(Element elem)
-	{
-		if(elem!=null)
-		{
+
+	private void clearElement(Element elem) {
+		if (elem != null) {
 			NodeList list = elem.getChildNodes();
-		
+
 			//int len = list.getLength();
-			for(int i=0;i<list.getLength();i++)
-			{
+			for (int i = 0; i < list.getLength(); i++) {
 				elem.removeChild(list.item(i));
 			}
 			NamedNodeMap map = elem.getAttributes();
 			//len =map.getLength();
-			for(int i=0;i<map.getLength();i++)
-			{
+			for (int i = 0; i < map.getLength(); i++) {
 				elem.removeAttribute(map.item(i).getNodeName());
 			}
 		}
 	}
-	
+
 	/**
 	 * Respond with Error
 	 * @param stream 
@@ -130,30 +125,28 @@ public class XmlContentRepository extends ContentRepository {
 	 * @param isDebug 
 	 * 
 	 */
-	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
+	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
 		clearElement(this.rootElement);
 		Element errElement = doc.createElement("Error");
-		errElement.setAttribute("type",ex.getType());
-		errElement.setAttribute("messge",ex.getMessage());
-		if(isDebug)
-		{
+		errElement.setAttribute("type", ex.getType());
+		errElement.setAttribute("messge", ex.getMessage());
+		if (isDebug) {
 			Element stackTrace = doc.createElement("StackTrace");
 			Text text = doc.createCDATASection(ex.getStringStackTrace());
 			stackTrace.appendChild(text);
 			errElement.appendChild(stackTrace);
 		}
-		
-		this.rootElement.setAttribute("status","error");
+
+		this.rootElement.setAttribute("status", "error");
 		this.rootElement.appendChild(errElement);
-		
+
 		//		 output xml
 		StreamResult strRes = new StreamResult(stream);
-		
+
 		try {
-			
-			TransformerFactory.newInstance().newTransformer().transform(
-					this.src, strRes);
-		
+
+			TransformerFactory.newInstance().newTransformer().transform(this.src, strRes);
+
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
 		} catch (TransformerException e) {
@@ -161,7 +154,7 @@ public class XmlContentRepository extends ContentRepository {
 		} catch (TransformerFactoryConfigurationError e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -172,40 +165,35 @@ public class XmlContentRepository extends ContentRepository {
 	 * 
 	 */
 	public void toStream(OutputStream stream) throws CRException {
-		
-		if(this.resolvableColl.isEmpty())
-		{
+
+		if (this.resolvableColl.isEmpty()) {
 			//No Data Found
-			/*this.rootElement.setAttribute("status","error");
-			Element errElement = doc.createElement("Error");
-			errElement.setAttribute("type","NoDataFound");
-			errElement.setAttribute("message","Data could not be found.");
-			this.rootElement.appendChild(errElement);*/
-			throw new CRException("NoDataFound","Data could not be found.");
-		}
-		else
-		{
+			/*
+			 * this.rootElement.setAttribute("status","error"); Element errElement = doc.createElement("Error");
+			 * errElement.setAttribute("type","NoDataFound");
+			 * errElement.setAttribute("message","Data could not be found."); this.rootElement.appendChild(errElement);
+			 */
+			throw new CRException("NoDataFound", "Data could not be found.");
+		} else {
 			//Elements found/status ok
-			this.rootElement.setAttribute("status","ok");
-			
+			this.rootElement.setAttribute("status", "ok");
+
 			for (Iterator<CRResolvableBean> it = this.resolvableColl.iterator(); it.hasNext();) {
-				
+
 				CRResolvableBean crBean = (CRResolvableBean) it.next();
-	
+
 				Element objElement = processElement(crBean);
 				this.rootElement.appendChild(objElement);
 			}
 		}
-		
+
 		// output xml
-		
-		
+
 		try {
 			OutputStreamWriter wr = new OutputStreamWriter(stream, this.getResponseEncoding());
-									
+
 			StreamResult strRes = new StreamResult(wr);
-			TransformerFactory.newInstance().newTransformer().transform(
-					this.src, strRes);
+			TransformerFactory.newInstance().newTransformer().transform(this.src, strRes);
 			wr.flush();
 			wr.close();
 		} catch (TransformerConfigurationException e) {
@@ -226,149 +214,124 @@ public class XmlContentRepository extends ContentRepository {
 	@SuppressWarnings("unchecked")
 	private Element processElement(CRResolvableBean crBean) {
 		Element objElement = doc.createElement("Object");
-		
-		
+
 		objElement.setAttribute("contentid", "" + crBean.getContentid());
 		objElement.setAttribute("obj_id", "" + crBean.getObj_id());
 		objElement.setAttribute("obj_type", "" + crBean.getObj_type());
-		objElement.setAttribute("mother_id",
-				((crBean.getMother_id() == null) ? "" : ""
-						+ crBean.getMother_id()));
-		objElement.setAttribute("mother_type",
-				((crBean.getMother_type() == null) ? "" : ""
-						+ crBean.getMother_type()));
-		
+		objElement.setAttribute("mother_id", ((crBean.getMother_id() == null) ? "" : "" + crBean.getMother_id()));
+		objElement.setAttribute("mother_type", ((crBean.getMother_type() == null) ? "" : "" + crBean.getMother_type()));
+
 		if (crBean.getAttrMap() != null && (!crBean.getAttrMap().isEmpty())) {
 			Element attrContainer = doc.createElement("attributes");
 			Iterator<String> bit = crBean.getAttrMap().keySet().iterator();
 			while (bit.hasNext()) {
-				
+
 				String entry = bit.next();
-				if(!"".equals(entry))
-				{
-					
-					Object bValue=crBean.getAttrMap().get(entry);
+				if (!"".equals(entry)) {
+
+					Object bValue = crBean.getAttrMap().get(entry);
 					String value = "";
-					if(bValue!=null)
-					{
-						
-						if((!entry.equals("binarycontent")) &&(bValue.getClass().isArray()||bValue.getClass()==ArrayList.class))
-						{
-							
-								Object[] arr;
-								if(bValue.getClass()==ArrayList.class)
-									arr = ((ArrayList<Object>)bValue).toArray();
-								else
-									arr= (Object[])bValue;
-								for(int i=0;i<arr.length;i++)
-								{
-									Element attrElement = doc.createElement(entry);
-									attrContainer.appendChild(attrElement);
-	//								
-									if(arr[i].getClass()==String.class)
-									{
-										value=(String)arr[i];
+					if (bValue != null) {
+
+						if ((!entry.equals("binarycontent"))
+								&& (bValue.getClass().isArray() || bValue.getClass() == ArrayList.class)) {
+
+							Object[] arr;
+							if (bValue.getClass() == ArrayList.class)
+								arr = ((ArrayList<Object>) bValue).toArray();
+							else
+								arr = (Object[]) bValue;
+							for (int i = 0; i < arr.length; i++) {
+								Element attrElement = doc.createElement(entry);
+								attrContainer.appendChild(attrElement);
+								//								
+								if (arr[i].getClass() == String.class) {
+									value = (String) arr[i];
+								} else {
+									try {
+										value = new String(getBytes(bValue));
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
 									}
-									else
-									{
-										try {
-											value = new String(getBytes(bValue));
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-									}
-									Text text = doc.createCDATASection(value);
-									attrElement.appendChild(text);
 								}
-							
-						}
-						else
-						{
+								Text text = doc.createCDATASection(value);
+								attrElement.appendChild(text);
+							}
+
+						} else {
 							Element attrElement = doc.createElement(entry);
 							attrContainer.appendChild(attrElement);
-							
-							if(entry.equals("binarycontent"))
-							{
-								
-								try
-								{
-									value=new String((byte[])bValue);
-								}
-								catch(ClassCastException x)
-								{
+
+							if (entry.equals("binarycontent")) {
+
+								try {
+									value = new String((byte[]) bValue);
+								} catch (ClassCastException x) {
 									try {
-										value=new String(getBytes(bValue));
+										value = new String(getBytes(bValue));
 									} catch (IOException e) {
-										value=bValue.toString();
+										value = bValue.toString();
 										e.printStackTrace();
 									}
 								}
 								//TODO return proper binary content
 								//value=(String) bValue.toString();
-							}
-							else
-							{
-								if(bValue.getClass()==String.class)
-								{
-									value=(String)bValue;
+							} else {
+								if (bValue.getClass() == String.class) {
+									value = (String) bValue;
+								} else {
+									value = bValue.toString();
+									//									try {
+									//										value = new String(getBytes(bValue));
+									//									} catch (IOException e) {
+									//										// TODO Auto-generated catch block
+									//										e.printStackTrace();
+									//									}
 								}
-								else
-								{
-									value=bValue.toString();
-//									try {
-//										value = new String(getBytes(bValue));
-//									} catch (IOException e) {
-//										// TODO Auto-generated catch block
-//										e.printStackTrace();
-//									}
-								}
-	//							if(bValue.getClass()==String.class)
-	//							{
-	//								value=(String) bValue;
-	//							}
-	//							else
-	//							{
-	//								value=(String) bValue.toString();
-	//							}
-									
+								//							if(bValue.getClass()==String.class)
+								//							{
+								//								value=(String) bValue;
+								//							}
+								//							else
+								//							{
+								//								value=(String) bValue.toString();
+								//							}
+
 							}
 							Text text = doc.createCDATASection(value);
 							attrElement.appendChild(text);
 						}
-						
-					}
-					else
-					{
+
+					} else {
 						Element attrElement = doc.createElement(entry);
 						attrContainer.appendChild(attrElement);
-						
+
 						Text text = doc.createCDATASection(value);
 						attrElement.appendChild(text);
 					}
-					/*if (value == null) {
-						value = "";
-					}*/
-					
+					/*
+					 * if (value == null) { value = ""; }
+					 */
+
 				}
 			}
 			objElement.appendChild(attrContainer);
 		}
-		
-		if(crBean.getChildRepository()!=null && crBean.getChildRepository().size()>0)
-		{
+
+		if (crBean.getChildRepository() != null && crBean.getChildRepository().size() > 0) {
 			Element childContainer = doc.createElement("children");
-			
+
 			for (Iterator<CRResolvableBean> it = crBean.getChildRepository().iterator(); it.hasNext();) {
-				
+
 				CRResolvableBean chBean = (CRResolvableBean) it.next();
-	
+
 				Element chElement = processElement(chBean);
 				childContainer.appendChild(chElement);
 			}
 			//Text t = doc.createCDATASection("Count: "+crBean.getChildRepository().size());
 			//childContainer.appendChild(t);
-			
+
 			objElement.appendChild(childContainer);
 		}
 		return objElement;

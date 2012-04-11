@@ -11,9 +11,9 @@ import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 
 public class DummyRequestProcessor extends RequestProcessor {
-	
+
 	private static Hashtable<String, CRResolvableBean> beans = new Hashtable<String, CRResolvableBean>();
-	
+
 	public static void addBean(CRResolvableBean bean) {
 		beans.put(bean.getContentid(), bean);
 	}
@@ -24,8 +24,7 @@ public class DummyRequestProcessor extends RequestProcessor {
 	}
 
 	@Override
-	public Collection<CRResolvableBean> getObjects(CRRequest request,
-			boolean doNavigation) throws CRException {
+	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
 		String contentid = request.getContentid();
 		return Collections.singleton(beans.get(contentid));
 	}

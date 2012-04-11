@@ -13,7 +13,7 @@ import com.gentics.api.portalnode.connector.PLinkReplacer;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class PLinkStripper implements PLinkReplacer{
+public class PLinkStripper implements PLinkReplacer {
 
 	/**
 	 * Returns an empty String to remove PLinks in the Content

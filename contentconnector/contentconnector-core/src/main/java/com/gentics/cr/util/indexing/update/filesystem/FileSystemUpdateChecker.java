@@ -63,10 +63,9 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 	 * check if the file corresponding to the object is newer than the given timestamp and remove the file from {@link #files}.
 	 */
 	@Override
-	protected boolean checkUpToDate(String identifyer, Object timestamp,
-			String timestampattribute, Resolvable object) {
+	protected boolean checkUpToDate(String identifyer, Object timestamp, String timestampattribute, Resolvable object) {
 		CRResolvableBean bean = new CRResolvableBean(object);
-		if(!"10002".equals(bean.getObj_type())) {
+		if (!"10002".equals(bean.getObj_type())) {
 			String publicationDirectory;
 			if (ignorePubDir) {
 				publicationDirectory = "";
@@ -85,10 +84,10 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 			}
 			File file = new File(new File(directory, publicationDirectory), filename);
 			files.remove(publicationDirectory + filename);
-			if(file.exists() && file.isFile() && (file.lastModified() / 1000) >= updatetimestamp) {
+			if (file.exists() && file.isFile() && (file.lastModified() / 1000) >= updatetimestamp) {
 				return true;
 			}
-		} else if(!ignorePubDir) {
+		} else if (!ignorePubDir) {
 			//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
 			String publicationDirectory = bean.getString("pub_dir");
 			File file = new File(directory, publicationDirectory);
@@ -118,7 +117,7 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 	 */
 	@Override
 	public void deleteStaleObjects() {
-		for(String filename : files) {
+		for (String filename : files) {
 			File file = new File(directory, filename);
 			file.delete();
 		}

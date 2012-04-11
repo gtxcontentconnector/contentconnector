@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
+
 /**
  * {@link CRRequestBuilder} to generate CrRequests needed for building a
  * navigation.
@@ -18,7 +19,7 @@ public class CRNavigationRequestBuilder extends CRRequestBuilder {
 	 * String containing the filter for the children.
 	 */
 	private String childfilter;
-	
+
 	/**
 	 * Create new Instance of the CRRequestBuilder.
 	 * @param request TODO javadoc.
@@ -26,21 +27,19 @@ public class CRNavigationRequestBuilder extends CRRequestBuilder {
 	public CRNavigationRequestBuilder(final HttpServletRequest request) {
 		this(request, null);
 	}
+
 	/**
 	 * Create a new instance of the CRRequestBuilder.
 	 * @param request {@link HttpServletRequest} to create the CRRequestBuilder
 	 * for
 	 * @param crConf configuration containing the default parameters.
 	 */
-	public CRNavigationRequestBuilder(final HttpServletRequest request,
-			final GenericConfiguration crConf) {
+	public CRNavigationRequestBuilder(final HttpServletRequest request, final GenericConfiguration crConf) {
 		super(request, crConf);
-		childfilter = this.createPermissionsRule(
-				(String) request.getParameter("childfilter"), this.permissions);
+		childfilter = this.createPermissionsRule((String) request.getParameter("childfilter"), this.permissions);
 		String rootfilter = (String) request.getParameter("rootfilter");
 		if (rootfilter != null && !rootfilter.equals("")) {
-			this.filter = this.createPermissionsRule(rootfilter,
-					this.permissions);
+			this.filter = this.createPermissionsRule(rootfilter, this.permissions);
 		}
 	}
 
@@ -53,7 +52,5 @@ public class CRNavigationRequestBuilder extends CRRequestBuilder {
 		req.setChildFilter(childfilter);
 		return req;
 	}
-	
-	
 
 }

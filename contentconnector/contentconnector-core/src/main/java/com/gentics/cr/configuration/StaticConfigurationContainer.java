@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigFileLoader;
+
 /**
  * Class that acts as configuration container.
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
@@ -13,23 +14,22 @@ import com.gentics.cr.CRConfigFileLoader;
  *
  */
 public final class StaticConfigurationContainer {
-	
+
 	/**
 	 * Logger.
 	 */
-	private static Logger log 
-			= Logger.getLogger(StaticConfigurationContainer.class);
+	private static Logger log = Logger.getLogger(StaticConfigurationContainer.class);
 	/**
 	 * Cache for parsed configs.
 	 */
-	private static Hashtable<String, CRConfigFileLoader> configmap 
-			= new Hashtable<String, CRConfigFileLoader>(2);
-	
+	private static Hashtable<String, CRConfigFileLoader> configmap = new Hashtable<String, CRConfigFileLoader>(2);
+
 	/**
 	 * Prevent instantiation.
 	 */
-	private StaticConfigurationContainer() { }
-	
+	private StaticConfigurationContainer() {
+	}
+
 	/**
 	 * Fetches a already created instance of the requested config. 
 	 * If config was not created yet, one will be instantiated.
@@ -37,11 +37,10 @@ public final class StaticConfigurationContainer {
 	 * @param webapproot root of the file location
 	 * @return Config as <code>CRConfigFileLoader</code>
 	 */
-	public static CRConfigFileLoader getConfig(final String key, 
-				final String webapproot) {
+	public static CRConfigFileLoader getConfig(final String key, final String webapproot) {
 		return StaticConfigurationContainer.getConfig(key, webapproot, "");
 	}
-	
+
 	/**
 	 * Gets configuration.
 	 * @param key configuration key.
@@ -49,8 +48,7 @@ public final class StaticConfigurationContainer {
 	 * @param subdir sub directory.
 	 * @return Configuration as <code>CRConfigFileLoader</code>
 	 */
-	public static CRConfigFileLoader getConfig(final String key,
-			final String webapproot, final String subdir) {
+	public static CRConfigFileLoader getConfig(final String key, final String webapproot, final String subdir) {
 		assertStaticAttributesInitialized();
 
 		CRConfigFileLoader config = configmap.get(key);

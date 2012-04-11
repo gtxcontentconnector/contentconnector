@@ -10,7 +10,7 @@ import com.gentics.cr.CRResolvableBean;
  *
  */
 public interface WriteableRepository {
-	
+
 	/**
 	 * Create a new CRResolvableBean especially for this repository.
 	 * @return

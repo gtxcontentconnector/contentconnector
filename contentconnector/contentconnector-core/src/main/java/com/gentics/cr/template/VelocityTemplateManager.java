@@ -27,22 +27,20 @@ public class VelocityTemplateManager implements ITemplateManager {
 	private static Logger log = Logger.getLogger(VelocityTemplateManager.class);
 	private String encoding;
 	private HashMap<String, Object> objectstoput;
-	
+
 	//Templatecache
 	private HashMap<String, Template> templates;
-	
+
 	/**
 	 * Create Instance
 	 * @param encoding
 	 */
-	public VelocityTemplateManager(String encoding)
-	{
+	public VelocityTemplateManager(String encoding) {
 		this.encoding = encoding;
-		this.objectstoput = new HashMap<String,Object>();
-		this.templates  = new HashMap<String,Template>();
+		this.objectstoput = new HashMap<String, Object>();
+		this.templates = new HashMap<String, Template>();
 	}
-	
-	
+
 	/**
 	 * @see com.gentics.cr.template.ITemplateManager#put(java.lang.Object)
 	 */
@@ -56,9 +54,9 @@ public class VelocityTemplateManager implements ITemplateManager {
 	 * @see com.gentics.cr.template.ITemplateManager#render(java.lang.String, java.lang.Object, java.lang.Object)
 	 */
 	public String render(String templateName, String templateSource) throws CRException {
-		String renderedTemplate=null;
+		String renderedTemplate = null;
 		long s1 = System.currentTimeMillis();
-		
+
 		StringResourceRepository rep = StringResourceLoader.getRepository();
 		if (rep == null) {
 			rep = new StringResourceRepositoryImpl();
@@ -66,26 +64,24 @@ public class VelocityTemplateManager implements ITemplateManager {
 		}
 		rep.setEncoding(this.encoding);
 		try {
-			
-			Template template=this.templates.get(templateName);
-			if(template==null)
-			{
+
+			Template template = this.templates.get(templateName);
+			if (template == null) {
 				rep.putStringResource(templateName, templateSource);
-				
+
 				template = Velocity.getTemplate(templateName);
 				rep.removeStringResource(templateName);
 				this.templates.put(templateName, template);
-			}	
-			
+			}
+
 			VelocityContext context = new VelocityContext();
 			Iterator<String> it = this.objectstoput.keySet().iterator();
-			while(it.hasNext())
-			{
+			while (it.hasNext()) {
 				String key = it.next();
 				context.put(key, this.objectstoput.get(key));
 			}
 			StringWriter ret = new StringWriter();
-			template.merge(context,ret);
+			template.merge(context, ret);
 			renderedTemplate = ret.toString();
 		} catch (ResourceNotFoundException e) {
 			throw new CRException(e);
@@ -93,10 +89,10 @@ public class VelocityTemplateManager implements ITemplateManager {
 			throw new CRException(e);
 		} catch (Exception e) {
 			throw new CRException(e);
-		}finally{
-			this.objectstoput = new HashMap<String,Object>();
+		} finally {
+			this.objectstoput = new HashMap<String, Object>();
 		}
-		log.debug("Velocity has been rendered in "+(System.currentTimeMillis()-s1)+"ms");
+		log.debug("Velocity has been rendered in " + (System.currentTimeMillis() - s1) + "ms");
 		return renderedTemplate;
 	}
 

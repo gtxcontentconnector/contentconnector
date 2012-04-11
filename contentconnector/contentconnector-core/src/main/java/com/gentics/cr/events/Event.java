@@ -1,4 +1,5 @@
 package com.gentics.cr.events;
+
 /**
  * General Interface for Content Connector Events.
  * Last changed: $Date: 2009-07-10 10:49:03 +0200 (Fr, 10 Jul 2009) $
@@ -12,7 +13,7 @@ public abstract class Event {
 	 * @return type as String
 	 */
 	public abstract String getType();
-	
+
 	/**
 	 * Get the Data of the Event.
 	 * @return data

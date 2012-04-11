@@ -32,8 +32,7 @@ public class CRUtil {
 	/**
 	 * system property holding the Gentics Portal.Node confpath.
 	 */
-	public static final String PORTALNODE_CONFPATH =
-		"com.gentics.portalnode.confpath";
+	public static final String PORTALNODE_CONFPATH = "com.gentics.portalnode.confpath";
 
 	/**
 	 * Log4J Logger for debugging purposes.
@@ -66,14 +65,11 @@ public class CRUtil {
 
 				if (sort[0] != null) {
 					if ("asc".equals(sort[1].toLowerCase())) {
-						sortingColl.add(new Sorting(sort[0],
-								Datasource.SORTORDER_ASC));
+						sortingColl.add(new Sorting(sort[0], Datasource.SORTORDER_ASC));
 					} else if ("desc".equals(sort[1].toLowerCase())) {
-						sortingColl.add(new Sorting(sort[0],
-								Datasource.SORTORDER_DESC));
+						sortingColl.add(new Sorting(sort[0], Datasource.SORTORDER_DESC));
 					} else {
-						sortingColl.add(new Sorting(sort[0],
-								Datasource.SORTORDER_NONE));
+						sortingColl.add(new Sorting(sort[0], Datasource.SORTORDER_NONE));
 					}
 				}
 			}
@@ -82,13 +78,12 @@ public class CRUtil {
 		// convert hashmap to uncomfortable Array :-/ and return that or return
 		// null if converting need not succed for any reason.
 		if (sortingColl != null) {
-			return (Sorting[]) sortingColl.toArray(new Sorting[sortingColl
-					.size()]);
+			return (Sorting[]) sortingColl.toArray(new Sorting[sortingColl.size()]);
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Convert a HTML-conform sorting request multivalue parameter array
 	 * to a Sorting[], suitable for the contentrepository queries
@@ -99,139 +94,125 @@ public class CRUtil {
 	public final static Sorting[] convertSorting(String[] sortingArray) {
 		Sorting[] ret = new Sorting[0];
 		ArrayList<Sorting> sortingColl = new ArrayList<Sorting>();
-		if(sortingArray!=null)
-		{
+		if (sortingArray != null) {
 			int arrlen = sortingArray.length;
-			
-			
+
 			for (int i = 0; i < arrlen; i++) {
-	
+
 				// split attribute on :. First element is attribute name the
 				// second is the direction
 				String[] sort = sortingArray[i].split(":");
-	
+
 				if (sort[0] != null) {
 					if ("asc".equals(sort[1].toLowerCase())) {
-						sortingColl.add(new Sorting(sort[0],
-								Datasource.SORTORDER_ASC));
+						sortingColl.add(new Sorting(sort[0], Datasource.SORTORDER_ASC));
 					} else if ("desc".equals(sort[1].toLowerCase())) {
-						sortingColl.add(new Sorting(sort[0],
-								Datasource.SORTORDER_DESC));
+						sortingColl.add(new Sorting(sort[0], Datasource.SORTORDER_DESC));
 					} else {
-						sortingColl.add(new Sorting(sort[0],
-								Datasource.SORTORDER_NONE));
+						sortingColl.add(new Sorting(sort[0], Datasource.SORTORDER_NONE));
 					}
 				}
 			}
 		}
-		return(sortingColl.toArray(ret));
+		return (sortingColl.toArray(ret));
 	}
-	
-	
+
 	/**
 	 * Convert an array of strings to an array that can be usen in a filter rule
 	 * @param arr
 	 * @return rule ready string
 	 */
-	public static String prepareParameterArrayForRule(String[] arr)
-	{
+	public static String prepareParameterArrayForRule(String[] arr) {
 		String ret = "[";
 		int arrlen = arr.length;
-		if(arrlen>0)
-		{
-			ret+="'"+arr[0]+"'";
-			if(arrlen>1)
-			{
-				for(int i=1; i<arrlen;i++)
-				{
-					ret+=",'"+arr[i]+"'";
+		if (arrlen > 0) {
+			ret += "'" + arr[0] + "'";
+			if (arrlen > 1) {
+				for (int i = 1; i < arrlen; i++) {
+					ret += ",'" + arr[i] + "'";
 				}
 			}
 		}
 		ret += "]";
 		return ret;
 	}
-	
-		/**
-		 * FIXME copied from {@link com.gentics.lib.etc.StringUtils}
-		 * - move it to API ?
-		 * Resolve system properties encoded in the string as ${property.name}
-		 * @param string string holding encoded system properties
-		 * @return string with the system properties resolved
-		 */
-		public static String resolveSystemProperties(final String string) {
-				// avoid NPE here
-				if (string == null) {
-					return null;
-				} else if (string.startsWith(DONOTRESOLVE_MARKER)) {
-					return string.replaceAll("^" + DONOTRESOLVE_MARKER, "");
-				}
-				//init com.gentics.portalnode.confpath if it isn't set
-				if (System.getProperty(PORTALNODE_CONFPATH) == null
-						|| System.getProperty(PORTALNODE_CONFPATH).equals("")) {
-					String defaultConfPath = System.getProperty("catalina.base")
-					+ File.separator + "conf" + File.separator + "gentics"
-					+ File.separator;
-					System.setProperty(PORTALNODE_CONFPATH, defaultConfPath);
-				} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith("file:/")) {
-					File confFile = null;
-					try {
-						confFile = new File(new URI(System.getProperty(PORTALNODE_CONFPATH)));
-					} catch (URISyntaxException e) {
-						LOGGER.error("Could not convert PORTALNODE_CONFPATH (" 
-								+ System.getProperty(PORTALNODE_CONFPATH) + ") to an absolutePath", e);
-					}
-					String confFilePath = confFile.getAbsolutePath();
-					System.setProperty(PORTALNODE_CONFPATH, confFilePath);
-				}
-				String result = CRUtilResolver.resolveSystemProperties(string);
-				result =
-					CRUtilResolver.resolveContentConnectorProperties(result);
-				return result;
-		}
 
-		/**
-		 * Slurps a InputStream into a String.
-		 * @param in - TODO javadoc
-		 * @return TODO javadoc
-		 * @throws IOException TODO javadoc
-		 */
-		public static String inputStreamToString(final InputStream in)
-			throws IOException {
-		StringBuffer out = new StringBuffer();
-			byte[] b = new byte[4096];
-			for (int n; (n = in.read(b)) != -1;) {
-					out.append(new String(b, 0, n));
+	/**
+	 * FIXME copied from {@link com.gentics.lib.etc.StringUtils}
+	 * - move it to API ?
+	 * Resolve system properties encoded in the string as ${property.name}
+	 * @param string string holding encoded system properties
+	 * @return string with the system properties resolved
+	 */
+	public static String resolveSystemProperties(final String string) {
+		// avoid NPE here
+		if (string == null) {
+			return null;
+		} else if (string.startsWith(DONOTRESOLVE_MARKER)) {
+			return string.replaceAll("^" + DONOTRESOLVE_MARKER, "");
+		}
+		//init com.gentics.portalnode.confpath if it isn't set
+		if (System.getProperty(PORTALNODE_CONFPATH) == null || System.getProperty(PORTALNODE_CONFPATH).equals("")) {
+			String defaultConfPath = System.getProperty("catalina.base") + File.separator + "conf" + File.separator
+					+ "gentics" + File.separator;
+			System.setProperty(PORTALNODE_CONFPATH, defaultConfPath);
+		} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith("file:/")) {
+			File confFile = null;
+			try {
+				confFile = new File(new URI(System.getProperty(PORTALNODE_CONFPATH)));
+			} catch (URISyntaxException e) {
+				LOGGER.error("Could not convert PORTALNODE_CONFPATH (" + System.getProperty(PORTALNODE_CONFPATH)
+						+ ") to an absolutePath", e);
 			}
-			return out.toString();
+			String confFilePath = confFile.getAbsolutePath();
+			System.setProperty(PORTALNODE_CONFPATH, confFilePath);
+		}
+		String result = CRUtilResolver.resolveSystemProperties(string);
+		result = CRUtilResolver.resolveContentConnectorProperties(result);
+		return result;
 	}
-		
-		/**
-		 * Slurps a Reader into a String
-		 * @param in
-		 * @return
-		 * @throws IOException
-		 */
-		public static String readerToString (Reader in) throws IOException {
+
+	/**
+	 * Slurps a InputStream into a String.
+	 * @param in - TODO javadoc
+	 * @return TODO javadoc
+	 * @throws IOException TODO javadoc
+	 */
+	public static String inputStreamToString(final InputStream in) throws IOException {
 		StringBuffer out = new StringBuffer();
-			char[] b = new char[4096];
-			for (int n; (n = in.read(b)) != -1;) {
-					out.append(new String(b, 0, n));
-			}
-			return out.toString();
+		byte[] b = new byte[4096];
+		for (int n; (n = in.read(b)) != -1;) {
+			out.append(new String(b, 0, n));
+		}
+		return out.toString();
 	}
+
+	/**
+	 * Slurps a Reader into a String
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public static String readerToString(Reader in) throws IOException {
+		StringBuffer out = new StringBuffer();
+		char[] b = new char[4096];
+		for (int n; (n = in.read(b)) != -1;) {
+			out.append(new String(b, 0, n));
+		}
+		return out.toString();
+	}
+
 	/**
 	 * Slurps a Reader into a String and strips the character 0
 	 * @param in
 	 * @return
 	 * @throws IOException
 	 */
-	public static String readerToPrintableCharString(Reader in)throws IOException
-	{
+	public static String readerToPrintableCharString(Reader in) throws IOException {
 		StringBuffer out = new StringBuffer();
 		int n;
-		while ((n = in.read())!=-1) {
-			if (n!=0) {
+		while ((n = in.read()) != -1) {
+			if (n != 0) {
 				char c = (char) n;
 				out.append(c);
 			}
@@ -241,43 +222,33 @@ public class CRUtil {
 
 	public static boolean isEmpty(String s) {
 		boolean isempty = false;
-	
+
 		if (s == null || s.length() == 0 || s.equals("")) {
 			isempty = true;
 		}
-		
+
 		return isempty;
 	}
-	
-	public static File createTempDir() throws IOException
-	{
-	    final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
-	    File newTempDir;
-	    final int maxAttempts = 9;
-	    int attemptCount = 0;
-	    do
-	    {
-	        attemptCount++;
-	        if(attemptCount > maxAttempts)
-	        {
-	            throw new IOException(
-	                    "The highly improbable has occurred! Failed to " +
-	                    "create a unique temporary directory after " +
-	                    maxAttempts + " attempts.");
-	        }
-	        String dirName = UUID.randomUUID().toString();
-	        newTempDir = new File(sysTempDir, dirName);
-	    } while(newTempDir.exists());
 
-	    if(newTempDir.mkdirs())
-	    {
-	        return newTempDir;
-	    }
-	    else
-	    {
-	        throw new IOException(
-	                "Failed to create temp dir named " +
-	                newTempDir.getAbsolutePath());
-	    }
+	public static File createTempDir() throws IOException {
+		final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
+		File newTempDir;
+		final int maxAttempts = 9;
+		int attemptCount = 0;
+		do {
+			attemptCount++;
+			if (attemptCount > maxAttempts) {
+				throw new IOException("The highly improbable has occurred! Failed to "
+						+ "create a unique temporary directory after " + maxAttempts + " attempts.");
+			}
+			String dirName = UUID.randomUUID().toString();
+			newTempDir = new File(sysTempDir, dirName);
+		} while (newTempDir.exists());
+
+		if (newTempDir.mkdirs()) {
+			return newTempDir;
+		} else {
+			throw new IOException("Failed to create temp dir named " + newTempDir.getAbsolutePath());
+		}
 	}
 }

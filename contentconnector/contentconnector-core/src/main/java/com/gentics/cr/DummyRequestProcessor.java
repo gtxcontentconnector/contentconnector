@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.gentics.cr.exceptions.CRException;
+
 /**
  * Dummy Request Processor is a simple Template 
  * for new RequestProcessor classes.
@@ -19,6 +20,7 @@ public class DummyRequestProcessor extends RequestProcessor {
 	 * Custom prefix that will be added to all values.
 	 */
 	private String customPrefix = "";
+
 	/**
 	 * Constructor.
 	 * @param config configuration passed by the system.
@@ -43,11 +45,9 @@ public class DummyRequestProcessor extends RequestProcessor {
 	 * @throws CRException exception that gets thrown on error.
 	 * @return complete list of objects requested.
 	 */
-	public final Collection<CRResolvableBean> getObjects(
-			final CRRequest request,
-			final boolean doNavigation) throws CRException {
-		Collection<CRResolvableBean> response 
-				= new ArrayList<CRResolvableBean>();
+	public final Collection<CRResolvableBean> getObjects(final CRRequest request, final boolean doNavigation)
+			throws CRException {
+		Collection<CRResolvableBean> response = new ArrayList<CRResolvableBean>();
 		//The Request filter could be a SQL statement, a XPATH Query
 		//or anything the like.
 		String requestFilter = request.getRequestFilter();
@@ -55,10 +55,9 @@ public class DummyRequestProcessor extends RequestProcessor {
 		for (int i = 0; i < 10; i++) {
 			CRResolvableBean bean = new CRResolvableBean();
 			String[] requestedAttributes = request.getAttributeArray();
-			
+
 			for (String attribute : requestedAttributes) {
-				bean.set(attribute, customPrefix + "VALUE" + i + "_FOR_"
-						+ attribute);
+				bean.set(attribute, customPrefix + "VALUE" + i + "_FOR_" + attribute);
 			}
 			//CHECK IF BEAN MATCHES THE CONFIGURED RULE
 			// IN THIS CASE IT ALWAYS DOES IF THE FILTER IS NOT NULL
@@ -66,7 +65,7 @@ public class DummyRequestProcessor extends RequestProcessor {
 				response.add(bean);
 			}
 		}
-		
+
 		return response;
 	}
 

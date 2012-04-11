@@ -41,8 +41,7 @@ public interface IndexExtension {
 	 * @param indexLocation
 	 * @throws NoSuchMethodException
 	 */
-	public void addJob(String name, IndexLocation indexLocation)
-			throws NoSuchMethodException;
+	public void addJob(String name, IndexLocation indexLocation) throws NoSuchMethodException;
 
 	/**
 	 * returns all the jobs supported by this extension

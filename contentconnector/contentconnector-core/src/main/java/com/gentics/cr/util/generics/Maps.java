@@ -11,8 +11,9 @@ public final class Maps {
 	/**
 	 * private constructor to prevent instantiation.
 	 */
-	private Maps() { }
-	
+	private Maps() {
+	}
+
 	/**
 	 * Converts a generic map into a map with special values.
 	 * @param <K> - Type of the keys
@@ -23,8 +24,8 @@ public final class Maps {
 	 * @return map with keys of type K and values of type V. all not castable
 	 * key value pairs are not contained in the list.
 	 */
-	public static <K, V> Map<K, V> toSpecialMap(final Map<?, ?> map,
-			final Class<K> keyClass, final Class<V> valueClass) {
+	public static <K, V> Map<K, V>
+			toSpecialMap(final Map<?, ?> map, final Class<K> keyClass, final Class<V> valueClass) {
 		Map<K, V> result;
 		if (map instanceof HashMap) {
 			result = new HashMap<K, V>(map.size());
