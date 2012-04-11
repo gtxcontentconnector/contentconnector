@@ -59,7 +59,7 @@ public class CutoutTransformer extends ContentTransformer {
 	}
 
 	private String getStringContents(Object obj) {
-		String str = null;
+		String str = "";
 		if (obj instanceof String) {
 			str = (String) obj;
 		} else if (obj instanceof byte[]) {
