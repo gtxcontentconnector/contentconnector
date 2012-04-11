@@ -64,8 +64,7 @@ public class JSONContentRepository extends ContentRepository {
 	 * @param encoding
 	 * @param options
 	 */
-	public JSONContentRepository(String[] attr, String encoding,
-			String[] options) {
+	public JSONContentRepository(String[] attr, String encoding, String[] options) {
 
 		super(attr, encoding, options);
 		// this.setResponseEncoding(encoding);
@@ -92,8 +91,7 @@ public class JSONContentRepository extends ContentRepository {
 	 * @param isDebug
 	 * 
 	 */
-	public void respondWithError(OutputStream stream, CRException ex,
-			boolean isDebug) {
+	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
 		// Clear the root element and set the status
 		this.rootObject.clear();
 		this.rootObject.element("status", "error");
@@ -132,8 +130,7 @@ public class JSONContentRepository extends ContentRepository {
 
 			JSONArray jsArray = new JSONArray();
 
-			for (Iterator<CRResolvableBean> it = this.resolvableColl.iterator(); it
-					.hasNext();) {
+			for (Iterator<CRResolvableBean> it = this.resolvableColl.iterator(); it.hasNext();) {
 
 				CRResolvableBean crBean = it.next();
 
@@ -147,8 +144,7 @@ public class JSONContentRepository extends ContentRepository {
 
 		try {
 			// use JSONObject.write instead toString is not a good solution
-			OutputStreamWriter wr = new OutputStreamWriter(stream,
-					this.getResponseEncoding());
+			OutputStreamWriter wr = new OutputStreamWriter(stream, this.getResponseEncoding());
 
 			this.rootObject.write(wr);
 			wr.flush();
@@ -166,12 +162,8 @@ public class JSONContentRepository extends ContentRepository {
 		objElement.element("contentid", "" + crBean.getContentid());
 		objElement.element("obj_id", "" + crBean.getObj_id());
 		objElement.element("obj_type", "" + crBean.getObj_type());
-		objElement.element("mother_id", ((crBean.getMother_id() == null) ? ""
-				: "" + crBean.getMother_id()));
-		objElement.element(
-				"mother_type",
-				((crBean.getMother_type() == null) ? "" : ""
-						+ crBean.getMother_type()));
+		objElement.element("mother_id", ((crBean.getMother_id() == null) ? "" : "" + crBean.getMother_id()));
+		objElement.element("mother_type", ((crBean.getMother_type() == null) ? "" : "" + crBean.getMother_type()));
 
 		if (crBean.getAttrMap() != null && (!crBean.getAttrMap().isEmpty())) {
 			JSONObject attrContainer = new JSONObject();
@@ -185,8 +177,7 @@ public class JSONContentRepository extends ContentRepository {
 
 				if (bValue != null) {
 					// deal with multivalue attributes
-					if ((bValue.getClass().isArray() && !(bValue instanceof byte[]))
-							|| bValue instanceof List) {
+					if ((bValue.getClass().isArray() && !(bValue instanceof byte[])) || bValue instanceof List) {
 						JSONArray value = new JSONArray();
 						List<Object> arr;
 						if (bValue instanceof List) {
@@ -222,14 +213,10 @@ public class JSONContentRepository extends ContentRepository {
 			}
 			objElement.element("attributes", attrContainer);
 		}
-		if (crBean.getChildRepository() != null
-				&& crBean.getChildRepository().size() > 0) {
+		if (crBean.getChildRepository() != null && crBean.getChildRepository().size() > 0) {
 			// JSONObject childContainer = new JSONObject();
 			JSONArray childContainer = new JSONArray();
-			for (Iterator it = crBean
-					.getChildRepository().iterator();
-					it
-					.hasNext();) {
+			for (Iterator it = crBean.getChildRepository().iterator(); it.hasNext();) {
 
 				CRResolvableBean chBean = (CRResolvableBean) it.next();
 

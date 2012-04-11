@@ -53,8 +53,7 @@ public class JSONRequestProcessor extends RequestProcessor {
 	}
 
 	@Override
-	public Collection<CRResolvableBean> getObjects(CRRequest request,
-			boolean doNavigation) throws CRException {
+	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
 		initObjects();
 		return objects;
 	}
@@ -68,7 +67,7 @@ public class JSONRequestProcessor extends RequestProcessor {
 			objects = new Vector<CRResolvableBean>();
 			String objectString;
 			String jsonFile = config.getString("file");
-			if(jsonFile != null) {
+			if (jsonFile != null) {
 				try {
 					objectString = StringUtils.streamToString(new FileInputStream(jsonFile));
 				} catch (FileNotFoundException e) {
@@ -79,8 +78,8 @@ public class JSONRequestProcessor extends RequestProcessor {
 			}
 			JSONObject json = JSONObject.fromObject(objectString);
 			JSONArray jsonObjects = json.getJSONArray("objects");
-			for(Object object : jsonObjects) {
-				if(object instanceof JSONObject) {
+			for (Object object : jsonObjects) {
+				if (object instanceof JSONObject) {
 					objects.add(createCRResolvableBean((JSONObject) object));
 				}
 			}
@@ -93,16 +92,16 @@ public class JSONRequestProcessor extends RequestProcessor {
 	 * @return the resolvable representing the json object.
 	 */
 	private CRResolvableBean createCRResolvableBean(JSONObject object) {
-		if(object != null) {
+		if (object != null) {
 			CRResolvableBean bean = new CRResolvableBean();
-			for(Object key : object.keySet()) {
+			for (Object key : object.keySet()) {
 				Object value = object.get(key);
-				if(value instanceof JSONObject) {
+				if (value instanceof JSONObject) {
 					bean.set(key.toString(), createCRResolvableBean((JSONObject) value));
-				} else if(value instanceof JSONArray) {
+				} else if (value instanceof JSONArray) {
 					Collection<Object> array = new Vector<Object>(((JSONArray) value).size());
-					for(Object arrayObject : (JSONArray) value) {
-						if(arrayObject instanceof JSONObject) {
+					for (Object arrayObject : (JSONArray) value) {
+						if (arrayObject instanceof JSONObject) {
 							array.add(createCRResolvableBean((JSONObject) arrayObject));
 						} else {
 							array.add(arrayObject);
