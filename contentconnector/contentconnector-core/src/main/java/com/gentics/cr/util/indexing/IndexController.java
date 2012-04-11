@@ -10,95 +10,104 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
+
 /**
- * Operates as an Interface between the servlet and the Indexer Engine
+ * Operates as an Interface between the servlet and the Indexer Engine.
+ * Each instance of this class spawns IndexJobQueueWorker threads for each index.
+ * Therefore be careful with initializing this class in webservices!
+ * NOT threadsafe atm.
+ * 
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
  * @version $Revision: 180 $
  * @author $Author: supnig@constantinopel.at $
- *
  */
 public class IndexController {
-	
-	private static Logger logger = Logger.getLogger(IndexController.class);
-	
-	private static final String INDEX_KEY = "index";
-	
-	private CRConfigUtil crconfig;
-	private Hashtable<String,IndexLocation> indextable;
-	
+
 	/**
-	 * Create new instance of IndexController
-	 * This constructor will read the config file with this name
-	 * @param name
+	 * Log4J Logger.
 	 */
-	public IndexController(String name)
-	{
+	private static final Logger LOGGER = Logger.getLogger(IndexController.class);
+
+	/**
+	 * Configuration key.
+	 */
+	private static final String INDEX_KEY = "index";
+
+	/**
+	 * Configuration used internally.
+	 */
+	private CRConfigUtil crconfig;
+
+	/**
+	 * 
+	 */
+	private Hashtable<String, IndexLocation> indextable;
+
+	/**
+	 * Create new instance of IndexController.
+	 * This constructor will read the config file with this name
+	 * @param name of the config file
+	 */
+	public IndexController(final String name) {
 		crconfig = new CRConfigFileLoader(name, null);
 		MonitorFactory.init(crconfig);
 		this.indextable = buildIndexTable();
-		
+
 	}
-	
+
 	/**
-	 * Returns the current config of the indexController
-	 * @return
+	 * Create new instance of IndexController.
+	 * @param config to use for configuration
 	 */
-	public CRConfigUtil getConfig()
-	{
-		return this.crconfig;
-	}
-	
-	/**
-	 * Create new instance of IndexController
-	 * @param config
-	 */
-	public IndexController(CRConfigUtil config)
-	{
+	public IndexController(final CRConfigUtil config) {
 		crconfig = config;
 		this.indextable = buildIndexTable();
 	}
-	
-	
+
 	/**
-	 * Get table of configured indexes
+	 * Returns the current config of the indexController.
+	 * @return currently in use config.
+	 */
+	public CRConfigUtil getConfig() {
+		return this.crconfig;
+	}
+
+	/**
+	 * Get table of configured indexes.
 	 * @return
 	 */
 	public Hashtable<String, IndexLocation> getIndexes() {
 		return this.indextable;
 	}
-	
+
 	/**
 	 * Build the index table.
-	 * @return index table.
+	 * Reads the config with the index_key, reads all subconfigs and creates IndexLocations for each Index.
+	 * @return IndexLocation hash identified by the indexkey.indexname
 	 */
 	private Hashtable<String, IndexLocation> buildIndexTable() {
-		Hashtable<String, IndexLocation> indexes 
-			= new Hashtable<String, IndexLocation>(1);
-		GenericConfiguration indexConfiguration 
-			= (GenericConfiguration) crconfig.get(INDEX_KEY);
+		Hashtable<String, IndexLocation> indexes = new Hashtable<String, IndexLocation>(1);
+		GenericConfiguration indexConfiguration = (GenericConfiguration) crconfig.get(INDEX_KEY);
 		if (indexConfiguration != null) {
-			Hashtable<String, GenericConfiguration> configs 
-				= indexConfiguration.getSubConfigs();
+			Hashtable<String, GenericConfiguration> configs = indexConfiguration.getSubConfigs();
 
 			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				String indexLocationName = e.getKey();
-				IndexLocation indexLocation = IndexLocation.getIndexLocation(
-						new CRConfigUtil(e.getValue(), INDEX_KEY + "." 
-								+ indexLocationName));
+				IndexLocation indexLocation = 
+						IndexLocation.getIndexLocation(
+							new CRConfigUtil(e.getValue(), INDEX_KEY + "." + indexLocationName));
 				if (indexLocation == null) {
-					logger.error("Cannot get index location for "
-							+ indexLocationName);
+					LOGGER.error("Cannot get index location for " + indexLocationName);
 				} else {
 					indexes.put(indexLocationName, indexLocation);
 				}
 			}
 		} else {
-			logger.error("THERE ARE NO INDEXES CONFIGURED FOR INDEXING.");
+			LOGGER.error("THERE ARE NO INDEXES CONFIGURED FOR INDEXING.");
 		}
 		return indexes;
 	}
-	
-	
+
 	/**
 	 * Finalizes all index Locations.
 	 */
