@@ -59,8 +59,8 @@ public class CRStreamingServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void doService(HttpServletRequest request,
-			final HttpServletResponse response) throws ServletException, IOException {
+	public void doService(HttpServletRequest request, final HttpServletResponse response) throws ServletException,
+			IOException {
 
 		// URI and Query String
 		String requestID = request.getRequestURI();
@@ -77,13 +77,14 @@ public class CRStreamingServlet extends HttpServlet {
 		HashMap<String, Resolvable> objects = new HashMap<String, Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		container.processService(new CRBinaryRequestBuilder(request), objects,
-				response.getOutputStream(), new ServletResponseTypeSetter(
-						response));
+		container.processService(
+			new CRBinaryRequestBuilder(request),
+			objects,
+			response.getOutputStream(),
+			new ServletResponseTypeSetter(response));
 
 		if (contentDisposition != null && contentDisposition != "") {
-			response.addHeader("Content-Disposition", "attachment; filename=\""
-					+ contentDisposition + "\"");
+			response.addHeader("Content-Disposition", "attachment; filename=\"" + contentDisposition + "\"");
 		}
 
 		response.getOutputStream().flush();
@@ -95,13 +96,11 @@ public class CRStreamingServlet extends HttpServlet {
 
 	}
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 

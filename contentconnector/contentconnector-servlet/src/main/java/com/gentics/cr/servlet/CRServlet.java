@@ -20,7 +20,6 @@ import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
 import com.gentics.cr.util.response.ServletResponseTypeSetter;
 
-
 /**
  * @author haymo
  * 
@@ -29,7 +28,6 @@ import com.gentics.cr.util.response.ServletResponseTypeSetter;
  */
 public class CRServlet extends HttpServlet {
 
-	
 	/**
 	 * 
 	 */
@@ -47,11 +45,11 @@ public class CRServlet extends HttpServlet {
 	}
 
 	@Override
-	public void destroy()
-	{
-		if(this.container!=null)this.container.finalize();
+	public void destroy() {
+		if (this.container != null)
+			this.container.finalize();
 	}
-	
+
 	/**
 	 * Wrapper Method for the doGet and doPost Methods
 	 * 
@@ -60,8 +58,8 @@ public class CRServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void doService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
 
 		// URI and Query String
 		String requestID = request.getRequestURI();
@@ -69,22 +67,25 @@ public class CRServlet extends HttpServlet {
 			requestID += "?" + request.getQueryString();
 		}
 		String contentDisposition = request.getParameter("contentdisposition");
-		
+
 		this.log.debug("Starting request: " + requestID);
 
 		// starttime
 		long s = new Date().getTime();
-		
-		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
+
+		HashMap<String, Resolvable> objects = new HashMap<String, Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
-		container.processService(new CRBinaryRequestBuilder(request), objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
-		
-		if(contentDisposition!=null && contentDisposition!="")
-		{
-			response.addHeader("Content-Disposition","attachment; filename=\""+contentDisposition+"\"");
+		container.processService(
+			new CRBinaryRequestBuilder(request),
+			objects,
+			response.getOutputStream(),
+			new ServletResponseTypeSetter(response));
+
+		if (contentDisposition != null && contentDisposition != "") {
+			response.addHeader("Content-Disposition", "attachment; filename=\"" + contentDisposition + "\"");
 		}
-		
+
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
 
@@ -93,14 +94,12 @@ public class CRServlet extends HttpServlet {
 		this.log.debug("Executiontime for " + requestID + ":" + (e - s));
 
 	}
-	
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 

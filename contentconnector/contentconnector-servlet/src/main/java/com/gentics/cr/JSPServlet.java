@@ -36,8 +36,9 @@ public class JSPServlet extends HttpServlet {
 	private ContentRenderer renderer;
 	private PlinkProcessor pproc;
 	private RequestProcessor rp;
-	
+
 	private static final String JSP_FILE_KEY = "jspfile";
+
 	/**
 	 * @param config 
 	 * @throws ServletException 
@@ -56,11 +57,11 @@ public class JSPServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
-	public void destroy()
-	{
-		if(this.rp!=null)this.rp.finalize();
+	public void destroy() {
+		if (this.rp != null)
+			this.rp.finalize();
 	}
 
 	/**
@@ -71,8 +72,8 @@ public class JSPServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void doService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
 
 		log.debug("Request:" + request.getQueryString());
 		// starttime
@@ -80,30 +81,28 @@ public class JSPServlet extends HttpServlet {
 		// get the objects
 		CRBinaryRequestBuilder rb = new CRBinaryRequestBuilder(request);
 		CRRequest req = rb.getBinaryRequest();
-		
+
 		try {
 			Collection<CRResolvableBean> coll = this.rp.getObjects(req);
-			if(coll!=null)
-			{
-				request.setAttribute("objects",coll);
+			if (coll != null) {
+				request.setAttribute("objects", coll);
 			}
 		} catch (CRException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		request.setAttribute(com.gentics.cr.taglib.servlet.RenderContentTag.RENDERER_PARAM, renderer);
 		request.setAttribute(com.gentics.cr.taglib.servlet.RenderContentTag.PLINK_PARAM, new PlinkReplacer(pproc, req));
-		
-		String jspFile = (String)this.crConf.get(JSP_FILE_KEY);
-		getServletContext().getRequestDispatcher(jspFile).forward(request, response); 
+
+		String jspFile = (String) this.crConf.get(JSP_FILE_KEY);
+		getServletContext().getRequestDispatcher(jspFile).forward(request, response);
 		// endtime
 		long e = new Date().getTime();
 		log.info("Executiontime for " + request.getQueryString() + ":" + (e - s));
 
 	}
 
-	
 	/**
 	 * @param request 
 	 * @param response 
@@ -111,8 +110,7 @@ public class JSPServlet extends HttpServlet {
 	 * @throws IOException 
 	 * 
 	 */
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 
@@ -123,8 +121,7 @@ public class JSPServlet extends HttpServlet {
 	 * @throws IOException 
 	 * 
 	 */
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 

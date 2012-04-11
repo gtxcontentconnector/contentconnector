@@ -24,12 +24,11 @@ import com.gentics.cr.util.CRNavigationRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
 import com.gentics.cr.util.response.ServletResponseTypeSetter;
 
-
 /**
  * @author Christopher
  *
  */
-public class RESTNavigation extends HttpServlet{
+public class RESTNavigation extends HttpServlet {
 
 	/**
 	 * 
@@ -45,7 +44,7 @@ public class RESTNavigation extends HttpServlet{
 	 * Configuration for the Servlet.
 	 */
 	private CRServletConfig crConf;
-	
+
 	private RESTNavigationContainer container;
 
 	public void init(ServletConfig config) throws ServletException {
@@ -54,46 +53,40 @@ public class RESTNavigation extends HttpServlet{
 		crConf = new CRServletConfig(config);
 		container = new RESTNavigationContainer(crConf);
 	}
-	
+
 	@Override
-	public void destroy()
-	{
-		if(this.container!=null)this.container.finalize();
+	public void destroy() {
+		if (this.container != null)
+			this.container.finalize();
 	}
-	
-	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+
+	public void doService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
 		UseCase uc = MonitorFactory.startUseCase("RESTServlet(" + request.getServletPath() + ")");
 		this.log.debug("Request:" + request.getQueryString());
 
 		// starttime
 		long s = new Date().getTime();
-		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
+		HashMap<String, Resolvable> objects = new HashMap<String, Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
 		CRNavigationRequestBuilder requestBuilder = new CRNavigationRequestBuilder(request, crConf);
-		container.processService(requestBuilder, objects,
-				response.getOutputStream(),
-				new ServletResponseTypeSetter(response));
+		container.processService(requestBuilder, objects, response.getOutputStream(), new ServletResponseTypeSetter(
+				response));
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
 		// endtime
 		long e = new Date().getTime();
-		this.log.info("Executiontime for " + request.getQueryString() + ":"
-				+ (e - s));
+		this.log.info("Executiontime for " + request.getQueryString() + ":" + (e - s));
 		uc.stop();
 	}
-	
-	
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-	throws ServletException, IOException {
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
-	
 
 }

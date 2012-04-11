@@ -33,7 +33,6 @@ import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
 
-
 /**
  * @author haymo
  * 
@@ -50,14 +49,13 @@ public class VelocitySearchServlet extends HttpServlet {
 	private CRServletConfig crConf;
 	private RequestProcessor rp;
 	private String response_encoding;
-	private String contenttype="text/html";
-	
+	private String contenttype = "text/html";
+
 	private String querytemplate = "content:$query";
-	
+
 	private ITemplateManager vtl;
 	private ITemplate tpl;
-	
-	
+
 	public void init(ServletConfig config) throws ServletException {
 
 		super.init(config);
@@ -65,23 +63,21 @@ public class VelocitySearchServlet extends HttpServlet {
 		this.crConf = new CRServletConfig(config);
 		this.response_encoding = crConf.getEncoding();
 		this.vtl = crConf.getTemplateManager();
-		String qt = (String)crConf.get("querytemplate");
-		if(qt!=null)this.querytemplate=qt;
-		String tmplate = (String)crConf.get("velocitytemplate");
-		try{
+		String qt = (String) crConf.get("querytemplate");
+		if (qt != null)
+			this.querytemplate = qt;
+		String tmplate = (String) crConf.get("velocitytemplate");
+		try {
 			File f = new File(tmplate);
 			tpl = new FileTemplate(new FileInputStream(f));
-		}
-		catch(Exception ex)
-		{
-			log.error("FAILED TO LOAD VELOCITY TEMPLATE FROM "+tmplate);
+		} catch (Exception ex) {
+			log.error("FAILED TO LOAD VELOCITY TEMPLATE FROM " + tmplate);
 		}
 		try {
-			
+
 			this.rp = crConf.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
-			
-			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... "+e.getStringStackTrace());
+			log.error("FAILED TO INITIALIZE REQUEST PROCESSOR... " + e.getStringStackTrace());
 		}
 
 	}
@@ -94,99 +90,91 @@ public class VelocitySearchServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void doService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
 		//request.setCharacterEncoding("UTF-8");
 		this.log.debug("Request:" + request.getQueryString());
-		
+
 		// starttime
 		long s = new Date().getTime();
 		// get the objects
-		
+
 		String query = request.getParameter("q");
-		if(query==null) query = request.getParameter("query");
-		if(query==null) query = request.getParameter("filter");
-		
+		if (query == null)
+			query = request.getParameter("query");
+		if (query == null)
+			query = request.getParameter("filter");
+
 		String start_s = request.getParameter("start");
 		int start = 0;
-		if(start_s!=null)start = Integer.parseInt(start_s);
-		
+		if (start_s != null)
+			start = Integer.parseInt(start_s);
+
 		String count_s = request.getParameter("count");
-		int count=10;
-		if(count_s!=null)count = Integer.parseInt(count_s);
+		int count = 10;
+		if (count_s != null)
+			count = Integer.parseInt(count_s);
 		String parsedquery = "";
-		try
-		{
+		try {
 			this.vtl.put("query", query);
 			parsedquery = this.vtl.render("query", this.querytemplate);
-		}
-		catch(CRException ex)
-		{
+		} catch (CRException ex) {
 			ex.printStackTrace();
-			parsedquery="content:"+query;
+			parsedquery = "content:" + query;
 		}
-		
+
 		this.vtl.put("start", new Integer(start));
 		this.vtl.put("count", new Integer(count));
 		this.vtl.put("query", query);
 		this.vtl.put("encquery", URLEncoder.encode(query, "UTF-8"));
-		
-		HashMap<String,Resolvable> objects = new HashMap<String,Resolvable>();
+
+		HashMap<String, Resolvable> objects = new HashMap<String, Resolvable>();
 		objects.put("request", new BeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
 		CRRequestBuilder myReqBuilder = new CRRequestBuilder(request);
 		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
 		Collection<CRResolvableBean> coll;
 		try {
-			response.setContentType(this.contenttype+"; charset="+this.response_encoding);
+			response.setContentType(this.contenttype + "; charset=" + this.response_encoding);
 			CRRequest req = myReqBuilder.getCRRequest();
 			req.setRequestFilter(parsedquery);
 			req.set(RequestProcessor.META_RESOLVABLE_KEY, true);
 			//DEPLOY OBJECTS TO REQUEST
-			for (Iterator<Map.Entry<String, Resolvable>> i = objects.entrySet().iterator() ; i.hasNext() ; ) {
-				Map.Entry<String,Resolvable> entry = (Entry<String,Resolvable>) i.next();
-				req.addObjectForFilterDeployment((String)entry.getKey(), entry.getValue());
+			for (Iterator<Map.Entry<String, Resolvable>> i = objects.entrySet().iterator(); i.hasNext();) {
+				Map.Entry<String, Resolvable> entry = (Entry<String, Resolvable>) i.next();
+				req.addObjectForFilterDeployment((String) entry.getKey(), entry.getValue());
 			}
 			// Query the Objects from RequestProcessor
 			coll = rp.getObjects(req);
-			
-			
+
 			Collection<CRResolvableBean> found = new ArrayList<CRResolvableBean>();
-			boolean first=true;
-			for(CRResolvableBean bean:coll)
-			{
-				if(first)
-				{
+			boolean first = true;
+			for (CRResolvableBean bean : coll) {
+				if (first) {
 					this.vtl.put("meta", bean);
-					first=false;
-				}
-				else
+					first = false;
+				} else
 					found.add(bean);
 			}
 			// add the objects to repository as serializeable beans
 			this.vtl.put("items", found);
-			this.vtl.put("error",false);
+			this.vtl.put("error", false);
 			this.vtl.put("size", found.size());
 		} catch (CRException e1) {
-			
-			log.debug(e1.getMessage()+" : "+e1.getStringStackTrace());
+
+			log.debug(e1.getMessage() + " : " + e1.getStringStackTrace());
 			this.vtl.put("notfound", true);
-			this.vtl.put("size",0);
-		}
-		catch(Exception ex)
-		{
+			this.vtl.put("size", 0);
+		} catch (Exception ex) {
 			CRException crex = new CRException(ex);
-			log.debug(ex.getMessage()+" : "+crex.getStringStackTrace());
+			log.debug(ex.getMessage() + " : " + crex.getStringStackTrace());
 			this.vtl.put("error", true);
 		}
-		
-		try
-		{
+
+		try {
 			String output = this.vtl.render(this.tpl.getKey(), this.tpl.getSource());
 			response.getWriter().write(output);
-		}
-		catch(Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		response.getWriter().flush();
@@ -197,13 +185,11 @@ public class VelocitySearchServlet extends HttpServlet {
 
 	}
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 

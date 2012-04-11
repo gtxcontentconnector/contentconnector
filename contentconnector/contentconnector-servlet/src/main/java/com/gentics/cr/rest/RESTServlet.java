@@ -63,10 +63,9 @@ public class RESTServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		UseCase uc = MonitorFactory.startUseCase("RESTServlet("
-				+ request.getServletPath() + ")");
+	public void doService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
+		UseCase uc = MonitorFactory.startUseCase("RESTServlet(" + request.getServletPath() + ")");
 		log.debug("Request:" + request.getQueryString());
 
 		// starttime
@@ -78,8 +77,7 @@ public class RESTServlet extends HttpServlet {
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
 		CRRequestBuilder rB = new CRRequestBuilder(request, crConf);
 		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
-		container.processService(rB, objects, response.getOutputStream(),
-				new ServletResponseTypeSetter(response));
+		container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
 		// endtime
@@ -96,13 +94,11 @@ public class RESTServlet extends HttpServlet {
 		uc.stop();
 	}
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doService(request, response);
 	}
 

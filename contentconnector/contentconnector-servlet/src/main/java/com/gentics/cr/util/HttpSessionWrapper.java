@@ -1,6 +1,7 @@
 package com.gentics.cr.util;
 
 import javax.servlet.http.HttpSession;
+
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:24:41 +0200 (Do, 01 Apr 2010) $
@@ -10,17 +11,15 @@ import javax.servlet.http.HttpSession;
  */
 public class HttpSessionWrapper extends ResolvableWrapper {
 	private HttpSession session;
-	
+
 	/**
 	 * Create new instance
 	 * @param session
 	 */
-	public HttpSessionWrapper(HttpSession session)
-	{
-		this.session=session;
+	public HttpSessionWrapper(HttpSession session) {
+		this.session = session;
 	}
-	
-	
+
 	/**
 	 * 
 	 * Get Property
@@ -31,19 +30,16 @@ public class HttpSessionWrapper extends ResolvableWrapper {
 	public Object get(String key) {
 		try {
 			Object value;
-			if(key.equalsIgnoreCase("ATTRIBUTES"))
-			{
+			if (key.equalsIgnoreCase("ATTRIBUTES")) {
 				value = session.getAttribute(key);
-			}
-			else
-			{
+			} else {
 				value = invokeGetter(session, key);
 			}
 			//if value is set then check for basic types otherwise wrap objects
-            return WrapperUtil.resolveType(value);
-        } catch (Exception e) {
-            return null;
-        }
+			return WrapperUtil.resolveType(value);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

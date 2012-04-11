@@ -19,7 +19,7 @@ public class CRServletConfig extends CRConfigFileLoader {
 	 * @param config TODO javadoc
 	 */
 	public CRServletConfig(ServletConfig config) {
-		super(config.getServletName(),config.getServletContext().getRealPath(""));
+		super(config.getServletName(), config.getServletContext().getRealPath(""));
 	}
-	
+
 }

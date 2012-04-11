@@ -45,12 +45,12 @@ public abstract class VelocityServlet extends HttpServlet {
 	 * velocity Template to render.
 	 */
 	private ITemplate tpl;
-	
+
 	/**
 	 * Configuration key to specify a template in the configuration.
 	 */
 	private static final String VELOCITY_TEMPLATE_KEY = "velocitytemplate";
-	
+
 	/**
 	 * Mark if we should render the velocity template.
 	 */
@@ -63,7 +63,7 @@ public abstract class VelocityServlet extends HttpServlet {
 		String servletName = config.getServletName();
 		crConf = new CRConfigFileLoader(servletName, null);
 		vtl = crConf.getTemplateManager();
-		
+
 		String templatepath = crConf.getString(VELOCITY_TEMPLATE_KEY);
 		if (templatepath != null) {
 			File f = new File(templatepath);
@@ -71,34 +71,30 @@ public abstract class VelocityServlet extends HttpServlet {
 				try {
 					this.tpl = new FileTemplate(new FileInputStream(f));
 				} catch (FileNotFoundException e) {
-					log.error("Could not load template from " + templatepath,
-							e);
+					log.error("Could not load template from " + templatepath, e);
 				} catch (CRException e) {
-					log.error("Could not load template from " + templatepath,
-							e);
+					log.error("Could not load template from " + templatepath, e);
 				}
 			}
 		}
 		if (this.tpl == null) {
 			String templateName = this.getClass().getSimpleName() + ".vm";
 			try {
-				InputStream stream = 
-					this.getClass().getResourceAsStream(templateName);
+				InputStream stream = this.getClass().getResourceAsStream(templateName);
 				this.tpl = new FileTemplate(stream);
 			} catch (Exception e) {
-				log.error("failed to load velocity template from "
-						+ templateName, e);
+				log.error("failed to load velocity template from " + templateName, e);
 			}
 		}
 	}
-	
+
 	/**
 	 * Get the content connetcor configuration of the servlet.
 	 */
-	protected final CRConfigUtil getCRConfig(){
+	protected final CRConfigUtil getCRConfig() {
 		return crConf;
 	}
-	
+
 	/**
 	 * Wrapper Method for the doGet and doPost Methods. Prepares the data for
 	 * the render method. Don't forget to put your variables into the velocity
@@ -107,9 +103,9 @@ public abstract class VelocityServlet extends HttpServlet {
 	 * @param response {@link HttpServletResponse} to write the output into.
 	 * @throws IOException in case something went wrong processing the service.
 	 */
-	public abstract void doService(final HttpServletRequest request,
-			final HttpServletResponse response) throws IOException;
-	
+	public abstract void doService(final HttpServletRequest request, final HttpServletResponse response)
+			throws IOException;
+
 	/**
 	 * Renders the velocity template.
 	 * Don't forget to put your variables into the velocity template before
@@ -117,33 +113,30 @@ public abstract class VelocityServlet extends HttpServlet {
 	 * @param response {@link HttpServletResponse} to render the template into
 	 * @throws IOException if we cannot write the output to the output stream.
 	 */
-	public final void render(final HttpServletResponse response)
-			throws IOException {
+	public final void render(final HttpServletResponse response) throws IOException {
 		try {
 			String timestamp = new Long(System.currentTimeMillis()).toString();
 			vtl.put("timestamp", timestamp);
 			String output = vtl.render(tpl.getKey(), tpl.getSource());
 			response.getWriter().write(output);
 		} catch (Exception ex) {
-			log.error("Error rendering template for "
-					+ this.getClass().getSimpleName() + ".", ex);
+			log.error("Error rendering template for " + this.getClass().getSimpleName() + ".", ex);
 		}
 		response.getWriter().flush();
 		response.getWriter().close();
 	}
-	
+
 	/**
 	 * Set a variable in the velocity context.
 	 * @param name - name of the variable to set
 	 * @param value - value to set the variable to
 	 */
-	protected final void setTemplateVariable(final String name,
-			final Object value) {
+	protected final void setTemplateVariable(final String name, final Object value) {
 		if (vtl != null) {
 			vtl.put(name, value);
 		}
 	}
-	
+
 	/**
 	 * skip velocity rendering for this request. this can be used if you want to
 	 * put binaries direct to the render response.
@@ -153,9 +146,8 @@ public abstract class VelocityServlet extends HttpServlet {
 	}
 
 	@Override
-	protected final void doGet(final HttpServletRequest request,
-			final HttpServletResponse response) throws ServletException,
-			IOException {
+	protected final void doGet(final HttpServletRequest request, final HttpServletResponse response)
+			throws ServletException, IOException {
 		renderVelocity = true;
 		doService(request, response);
 		if (renderVelocity) {
@@ -164,9 +156,8 @@ public abstract class VelocityServlet extends HttpServlet {
 	}
 
 	@Override
-	protected final void doPost(final HttpServletRequest request,
-			final HttpServletResponse response) throws ServletException,
-			IOException {
+	protected final void doPost(final HttpServletRequest request, final HttpServletResponse response)
+			throws ServletException, IOException {
 		doGet(request, response);
 	}
 
