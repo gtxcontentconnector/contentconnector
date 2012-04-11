@@ -33,25 +33,23 @@ public class AutocompleteIndexDeleteJob extends AbstractUpdateCheckerJob {
 	 * @param autocompleter
 	 *            the {@link AutocompleteIndexExtension} to clear
 	 */
-	public AutocompleteIndexDeleteJob(final CRConfig config,
-			final IndexLocation indexLoc, AutocompleteIndexExtension autocompleter) {
+	public AutocompleteIndexDeleteJob(final CRConfig config, final IndexLocation indexLoc,
+		AutocompleteIndexExtension autocompleter) {
 		super(config, indexLoc, null);
 		log = Logger.getLogger(AutocompleteIndexDeleteJob.class);
 
 		this.identifyer = identifyer.concat(":clear");
 		this.autocompleter = autocompleter;
 	}
-	
+
 	/**
 	 * starts the job - is called by the IndexJobQueue
 	 */
 	@Override
-	protected final void indexCR(final IndexLocation indexLocation,
-			final CRConfigUtil config) throws CRException {
+	protected final void indexCR(final IndexLocation indexLocation, final CRConfigUtil config) throws CRException {
 
 		log.debug("Starting to clear index.");
-		LuceneIndexLocation autocompleteLocation = autocompleter
-				.getAutocompleteLocation();
+		LuceneIndexLocation autocompleteLocation = autocompleter.getAutocompleteLocation();
 		IndexAccessor ia = autocompleteLocation.getAccessor();
 		IndexWriter writer = null;
 		try {

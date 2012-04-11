@@ -27,10 +27,9 @@ import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
  * 
  * @author Sebastian Vogel <s.vogel@gentics.com>
  */
-public class AutocompleteIndexExtension extends AbstractIndexExtension
-		implements IEventReceiver, AutocompleteConfigurationKeys {
-	protected static final Logger log = Logger
-			.getLogger(AutocompleteIndexExtension.class);
+public class AutocompleteIndexExtension extends AbstractIndexExtension implements IEventReceiver,
+		AutocompleteConfigurationKeys {
+	protected static final Logger log = Logger.getLogger(AutocompleteIndexExtension.class);
 
 	private static final String REINDEX_JOB = "reIndex";
 	private static final String CLEAR_JOB = "clearAutocompleteIndex";
@@ -57,16 +56,13 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 	 * @param config
 	 * @param callingLocation
 	 */
-	public AutocompleteIndexExtension(CRConfig config,
-			IndexLocation callingLocation) {
+	public AutocompleteIndexExtension(CRConfig config, IndexLocation callingLocation) {
 		super(config, callingLocation);
 		this.config = config;
 		this.callingIndexLocation = callingLocation;
 
-		GenericConfiguration src_conf = (GenericConfiguration) config
-				.get(SOURCE_INDEX_KEY);
-		CRConfigUtil src_conf_util = new CRConfigUtil(src_conf,
-				"SOURCE_INDEX_KEY");
+		GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
+		CRConfigUtil src_conf_util = new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY");
 		if (src_conf_util.getPropertySize() > 0) {
 			source = LuceneIndexLocation.getIndexLocation(src_conf_util);
 		}
@@ -74,11 +70,9 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 			source = (LuceneIndexLocation) callingLocation;
 		}
 
-		GenericConfiguration auto_conf = (GenericConfiguration) config
-				.get(AUTOCOMPLETE_INDEX_KEY);
+		GenericConfiguration auto_conf = (GenericConfiguration) config.get(AUTOCOMPLETE_INDEX_KEY);
 		autocompleteLocation = LuceneIndexLocation
-				.getIndexLocation(new CRConfigUtil(auto_conf,
-						AUTOCOMPLETE_INDEX_KEY));
+				.getIndexLocation(new CRConfigUtil(auto_conf, AUTOCOMPLETE_INDEX_KEY));
 		autocompleteLocation.registerDirectoriesSpecial();
 
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);
@@ -86,12 +80,10 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 		if (s_autofield != null)
 			this.autocompletefield = s_autofield;
 
-		autocompletereopenupdate = config.getBoolean(
-				AUTOCOMPLETE_REOPEN_UPDATE, autocompletereopenupdate);
+		autocompletereopenupdate = config.getBoolean(AUTOCOMPLETE_REOPEN_UPDATE, autocompletereopenupdate);
 
-		subscribeToIndexFinished = config.getBoolean(
-				AUTOCOMPLETE_SUBSCRIBE_TO_INDEX_FINISHED,
-				subscribeToIndexFinished);
+		subscribeToIndexFinished = config
+				.getBoolean(AUTOCOMPLETE_SUBSCRIBE_TO_INDEX_FINISHED, subscribeToIndexFinished);
 
 		if (subscribeToIndexFinished) {
 			EventManager.getInstance().register(this);
@@ -105,22 +97,20 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 	 * of the {@link IndexLocation} which fired the event
 	 */
 	public void processEvent(Event event) {
-		if (!subscribeToIndexFinished
-				|| !IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE
-						.equals(event.getType())) {
+		if (!subscribeToIndexFinished || !IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType())) {
 			return;
 		}
-		
+
 		Object obj = event.getData();
 		LuceneIndexLocation callingLuceneLocation = (LuceneIndexLocation) callingIndexLocation;
-		
-		if(!callingLuceneLocation.equals(obj)) {
+
+		if (!callingLuceneLocation.equals(obj)) {
 			return;
 		}
-		
+
 		if (!reindexStrategy.skipReIndex(callingLuceneLocation)) {
-			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(
-					config, callingLuceneLocation, this);
+			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(config,
+					callingLuceneLocation, this);
 			callingLuceneLocation.getQueue().addJob(job);
 		}
 
@@ -128,7 +118,6 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#stop()
 	 */
 	@Override
@@ -154,12 +143,10 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 		if (className != null && className.length() != 0) {
 			try {
 				Class<?> clazz = Class.forName(className);
-				Constructor<?> constructor = clazz
-						.getConstructor(CRConfig.class);
+				Constructor<?> constructor = clazz.getConstructor(CRConfig.class);
 				return (IReIndexStrategy) constructor.newInstance(config);
 			} catch (Exception e) {
-				log.warn("Cound not init configured "
-						+ REINDEXSTRATEGYCLASS_KEY + ": " + className, e);
+				log.warn("Cound not init configured " + REINDEXSTRATEGYCLASS_KEY + ": " + className, e);
 			}
 		}
 		return new ReIndexNoSkipStrategy(config);
@@ -167,10 +154,7 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang.
-	 * String)
+	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang. String)
 	 */
 	@Override
 	public void addJob(String name) throws NoSuchMethodException {
@@ -179,35 +163,30 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang.
-	 * String, com.gentics.cr.util.indexing.IndexLocation)
+	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang. String,
+	 * com.gentics.cr.util.indexing.IndexLocation)
 	 */
 	@Override
-	public void addJob(String name, IndexLocation indexLocation)
-			throws NoSuchMethodException {
+	public void addJob(String name, IndexLocation indexLocation) throws NoSuchMethodException {
 		IndexLocation actualLocation = callingIndexLocation;
 		if (indexLocation != null) {
 			actualLocation = indexLocation;
 		}
 		if (REINDEX_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(
-					this.config, actualLocation, this);			
+			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexJob(this.config,
+					actualLocation, this);
 			actualLocation.getQueue().addJob(job);
 		} else if (CLEAR_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexDeleteJob(
-					this.config, actualLocation, this);
+			AbstractUpdateCheckerJob job = (AbstractUpdateCheckerJob) new AutocompleteIndexDeleteJob(this.config,
+					actualLocation, this);
 			actualLocation.getQueue().addJob(job);
 		} else {
-			throw new NoSuchMethodException("No Job-Method by the name: "
-					+ name);
+			throw new NoSuchMethodException("No Job-Method by the name: " + name);
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#getJobs()
 	 */
 	@Override

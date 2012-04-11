@@ -55,8 +55,7 @@ import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
  * @author $Author: supnig@constantinopel.at $
  * @author Sebastian Vogel <s.vogel@gentics.com>
  */
-public class Autocompleter implements IEventReceiver,
-		AutocompleteConfigurationKeys {
+public class Autocompleter implements IEventReceiver, AutocompleteConfigurationKeys {
 
 	protected static final Logger log = Logger.getLogger(Autocompleter.class);
 	@Deprecated
@@ -82,22 +81,18 @@ public class Autocompleter implements IEventReceiver,
 	private boolean useAutocompleteIndexExtension = false;
 
 	public Autocompleter(CRConfig config) {
-		GenericConfiguration src_conf = (GenericConfiguration) config
-				.get(SOURCE_INDEX_KEY);
-		GenericConfiguration auto_conf = (GenericConfiguration) config
-				.get(AUTOCOMPLETE_INDEX_KEY);
+		GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
+		GenericConfiguration auto_conf = (GenericConfiguration) config.get(AUTOCOMPLETE_INDEX_KEY);
 		useAutocompleteIndexExtension = config.getBoolean(
-				AUTOCOMPLETE_USE_AUTCOMPLETE_INDEXER,
-				useAutocompleteIndexExtension);
+			AUTOCOMPLETE_USE_AUTCOMPLETE_INDEXER,
+			useAutocompleteIndexExtension);
 
 		source = null;
 		if (!useAutocompleteIndexExtension) {
-			source = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(
-					src_conf, "SOURCE_INDEX_KEY"));
+			source = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY"));
 		}
 		autocompleteLocation = LuceneIndexLocation
-				.getIndexLocation(new CRConfigUtil(auto_conf,
-						AUTOCOMPLETE_INDEX_KEY));
+				.getIndexLocation(new CRConfigUtil(auto_conf, AUTOCOMPLETE_INDEX_KEY));
 		autocompleteLocation.registerDirectoriesSpecial();
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);
 
@@ -132,8 +127,7 @@ public class Autocompleter implements IEventReceiver,
 	 */
 	@Deprecated
 	public void processEvent(Event event) {
-		if (IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event
-				.getType())) {
+		if (IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType())) {
 			IndexLocation il = (IndexLocation) event.getData();
 			if (!reindexStrategy.skipReIndex(il)) {
 				try {
@@ -145,8 +139,7 @@ public class Autocompleter implements IEventReceiver,
 		}
 	}
 
-	public Collection<CRResolvableBean> suggestWords(CRRequest request)
-			throws IOException {
+	public Collection<CRResolvableBean> suggestWords(CRRequest request) throws IOException {
 		ArrayList<CRResolvableBean> result = new ArrayList<CRResolvableBean>();
 		String term = request.getRequestFilter();
 		// get the top 5 terms for query
@@ -160,8 +153,7 @@ public class Autocompleter implements IEventReceiver,
 		IndexReader autoCompleteReader = ia.getReader(false);
 		try {
 			Query query = new TermQuery(new Term(GRAMMED_WORDS_FIELD, term));
-			Sort sort = new Sort(new SortField(COUNT_FIELD, SortField.LONG,
-					true));
+			Sort sort = new Sort(new SortField(COUNT_FIELD, SortField.LONG, true));
 			TopDocs docs = autoCompleteSearcher.search(query, null, 5, sort);
 			for (ScoreDoc doc : docs.scoreDocs) {
 				CRResolvableBean bean = new CRResolvableBean();
@@ -227,8 +219,7 @@ public class Autocompleter implements IEventReceiver,
 		log.debug("Starting to reindex autocomplete index.");
 		IndexAccessor sia = this.source.getAccessor();
 		IndexReader sourceReader = sia.getReader(false);
-		LuceneDictionary dict = new LuceneDictionary(sourceReader,
-				this.autocompletefield);
+		LuceneDictionary dict = new LuceneDictionary(sourceReader, this.autocompletefield);
 		IndexAccessor aia = this.autocompleteLocation.getAccessor();
 		// IndexReader reader = aia.getReader(false);
 		IndexWriter writer = aia.getWriter();
@@ -248,12 +239,10 @@ public class Autocompleter implements IEventReceiver,
 					continue; // too short we bail but "too long" is fine...
 				}
 				if (wordsMap.containsKey(word)) {
-					throw new IllegalStateException(
-							"Lucene returned a bad word list");
+					throw new IllegalStateException("Lucene returned a bad word list");
 				} else {
 					// use the number of documents this word appears in
-					wordsMap.put(word, sourceReader.docFreq(new Term(
-							autocompletefield, word)));
+					wordsMap.put(word, sourceReader.docFreq(new Term(autocompletefield, word)));
 				}
 			}
 			// DELETE OLD OBJECTS FROM INDEX
@@ -263,12 +252,9 @@ public class Autocompleter implements IEventReceiver,
 			for (String word : wordsMap.keySet()) {
 				// ok index the word
 				Document doc = new Document();
-				doc.add(new Field(SOURCE_WORD_FIELD, word, Field.Store.YES,
-						Field.Index.NOT_ANALYZED_NO_NORMS)); // orig term
-				doc.add(new Field(GRAMMED_WORDS_FIELD, word, Field.Store.YES,
-						Field.Index.ANALYZED)); // grammed
-				doc.add(new Field(COUNT_FIELD, Integer.toString(wordsMap
-						.get(word)), Field.Store.YES,
+				doc.add(new Field(SOURCE_WORD_FIELD, word, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS)); // orig term
+				doc.add(new Field(GRAMMED_WORDS_FIELD, word, Field.Store.YES, Field.Index.ANALYZED)); // grammed
+				doc.add(new Field(COUNT_FIELD, Integer.toString(wordsMap.get(word)), Field.Store.YES,
 						Field.Index.NOT_ANALYZED_NO_NORMS)); // count
 				writer.addDocument(doc);
 			}
@@ -313,12 +299,10 @@ public class Autocompleter implements IEventReceiver,
 		if (className != null && className.length() != 0) {
 			try {
 				Class<?> clazz = Class.forName(className);
-				Constructor<?> constructor = clazz
-						.getConstructor(CRConfig.class);
+				Constructor<?> constructor = clazz.getConstructor(CRConfig.class);
 				return (IReIndexStrategy) constructor.newInstance(config);
 			} catch (Exception e) {
-				log.warn("Cound not init configured "
-						+ REINDEXSTRATEGYCLASS_KEY + ": " + className, e);
+				log.warn("Cound not init configured " + REINDEXSTRATEGYCLASS_KEY + ": " + className, e);
 			}
 		}
 		return new ReIndexNoSkipStrategy(config);

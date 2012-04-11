@@ -23,33 +23,30 @@ import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
 
-
 /**
  * This job is used to re-index (or newly index) the autocomplete-index 
  * 
  * @author Sebastian Vogel <s.vogel@gentics.com>
  *
  */
-public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements AutocompleteConfigurationKeys{
+public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements AutocompleteConfigurationKeys {
 
 	private AutocompleteIndexExtension autocompleter;
-	
-	public AutocompleteIndexJob(CRConfig updateCheckerConfig,
-			IndexLocation indexLoc,
-			AutocompleteIndexExtension autocompleter) {		
+
+	public AutocompleteIndexJob(CRConfig updateCheckerConfig, IndexLocation indexLoc,
+		AutocompleteIndexExtension autocompleter) {
 		super(updateCheckerConfig, indexLoc, null);
-		
+
 		this.identifyer = identifyer.concat(":reIndex");
 		log = Logger.getLogger(AutocompleteIndexJob.class);
-		this.autocompleter = autocompleter;		
+		this.autocompleter = autocompleter;
 	}
 
 	/**
 	 * starts the job - is called by the IndexJobQueue
 	 */
 	@Override
-	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
-			throws CRException {		
+	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException {
 		try {
 			reIndex();
 		} catch (IOException e) {
@@ -57,20 +54,19 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 		}
 
 	}
-	
+
 	private synchronized void reIndex() throws IOException {
 		UseCase ucReIndex = MonitorFactory.startUseCase("reIndex()");
 		// build a dictionary (from the spell package)
 		log.debug("Starting to reindex autocomplete index.");
-		
+
 		LuceneIndexLocation source = this.autocompleter.getSource();
 		LuceneIndexLocation autocompleteLocation = this.autocompleter.getAutocompleteLocation();
 		String autocompletefield = this.autocompleter.getAutocompletefield();
-		
+
 		IndexAccessor sia = source.getAccessor();
 		IndexReader sourceReader = sia.getReader(false);
-		LuceneDictionary dict = new LuceneDictionary(sourceReader,
-				autocompletefield);
+		LuceneDictionary dict = new LuceneDictionary(sourceReader, autocompletefield);
 		IndexAccessor aia = autocompleteLocation.getAccessor();
 		// IndexReader reader = aia.getReader(false);
 		IndexWriter writer = aia.getWriter();
@@ -90,12 +86,10 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 					continue; // too short we bail but "too long" is fine...
 				}
 				if (wordsMap.containsKey(word)) {
-					throw new IllegalStateException(
-							"Lucene returned a bad word list");
+					throw new IllegalStateException("Lucene returned a bad word list");
 				} else {
 					// use the number of documents this word appears in
-					wordsMap.put(word, sourceReader.docFreq(new Term(
-							autocompletefield, word)));
+					wordsMap.put(word, sourceReader.docFreq(new Term(autocompletefield, word)));
 				}
 			}
 			// DELETE OLD OBJECTS FROM INDEX
@@ -105,12 +99,9 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 			for (String word : wordsMap.keySet()) {
 				// ok index the word
 				Document doc = new Document();
-				doc.add(new Field(SOURCE_WORD_FIELD, word, Field.Store.YES,
-						Field.Index.NOT_ANALYZED_NO_NORMS)); // orig term
-				doc.add(new Field(GRAMMED_WORDS_FIELD, word, Field.Store.YES,
-						Field.Index.ANALYZED)); // grammed
-				doc.add(new Field(COUNT_FIELD, Integer.toString(wordsMap
-						.get(word)), Field.Store.YES,
+				doc.add(new Field(SOURCE_WORD_FIELD, word, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS)); // orig term
+				doc.add(new Field(GRAMMED_WORDS_FIELD, word, Field.Store.YES, Field.Index.ANALYZED)); // grammed
+				doc.add(new Field(COUNT_FIELD, Integer.toString(wordsMap.get(word)), Field.Store.YES,
 						Field.Index.NOT_ANALYZED_NO_NORMS)); // count
 				writer.addDocument(doc);
 			}
@@ -123,7 +114,7 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 
 			aia.release(writer);
 			// aia.release(reader,false);
-		}		
+		}
 		log.debug("Finished reindexing autocomplete index.");
 		ucReIndex.stop();
 	}

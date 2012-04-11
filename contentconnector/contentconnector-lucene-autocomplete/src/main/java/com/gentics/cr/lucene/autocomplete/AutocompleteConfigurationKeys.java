@@ -10,9 +10,9 @@ package com.gentics.cr.lucene.autocomplete;
 public interface AutocompleteConfigurationKeys {
 
 	public static final String GRAMMED_WORDS_FIELD = "grammedwords";
-	
+
 	public static final String COUNT_FIELD = "count";
-	
+
 	public static final String SOURCE_WORD_FIELD = "word";
 
 	public static final String SOURCE_INDEX_KEY = "srcindexlocation";

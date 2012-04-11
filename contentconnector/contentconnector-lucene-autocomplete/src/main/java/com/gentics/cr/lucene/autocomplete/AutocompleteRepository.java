@@ -20,33 +20,28 @@ import com.gentics.cr.rest.ContentRepository;
  */
 public class AutocompleteRepository extends ContentRepository {
 
-	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6929053170765114770L;
 
-	
 	/**
 	 * Create new instance
 	 * @param attr
 	 */
 	public AutocompleteRepository(String[] attr) {
-		
 		super(attr);
-
-		
 	}
+
 	/**
 	 * 
 	 * @param attr
 	 * @param encoding
 	 */
 	public AutocompleteRepository(String[] attr, String encoding) {
-		
 		super(attr);
-	
 	}
+
 	/**
 	 * 
 	 * @param attr
@@ -54,11 +49,8 @@ public class AutocompleteRepository extends ContentRepository {
 	 * @param options
 	 */
 	public AutocompleteRepository(String[] attr, String encoding, String[] options) {
-		
-		super(attr,encoding,options);
-
+		super(attr, encoding, options);
 	}
-	
 
 	/**
 	 * returns text/xml
@@ -67,9 +59,7 @@ public class AutocompleteRepository extends ContentRepository {
 	public String getContentType() {
 		return "text/plain";
 	}
-	
-	
-	
+
 	/**
 	 * Respond with Error
 	 * @param stream 
@@ -77,10 +67,9 @@ public class AutocompleteRepository extends ContentRepository {
 	 * @param isDebug 
 	 * 
 	 */
-	public void respondWithError(OutputStream stream,CRException ex, boolean isDebug){
-		
+	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
+
 		try {
-			
 			OutputStreamWriter wr = new OutputStreamWriter(stream, this.getResponseEncoding());
 			wr.write("ERROR");
 			wr.close();
@@ -91,7 +80,7 @@ public class AutocompleteRepository extends ContentRepository {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -102,21 +91,18 @@ public class AutocompleteRepository extends ContentRepository {
 	 * 
 	 */
 	public void toStream(OutputStream stream) throws CRException {
-		
-		
-		
+
 		try {
 			OutputStreamWriter wr = new OutputStreamWriter(stream, this.getResponseEncoding());
 			String nl = System.getProperty("line.separator");
-			for(CRResolvableBean bean:this.resolvableColl)
-			{
-				wr.write(bean.get(Autocompleter.SOURCE_WORD_FIELD)+"|"+bean.get(Autocompleter.COUNT_FIELD)+nl);
-			
+			for (CRResolvableBean bean : this.resolvableColl) {
+				wr.write(bean.get(Autocompleter.SOURCE_WORD_FIELD) + "|" + bean.get(Autocompleter.COUNT_FIELD) + nl);
+
 			}
-			
+
 			wr.flush();
 			wr.close();
-		
+
 		} catch (TransformerFactoryConfigurationError e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
@@ -128,5 +114,4 @@ public class AutocompleteRepository extends ContentRepository {
 		}
 	}
 
-	
 }
