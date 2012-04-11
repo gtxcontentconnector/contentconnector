@@ -15,7 +15,6 @@ import com.gentics.cr.monitoring.MonitorFactory;
  * Operates as an Interface between the servlet and the Indexer Engine.
  * Each instance of this class spawns IndexJobQueueWorker threads for each index.
  * Therefore be careful with initializing this class in webservices!
- * NOT threadsafe atm.
  * 
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
  * @version $Revision: 180 $
@@ -52,7 +51,6 @@ public class IndexController {
 		crconfig = new CRConfigFileLoader(name, null);
 		MonitorFactory.init(crconfig);
 		this.indextable = buildIndexTable();
-
 	}
 
 	/**
