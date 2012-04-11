@@ -56,8 +56,9 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		IndexReader reader = indexAccessor.getReader(true);
 
 		TermDocs termDocs = reader.termDocs(new Term(termKey, termValue));
-
+		log.debug("Fetching sorted documents from index...");
 		docs = fetchSortedDocs(termDocs, reader, idAttribute);
+		log.debug("Fetched sorted docs from index");
 		docIT = docs.keySet().iterator();
 
 		checkedDocuments = new Vector<String>(100);
