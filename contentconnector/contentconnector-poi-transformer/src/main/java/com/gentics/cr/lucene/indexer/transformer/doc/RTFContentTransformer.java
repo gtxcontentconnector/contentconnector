@@ -43,8 +43,7 @@ public class RTFContentTransformer extends ContentTransformer {
 		if (obj instanceof byte[]) {
 			is = new ByteArrayInputStream((byte[]) obj);
 		} else {
-			throw new IllegalArgumentException(
-					"Parameter must be instance of byte[]");
+			throw new IllegalArgumentException("Parameter must be instance of byte[]");
 		}
 		String ret = null;
 		//creating a default blank styled document
@@ -82,8 +81,7 @@ public class RTFContentTransformer extends ContentTransformer {
 				}
 			}
 		} else {
-			log
-					.error("Configured attribute is null. Bean will not be processed");
+			log.error("Configured attribute is null. Bean will not be processed");
 		}
 	}
 

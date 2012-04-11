@@ -12,6 +12,7 @@ import org.apache.xmlbeans.XmlException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+
 /**
  * 
  * Last changed: $Date$
@@ -19,48 +20,42 @@ import com.gentics.cr.exceptions.CRException;
  * @author $Author$
  *
  */
-public class POIContentTransformer extends ContentTransformer{
-	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
-	private String attribute="";
+public class POIContentTransformer extends ContentTransformer {
+	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
+	private String attribute = "";
+
 	/**
 	 * Get new instance of DOCContentTransformer
 	 * @param config
 	 */
-	public POIContentTransformer(GenericConfiguration config)
-	{
+	public POIContentTransformer(GenericConfiguration config) {
 		super(config);
-		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
+		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
-	
+
 	/**
 	 * Converts a byte array that contains a word file into a string with its contents
 	 * @param obj
 	 * @return
 	 */
-	private String getStringContents(Object obj)throws CRException
-	{
+	private String getStringContents(Object obj) throws CRException {
 		ByteArrayInputStream is;
-		if(obj instanceof byte[])
-		{
-			is= new ByteArrayInputStream((byte[])obj);
-		}
-		else if(obj instanceof String)
-		{
-			String str = (String)obj;
+		if (obj instanceof byte[]) {
+			is = new ByteArrayInputStream((byte[]) obj);
+		} else if (obj instanceof String) {
+			String str = (String) obj;
 			is = new ByteArrayInputStream(str.getBytes());
-		}
-		else
-		{
+		} else {
 			throw new IllegalArgumentException("Parameter must be instance of byte[]");
 		}
-		String ret=null;
+		String ret = null;
 		POITextExtractor extractor;
-        
+
 		try {
-			extractor = ExtractorFactory.createExtractor(is); 
-			
+			extractor = ExtractorFactory.createExtractor(is);
+
 			ret = extractor.getText();
-			
+
 		} catch (IOException e) {
 			throw new CRException(e);
 		} catch (InvalidFormatException e) {
@@ -69,27 +64,21 @@ public class POIContentTransformer extends ContentTransformer{
 			throw new CRException(e);
 		} catch (XmlException e) {
 			throw new CRException(e);
-		} 
-		return(ret);
+		}
+		return (ret);
 	}
-	
 
 	@Override
-	public void processBean(CRResolvableBean bean)throws CRException{
-		if(this.attribute!=null)
-		{
+	public void processBean(CRResolvableBean bean) throws CRException {
+		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			if(obj!=null)
-			{
+			if (obj != null) {
 				String newString = getStringContents(obj);
-				if(newString!=null)
-				{
+				if (newString != null) {
 					bean.set(this.attribute, newString);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			log.error("Configured attribute is null. Bean will not be processed");
 		}
 	}
@@ -97,6 +86,6 @@ public class POIContentTransformer extends ContentTransformer{
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

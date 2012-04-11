@@ -14,32 +14,32 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.lucene.indexer.transformer.doc.RTFContentTransformer;
 
 public class RTFContentTransformerTest extends TestCase {
-	
+
 	CRResolvableBean bean;
 	GenericConfiguration config;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		bean = new CRResolvableBean();
-		
+
 		InputStream stream = RTFContentTransformerTest.class.getResourceAsStream("testdoc.rtf");
 		byte[] arr = IOUtils.toByteArray(stream);
 		bean.set("binarycontent", arr);
-		
+
 		config = new GenericConfiguration();
 		config.set("attribute", "binarycontent");
 	}
-	
+
 	public void testTransformer() throws Exception {
 		ContentTransformer t = new RTFContentTransformer(config);
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
-		
+
 		assertTrue("testtext\n".equals(s));
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		
+
 	}
 }

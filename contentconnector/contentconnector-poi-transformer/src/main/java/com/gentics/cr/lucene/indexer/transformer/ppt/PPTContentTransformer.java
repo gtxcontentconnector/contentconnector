@@ -1,11 +1,10 @@
 package com.gentics.cr.lucene.indexer.transformer.ppt;
+
 import java.io.ByteArrayInputStream;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
-
-
 
 /**
  * 
@@ -14,58 +13,47 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class PPTContentTransformer extends ContentTransformer{
-	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
-	private String attribute="";
-	
-	
+public class PPTContentTransformer extends ContentTransformer {
+	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
+	private String attribute = "";
+
 	/**
 	 * Get new instance of PPTContentTransformer
 	 * @param config
 	 */
-	public PPTContentTransformer(GenericConfiguration config)
-	{
+	public PPTContentTransformer(GenericConfiguration config) {
 		super(config);
-		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
+		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
-	
+
 	/**
 	 * Converts a byte array containing a ppt file to a String that can be indexed by lucene
 	 * @param obj
 	 * @return
 	 */
-	private String getStringContents(Object obj)
-	{
+	private String getStringContents(Object obj) {
 		ByteArrayInputStream is;
-		if(obj instanceof byte[])
-		{
-			is= new ByteArrayInputStream((byte[])obj);
-		}
-		else
-		{
+		if (obj instanceof byte[]) {
+			is = new ByteArrayInputStream((byte[]) obj);
+		} else {
 			throw new IllegalArgumentException("Parameter must be instance of byte[]");
 		}
 		MSPowerPointParser parser = new MSPowerPointParser(is);
 		String contents = parser.getContents();
-		return(contents);
+		return (contents);
 	}
-	
+
 	@Override
 	public void processBean(CRResolvableBean bean) {
-		if(this.attribute!=null)
-		{
+		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			if(obj!=null)
-			{
+			if (obj != null) {
 				String newString = getStringContents(obj);
-				if(newString!=null)
-				{
+				if (newString != null) {
 					bean.set(this.attribute, newString);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			log.error("Configured attribute is null. Bean will not be processed");
 		}
 	}
@@ -73,6 +61,6 @@ public class PPTContentTransformer extends ContentTransformer{
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
