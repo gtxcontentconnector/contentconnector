@@ -15,6 +15,8 @@ import org.apache.lucene.store.Directory;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
 /**
@@ -139,6 +141,8 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		log.debug(checkedDocuments.size()+" objects checked, "+docs.size()+" objects already in the index.");
 		IndexReader writeReader = null;
 		boolean readerNeedsWrite = true;
+		UseCase deleteStale = MonitorFactory.startUseCase(
+				"LuceneIndexUpdateChecker.deleteStaleObjects(" + indexLocation.getName()	+ ")");
 		try {
 			boolean objectsDeleted = false;
 			for (String contentId : docs.keySet()) {
@@ -161,6 +165,8 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 			if (writeReader != null) {
 				indexAccessor.release(writeReader, readerNeedsWrite);
 			}
+			log.debug("Finished cleaning stale documents");
+			deleteStale.stop();
 		}
 		checkedDocuments.clear();
 	}

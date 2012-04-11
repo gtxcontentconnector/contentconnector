@@ -122,6 +122,14 @@ public abstract class LuceneIndexLocation extends
 		accessorToken = IndexAccessorFactory.getInstance().registerConsumer();
 		name = config.getName();
 	}
+	
+	/**
+	 * Gets the name of the index location.
+	 * @return name as String
+	 */
+	public String getName() {
+		return name;
+	}
 
 	public static synchronized LuceneIndexLocation getIndexLocation(
 			CRConfig config) {
