@@ -46,12 +46,13 @@ public class CRServlet extends HttpServlet {
 
 	@Override
 	public void destroy() {
-		if (this.container != null)
+		if (this.container != null) {
 			this.container.finalize();
+		}
 	}
 
 	/**
-	 * Wrapper Method for the doGet and doPost Methods
+	 * Wrapper Method for the doGet and doPost Methods.
 	 * 
 	 * @param request
 	 * @param response

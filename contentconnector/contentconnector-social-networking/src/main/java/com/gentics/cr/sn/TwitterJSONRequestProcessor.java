@@ -61,9 +61,10 @@ public class TwitterJSONRequestProcessor extends RequestProcessor {
 	public TwitterJSONRequestProcessor(CRConfig config) throws CRException {
 		super(config);
 		client = new HttpClient();
-		String t_surl = config.getString(TWITTER_SEARCH_URL_KEY);
-		if (t_surl != null)
-			this.searchurl = t_surl;
+		String searchUrl = config.getString(TWITTER_SEARCH_URL_KEY);
+		if (searchUrl != null) {
+			this.searchurl = searchUrl;
+		}
 	}
 
 	private String constructSearchURL(CRRequest req) {

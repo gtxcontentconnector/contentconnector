@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -64,8 +63,9 @@ public class VelocitySearchServlet extends HttpServlet {
 		this.response_encoding = crConf.getEncoding();
 		this.vtl = crConf.getTemplateManager();
 		String qt = (String) crConf.get("querytemplate");
-		if (qt != null)
+		if (qt != null) {
 			this.querytemplate = qt;
+		}
 		String tmplate = (String) crConf.get("velocitytemplate");
 		try {
 			File f = new File(tmplate);
@@ -100,20 +100,24 @@ public class VelocitySearchServlet extends HttpServlet {
 		// get the objects
 
 		String query = request.getParameter("q");
-		if (query == null)
+		if (query == null) {
 			query = request.getParameter("query");
-		if (query == null)
+		}
+		if (query == null) {
 			query = request.getParameter("filter");
+		}
 
-		String start_s = request.getParameter("start");
+		String startString = request.getParameter("start");
 		int start = 0;
-		if (start_s != null)
-			start = Integer.parseInt(start_s);
+		if (startString != null) {
+			start = Integer.parseInt(startString);
+		}
 
-		String count_s = request.getParameter("count");
+		String countString = request.getParameter("count");
 		int count = 10;
-		if (count_s != null)
-			count = Integer.parseInt(count_s);
+		if (countString != null) {
+			count = Integer.parseInt(countString);
+		}
 		String parsedquery = "";
 		try {
 			this.vtl.put("query", query);
@@ -141,8 +145,8 @@ public class VelocitySearchServlet extends HttpServlet {
 			req.set(RequestProcessor.META_RESOLVABLE_KEY, true);
 			//DEPLOY OBJECTS TO REQUEST
 			for (Iterator<Map.Entry<String, Resolvable>> i = objects.entrySet().iterator(); i.hasNext();) {
-				Map.Entry<String, Resolvable> entry = (Entry<String, Resolvable>) i.next();
-				req.addObjectForFilterDeployment((String) entry.getKey(), entry.getValue());
+				Map.Entry<String, Resolvable> entry = i.next();
+				req.addObjectForFilterDeployment(entry.getKey(), entry.getValue());
 			}
 			// Query the Objects from RequestProcessor
 			coll = rp.getObjects(req);
@@ -153,8 +157,9 @@ public class VelocitySearchServlet extends HttpServlet {
 				if (first) {
 					this.vtl.put("meta", bean);
 					first = false;
-				} else
+				} else {
 					found.add(bean);
+				}
 			}
 			// add the objects to repository as serializeable beans
 			this.vtl.put("items", found);

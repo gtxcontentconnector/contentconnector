@@ -87,17 +87,17 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 		this.config = config;
 		this.callingIndexLocation = callingLocation;
 
-		GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
-		CRConfigUtil src_conf_util = new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY");
-		if (src_conf_util.getPropertySize() > 0) {
-			sourceLocation = LuceneIndexLocation.getIndexLocation(src_conf_util);
+		GenericConfiguration srcConf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
+		CRConfigUtil srcConfUtil = new CRConfigUtil(srcConf, "SOURCE_INDEX_KEY");
+		if (srcConfUtil.getPropertySize() > 0) {
+			sourceLocation = LuceneIndexLocation.getIndexLocation(srcConfUtil);
 		}
 		if (sourceLocation == null) {
 			sourceLocation = (LuceneIndexLocation) callingLocation;
 		}
 
-		GenericConfiguration didyou_conf = (GenericConfiguration) config.get(DIDYOUMEAN_INDEX_KEY);
-		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(didyou_conf, DIDYOUMEAN_INDEX_KEY));
+		GenericConfiguration didyouConf = (GenericConfiguration) config.get(DIDYOUMEAN_INDEX_KEY);
+		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(didyouConf, DIDYOUMEAN_INDEX_KEY));
 		didyoumeanLocation.registerDirectoriesSpecial();
 
 		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);

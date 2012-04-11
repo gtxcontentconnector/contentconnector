@@ -25,7 +25,7 @@ public class RegexReplacer extends ContentTransformer {
 	private String attribute = "";
 	private String pattern = "(?s)(<!--[ \t\n\r]*noindexstart[^>]*-->.*?<!--[ \t\n\r]*noindexend[^>]*-->)";
 	private String replacement = "";
-	private Pattern c_pattern = null;
+	private Pattern cPattern = null;
 
 	/**
 	 * Create Instance of CommentSectionStripper
@@ -37,7 +37,7 @@ public class RegexReplacer extends ContentTransformer {
 		super(config);
 		attribute = config.getString(TRANSFORMER_ATTRIBUTE_KEY);
 		pattern = config.getString(STRIPPER_PATTERN_KEY, pattern);
-		c_pattern = Pattern.compile(pattern);
+		cPattern = Pattern.compile(pattern);
 		replacement = config.getString(REPLACEMENT_PATTERN_KEY, replacement);
 	}
 
@@ -70,7 +70,7 @@ public class RegexReplacer extends ContentTransformer {
 		}
 
 		// Replace all occurrences of pattern in input
-		Matcher matcher = c_pattern.matcher(str);
+		Matcher matcher = cPattern.matcher(str);
 		str = matcher.replaceAll(replacement);
 		return str;
 	}

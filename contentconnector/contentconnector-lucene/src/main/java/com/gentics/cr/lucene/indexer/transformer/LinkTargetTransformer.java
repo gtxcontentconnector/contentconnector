@@ -38,9 +38,9 @@ public class LinkTargetTransformer extends ContentTransformer {
 	public LinkTargetTransformer(GenericConfiguration config) {
 		super(config);
 		this.config = config;
-		String att_string = config.getString(ATTRIBUTE_KEY);
-		if (att_string != null) {
-			this.attribute = att_string;
+		String attString = config.getString(ATTRIBUTE_KEY);
+		if (attString != null) {
+			this.attribute = attString;
 		}
 		externaltarget = this.config.getString(EXTERNALTARGET_KEY);
 		externaltitle = this.config.getString(EXTERNAL_TITLE_KEY);

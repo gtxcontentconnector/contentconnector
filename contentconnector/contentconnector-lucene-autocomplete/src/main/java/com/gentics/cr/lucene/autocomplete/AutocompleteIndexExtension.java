@@ -70,9 +70,9 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension implement
 			source = (LuceneIndexLocation) callingLocation;
 		}
 
-		GenericConfiguration auto_conf = (GenericConfiguration) config.get(AUTOCOMPLETE_INDEX_KEY);
+		GenericConfiguration autoConf = (GenericConfiguration) config.get(AUTOCOMPLETE_INDEX_KEY);
 		autocompleteLocation = LuceneIndexLocation
-				.getIndexLocation(new CRConfigUtil(auto_conf, AUTOCOMPLETE_INDEX_KEY));
+				.getIndexLocation(new CRConfigUtil(autoConf, AUTOCOMPLETE_INDEX_KEY));
 		autocompleteLocation.registerDirectoriesSpecial();
 
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);

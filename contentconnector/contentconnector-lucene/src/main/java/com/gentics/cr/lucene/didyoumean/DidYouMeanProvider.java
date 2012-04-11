@@ -104,12 +104,12 @@ public class DidYouMeanProvider implements IEventReceiver {
 		useDidyomeanIndexExtension = config.getBoolean(DIDYOUMEAN_USE_INDEX_EXTENSION, useDidyomeanIndexExtension);
 
 		if (!useDidyomeanIndexExtension) {
-			GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
-			source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY"));
+			GenericConfiguration srcConf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
+			source = LuceneIndexLocation.createDirectory(new CRConfigUtil(srcConf, "SOURCE_INDEX_KEY"));
 		}
 
-		GenericConfiguration auto_conf = (GenericConfiguration) config.get(DIDYOUMEAN_INDEX_KEY);
-		CRConfigUtil dymConfUtil = new CRConfigUtil(auto_conf, DIDYOUMEAN_INDEX_KEY);
+		GenericConfiguration autoConf = (GenericConfiguration) config.get(DIDYOUMEAN_INDEX_KEY);
+		CRConfigUtil dymConfUtil = new CRConfigUtil(autoConf, DIDYOUMEAN_INDEX_KEY);
 		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(dymConfUtil);
 		if (!useDidyomeanIndexExtension) {
 			didyoumeanLocation.registerDirectoriesSpecial();

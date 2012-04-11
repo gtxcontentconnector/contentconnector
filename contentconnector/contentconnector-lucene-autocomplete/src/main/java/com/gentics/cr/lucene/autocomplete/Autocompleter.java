@@ -81,18 +81,18 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 	private boolean useAutocompleteIndexExtension = false;
 
 	public Autocompleter(CRConfig config) {
-		GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
-		GenericConfiguration auto_conf = (GenericConfiguration) config.get(AUTOCOMPLETE_INDEX_KEY);
+		GenericConfiguration srcConf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
+		GenericConfiguration autoConf = (GenericConfiguration) config.get(AUTOCOMPLETE_INDEX_KEY);
 		useAutocompleteIndexExtension = config.getBoolean(
 			AUTOCOMPLETE_USE_AUTCOMPLETE_INDEXER,
 			useAutocompleteIndexExtension);
 
 		source = null;
 		if (!useAutocompleteIndexExtension) {
-			source = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY"));
+			source = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(srcConf, "SOURCE_INDEX_KEY"));
 		}
 		autocompleteLocation = LuceneIndexLocation
-				.getIndexLocation(new CRConfigUtil(auto_conf, AUTOCOMPLETE_INDEX_KEY));
+				.getIndexLocation(new CRConfigUtil(autoConf, AUTOCOMPLETE_INDEX_KEY));
 		autocompleteLocation.registerDirectoriesSpecial();
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);
 

@@ -31,10 +31,10 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 	Pattern parameterPattern = Pattern.compile("(#|\\?)(.*)");
 	Pattern excludeHostPattern = Pattern.compile("^([a-zA-Z][a-zA-Z0-9^:]*:|#|<plink)");
 
-	CRConfigUtil config;
-	LucenePathResolver pr;
-	String staticprefix = null;
-	String hostprefix = null;
+	private CRConfigUtil config;
+	private LucenePathResolver pr;
+	private String staticprefix = null;
+	private String hostprefix = null;
 
 	/**
 	 * Create new Instance.

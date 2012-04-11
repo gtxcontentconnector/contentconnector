@@ -29,7 +29,7 @@ public class RegexCopy extends ContentTransformer {
 	private String attribute = "";
 	private String target_attribute = "";
 	private String pattern = "(?si)<h1[^>]*>(.*?)</h1>";
-	private Pattern c_pattern = null;
+	private Pattern cPattern = null;
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
@@ -46,7 +46,7 @@ public class RegexCopy extends ContentTransformer {
 		attribute = config.getString(TRANSFORMER_ATTRIBUTE_KEY);
 		target_attribute = config.getString(TARGET_ATTRIBUTE_KEY);
 		pattern = config.getString(STRIPPER_PATTERN_KEY, pattern);
-		c_pattern = Pattern.compile(pattern);
+		cPattern = Pattern.compile(pattern);
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class RegexCopy extends ContentTransformer {
 		}
 
 		// Replace all occurrences of pattern in input
-		Matcher matcher = c_pattern.matcher(str);
+		Matcher matcher = cPattern.matcher(str);
 		if (matcher.find()) {
 			return matcher.group(1);
 		}
