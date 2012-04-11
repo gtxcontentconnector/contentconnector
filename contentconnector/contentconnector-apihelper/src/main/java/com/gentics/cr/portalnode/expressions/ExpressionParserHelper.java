@@ -1,4 +1,3 @@
-
 package com.gentics.cr.portalnode.expressions;
 
 import org.apache.log4j.Logger;
@@ -23,24 +22,23 @@ public final class ExpressionParserHelper {
 	 * Log4j logger for error and debug messages
 	 */
 	private static Logger logger = Logger.getLogger(ExpressionParserHelper.class);
-	
+
 	/**
 	 * {@link ExpressionParser} instance from Gentics Portal.Node API.
 	 */
-	private static ExpressionParser expressionParser =
-		ExpressionParser.getInstance();
+	private static ExpressionParser expressionParser = ExpressionParser.getInstance();
 
 	/**
 	 * {@link ExpressionEvaluator} instance from Gentics Portal.Node API.
 	 */
-	private static ExpressionEvaluator expressionEvaluator =
-		new ExpressionEvaluator();
+	private static ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
 
 	/**
 	 * private constructor for the utility class.
 	 */
-	private ExpressionParserHelper() { }
-	
+	private ExpressionParserHelper() {
+	}
+
 	/**
 	 * Parse the given expression {@link String} into an {@link Expression}.
 	 * @param rule {@link String} String containing the rule
@@ -62,8 +60,8 @@ public final class ExpressionParserHelper {
 	 * @throws ExpressionParserException when the expression cannot be matched
 	 * (is not boolean or contains errors)
 	 */
-	public static boolean match(final Expression expression,
-		final Resolvable objectToMatch) throws ExpressionParserException {
+	public static boolean match(final Expression expression, final Resolvable objectToMatch)
+			throws ExpressionParserException {
 		return expressionEvaluator.match(expression, objectToMatch);
 	}
 
@@ -78,12 +76,12 @@ public final class ExpressionParserHelper {
 	 * @throws ParserException when the rule cannot be parsed into an
 	 * {@link Expression}.
 	 */
-	public static boolean match(final String rule, final Resolvable objectToMatch)
-			throws ExpressionParserException, ParserException {
+	public static boolean match(final String rule, final Resolvable objectToMatch) throws ExpressionParserException,
+			ParserException {
 		Expression expression = parse(rule);
 		return expressionEvaluator.match(expression, objectToMatch);
 	}
-	
+
 	/**
 	 * Create a {@link DatasourceFilter} for the given rule. With the
 	 * DatasourceFilter you can get Objects from a {@link Datasource}.
@@ -97,12 +95,12 @@ public final class ExpressionParserHelper {
 	 * doesn't specify when this exception is thrown. Documententation request was
 	 * sent to Gentics Support @2010-06-07, Ticket number: 37059
 	 */
-	public static DatasourceFilter createDatasourceFilter(final String rule,
-			final Datasource ds) throws ParserException, ExpressionParserException {
+	public static DatasourceFilter createDatasourceFilter(final String rule, final Datasource ds)
+			throws ParserException, ExpressionParserException {
 		Expression expression = parse(rule);
 		return ExpressionParserHelper.createDatasourceFilter(expression, ds);
 	}
-	
+
 	/**
 	 * Create a {@link DatasourceFilter} for the given expression. With the
 	 * DatasourceFilter you can get Objects from a {@link Datasource}.
@@ -117,8 +115,8 @@ public final class ExpressionParserHelper {
 	 * doesn't specify when this exception is thrown. Documententation request was
 	 * sent to Gentics Support @2010-06-07, Ticket number: 37059
 	 */
-	public static DatasourceFilter createDatasourceFilter(final Expression expression,
-			final Datasource ds) throws ExpressionParserException {
+	public static DatasourceFilter createDatasourceFilter(final Expression expression, final Datasource ds)
+			throws ExpressionParserException {
 		if (ds != null) {
 			return ds.createDatasourceFilter(expression);
 		} else {

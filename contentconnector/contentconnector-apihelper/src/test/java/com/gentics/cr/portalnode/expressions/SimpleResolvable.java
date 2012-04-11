@@ -7,11 +7,11 @@ import com.gentics.api.lib.resolving.Resolvable;
 public class SimpleResolvable implements Resolvable {
 
 	private Map<String, Object> attributes;
-	
+
 	public SimpleResolvable(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
+
 	public boolean canResolve() {
 		return true;
 	}

@@ -6,7 +6,6 @@ import com.gentics.api.portalnode.templateengine.TemplateProcessor;
 import com.gentics.lib.image.GenticsImageResizer;
 import com.gentics.portalnode.portal.Portal;
 
-
 /**
  * 
  * Last changed: $Date: 2009-06-26 15:48:16 +0200 (Fr, 26 Jun 2009) $
@@ -21,23 +20,21 @@ public class PortalNodeInteractor {
 	 * @param key datasource identifyer e.g.: ccr, pcr,...
 	 * @return
 	 */
-	public static Datasource getPortalnodeDatasource(String key)
-	{
+	public static Datasource getPortalnodeDatasource(String key) {
 		return (Portal.getCurrentPortal().createDatasource(key));
 	}
-	
+
 	/**
 	 * Get a TemplateProcessor from a running Portal.Node Instance
 	 * @param portlet
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
-	public static TemplateProcessor getPortletTemplateProcessor(GenticsPortlet portlet)
-	{
+	public static TemplateProcessor getPortletTemplateProcessor(GenticsPortlet portlet) {
 		//TODO Get not depricated method from DEV
-		return(portlet.getTemplateProcessor(null, null));
+		return (portlet.getTemplateProcessor(null, null));
 	}
-	
+
 	/**
 	 * Use Portal.Node functionality to resize Images
 	 * @param binary - the image data as byte array
@@ -46,8 +43,7 @@ public class PortalNodeInteractor {
 	 * @param imageType - the image type e.g. png
 	 * @return
 	 */
-	public static byte[] resizeImage(byte[] binary,int width, int height, String imageType)
-	{
+	public static byte[] resizeImage(byte[] binary, int width, int height, String imageType) {
 		return GenticsImageResizer.resize(binary, Math.max(width, 0), Math.max(height, 0), imageType);
 	}
 }
