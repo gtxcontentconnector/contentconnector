@@ -687,7 +687,7 @@ public abstract class IndexLocation {
 					if (e != null && e.getKey() != null) {
 						key = e.getKey();
 					}
-					if (config != null && config.getName() != null) {
+					if (config.getName() != null) {
 						name = config.getName();
 					}
 					log.error("Error while creating cr map for " + name + "." + key + " - " + cex.getMessage(), cex);
