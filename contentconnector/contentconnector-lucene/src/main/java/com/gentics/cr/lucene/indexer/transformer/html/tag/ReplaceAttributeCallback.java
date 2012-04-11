@@ -10,9 +10,12 @@ public class ReplaceAttributeCallback implements AttributeCallback {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final void invokeCallback(final StringBuffer html, final String attributeName,
-			final String attributeValue) {
-		html.replace(0, html.length(), html.toString().replaceAll("(?i)" + attributeName + "=\"?[^\"]*\"?",
+	public final void invokeCallback(final StringBuffer html, final String attributeName, final String attributeValue) {
+		html.replace(
+			0,
+			html.length(),
+			html.toString().replaceAll(
+				"(?i)" + attributeName + "=\"?[^\"]*\"?",
 				attributeName + "=\"" + attributeValue + "\""));
 	}
 

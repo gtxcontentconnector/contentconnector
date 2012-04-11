@@ -31,21 +31,20 @@ public class DidyoumeanIndexDeleteJob extends AbstractUpdateCheckerJob {
 	 * @param autocompleter
 	 *            the {@link DidyoumeanIndexExtension} to clear
 	 */
-	public DidyoumeanIndexDeleteJob(final CRConfig config,
-			final IndexLocation indexLoc, DidyoumeanIndexExtension didyoumean) {
+	public DidyoumeanIndexDeleteJob(final CRConfig config, final IndexLocation indexLoc,
+		DidyoumeanIndexExtension didyoumean) {
 		super(config, indexLoc, null);
 		log = Logger.getLogger(DidyoumeanIndexDeleteJob.class);
 
 		this.identifyer = identifyer.concat(":clear");
 		this.didyoumean = didyoumean;
 	}
-	
+
 	/**
 	 * starts the job - is called by the IndexJobQueue
 	 */
 	@Override
-	protected final void indexCR(final IndexLocation indexLocation,
-			final CRConfigUtil config) throws CRException {
+	protected final void indexCR(final IndexLocation indexLocation, final CRConfigUtil config) throws CRException {
 
 		log.debug("Starting to clear index.");
 		CustomSpellChecker spellchecker = didyoumean.getSpellchecker();
@@ -54,7 +53,7 @@ public class DidyoumeanIndexDeleteJob extends AbstractUpdateCheckerJob {
 			didyoumean.getDidyoumeanLocation().resetIndexJobCreationTimes();
 		} catch (IOException e) {
 			log.error("Could not clear index", e);
-		} 
+		}
 		log.debug("Finished clearing index.");
 
 	}

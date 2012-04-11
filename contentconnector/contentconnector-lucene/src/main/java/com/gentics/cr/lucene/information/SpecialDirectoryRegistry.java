@@ -19,12 +19,14 @@ public final class SpecialDirectoryRegistry {
 	/**
 	 * Directory map.
 	 */
-	private Hashtable<String, SpecialDirectoryInformationEntry> dirMap = 
-		new Hashtable<String, SpecialDirectoryInformationEntry>();
+	private Hashtable<String, SpecialDirectoryInformationEntry> dirMap = new Hashtable<String, SpecialDirectoryInformationEntry>();
+
 	/**
 	 * Prevent instantiation.
 	 */
-	private SpecialDirectoryRegistry() { }
+	private SpecialDirectoryRegistry() {
+	}
+
 	/**
 	 * Get the singleton instance.
 	 * @return singleton instance.
@@ -35,31 +37,30 @@ public final class SpecialDirectoryRegistry {
 		}
 		return instance;
 	}
+
 	/**
 	 * Register a directory.
 	 * @param dir directory to register.
 	 */
 	public void register(final Directory dir) {
-		dirMap.put(SpecialDirectoryInformationEntry
-				.createDirectoryIdentifyer(dir),
-				new SpecialDirectoryInformationEntry(dir));
+		dirMap.put(
+			SpecialDirectoryInformationEntry.createDirectoryIdentifyer(dir),
+			new SpecialDirectoryInformationEntry(dir));
 	}
-	
+
 	/**
 	 * Unregister the directory.
 	 * @param dir directory to unregister.
 	 */
 	public void unregister(final Directory dir) {
-		dirMap.remove(SpecialDirectoryInformationEntry
-				.createDirectoryIdentifyer(dir));
+		dirMap.remove(SpecialDirectoryInformationEntry.createDirectoryIdentifyer(dir));
 	}
-	
+
 	/**
 	 * Get special directory entries.
 	 * @return entries.
 	 */
-	public Collection<SpecialDirectoryInformationEntry> 
-			getSpecialDirectories() {
+	public Collection<SpecialDirectoryInformationEntry> getSpecialDirectories() {
 		return dirMap.values();
 	}
 

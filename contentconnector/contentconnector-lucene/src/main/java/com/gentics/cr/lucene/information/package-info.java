@@ -3,3 +3,4 @@
  * of the gentics content connector.
 **/
 package com.gentics.cr.lucene.information;
+

@@ -18,16 +18,14 @@ public class LockedIndexException extends Exception {
 	 * Create new LockedIndexException
 	 * @param ex
 	 */
-	public LockedIndexException(Exception ex)
-	{
+	public LockedIndexException(Exception ex) {
 		super(ex.getMessage(), ex);
 	}
-	
+
 	/**
 	 * Create new LocketIndexException without a causing exception
 	 */
-	public LockedIndexException()
-	{
-		
+	public LockedIndexException() {
+
 	}
 }

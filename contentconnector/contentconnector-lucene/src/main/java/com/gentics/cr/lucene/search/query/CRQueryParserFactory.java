@@ -11,13 +11,14 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.util.generics.Instanciator;
+
 /**
  * Parser factory.
  * @author Christopher
  *
  */
 public final class CRQueryParserFactory {
-	
+
 	/**
 	 * Log4j logger.
 	 */
@@ -26,20 +27,21 @@ public final class CRQueryParserFactory {
 	/**
 	 * Default constructor to prevent instantiation of utility class.
 	 */
-	private CRQueryParserFactory() { }
-	
+	private CRQueryParserFactory() {
+	}
+
 	/**
 	 * max clause key.
 	 */
 	private static final String MAX_CLAUSES_KEY = "maxqueryclauses";
-	
+
 	/**
 	 * configuration key for lower case expanded terms.
 	 * configures if the wildcardqueries should be automatically converted 
 	 * to lowercase by lucene.
 	 */
 	private static final String LOWER_CASE_EXPANDED_TERMS_KEY = "lowercaseexpandedterms";
-	
+
 	/**
 	 * Query parser class key.
 	 */
@@ -48,7 +50,7 @@ public final class CRQueryParserFactory {
 	 * queryparser key.
 	 */
 	private static final String QUERY_PARSER_CONFIG = "queryparser";
-	
+
 	/***
 	 * Generates a prepared and configured QueryParser.
 	 * @param searchedAttributes attributes-
@@ -57,53 +59,49 @@ public final class CRQueryParserFactory {
 	 * @param config config
 	 * @return query parser
 	 */
-	public static QueryParser getConfiguredParser(
-			final String[] searchedAttributes, final Analyzer analyzer,
+	public static QueryParser getConfiguredParser(final String[] searchedAttributes, final Analyzer analyzer,
 			final CRRequest request, final CRConfig config) {
-			QueryParser parser = null;
-			
-			
-			Object subconfig = config.get(QUERY_PARSER_CONFIG);
-			if (subconfig != null && subconfig instanceof GenericConfiguration) {
-				GenericConfiguration pconfig = (GenericConfiguration) subconfig;
-				
-				String parserClass = pconfig.getString(QUERY_PARSER_CLASS);
-				if (parserClass != null) {
-					parser = (QueryParser) Instanciator.getInstance(parserClass,
-						new Object[][]{new Object[]{LuceneVersion.getVersion(),
-								searchedAttributes, analyzer, request}});
-					if (parser == null) {
-						logger.warn(String.format(
-								"Configured %s '%s' of CRConfig %s was not initialized",
-								QUERY_PARSER_CLASS,
-								parserClass,
-								config.getName()));
-					}
-					
+		QueryParser parser = null;
+
+		Object subconfig = config.get(QUERY_PARSER_CONFIG);
+		if (subconfig != null && subconfig instanceof GenericConfiguration) {
+			GenericConfiguration pconfig = (GenericConfiguration) subconfig;
+
+			String parserClass = pconfig.getString(QUERY_PARSER_CLASS);
+			if (parserClass != null) {
+				parser = (QueryParser) Instanciator.getInstance(parserClass, new Object[][] { new Object[] {
+						LuceneVersion.getVersion(), searchedAttributes, analyzer, request } });
+				if (parser == null) {
+					logger.warn(String.format(
+						"Configured %s '%s' of CRConfig %s was not initialized",
+						QUERY_PARSER_CLASS,
+						parserClass,
+						config.getName()));
 				}
 
 			}
 
-			if (parser == null) {
-				//USE DEFAULT QUERY PARSER
-				parser = new QueryParser(LuceneVersion.getVersion(),
-						searchedAttributes[0], analyzer);
-			}
+		}
 
-			//CONFIGURE MAX CLAUSES
-			BooleanQuery.setMaxClauseCount(config.getInteger(QUERY_PARSER_CONFIG + "."
-					+ MAX_CLAUSES_KEY, BooleanQuery.getMaxClauseCount()));
+		if (parser == null) {
+			//USE DEFAULT QUERY PARSER
+			parser = new QueryParser(LuceneVersion.getVersion(), searchedAttributes[0], analyzer);
+		}
 
-			//CONFIGURE LOWER CASE EXPANDED TERMS (useful for WhitespaceAnalyzer)
-			parser.setLowercaseExpandedTerms(config.getBoolean(QUERY_PARSER_CONFIG + "."
-					+ LOWER_CASE_EXPANDED_TERMS_KEY, true));
+		//CONFIGURE MAX CLAUSES
+		BooleanQuery.setMaxClauseCount(config.getInteger(
+			QUERY_PARSER_CONFIG + "." + MAX_CLAUSES_KEY,
+			BooleanQuery.getMaxClauseCount()));
 
+		//CONFIGURE LOWER CASE EXPANDED TERMS (useful for WhitespaceAnalyzer)
+		parser.setLowercaseExpandedTerms(config.getBoolean(
+			QUERY_PARSER_CONFIG + "." + LOWER_CASE_EXPANDED_TERMS_KEY,
+			true));
 
-			//ADD SUPPORT FOR LEADING WILDCARDS
-			parser.setAllowLeadingWildcard(true);
-				parser.setMultiTermRewriteMethod(MultiTermQuery
-						.SCORING_BOOLEAN_QUERY_REWRITE);
+		//ADD SUPPORT FOR LEADING WILDCARDS
+		parser.setAllowLeadingWildcard(true);
+		parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
 
-			return parser;
+		return parser;
 	}
 }

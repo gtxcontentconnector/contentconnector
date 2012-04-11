@@ -149,8 +149,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * @throws IOException
 	 *             if Spellchecker can not open the directory
 	 */
-	public CustomSpellChecker(final LuceneIndexLocation sspellIndex,
-			final StringDistance xsd) throws IOException {
+	public CustomSpellChecker(final LuceneIndexLocation sspellIndex, final StringDistance xsd) throws IOException {
 		setSpellIndex(sspellIndex);
 		setStringDistance(xsd);
 	}
@@ -169,8 +168,8 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * @throws IOException
 	 *             if spellchecker can not open the directory
 	 */
-	public CustomSpellChecker(final LuceneIndexLocation sspellIndex,
-			final Float xminScore, final Integer xminDfreq) throws IOException {
+	public CustomSpellChecker(final LuceneIndexLocation sspellIndex, final Float xminScore, final Integer xminDfreq)
+		throws IOException {
 		this(sspellIndex, new LevensteinDistance());
 		if (xminScore != null) {
 			this.minScore = xminScore;
@@ -191,8 +190,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 *             if spellchecker can not open the directory
 	 */
 	// TODO: we should make this final as it is called in the constructor
-	public final void setSpellIndex(final LuceneIndexLocation spellIndexDir)
-			throws IOException {
+	public final void setSpellIndex(final LuceneIndexLocation spellIndexDir) throws IOException {
 		// this could be the same directory as the current spellIndex
 		// modifications to the directory should be synchronized
 		synchronized (modifyCurrentIndexLock) {
@@ -257,8 +255,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 *             if the underlying index throws an {@link IOException}
 	 * @return String[]
 	 */
-	public final String[] suggestSimilar(final String word, final int numSug)
-			throws IOException {
+	public final String[] suggestSimilar(final String word, final int numSug) throws IOException {
 		return this.suggestSimilar(word, numSug, null, null, false);
 	}
 
@@ -299,15 +296,13 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 *         (only if restricted mode): the popularity of the suggest words in
 	 *         the field of the user index
 	 */
-	public final String[] suggestSimilar(final String word, final int numSug,
-			final IndexReader ir, final String field, final boolean morePopular)
-			throws IOException {
+	public final String[] suggestSimilar(final String word, final int numSug, final IndexReader ir, final String field,
+			final boolean morePopular) throws IOException {
 		// obtainSearcher calls ensureOpen
 		ensureOpen();
 
 		IndexAccessor ia = this.spellIndex.getAccessor();
-		final IndexSearcher indexSearcher = (IndexSearcher) ia
-				.getPrioritizedSearcher();
+		final IndexSearcher indexSearcher = (IndexSearcher) ia.getPrioritizedSearcher();
 
 		try {
 			float min = this.minScore;
@@ -319,8 +314,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 			int intfreq = 0;
 			if (ir != null) {
 				if (field != null) {
-					if ("all".equalsIgnoreCase(field)
-							|| (field != null && field.contains(","))) {
+					if ("all".equalsIgnoreCase(field) || (field != null && field.contains(","))) {
 						if ("all".equalsIgnoreCase(field)) {
 							fieldnames = ir.getFieldNames(FieldOption.ALL);
 						} else {
@@ -400,8 +394,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 
 				// don't suggest a word for itself, that would be silly
 				if (sugWord.getString().equals(word)) {
-					log.debug("  Found word is the same as input word (" + word
-							+ ") -> next");
+					log.debug("  Found word is the same as input word (" + word + ") -> next");
 					continue;
 				}
 
@@ -409,8 +402,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 				sugWord.setScore(sd.getDistance(word, sugWord.getString()));
 				log.debug("  Distance score: " + sugWord.getScore());
 				if (sugWord.getScore() < min) {
-					log.debug("  Found word does not match min score (" + min
-							+ ") -> next");
+					log.debug("  Found word does not match min score (" + min + ") -> next");
 					continue;
 				}
 
@@ -428,10 +420,8 @@ public class CustomSpellChecker implements java.io.Closeable {
 					sugWord.setFreq(sugfreq); // freq in the index
 					log.debug("  DocFreq: " + sugWord.getFreq());
 					// don't suggest a word that is not present in the field
-					if ((morePopular && goalFreq > sugWord.getFreq())
-							|| sugWord.getFreq() < minfrq) {
-						log.debug("  Found word doese not match min frequency ("
-								+ minfrq + ") -> next");
+					if ((morePopular && goalFreq > sugWord.getFreq()) || sugWord.getFreq() < minfrq) {
+						log.debug("  Found word doese not match min frequency (" + minfrq + ") -> next");
 						continue;
 					}
 				}
@@ -469,8 +459,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * @param boost
 	 *            boost
 	 */
-	private static void add(final BooleanQuery q, final String name,
-			final String value, final float boost) {
+	private static void add(final BooleanQuery q, final String name, final String value, final float boost) {
 		Query tq = new TermQuery(new Term(name, value));
 		tq.setBoost(boost);
 		q.add(new BooleanClause(tq, BooleanClause.Occur.SHOULD));
@@ -486,10 +475,8 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * @param value
 	 *            value
 	 */
-	private static void add(final BooleanQuery q, final String name,
-			final String value) {
-		q.add(new BooleanClause(new TermQuery(new Term(name, value)),
-				BooleanClause.Occur.SHOULD));
+	private static void add(final BooleanQuery q, final String name, final String value) {
+		q.add(new BooleanClause(new TermQuery(new Term(name, value)), BooleanClause.Occur.SHOULD));
 	}
 
 	/**
@@ -543,8 +530,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	public final boolean exist(final String word) throws IOException {
 		ensureOpen();
 		final IndexAccessor accessor = this.spellIndex.getAccessor();
-		final IndexSearcher indexSearcher = (IndexSearcher) accessor
-				.getPrioritizedSearcher();
+		final IndexSearcher indexSearcher = (IndexSearcher) accessor.getPrioritizedSearcher();
 		try {
 			return indexSearcher.docFreq(F_WORD_TERM.createTerm(word)) > 0;
 		} finally {
@@ -578,8 +564,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 			final IndexAccessor accessor = this.spellIndex.getAccessor();
 			final IndexWriter writer = accessor.getWriter();
 			writer.setMergeFactor(300);
-			final IndexSearcher indexSearcher = (IndexSearcher) accessor
-					.getPrioritizedSearcher();
+			final IndexSearcher indexSearcher = (IndexSearcher) accessor.getPrioritizedSearcher();
 			int obj_count = 0;
 
 			try {
@@ -598,8 +583,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 					}
 
 					// ok index the word
-					Document doc = createDocument(word, getMin(len),
-							getMax(len));
+					Document doc = createDocument(word, getMin(len), getMax(len));
 					writer.addDocument(doc);
 					obj_count++;
 				}
@@ -622,7 +606,6 @@ public class CustomSpellChecker implements java.io.Closeable {
 			}
 		}
 	}
-
 
 	/**
 	 * 1.
@@ -699,11 +682,9 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 *            ng
 	 * @return document
 	 */
-	private static Document createDocument(final String text, final int ng1,
-			final int ng2) {
+	private static Document createDocument(final String text, final int ng1, final int ng2) {
 		Document doc = new Document();
-		doc.add(new Field(F_WORD, text, Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
+		doc.add(new Field(F_WORD, text, Field.Store.YES, Field.Index.NOT_ANALYZED));
 		// orig term
 		addGram(text, doc, ng1, ng2);
 		return doc;
@@ -721,25 +702,21 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * @param ng2
 	 *            n
 	 */
-	private static void addGram(final String text, final Document doc,
-			final int ng1, final int ng2) {
+	private static void addGram(final String text, final Document doc, final int ng1, final int ng2) {
 		int len = text.length();
 		for (int ng = ng1; ng <= ng2; ng++) {
 			String key = "gram" + ng;
 			String end = null;
 			for (int i = 0; i < len - ng + 1; i++) {
 				String gram = text.substring(i, i + ng);
-				doc.add(new Field(key, gram, Field.Store.NO,
-						Field.Index.NOT_ANALYZED));
+				doc.add(new Field(key, gram, Field.Store.NO, Field.Index.NOT_ANALYZED));
 				if (i == 0) {
-					doc.add(new Field("start" + ng, gram, Field.Store.NO,
-							Field.Index.NOT_ANALYZED));
+					doc.add(new Field("start" + ng, gram, Field.Store.NO, Field.Index.NOT_ANALYZED));
 				}
 				end = gram;
 			}
 			if (end != null) { // may not be present if len==ng1
-				doc.add(new Field("end" + ng, end, Field.Store.NO,
-						Field.Index.NOT_ANALYZED));
+				doc.add(new Field("end" + ng, end, Field.Store.NO, Field.Index.NOT_ANALYZED));
 			}
 		}
 	}

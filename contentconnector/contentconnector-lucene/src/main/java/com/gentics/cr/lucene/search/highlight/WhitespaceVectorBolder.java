@@ -13,6 +13,7 @@ import org.apache.lucene.search.vectorhighlight.WhitespaceFragmentsBuilder;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+
 /**
  * WhitespaceVectorBolder.
  * Last changed: $Date: 2009-06-26 15:48:16 +0200 (Fr, 26 Jun 2009) $
@@ -25,8 +26,7 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	/**
 		 * Log4j logger for error and debug messages.
 		 */
-		private static final Logger LOGGER =
-			Logger.getLogger(WhitespaceVectorBolder.class);
+	private static final Logger LOGGER = Logger.getLogger(WhitespaceVectorBolder.class);
 	/**
 	 * default value for max frequents.
 	 */
@@ -35,7 +35,7 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	 * default fragment size.
 	 */
 	private static final int DEFAULT_FRAGMENT_SIZE = 100;
-	
+
 	/**
 	 * Create new Instance of PhraseBolder.
 	 * @param config config
@@ -44,7 +44,6 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 		super(config);
 	}
 
-	
 	/**
 	 * @param parsedQuery query.
 	 * @param reader reader.
@@ -52,29 +51,31 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	 * @param fieldName fieldname.
 	 * @return string.
 	 */
-	public final String highlight(final Query parsedQuery,
-			final IndexReader reader, final int docId, final String fieldName) {
-		UseCase uc = MonitorFactory.startUseCase(
-				"Highlight.WhitespaceVectorBolder.highlight()");
+	public final String highlight(final Query parsedQuery, final IndexReader reader, final int docId,
+			final String fieldName) {
+		UseCase uc = MonitorFactory.startUseCase("Highlight.WhitespaceVectorBolder.highlight()");
 		StringBuilder result = new StringBuilder();
 		if (fieldName != null && parsedQuery != null) {
-			FastVectorHighlighter highlighter =
-				new FastVectorHighlighter(true, true, new SimpleFragListBuilder(),
-						new WhitespaceFragmentsBuilder(
-						new String[]{getHighlightPrefix()},
-						new String[]{getHighlightPostfix()}));
+			FastVectorHighlighter highlighter = new FastVectorHighlighter(true, true, new SimpleFragListBuilder(),
+					new WhitespaceFragmentsBuilder(new String[] { getHighlightPrefix() },
+							new String[] { getHighlightPostfix() }));
 			FieldQuery fieldQuery = highlighter.getFieldQuery(parsedQuery);
 			//highlighter.setTextFragmenter(new WordCountFragmenter(fragmentSize));
 
 			//TokenStream tokenStream = analyzer.tokenStream(
 			//		this.getHighlightAttribute(), new StringReader(attribute));
 			try {
-				UseCase ucFragments = MonitorFactory.startUseCase(
-				"Highlight.WhitespaceVectorBolder.highlight()#getFragments");
+				UseCase ucFragments = MonitorFactory
+						.startUseCase("Highlight.WhitespaceVectorBolder.highlight()#getFragments");
 				//TextFragment[] frags = highlighter.getBestTextFragments(tokenStream,
 				//		attribute, true, numMaxFragments);
-				String[] frags = highlighter.getBestFragments(fieldQuery, reader, docId,
-						fieldName, getFragmentSize(), getMaxFragments());
+				String[] frags = highlighter.getBestFragments(
+					fieldQuery,
+					reader,
+					docId,
+					fieldName,
+					getFragmentSize(),
+					getMaxFragments());
 				ucFragments.stop();
 				boolean first = true;
 				if (frags != null) {
@@ -96,7 +97,6 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 		return result.toString();
 	}
 
-
 	@Override
 	protected final int getDefaultFragmentSize() {
 		return DEFAULT_FRAGMENT_SIZE;
@@ -106,7 +106,5 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	protected final int getDefaultMaxFragments() {
 		return DEFAULT_MAX_FRAGMENTS;
 	}
-
-
 
 }

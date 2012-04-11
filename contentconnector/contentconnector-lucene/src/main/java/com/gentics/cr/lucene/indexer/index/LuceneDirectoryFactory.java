@@ -18,25 +18,23 @@ public final class LuceneDirectoryFactory {
 	/**
 	 * Logger.
 	 */
-	protected static final Logger LOG = Logger
-				.getLogger(LuceneDirectoryFactory.class);
+	protected static final Logger LOG = Logger.getLogger(LuceneDirectoryFactory.class);
 	/**
 	 * Key that determines if a directory should be created in memory.
 	 */
 	protected static final String RAM_IDENTIFICATION_KEY = "RAM";
-	
+
 	/**
 	 * Hashtable to cache directories.
 	 */
-	private static Hashtable<String, Directory> 
-		cachedDirectories = new Hashtable<String, Directory>();
-	
+	private static Hashtable<String, Directory> cachedDirectories = new Hashtable<String, Directory>();
+
 	/**
 	 * Private constructor.
 	 */
-	private LuceneDirectoryFactory() { }
-	
-	
+	private LuceneDirectoryFactory() {
+	}
+
 	/**
 	 * Fetches a directory for the given location. 
 	 * If there is none it creates a directory 
@@ -54,7 +52,7 @@ public final class LuceneDirectoryFactory {
 		}
 		return dir;
 	}
-	
+
 	/**
 	 * Creates a new directory.
 	 * @param directoryLocation location
@@ -62,8 +60,7 @@ public final class LuceneDirectoryFactory {
 	 */
 	private static Directory createDirectory(final String directoryLocation) {
 		Directory dir;
-		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(directoryLocation)
-				|| directoryLocation == null
+		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(directoryLocation) || directoryLocation == null
 				|| directoryLocation.startsWith(RAM_IDENTIFICATION_KEY)) {
 			dir = createRAMDirectory(directoryLocation);
 
@@ -80,7 +77,7 @@ public final class LuceneDirectoryFactory {
 		}
 		return dir;
 	}
-	
+
 	/**
 	 * Creates a FSDirectory on the given location.
 	 * @param indexLoc location.
@@ -88,9 +85,7 @@ public final class LuceneDirectoryFactory {
 	 * @return FSDirectory
 	 * @throws IOException on error.
 	 */
-	protected static Directory createFSDirectory(final File indexLoc,
-			final String name)
-			throws IOException {
+	protected static Directory createFSDirectory(final File indexLoc, final String name) throws IOException {
 		if (!indexLoc.exists()) {
 			LOG.debug("Indexlocation did not exist. Creating directories...");
 			indexLoc.mkdirs();
@@ -99,7 +94,7 @@ public final class LuceneDirectoryFactory {
 		LOG.debug("Creating FS Directory for Index [" + name + "]");
 		return (dir);
 	}
-	
+
 	/**
 	 * Creates a Directory in memory.
 	 * @param name name of the directory

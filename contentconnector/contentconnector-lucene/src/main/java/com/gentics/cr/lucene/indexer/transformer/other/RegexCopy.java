@@ -13,7 +13,6 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
 
-
 /**
  * Get content out of an attribute with a regular expression and copy it to
  * another attribute.
@@ -35,7 +34,7 @@ public class RegexCopy extends ContentTransformer {
 	 * Log4j logger for error and debug messages.
 	 */
 	private static final Logger logger = Logger.getLogger(RegexCopy.class);
-	
+
 	/**
 	 * Create Instance of CommentSectionStripper
 	 * if the pattern is not configured in the config: the default pattern
@@ -61,25 +60,23 @@ public class RegexCopy extends ContentTransformer {
 				}
 			}
 		} else {
-			log.error(
-					"Configured attribute is null. Bean will not be processed");
+			log.error("Configured attribute is null. Bean will not be processed");
 		}
-	
+
 	}
-	
+
 	private String getStringContents(final Object obj) {
 		String str = null;
 		if (obj instanceof String) {
 			str = (String) obj;
 		} else if (obj instanceof byte[]) {
 			try {
-				str = CRUtil.readerToString(new InputStreamReader(
-						new ByteArrayInputStream((byte[]) obj)));
+				str = CRUtil.readerToString(new InputStreamReader(new ByteArrayInputStream((byte[]) obj)));
 			} catch (IOException e) {
 				logger.error("Error converting the object into a string.", e);
 			}
 		}
-		
+
 		// Replace all occurrences of pattern in input
 		Matcher matcher = c_pattern.matcher(str);
 		if (matcher.find()) {
@@ -91,7 +88,7 @@ public class RegexCopy extends ContentTransformer {
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

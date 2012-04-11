@@ -33,7 +33,7 @@ public class CRQueryParser extends QueryParser {
 	 * Constant 3.
 	 */
 	private static final int THREE = 3;
-	
+
 	/**
 	 * attributes to search in.
 	 */
@@ -48,20 +48,18 @@ public class CRQueryParser extends QueryParser {
 	 * Log4j logger for error and debug messages.
 	 */
 	private static final Logger LOGGER = Logger.getLogger(CRQueryParser.class);
-	
+
 	/**
 	 * initialize a CRQeryParser with multiple search attributes.
 	 * @param version version of lucene
 	 * @param searchedAttributes attributes to search in
 	 * @param analyzer analyzer for index
 	 */
-	public CRQueryParser(final Version version, final String[] searchedAttributes,
-			final Analyzer analyzer) {
+	public CRQueryParser(final Version version, final String[] searchedAttributes, final Analyzer analyzer) {
 		super(version, searchedAttributes[0], analyzer);
 		attributesToSearchIn = Arrays.asList(searchedAttributes);
 	}
-	
- 
+
 	/**
 	 * initialize a CRQeryParser with multiple search attributes.
 	 * @param version version of lucene
@@ -69,8 +67,8 @@ public class CRQueryParser extends QueryParser {
 	 * @param analyzer analyzer for index
 	 * @param crRequest request to get additional parameters from.
 	 */
-	public CRQueryParser(final Version version, final String[] searchedAttributes,
-			final Analyzer analyzer, final CRRequest crRequest) {
+	public CRQueryParser(final Version version, final String[] searchedAttributes, final Analyzer analyzer,
+		final CRRequest crRequest) {
 		this(version, searchedAttributes, analyzer);
 		this.request = crRequest;
 	}
@@ -93,8 +91,7 @@ public class CRQueryParser extends QueryParser {
 		LOGGER.debug("parsed query: " + crQuery);
 		return super.parse(crQuery);
 	}
-	
-	
+
 	/**
 	 * the query is splitted and all special characters are replaced in a way as
 	 * if they where spaces before. So "content:a-b" becomes "content:a +content:b".
@@ -110,12 +107,14 @@ public class CRQueryParser extends QueryParser {
 			String valueWithAttribute = valueMatcher.group(TWO);
 			String attribute = valueWithAttribute.indexOf(":") != -1 ? valueWithAttribute.replaceAll(":.*$", "") : "";
 			String charsAfterValue = valueMatcher.group(THREE);
-			if (!"AND".equalsIgnoreCase(valueWithAttribute)
-					&& !"OR".equalsIgnoreCase(valueWithAttribute)
+			if (!"AND".equalsIgnoreCase(valueWithAttribute) && !"OR".equalsIgnoreCase(valueWithAttribute)
 					&& !"NOT".equalsIgnoreCase(valueWithAttribute) && attributesToSearchIn.contains(attribute)) {
-				if(!valueWithAttribute.matches("[^:]+:\"[^\"]+\"") && valueWithAttribute.matches(".*[" + specialCharacters +  "].*")) {
+				if (!valueWithAttribute.matches("[^:]+:\"[^\"]+\"")
+						&& valueWithAttribute.matches(".*[" + specialCharacters + "].*")) {
 					String replacement = Matcher.quoteReplacement(charsBeforeValue
-							+ "(" + valueWithAttribute.replaceAll("\\\\?[" + specialCharacters + "]([^" + specialCharacters + "]+)", " +" + attribute + ":$1") + ")" + charsAfterValue);
+							+ "("
+							+ valueWithAttribute.replaceAll("\\\\?[" + specialCharacters + "]([^" + specialCharacters
+									+ "]+)", " +" + attribute + ":$1") + ")" + charsAfterValue);
 					valueMatcher.appendReplacement(newQuery, replacement);
 				}
 			}
@@ -123,7 +122,6 @@ public class CRQueryParser extends QueryParser {
 		valueMatcher.appendTail(newQuery);
 		return newQuery.toString();
 	}
-
 
 	/**
 	 * parse given query and prepare it to search in multiple attributes with
@@ -149,14 +147,9 @@ public class CRQueryParser extends QueryParser {
 				String charsBeforeValue = valueMatcher.group(ONE);
 				String value = valueMatcher.group(TWO);
 				String charsAfterValue = valueMatcher.group(THREE);
-				if (!"AND".equalsIgnoreCase(value)
-						&& !"OR".equalsIgnoreCase(value)
-						&& !"NOT".equalsIgnoreCase(value)
-						&& !"TO".equalsIgnoreCase(value)
-						&& !"+".equals(value)
-						&& !value.contains(":")) {
-					valueMatcher.appendReplacement(newQuery, charsBeforeValue
-							+ replacement + charsAfterValue);
+				if (!"AND".equalsIgnoreCase(value) && !"OR".equalsIgnoreCase(value) && !"NOT".equalsIgnoreCase(value)
+						&& !"TO".equalsIgnoreCase(value) && !"+".equals(value) && !value.contains(":")) {
+					valueMatcher.appendReplacement(newQuery, charsBeforeValue + replacement + charsAfterValue);
 				}
 			}
 			valueMatcher.appendTail(newQuery);
@@ -197,10 +190,9 @@ public class CRQueryParser extends QueryParser {
 			String value = valueMatcher.group(TWO);
 			String attribute = value.indexOf(":") != -1 ? value.replaceAll(":.*$", "") : "";
 			String charsAfterValue = valueMatcher.group(THREE);
-			if (!"AND".equalsIgnoreCase(value)
-					&& !"OR".equalsIgnoreCase(value)
-					&& !"NOT".equalsIgnoreCase(value) && attributesToSearchIn.contains(attribute)) {
-				if(!value.matches("[^:]+:\"[^\"]+\"")) {
+			if (!"AND".equalsIgnoreCase(value) && !"OR".equalsIgnoreCase(value) && !"NOT".equalsIgnoreCase(value)
+					&& attributesToSearchIn.contains(attribute)) {
+				if (!value.matches("[^:]+:\"[^\"]+\"")) {
 					String replacement = Matcher.quoteReplacement(charsBeforeValue
 							+ value.replaceAll("(.*:\\(?)?([^: \\(\\)]+)", "$1" + appendToWordBegin + "$2"
 									+ appendToWordEnd) + charsAfterValue);
@@ -219,13 +211,13 @@ public class CRQueryParser extends QueryParser {
 	 */
 	private Matcher getValueMatcher(final String query) {
 		String seperatorCharacterClass = " \\(\\)";
-		Pattern valuePattern = Pattern.compile(
-				"([" + seperatorCharacterClass + "]*)"
+		Pattern valuePattern = Pattern.compile("([" + seperatorCharacterClass + "]*)"
 				+ "([^:]+:(?:\\([^\\)]+\\)|\\[[^\\]]+\\]|\"[^\"]+\")|\"[^\"]+\"|[^" + seperatorCharacterClass + "]+)"
 				+ "([" + seperatorCharacterClass + "]*)");
 		Matcher valueMatcher = valuePattern.matcher(query);
 		return valueMatcher;
 	}
+
 	/**
 	 * Helper method to replace search parameters from boolean mnoGoSearch query
 	 * into their lucene compatible parameters.
@@ -233,10 +225,8 @@ public class CRQueryParser extends QueryParser {
 	 * @return query with mnoGoSearch syntax replaced for lucene
 	 */
 	private String replaceBooleanMnoGoSearchQuery(final String mnoGoSearchQuery) {
-		String luceneQuery = mnoGoSearchQuery
-			.replaceAll(" ?\\| ?", " OR ")
-			.replaceAll(" ?& ?", " AND ")
-			.replace('\'', '"');
+		String luceneQuery = mnoGoSearchQuery.replaceAll(" ?\\| ?", " OR ").replaceAll(" ?& ?", " AND ")
+				.replace('\'', '"');
 		luceneQuery = luceneQuery.replaceAll(" ~([a-zA-Z0-9üöäÜÖÄß]+)", " NOT $1");
 		return luceneQuery;
 	}

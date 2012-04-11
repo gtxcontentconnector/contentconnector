@@ -24,9 +24,8 @@ public class CleanupTextTest {
 
 	@Before
 	public void setUp() throws Exception {
-		URL confPath = new File(this.getClass().getResource(
-				"/config/nodelog.properties").toURI()).getParentFile().toURI()
-				.toURL();
+		URL confPath = new File(this.getClass().getResource("/config/nodelog.properties").toURI()).getParentFile()
+				.toURI().toURL();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath.getPath());
 		CRConfigUtil config = new CRConfigUtil();
 		config.set("attribute", CONTENT_ATTRIBUTE);
@@ -40,50 +39,50 @@ public class CleanupTextTest {
 				+ "1. First chapter ...................................................................................................................... 2\n"
 				+ "2. Second chapter .................................................................................................................................... 7");
 		assertEquals(
-				"Index points are not reduced correctly.",
-				"1. Index Title ... 1 1. First chapter ... 2 2. Second chapter ... 7",
-				result);
+			"Index points are not reduced correctly.",
+			"1. Index Title ... 1 1. First chapter ... 2 2. Second chapter ... 7",
+			result);
 
 		result = transform("First chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 33 Second chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 66");
-		assertEquals("Index points are not reduced correctly.",
-				"First chapter ... Page 33 Second chapter ... Page 66", result);
+		assertEquals(
+			"Index points are not reduced correctly.",
+			"First chapter ... Page 33 Second chapter ... Page 66",
+			result);
 	}
 
 	@Test
 	public void testUmlauts() throws CRException {
-		assertEquals("Umlauts cannot be processed correctly.", UMLAUTS,
-				transform(UMLAUTS + ""));
+		assertEquals("Umlauts cannot be processed correctly.", UMLAUTS, transform(UMLAUTS + ""));
 	}
 
 	@Test
 	public void testNotPrintableCharacters() throws CRException {
 		String stringWithNonPrintableCharacters = "Drittstaaten:  HYPERLINK \"http://www.help.gv.at/Content.Node/12/Seite.120000.html\" \\o \"Öffnet in neuem Fenster\" \\t \"_blank\" Aufenthaltsberechtigung";
 		String expectedResult = "Drittstaaten: HYPERLINK \"http://www.help.gv.at/Content.Node/12/Seite.120000.html\" \\o \"Öffnet in neuem Fenster\" \\t \"_blank\" Aufenthaltsberechtigung";
-		assertEquals("Special characters are not elminiated correctly.",
-				expectedResult,
-				transform(stringWithNonPrintableCharacters + ""));
+		assertEquals(
+			"Special characters are not elminiated correctly.",
+			expectedResult,
+			transform(stringWithNonPrintableCharacters + ""));
 
 		stringWithNonPrintableCharacters = "Person Familienname:  FORMTEXT       Vorname:  FORMTEXT       Standort:  FORMTEXT       Stock:  FORMTEXT ";
 		expectedResult = "Person Familienname: FORMTEXT Vorname: FORMTEXT Standort: FORMTEXT Stock: FORMTEXT ";
-		assertEquals("Special characters are not elminiated correctly.",
-				expectedResult,
-				transform(stringWithNonPrintableCharacters + ""));
+		assertEquals(
+			"Special characters are not elminiated correctly.",
+			expectedResult,
+			transform(stringWithNonPrintableCharacters + ""));
 	}
 
 	@Test
 	public void testMultipleSpaces() throws CRException {
 		final String stringWithMultipleSpaces = "test1  test2   test3    test4";
 		final String expectedResult = "test1 test2 test3 test4";
-		assertEquals("Multiple Spaces are not replaced correctly.",
-				expectedResult, transform(stringWithMultipleSpaces));
+		assertEquals("Multiple Spaces are not replaced correctly.", expectedResult, transform(stringWithMultipleSpaces));
 	}
 
 	@Test
 	public void testPendingSpace() throws CRException {
-		assertEquals("Pending Space was not handled correctly.", "a ",
-				transform("a "));
-		assertEquals("Pending Space was not handled correctly.", "a... ",
-				transform("a.... "));
+		assertEquals("Pending Space was not handled correctly.", "a ", transform("a "));
+		assertEquals("Pending Space was not handled correctly.", "a... ", transform("a.... "));
 	}
 
 	@Test
@@ -98,8 +97,7 @@ public class CleanupTextTest {
 	@Test
 	public void testUnchanged() throws CRException {
 		String testStringNotToChange = "test";
-		assertSame("String had not to be changed.", testStringNotToChange,
-				transform(testStringNotToChange));
+		assertSame("String had not to be changed.", testStringNotToChange, transform(testStringNotToChange));
 
 	}
 

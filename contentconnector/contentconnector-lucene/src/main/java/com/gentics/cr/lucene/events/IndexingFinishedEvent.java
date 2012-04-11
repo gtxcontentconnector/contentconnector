@@ -6,16 +6,15 @@ public class IndexingFinishedEvent extends Event {
 
 	public static final String INDEXING_FINISHED_EVENT_TYPE = "LUCENEINDEXINGFINISHEDEVENT";
 	private Object data;
-	
+
 	/**
 	 * Create a new instance of the IndexingFinishedEvent
 	 * @param data
 	 */
-	public IndexingFinishedEvent(Object data)
-	{
+	public IndexingFinishedEvent(Object data) {
 		this.data = data;
 	}
-	
+
 	@Override
 	public Object getData() {
 		return this.data;

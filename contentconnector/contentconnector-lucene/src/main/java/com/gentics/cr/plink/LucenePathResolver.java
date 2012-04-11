@@ -112,7 +112,7 @@ public class LucenePathResolver {
 	 * SearchConfigKey.
 	 */
 	private static final String SEARCH_CONFIG_FILE_KEY = "searchconfig";
-	
+
 	/**
 	 * IndexController.
 	 */
@@ -121,7 +121,6 @@ public class LucenePathResolver {
 	 * RequestProcessor.
 	 */
 	private RequestProcessor rp = null;
-		
 
 	/**
 	 * Initialize the expression needed to resolve Objects from passed URLs. As
@@ -135,33 +134,30 @@ public class LucenePathResolver {
 		this.conf = config;
 		String cxname = this.conf.getString(INDEXER_CONFIG_FILE_KEY);
 		if (cxname == null) {
-			cxname = "indexer";		
+			cxname = "indexer";
 		}
 		CRConfigUtil idxConfig = new CRConfigFileLoader(cxname, null);
-		
+
 		String csname = this.conf.getString(SEARCH_CONFIG_FILE_KEY);
 		if (csname == null) {
-			csname = "searcher";		
+			csname = "searcher";
 		}
 		CRConfigUtil srcConfig = new CRConfigFileLoader(csname, null);
-		
+
 		idx = new IndexController(idxConfig);
 		try {
 			rp = srcConfig.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
-			log.error("Could not initialize searcher request processor."
-					+ "Check your searcher config.", e);
+			log.error("Could not initialize searcher request processor." + "Check your searcher config.", e);
 		}
 	}
-	
+
 	/**
 	 * Destroys the PathResolver.
 	 */
 	public final void destroy() {
 		this.idx.stop();
 	}
-	
-	
 
 	/**
 	 * The Method looks in the repository with the expression initialized in the
@@ -177,31 +173,29 @@ public class LucenePathResolver {
 		CRResolvableBean contentObject = null;
 		String url = request.getUrl();
 		if (url != null) {
-			
-				CRRequest r = new CRRequest();
-				
-				PathBean pb = new PathBean(request.getUrl());
-				String path = pb.getPath();
-				
-				String filter = "";
-				if (path == null || "".equals(path)) {
-					filter = "(pub_dir:(/)) AND filename:(" 
-					+ pb.getFilename() + ")";
-				} else {
-					filter = "(pub_dir:(" + pb.getPath() + ") OR pub_dir:(" 
-					+ pb.getPath() + "/)) AND filename:(" 
-					+ pb.getFilename() + ")";
-				}
-				log.debug("Using filter: " + filter);
-				r.setRequestFilter(filter);
-				try {
-					contentObject = rp.getFirstMatchingResolvable(r);
-				} catch (CRException e) {
-					log.error("Could not load object from path " + url, e);
-				}
-			
+
+			CRRequest r = new CRRequest();
+
+			PathBean pb = new PathBean(request.getUrl());
+			String path = pb.getPath();
+
+			String filter = "";
+			if (path == null || "".equals(path)) {
+				filter = "(pub_dir:(/)) AND filename:(" + pb.getFilename() + ")";
+			} else {
+				filter = "(pub_dir:(" + pb.getPath() + ") OR pub_dir:(" + pb.getPath() + "/)) AND filename:("
+						+ pb.getFilename() + ")";
+			}
+			log.debug("Using filter: " + filter);
+			r.setRequestFilter(filter);
+			try {
+				contentObject = rp.getFirstMatchingResolvable(r);
+			} catch (CRException e) {
+				log.error("Could not load object from path " + url, e);
+			}
+
 		}
-		
+
 		return contentObject;
 	}
 
@@ -220,8 +214,7 @@ public class LucenePathResolver {
 		try {
 			ds = this.conf.getDatasource();
 			// initialize linked Object
-			linkedObject = PortalConnectorFactory.getContentObject(contentid,
-					ds);
+			linkedObject = PortalConnectorFactory.getContentObject(contentid, ds);
 			return getPath(linkedObject);
 
 		} catch (DatasourceNotAvailableException e) {
@@ -231,8 +224,8 @@ public class LucenePathResolver {
 		}
 
 		// if the linked Object cannot be initialized return a dynamic URL
-//		this.log.info("Use dynamic url for " + contentid);
-//		return getDynamicUrl(contentid);
+		//		this.log.info("Use dynamic url for " + contentid);
+		//		return getDynamicUrl(contentid);
 		return (null);
 	}
 
@@ -268,8 +261,7 @@ public class LucenePathResolver {
 		} else {
 
 			// return a dynamic URL instead
-			log.warn("Object " + linkedObject.get("contentid")
-					+ " has no filename.");
+			log.warn("Object " + linkedObject.get("contentid") + " has no filename.");
 			//this.log.info("Use dynamic url for "
 			//		+ linkedObject.get("contentid"));
 
@@ -285,9 +277,9 @@ public class LucenePathResolver {
 	public final String getDynamicUrl(final String contentid) {
 
 		return "?contentid=" + contentid;
-		
+
 	}
-	
+
 	/**
 	 * Get the alternate URL for the request. 
 	 * This is used if the object cannot be resolved dynamically.
@@ -316,8 +308,7 @@ public class LucenePathResolver {
 	 * Supports beautiful URLs, 
 	 * therefore it needs to load DB Objects and Attributes 
 	 */
-	public final String getDynamicUrl(final String contentid, 
-			final CRConfig config, final CRRequest request) {
+	public final String getDynamicUrl(final String contentid, final CRConfig config, final CRRequest request) {
 		String url = null;
 		if (request != null) {
 			url = (String) request.get("url");
@@ -330,68 +321,52 @@ public class LucenePathResolver {
 					//if there is an attribute URL the servlet was 
 					//called with a beautiful URL so give back a beautiful URL
 					//check if valid local link
-					String applicationrule 
-							= (String) config.get("applicationrule");
+					String applicationrule = (String) config.get("applicationrule");
 					ds = config.getDatasource();
 					Expression expression = null;
 					try {
-						expression 
-							= PortalConnectorFactory.createExpression(
-							"object.contentid == '" + contentid + "' && " 
-							+ applicationrule);
+						expression = PortalConnectorFactory.createExpression("object.contentid == '" + contentid
+								+ "' && " + applicationrule);
 					} catch (ParserException exception) {
-						log.error("Error while building expression object for " 
-								+ contentid, exception);
-						ret =  getDynamicUrl(contentid);
+						log.error("Error while building expression object for " + contentid, exception);
+						ret = getDynamicUrl(contentid);
 					}
-					
+
 					DatasourceFilter filter = null;
 					try {
 						filter = ds.createDatasourceFilter(expression);
 					} catch (ExpressionParserException e) {
-						log.error("Error while building filter object for " 
-								+ contentid, e);
-						ret =  getDynamicUrl(contentid);
+						log.error("Error while building filter object for " + contentid, e);
+						ret = getDynamicUrl(contentid);
 					}
 					int count = 0;
 					try {
 						count = ds.getCount(filter);
 					} catch (DatasourceException e) {
 						log.error("Error while querying for " + contentid, e);
-						ret =  getDynamicUrl(contentid);
+						ret = getDynamicUrl(contentid);
 					}
-					
-					if (count == 0 || "true".equals(config
-							.getString(CRConfig.ADVPLR_HOST_FORCE))) { 
+
+					if (count == 0 || "true".equals(config.getString(CRConfig.ADVPLR_HOST_FORCE))) {
 						//not permitted or forced, build link
-						ret =  getAlternateUrl(contentid);
+						ret = getAlternateUrl(contentid);
 					} else {
-					
+
 						Resolvable plinkObject;
 						try {
-							plinkObject = PortalConnectorFactory
-								.getContentObject(contentid, ds);
+							plinkObject = PortalConnectorFactory.getContentObject(contentid, ds);
 							//TODO: make this more beautiful and 
 							//compatible with portlets
-							String filenameattribute 
-								= (String) config.get(CRConfig.ADVPLR_FN_KEY);
-							String pubdirattribute 
-								= (String) config.get(CRConfig.ADVPLR_PB_KEY);
-							String filename 
-								= (String) plinkObject.get(filenameattribute);
-							String pubdir 
-								= (String) plinkObject.get(pubdirattribute);
-							HttpServletRequest servletRequest 
-								= (HttpServletRequest) request.get("request");
-							String contextPath 
-								= servletRequest.getContextPath();
-							String servletPath 
-								= servletRequest.getServletPath();
-							ret =  contextPath 
-									+ servletPath + pubdir + filename;
+							String filenameattribute = (String) config.get(CRConfig.ADVPLR_FN_KEY);
+							String pubdirattribute = (String) config.get(CRConfig.ADVPLR_PB_KEY);
+							String filename = (String) plinkObject.get(filenameattribute);
+							String pubdir = (String) plinkObject.get(pubdirattribute);
+							HttpServletRequest servletRequest = (HttpServletRequest) request.get("request");
+							String contextPath = servletRequest.getContextPath();
+							String servletPath = servletRequest.getServletPath();
+							ret = contextPath + servletPath + pubdir + filename;
 						} catch (DatasourceNotAvailableException e) {
-							log.error("Error while getting object for "
-									+ contentid, e);
+							log.error("Error while getting object for " + contentid, e);
 							ret = getDynamicUrl(contentid);
 						}
 					}

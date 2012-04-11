@@ -15,12 +15,12 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
  */
 public class SimpleMVString extends ContentTransformer {
 
-	private String NULLValue="NULL";
+	private String NULLValue = "NULL";
 	private static final String NULL_VALUE_KEY = "nullvalue";
-	private static final String DEFAULT_NULL_VALUE="NULL";
-	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
-	private String attribute="";
-	
+	private static final String DEFAULT_NULL_VALUE = "NULL";
+	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
+	private String attribute = "";
+
 	/**
 	 * Create new Instance of SimpleMVString
 	 * @param config
@@ -28,9 +28,10 @@ public class SimpleMVString extends ContentTransformer {
 	public SimpleMVString(GenericConfiguration config) {
 		super(config);
 		//Define Value for NULLS
-		NULLValue = (String)config.get(NULL_VALUE_KEY);
-		if(NULLValue==null)NULLValue=DEFAULT_NULL_VALUE;
-		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
+		NULLValue = (String) config.get(NULL_VALUE_KEY);
+		if (NULLValue == null)
+			NULLValue = DEFAULT_NULL_VALUE;
+		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
 
 	/**
@@ -38,17 +39,15 @@ public class SimpleMVString extends ContentTransformer {
 	 */
 	@SuppressWarnings("unchecked")
 	private String getStringContents(Object obj) {
-		String ret=NULLValue;
-		if(obj!=null && obj instanceof Collection)
-		{
-			ret="";
-			Collection<Object> coll = (Collection<Object>)obj;
-			if(coll==null || coll.size()<=0)return NULLValue;
-			for(Object object:coll)
-			{
-				if(object!=null)
-				{
-					ret+=object.toString()+" ";
+		String ret = NULLValue;
+		if (obj != null && obj instanceof Collection) {
+			ret = "";
+			Collection<Object> coll = (Collection<Object>) obj;
+			if (coll == null || coll.size() <= 0)
+				return NULLValue;
+			for (Object object : coll) {
+				if (object != null) {
+					ret += object.toString() + " ";
 				}
 			}
 		}
@@ -57,29 +56,24 @@ public class SimpleMVString extends ContentTransformer {
 
 	@Override
 	public void processBean(CRResolvableBean bean) {
-		if(this.attribute!=null)
-		{
+		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			if(obj!=null)
-			{
+			if (obj != null) {
 				String newString = getStringContents(obj);
-				if(newString!=null)
-				{
+				if (newString != null) {
 					bean.set(this.attribute, newString);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			log.error("Configured attribute is null. Bean will not be processed");
 		}
-		
+
 	}
 
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

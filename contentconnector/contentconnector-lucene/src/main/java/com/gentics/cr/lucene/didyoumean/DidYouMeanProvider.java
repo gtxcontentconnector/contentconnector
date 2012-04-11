@@ -39,15 +39,14 @@ import com.gentics.cr.monitoring.UseCase;
  */
 public class DidYouMeanProvider implements IEventReceiver {
 
-	protected static final Logger log = Logger
-			.getLogger(DidYouMeanProvider.class);
+	protected static final Logger log = Logger.getLogger(DidYouMeanProvider.class);
 
 	@Deprecated
 	private Directory source = null;
-	
+
 	//@Deprecated
 	//private Directory didyoumeanDirectory;
-	
+
 	private LuceneIndexLocation didyoumeanLocation;
 
 	private static final String SOURCE_INDEX_KEY = "srcindexlocation";
@@ -102,34 +101,26 @@ public class DidYouMeanProvider implements IEventReceiver {
 
 	public DidYouMeanProvider(CRConfig config) {
 
-		useDidyomeanIndexExtension = config.getBoolean(
-				DIDYOUMEAN_USE_INDEX_EXTENSION, useDidyomeanIndexExtension);
+		useDidyomeanIndexExtension = config.getBoolean(DIDYOUMEAN_USE_INDEX_EXTENSION, useDidyomeanIndexExtension);
 
 		if (!useDidyomeanIndexExtension) {
-			GenericConfiguration src_conf = (GenericConfiguration) config
-					.get(SOURCE_INDEX_KEY);
-			source = LuceneIndexLocation.createDirectory(new CRConfigUtil(
-					src_conf, "SOURCE_INDEX_KEY"));
+			GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
+			source = LuceneIndexLocation.createDirectory(new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY"));
 		}
 
-		GenericConfiguration auto_conf = (GenericConfiguration) config
-				.get(DIDYOUMEAN_INDEX_KEY);
-		CRConfigUtil dymConfUtil = new CRConfigUtil(auto_conf,
-				DIDYOUMEAN_INDEX_KEY);
-		didyoumeanLocation = LuceneIndexLocation
-				.getIndexLocation(dymConfUtil);
+		GenericConfiguration auto_conf = (GenericConfiguration) config.get(DIDYOUMEAN_INDEX_KEY);
+		CRConfigUtil dymConfUtil = new CRConfigUtil(auto_conf, DIDYOUMEAN_INDEX_KEY);
+		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(dymConfUtil);
 		if (!useDidyomeanIndexExtension) {
 			didyoumeanLocation.registerDirectoriesSpecial();
-		} 
+		}
 
-		checkForExistingTerms = config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY,
-				checkForExistingTerms);
+		checkForExistingTerms = config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY, checkForExistingTerms);
 
 		minDScore = config.getFloat(DIDYOUMEAN_MIN_DISTANCESCORE, (float) 0.0);
 		minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
 
-		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY,
-				didyoumeanfield);
+		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);
 
 		// FETCH DYM FIELDS
 		if (this.didyoumeanfield.equalsIgnoreCase("ALL")) {
@@ -142,10 +133,8 @@ public class DidYouMeanProvider implements IEventReceiver {
 			dym_fields.add(this.didyoumeanfield);
 		}
 
-
 		try {
-			spellchecker = new CustomSpellChecker(didyoumeanLocation,
-					minDScore, minDFreq);
+			spellchecker = new CustomSpellChecker(didyoumeanLocation, minDScore, minDFreq);
 		} catch (IOException e1) {
 			log.error("Could not create didyoumean index.", e1);
 		}
@@ -160,7 +149,7 @@ public class DidYouMeanProvider implements IEventReceiver {
 				reIndex();
 
 			} catch (IOException e) {
-				
+
 			}
 
 			EventManager.getInstance().register(this);
@@ -174,8 +163,7 @@ public class DidYouMeanProvider implements IEventReceiver {
 	// }
 
 	public void processEvent(Event event) {
-		if (IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event
-				.getType()) && !useDidyomeanIndexExtension) {
+		if (IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType()) && !useDidyomeanIndexExtension) {
 			try {
 				reIndex();
 			} catch (IOException e) {
@@ -190,10 +178,8 @@ public class DidYouMeanProvider implements IEventReceiver {
 
 	private long lastupdatestored = 0;
 
-	
 	private void checkForUpdate() {
 
-		
 		if (!useDidyomeanIndexExtension) {
 			boolean reopened = false;
 			try {
@@ -210,8 +196,8 @@ public class DidYouMeanProvider implements IEventReceiver {
 			} catch (IOException e) {
 				log.debug("Could not reIndex autocomplete index.", e);
 			}
-		} 
-		
+		}
+
 	}
 
 	/**
@@ -225,21 +211,18 @@ public class DidYouMeanProvider implements IEventReceiver {
 	 *            TODO javadoc
 	 * @return TODO javadoc
 	 */
-	public Map<String, String[]> getSuggestions(Set<Term> termlist, int count,
-			IndexReader reader) {
-		return getSuggestionsStringFromMap(getSuggestionTerms(termlist, count,
-				reader));
+	public Map<String, String[]> getSuggestions(Set<Term> termlist, int count, IndexReader reader) {
+		return getSuggestionsStringFromMap(getSuggestionTerms(termlist, count, reader));
 	}
 
-	public Map<Term, Term[]> getSuggestionTerms(Set<Term> termlist, int count,
-			IndexReader reader) {
+	public Map<Term, Term[]> getSuggestionTerms(Set<Term> termlist, int count, IndexReader reader) {
 
 		if (dymreopenupdate) {
 			checkForUpdate();
 		}
 		Map<Term, Term[]> result = new LinkedHashMap<Term, Term[]>();
 		Set<Term> termset = new HashSet<Term>();
-		
+
 		if (this.spellchecker != null) {
 			for (Term t : termlist) {
 				// CHECK IF ALL FIELDS ENABLED FOR SUGGESTIONS OTHERWHISE ONLY
@@ -248,14 +231,11 @@ public class DidYouMeanProvider implements IEventReceiver {
 					termset.add(t);
 				}
 			}
-			log.debug("Will use the following fields for dym: "
-					+ dym_fields.toString());
+			log.debug("Will use the following fields for dym: " + dym_fields.toString());
 			for (Term term : termset) {
 				try {
-					if (checkForExistingTerms
-							|| !this.spellchecker.exist(term.text())) {
-						String[] ts = this.spellchecker.suggestSimilar(
-								term.text(), count, reader, term.field(), true);
+					if (checkForExistingTerms || !this.spellchecker.exist(term.text())) {
+						String[] ts = this.spellchecker.suggestSimilar(term.text(), count, reader, term.field(), true);
 						if (ts != null && ts.length > 0) {
 							Term[] suggestedTerms = new Term[ts.length];
 							for (int i = 0; i < ts.length; i++) {
@@ -288,8 +268,7 @@ public class DidYouMeanProvider implements IEventReceiver {
 		}
 		try {
 			for (String fieldname : fields) {
-				LuceneDictionary dict = new LuceneDictionary(sourceReader,
-						fieldname);
+				LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname);
 				spellchecker.indexDictionary(dict);
 			}
 		} finally {
@@ -304,18 +283,15 @@ public class DidYouMeanProvider implements IEventReceiver {
 		EventManager.getInstance().unregister(this);
 	}
 
-	public Map<String, String[]> getSuggestionsStringFromMap(
-			Map<Term, Term[]> suggestions) {
+	public Map<String, String[]> getSuggestionsStringFromMap(Map<Term, Term[]> suggestions) {
 		Map<String, String[]> result = new LinkedHashMap<String, String[]>();
 		for (Term key : suggestions.keySet()) {
 			Term[] values = suggestions.get(key);
-			ArrayList<String> valueStrings = new ArrayList<String>(
-					values.length);
+			ArrayList<String> valueStrings = new ArrayList<String>(values.length);
 			for (Term value : values) {
 				valueStrings.add(value.text());
 			}
-			result.put(key.text(),
-					valueStrings.toArray(new String[valueStrings.size()]));
+			result.put(key.text(), valueStrings.toArray(new String[valueStrings.size()]));
 		}
 		return result;
 	}

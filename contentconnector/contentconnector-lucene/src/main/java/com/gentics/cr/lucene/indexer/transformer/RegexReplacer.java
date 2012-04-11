@@ -10,7 +10,6 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.CRUtil;
 
-
 /**
  * Regex Replacing within the content can be quite costful in terms of performance.
  * 
@@ -27,6 +26,7 @@ public class RegexReplacer extends ContentTransformer {
 	private String pattern = "(?s)(<!--[ \t\n\r]*noindexstart[^>]*-->.*?<!--[ \t\n\r]*noindexend[^>]*-->)";
 	private String replacement = "";
 	private Pattern c_pattern = null;
+
 	/**
 	 * Create Instance of CommentSectionStripper
 	 * if the pattern is not configured in the config: the default pattern
@@ -52,28 +52,23 @@ public class RegexReplacer extends ContentTransformer {
 				}
 			}
 		} else {
-			log.error(
-					"Configured attribute is null. Bean will not be processed");
+			log.error("Configured attribute is null. Bean will not be processed");
 		}
-	
+
 	}
-	
-	private String getStringContents(Object obj)
-	{
+
+	private String getStringContents(Object obj) {
 		String str = null;
-		if(obj instanceof String)
-		{
-			str = (String)obj;
-		}
-		else if (obj instanceof byte[])
-		{
+		if (obj instanceof String) {
+			str = (String) obj;
+		} else if (obj instanceof byte[]) {
 			try {
-				str = CRUtil.readerToString(new InputStreamReader(new ByteArrayInputStream((byte[])obj)));
+				str = CRUtil.readerToString(new InputStreamReader(new ByteArrayInputStream((byte[]) obj)));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		// Replace all occurrences of pattern in input
 		Matcher matcher = c_pattern.matcher(str);
 		str = matcher.replaceAll(replacement);
@@ -83,7 +78,7 @@ public class RegexReplacer extends ContentTransformer {
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

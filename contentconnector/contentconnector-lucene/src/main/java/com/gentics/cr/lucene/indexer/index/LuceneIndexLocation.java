@@ -28,12 +28,9 @@ import com.gentics.cr.util.indexing.IndexLocation;
  * 
  */
 
-public abstract class LuceneIndexLocation extends
-		com.gentics.cr.util.indexing.IndexLocation {
+public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocation {
 	// STATIC MEMBERS
-	protected static final Logger log = Logger
-			.getLogger(LuceneIndexLocation.class);
-	
+	protected static final Logger log = Logger.getLogger(LuceneIndexLocation.class);
 
 	protected String name = null;
 
@@ -42,8 +39,7 @@ public abstract class LuceneIndexLocation extends
 	private IndexAccessorToken accessorToken = null;
 
 	protected Analyzer getConfiguredAnalyzer() {
-		return LuceneAnalyzerFactory
-				.createAnalyzer((GenericConfiguration) config);
+		return LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) config);
 	}
 
 	/**
@@ -52,8 +48,7 @@ public abstract class LuceneIndexLocation extends
 	 * @return
 	 */
 	public List<String> getReverseAttributes() {
-		return LuceneAnalyzerFactory
-				.getReverseAttributes((GenericConfiguration) config);
+		return LuceneAnalyzerFactory.getReverseAttributes((GenericConfiguration) config);
 	}
 
 	/**
@@ -122,7 +117,7 @@ public abstract class LuceneIndexLocation extends
 		accessorToken = IndexAccessorFactory.getInstance().registerConsumer();
 		name = config.getName();
 	}
-	
+
 	/**
 	 * Gets the name of the index location.
 	 * @return name as String
@@ -131,30 +126,24 @@ public abstract class LuceneIndexLocation extends
 		return name;
 	}
 
-	public static synchronized LuceneIndexLocation getIndexLocation(
-			CRConfig config) {
-		IndexLocation genericIndexLocation = IndexLocation
-				.getIndexLocation(config);
+	public static synchronized LuceneIndexLocation getIndexLocation(CRConfig config) {
+		IndexLocation genericIndexLocation = IndexLocation.getIndexLocation(config);
 		if (genericIndexLocation instanceof LuceneIndexLocation) {
 			return (LuceneIndexLocation) genericIndexLocation;
 		} else {
-			log.error("IndexLocation is not created for Lucene. Using the "
-					+ CRLuceneIndexJob.class.getName()
-					+ " requires that you use the "
-					+ LuceneIndexLocation.class.getName()
-					+ ". You can configure another Job by setting the "
-					+ IndexLocation.UPDATEJOBCLASS_KEY + " key in your config.");
+			log.error("IndexLocation is not created for Lucene. Using the " + CRLuceneIndexJob.class.getName()
+					+ " requires that you use the " + LuceneIndexLocation.class.getName()
+					+ ". You can configure another Job by setting the " + IndexLocation.UPDATEJOBCLASS_KEY
+					+ " key in your config.");
 			return null;
 		}
 	}
 
 	protected static String getFirstIndexLocation(CRConfig config) {
 		String path = "";
-		GenericConfiguration locs = (GenericConfiguration) config
-				.get(INDEX_LOCATIONS_KEY);
+		GenericConfiguration locs = (GenericConfiguration) config.get(INDEX_LOCATIONS_KEY);
 		if (locs != null) {
-			Map<String, GenericConfiguration> locationmap = locs
-					.getSortedSubconfigs();
+			Map<String, GenericConfiguration> locationmap = locs.getSortedSubconfigs();
 			if (locationmap != null) {
 				for (GenericConfiguration locconf : locationmap.values()) {
 					String p = locconf.getString(INDEX_PATH_KEY);
@@ -188,8 +177,6 @@ public abstract class LuceneIndexLocation extends
 	public static Directory createDirectory(final String indexLocation) {
 		return LuceneDirectoryFactory.getDirectory(indexLocation);
 	}
-
-	
 
 	/**
 	 * @return the directory used by this index location.

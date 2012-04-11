@@ -14,14 +14,12 @@ import org.apache.lucene.analysis.Tokenizer;
 public class KeywordListAnalyzer extends Analyzer {
 
 	@Override
-	public final TokenStream tokenStream(final String fieldName,
-			final Reader reader) {
+	public final TokenStream tokenStream(final String fieldName, final Reader reader) {
 		return new KeywordListTokenizer(reader);
 	}
-  
+
 	@Override
-	public final TokenStream reusableTokenStream(final String fieldName,
-				final Reader reader) throws IOException {
+	public final TokenStream reusableTokenStream(final String fieldName, final Reader reader) throws IOException {
 
 		Tokenizer tokenizer = (Tokenizer) getPreviousTokenStream();
 		if (tokenizer == null) {

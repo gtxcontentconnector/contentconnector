@@ -41,7 +41,7 @@ public class IndexJobServlet extends VelocityServlet {
 		super.init(config);
 		this.indexer = initIndexController(config);
 	}
-	
+
 	/**
 	 * implemented as own method to change executed context.
 	 * 
@@ -54,13 +54,12 @@ public class IndexJobServlet extends VelocityServlet {
 
 	@Override
 	public final void destroy() {
-	if (indexer != null) {
+		if (indexer != null) {
 			indexer.stop();
 		}
 	}
 
-	public void doService(HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+	public void doService(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		// starttime
 		long s = new Date().getTime();
@@ -74,11 +73,11 @@ public class IndexJobServlet extends VelocityServlet {
 		} else {
 			response.setContentType("text/html");
 			Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
-			
+
 			setTemplateVariables(request);
-			
+
 			for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
-			IndexLocation loc = e.getValue();
+				IndexLocation loc = e.getValue();
 				IndexJobQueue queue = loc.getQueue();
 				Hashtable<String, CRConfigUtil> map = loc.getCRMap();
 				if (e.getKey().equalsIgnoreCase(index)) {
@@ -88,10 +87,10 @@ public class IndexJobServlet extends VelocityServlet {
 					if ("startWorker".equalsIgnoreCase(action)) {
 						queue.resumeWorker();
 					}
-					if ("clear".equalsIgnoreCase(action))	{
+					if ("clear".equalsIgnoreCase(action)) {
 						loc.createClearJob();
 					}
-					if ("optimize".equalsIgnoreCase(action))	{
+					if ("optimize".equalsIgnoreCase(action)) {
 						loc.createOptimizeJob();
 					}
 					if ("addJob".equalsIgnoreCase(action)) {
@@ -109,12 +108,12 @@ public class IndexJobServlet extends VelocityServlet {
 						String sExt = request.getParameter("ext");
 						try {
 							HashMap<String, IndexExtension> extensions = ((LuceneIndexLocation) loc).getExtensions();
-							if(extensions.containsKey(sExt)){
+							if (extensions.containsKey(sExt)) {
 								IndexExtension extension = extensions.get(sExt);
 								String job = request.getParameter("job");
 								extension.addJob(job);
 							}
-						} catch(Exception ex) {
+						} catch (Exception ex) {
 							LOGGER.info("Couldn not add extension Job");
 						}
 					}
@@ -126,7 +125,7 @@ public class IndexJobServlet extends VelocityServlet {
 		long e = new Date().getTime();
 		LOGGER.info("Executiontime for getting " + action + " " + (e - s));
 	}
-	
+
 	/**
 	 * Create an archive of the index.
 	 * @param index Index to create a tarball of.
@@ -168,17 +167,17 @@ public class IndexJobServlet extends VelocityServlet {
 					writeLock.delete();
 				}
 			}
-			
+
 		} else {
 			LOGGER.error("generating an archive for " + location + " not supported yet.");
 		}
-		
+
 	}
 
 	/**
-     * set variables for velocity template.
-     * @param request .
-     */
+	 * set variables for velocity template.
+	 * @param request .
+	 */
 	protected final void setTemplateVariables(final HttpServletRequest request) {
 		Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
 		String nc = "&t=" + System.currentTimeMillis();
@@ -186,9 +185,8 @@ public class IndexJobServlet extends VelocityServlet {
 		Long totalMemory = Runtime.getRuntime().totalMemory();
 		Long freeMemory = Runtime.getRuntime().freeMemory();
 		Long maxMemory = Runtime.getRuntime().maxMemory();
-	
-		setTemplateVariable("specialDirs", SpecialDirectoryRegistry
-				.getInstance().getSpecialDirectories()); 
+
+		setTemplateVariable("specialDirs", SpecialDirectoryRegistry.getInstance().getSpecialDirectories());
 		setTemplateVariable("indexes", indexTable.entrySet());
 		setTemplateVariable("nc", nc);
 		setTemplateVariable("selectedIndex", selectedIndex);
@@ -202,7 +200,7 @@ public class IndexJobServlet extends VelocityServlet {
 		setTemplateVariable("freememory", freeMemory);
 		setTemplateVariable("usedmemory", totalMemory - freeMemory);
 	}
-	
+
 	/**
 	 * Get action parameter from request.
 	 * @param request Request to get the action parameter of.

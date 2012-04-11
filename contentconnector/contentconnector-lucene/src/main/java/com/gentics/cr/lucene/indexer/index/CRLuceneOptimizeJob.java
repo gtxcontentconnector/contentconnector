@@ -15,21 +15,17 @@ import com.gentics.cr.util.indexing.IndexLocation;
 
 public class CRLuceneOptimizeJob extends AbstractUpdateCheckerJob {
 
-  
-	public CRLuceneOptimizeJob(CRConfig config, IndexLocation indexLoc,
-			Hashtable<String, CRConfigUtil> configmap) {
+	public CRLuceneOptimizeJob(CRConfig config, IndexLocation indexLoc, Hashtable<String, CRConfigUtil> configmap) {
 		super(config, indexLoc, configmap);
 		log = Logger.getLogger(CRLuceneOptimizeJob.class);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	protected final void indexCR(final IndexLocation indexLocation,
-			final CRConfigUtil config) throws CRException {
+	protected final void indexCR(final IndexLocation indexLocation, final CRConfigUtil config) throws CRException {
 		if (indexLocation instanceof LuceneIndexLocation) {
 			log.debug("Starting to optimize index.");
-			LuceneIndexLocation luceneIndexLoccation =
-				(LuceneIndexLocation) indexLocation;
+			LuceneIndexLocation luceneIndexLoccation = (LuceneIndexLocation) indexLocation;
 			IndexAccessor ia = luceneIndexLoccation.getAccessor();
 			IndexWriter writer = null;
 			try {
@@ -42,8 +38,7 @@ public class CRLuceneOptimizeJob extends AbstractUpdateCheckerJob {
 			}
 			log.debug("Finished optimizing index.");
 		} else {
-			log.error("Index does not seem to be a Lucene index. Therfore no "
-					+ "optimizing will be done.");
+			log.error("Index does not seem to be a Lucene index. Therfore no " + "optimizing will be done.");
 		}
 	}
 

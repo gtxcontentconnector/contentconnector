@@ -8,7 +8,6 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.CRUtil;
 
-
 /**
  * Regex Replacing within the content can be quite costful in terms of performance.
  * 
@@ -17,73 +16,67 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class CutoutTransformer extends ContentTransformer{
-	private static final String TRANSFORMER_ATTRIBUTE_KEY="attribute";
-	private static final String START_PATTERN_KEY="startpattern";
-	private static final String END_PATTERN_KEY="endpattern";
-	
-	
-	private String attribute="";
-	private String startpattern="";
-	private String endpattern="";
-	
+public class CutoutTransformer extends ContentTransformer {
+	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
+	private static final String START_PATTERN_KEY = "startpattern";
+	private static final String END_PATTERN_KEY = "endpattern";
+
+	private String attribute = "";
+	private String startpattern = "";
+	private String endpattern = "";
+
 	/**
 	 * Create Instance of CommentSectionStripper
 	 *  @param config
 	 */
 	public CutoutTransformer(GenericConfiguration config) {
 		super(config);
-		attribute = (String)config.get(TRANSFORMER_ATTRIBUTE_KEY);
-		String spt = (String)config.get(START_PATTERN_KEY);
-		if(spt!=null) startpattern = spt;
-		
-		String ept = (String)config.get(END_PATTERN_KEY);
-		if(ept!=null) endpattern = ept;
-		
+		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
+		String spt = (String) config.get(START_PATTERN_KEY);
+		if (spt != null)
+			startpattern = spt;
+
+		String ept = (String) config.get(END_PATTERN_KEY);
+		if (ept != null)
+			endpattern = ept;
+
 	}
 
 	@Override
 	public void processBean(CRResolvableBean bean) {
-		if(this.attribute != null) {
+		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			if(obj != null) {
+			if (obj != null) {
 				String newString = getStringContents(obj);
 				if (newString != null) {
 					bean.set(this.attribute, newString);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			log.error("Configured attribute is null. Bean will not be processed");
 		}
-	
+
 	}
-	
-	private String getStringContents(Object obj)
-	{
+
+	private String getStringContents(Object obj) {
 		String str = null;
-		if(obj instanceof String)
-		{
-			str = (String)obj;
-		}
-		else if (obj instanceof byte[])
-		{
+		if (obj instanceof String) {
+			str = (String) obj;
+		} else if (obj instanceof byte[]) {
 			try {
-				str = CRUtil.readerToString(new InputStreamReader(new ByteArrayInputStream((byte[])obj)));
+				str = CRUtil.readerToString(new InputStreamReader(new ByteArrayInputStream((byte[]) obj)));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		int sindex = str.indexOf(this.startpattern);
 		int eindex = str.indexOf(this.endpattern);
-		
+
 		String newString = str;
-		
-		if(sindex!=-1 && eindex!=-1 && sindex<eindex)
-		{
-			newString= str.substring(sindex, eindex);
+
+		if (sindex != -1 && eindex != -1 && sindex < eindex) {
+			newString = str.substring(sindex, eindex);
 		}
 		return newString;
 	}
@@ -91,7 +84,7 @@ public class CutoutTransformer extends ContentTransformer{
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

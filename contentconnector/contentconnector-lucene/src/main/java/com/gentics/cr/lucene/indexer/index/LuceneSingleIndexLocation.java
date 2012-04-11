@@ -31,7 +31,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	 * Timestamp to store the lastmodified value of the reopen file.
 	 */
 	private long lastmodifiedStored = 0;
-	
+
 	/**
 	 * Create a new Instance of LuceneSingleIndexLocation. 
 	 * This is the Default IndexLocation for Lucene.
@@ -57,16 +57,15 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	@Override
 	protected final IndexAccessor getAccessorInstance() {
 		Directory directory = this.getDirectory();
-		
-		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance()
-						.getAccessor(directory);
+
+		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory);
 		return indexAccessor;
 	}
 
 	@Override
-	public final int getDocCount()  {
+	public final int getDocCount() {
 		IndexAccessor indexAccessor = this.getAccessor();
-		IndexReader reader	= null;
+		IndexReader reader = null;
 		int count = 0;
 		try {
 			reader = indexAccessor.getReader(false);
@@ -76,16 +75,16 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 		} finally {
 			indexAccessor.release(reader, false);
 		}
-		
+
 		return count;
 	}
 
 	@Override
 	protected final Directory[] getDirectories() {
-		Directory[] dirs = new Directory[]{this.getDirectory()};
+		Directory[] dirs = new Directory[] { this.getDirectory() };
 		return dirs;
 	}
-	
+
 	/**
 	 * getDirectory.
 	 * @return directory.
@@ -93,8 +92,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	private Directory getDirectory() {
 		return this.dir;
 	}
-	
-	
+
 	/**
 	 * Returns the filename of the reopen file.
 	 * @return filename of the reopen file.
@@ -102,7 +100,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	public final String getReopenFilename() {
 		return this.indexLocation + "/" + REOPEN_FILENAME;
 	}
-	
+
 	/**
 	 * Creates the reopen file to make portlet reload the index.
 	 */
@@ -119,7 +117,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,29 +125,25 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 		boolean reopened = false;
 		if (reopencheck) {
 			try {
-				log.debug("Check for reopen file at "
-						+ this.getReopenFilename());
+				log.debug("Check for reopen file at " + this.getReopenFilename());
 				File reopenFile = new File(this.getReopenFilename());
 				if (reopenFile.exists()) {
 					if (reopencheckTimestamp) {
 						long lastmodified = reopenFile.lastModified();
 						if (lastmodified != lastmodifiedStored) {
-							lastmodifiedStored	= lastmodified;
+							lastmodifiedStored = lastmodified;
 							indexAccessor.reopen();
 							reopened = true;
-							log.debug("Reopened index because reopen file has "
-									+ "changed");
+							log.debug("Reopened index because reopen file has " + "changed");
 						} else {
-							log.debug("Do not reopen index because reopen file "
-									+ "hasn't changed.\n" + lastmodified
+							log.debug("Do not reopen index because reopen file " + "hasn't changed.\n" + lastmodified
 									+ " == " + lastmodifiedStored);
 						}
 					} else {
 						reopenFile.delete();
 						indexAccessor.reopen();
 						reopened = true;
-						log.debug("Reopened index because of simple "
-								+ "reopencheck.");
+						log.debug("Reopened index because of simple " + "reopencheck.");
 					}
 				} else {
 					log.debug("Reopen file not found.");
@@ -191,16 +185,16 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	public final boolean isOptimized() {
 		boolean ret = false;
 		IndexAccessor indexAccessor = this.getAccessor();
-			IndexReader reader	= null;
-			try {
-				reader = indexAccessor.getReader(false);
-				ret = reader.isOptimized();
-			} catch (IOException ex) {
-				log.error("IOException happened during test of index. ", ex);
-			} finally {
-				indexAccessor.release(reader, false);
-			}
-			
+		IndexReader reader = null;
+		try {
+			reader = indexAccessor.getReader(false);
+			ret = reader.isOptimized();
+		} catch (IOException ex) {
+			log.error("IOException happened during test of index. ", ex);
+		} finally {
+			indexAccessor.release(reader, false);
+		}
+
 		return ret;
 	}
 
@@ -208,9 +202,10 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	public final boolean isLocked() {
 		boolean locked = false;
 		IndexAccessor indexAccessor = this.getAccessor();
-		locked = indexAccessor.isLocked(); 
+		locked = indexAccessor.isLocked();
 		return locked;
 	}
+
 	/**
 	 * Returns the hashCode of the LockID of the used Directory
 	 * 

@@ -8,7 +8,6 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.CRUtil;
 
-
 /**
  * Substrings the indexed content (everything before a given start index pattern
  *  will be removed).
@@ -41,8 +40,7 @@ public class SubstringTransformer extends ContentTransformer {
 	/**
 	 * start pattern.
 	 */
-	private static final String SUBSTRING_START_INDEX_PATTERN_KEY = 
-		"startindexpattern";
+	private static final String SUBSTRING_START_INDEX_PATTERN_KEY = "startindexpattern";
 	/**
 	 * attribute.
 	 */
@@ -51,8 +49,7 @@ public class SubstringTransformer extends ContentTransformer {
 	 * default pattern.
 	 */
 	private String startindexpattern = "<!DOCTYPE";
-	
-	
+
 	/**
 	 * Create Instance of SubstringTransformer.
 	 * if the startindexpattern is not configured in the config: 
@@ -83,12 +80,11 @@ public class SubstringTransformer extends ContentTransformer {
 				}
 			}
 		} else {
-			log
-			 .error("Configured attribute is null. Bean will not be processed");
+			log.error("Configured attribute is null. Bean will not be processed");
 		}
-	
+
 	}
-	
+
 	/**
 	 * get contents.
 	 * @param obj obj
@@ -100,34 +96,30 @@ public class SubstringTransformer extends ContentTransformer {
 			str = (String) obj;
 		} else if (obj instanceof byte[]) {
 			try {
-				str = CRUtil.readerToString(new InputStreamReader(
-						new ByteArrayInputStream((byte[]) obj)));
+				str = CRUtil.readerToString(new InputStreamReader(new ByteArrayInputStream((byte[]) obj)));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		// Replace all occurrences of pattern in input
 		int startindex = str.indexOf(this.startindexpattern);
 		if (startindex < 0) {
 			log.debug("Pattern not found");
 			return null;
 		}
-		log.debug("StartIndex of pattern '" 
-				+ this.startindexpattern + "':" + startindex);
+		log.debug("StartIndex of pattern '" + this.startindexpattern + "':" + startindex);
 		String resultstring = str.substring(startindex);
-		log.debug("Original String:" 
-				+ str.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
-		log.debug("New String:" 
-				+ resultstring.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
-						
+		log.debug("Original String:" + str.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
+		log.debug("New String:" + resultstring.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
+
 		return resultstring;
 	}
 
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

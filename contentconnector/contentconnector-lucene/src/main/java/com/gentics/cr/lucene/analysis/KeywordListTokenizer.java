@@ -17,14 +17,13 @@ public final class KeywordListTokenizer extends CharTokenizer {
 	public KeywordListTokenizer(final Reader input) {
 		super(input);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param source source
 	 * @param input input
 	 */
-	public KeywordListTokenizer(final AttributeSource source,
-				final Reader input) {
+	public KeywordListTokenizer(final AttributeSource source, final Reader input) {
 		super(source, input);
 	}
 
@@ -33,11 +32,9 @@ public final class KeywordListTokenizer extends CharTokenizer {
 	 * @param factory factory.
 	 * @param input input
 	 */
-	public KeywordListTokenizer(final AttributeFactory factory,
-				final Reader input) {
+	public KeywordListTokenizer(final AttributeFactory factory, final Reader input) {
 		super(factory, input);
 	}
-
 
 	@Override
 	protected boolean isTokenChar(final char c) {

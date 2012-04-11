@@ -33,10 +33,11 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 
 	LuceneIndexLocation indexLocation;
 	IndexAccessor indexAccessor;
-	LinkedHashMap<String,Integer> docs;
+	LinkedHashMap<String, Integer> docs;
 	Iterator<String> docIT;
 	Vector<String> checkedDocuments;
 	private static final Logger log = Logger.getLogger(LuceneIndexUpdateChecker.class);
+
 	/**
 	 * Initializes the Lucene Implementation of {@link IndexUpdateChecker}.
 	 * @param indexLocation
@@ -48,31 +49,27 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	 * method {@link #checkUpToDate(String, int)} is present.
 	 * @throws IOException 
 	 */
-	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation,
-			final String termKey,
-			final String termValue,
-			final String idAttribute) throws IOException {
+	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation, final String termKey,
+		final String termValue, final String idAttribute) throws IOException {
 		this.indexLocation = indexLocation;
 		indexAccessor = indexLocation.getAccessor();
 		IndexReader reader = indexAccessor.getReader(true);
-		
+
 		TermDocs termDocs = reader.termDocs(new Term(termKey, termValue));
-		
+
 		docs = fetchSortedDocs(termDocs, reader, idAttribute);
 		docIT = docs.keySet().iterator();
-		
+
 		checkedDocuments = new Vector<String>(100);
-		
+
 		//TODO CONTINUE HERE PREPARE TO USE ITERATOR IN CHECK METHOD
-		
-		
+
 		indexAccessor.release(reader, true);
 	}
-	
+
 	@Override
-	protected final boolean checkUpToDate(final String identifyer,
-			final Object timestamp, final String timestampattribute,
-			final Resolvable object) {
+	protected final boolean checkUpToDate(final String identifyer, final Object timestamp,
+			final String timestampattribute, final Resolvable object) {
 		String timestampString;
 		if (timestamp == null) {
 			return false;
@@ -82,34 +79,27 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		if ("".equals(timestampString)) {
 			return false;
 		}
-		
+
 		boolean readerWithWritePermissions = false;
 		if (docs.containsKey(identifyer)) {
-			
-			
-			
+
 			Integer documentId = docs.get(identifyer);
 			try {
-				IndexReader reader =
-					indexAccessor.getReader(readerWithWritePermissions);
+				IndexReader reader = indexAccessor.getReader(readerWithWritePermissions);
 				Document document = reader.document(documentId);
 				checkedDocuments.add(identifyer);
 				Object documentUpdateTimestamp = null;
 				try {
 					documentUpdateTimestamp = document.get(timestampattribute);
 				} catch (NumberFormatException e) {
-					log.debug("Got an error getting the document for "
-							+ identifyer + " from index", e);
+					log.debug("Got an error getting the document for " + identifyer + " from index", e);
 				}
 				indexAccessor.release(reader, readerWithWritePermissions);
 				//Use strings to compare the attributes
-				if (documentUpdateTimestamp != null
-						&& !(documentUpdateTimestamp instanceof String)) {
-					documentUpdateTimestamp =
-						documentUpdateTimestamp.toString();
+				if (documentUpdateTimestamp != null && !(documentUpdateTimestamp instanceof String)) {
+					documentUpdateTimestamp = documentUpdateTimestamp.toString();
 				}
-				if (documentUpdateTimestamp == null
-						|| !documentUpdateTimestamp.equals(timestampString)) {
+				if (documentUpdateTimestamp == null || !documentUpdateTimestamp.equals(timestampString)) {
 					if (log.isTraceEnabled()) {
 						log.trace(identifyer + ": object is not up to date.");
 					}
@@ -126,8 +116,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				for (Directory dir : dirs) {
 					directories += dir.toString() + '\n';
 				}
-				log.error("Cannot open index for reading. (Directory: "
-						+ directories + ")", e);
+				log.error("Cannot open index for reading. (Directory: " + directories + ")", e);
 				return true;
 			}
 		} else {
@@ -138,11 +127,11 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 
 	@Override
 	public void deleteStaleObjects() {
-		log.debug(checkedDocuments.size()+" objects checked, "+docs.size()+" objects already in the index.");
+		log.debug(checkedDocuments.size() + " objects checked, " + docs.size() + " objects already in the index.");
 		IndexReader writeReader = null;
 		boolean readerNeedsWrite = true;
-		UseCase deleteStale = MonitorFactory.startUseCase(
-				"LuceneIndexUpdateChecker.deleteStaleObjects(" + indexLocation.getName()	+ ")");
+		UseCase deleteStale = MonitorFactory.startUseCase("LuceneIndexUpdateChecker.deleteStaleObjects("
+				+ indexLocation.getName() + ")");
 		try {
 			boolean objectsDeleted = false;
 			for (String contentId : docs.keySet()) {
@@ -170,18 +159,18 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		}
 		checkedDocuments.clear();
 	}
-	
-	private LinkedHashMap<String,Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute) throws IOException
-	{
-		LinkedHashMap<String,Integer> tmp = new LinkedHashMap<String,Integer>();
-		
+
+	private LinkedHashMap<String, Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute)
+			throws IOException {
+		LinkedHashMap<String, Integer> tmp = new LinkedHashMap<String, Integer>();
+
 		while (termDocs.next()) {
 			Document doc = reader.document(termDocs.doc());
 			String docID = doc.get(idAttribute);
 			tmp.put(docID, termDocs.doc());
 		}
-		
-		LinkedHashMap<String,Integer> ret = new LinkedHashMap<String,Integer>(tmp.size());
+
+		LinkedHashMap<String, Integer> ret = new LinkedHashMap<String, Integer>(tmp.size());
 		Vector<String> v = new Vector<String>(tmp.keySet());
 		Collections.sort(v);
 		for (String id : v) {

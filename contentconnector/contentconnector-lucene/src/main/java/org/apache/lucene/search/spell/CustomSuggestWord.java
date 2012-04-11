@@ -1,6 +1,5 @@
 package org.apache.lucene.search.spell;
 
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -24,89 +23,92 @@ package org.apache.lucene.search.spell;
  *
  */
 final class CustomSuggestWord {
-  /**
-   * the score of the word.
-   */
-  private float score;
-  
-  /**
-   * setScore.
-   * @param s score
-   */
-  public void setScore(final float s) {
-	  score = s;
-  }
-  
-  /**
-   * getScore.
-   * @return score.
-   */
-  public float getScore() {
-	  return score;
-  }
+	/**
+	 * the score of the word.
+	 */
+	private float score;
 
-  /**
-   * The freq of the word.
-   */
-  private int freq;
-  
-  /**
-   * setter for freq.
-   * @param f freq
-   */
-  public void setFreq(final int f) {
-	  freq = f;
-  }
-  /**
-   * getter for freq.
-   * @return freq
-   */
-  public int getFreq() {
-	  return freq;
-  }
+	/**
+	 * setScore.
+	 * @param s score
+	 */
+	public void setScore(final float s) {
+		score = s;
+	}
 
-  /**
-   * the suggested word.
-   */
-  private String string;
+	/**
+	 * getScore.
+	 * @return score.
+	 */
+	public float getScore() {
+		return score;
+	}
 
-  /**
-   * getter for String.
-   * @return string
-   */
-  public String getString() {
-	  return string;
-  }
-  /**
-   * Setter for string.
-   * @param str string
-   */
-  public void setString(final String str) {
-	  string = str;
-  }
-  /**
-   * compare.
-   * @param a compare to elem.
-   * @return comp.
-   */
-  public int compareTo(final CustomSuggestWord a) {
-    // first criteria: the edit distance
-	
-    if (score > a.score) {
-      return 1;
-    }
-    if (score < a.score) {
-      return -1;
-    }
+	/**
+	 * The freq of the word.
+	 */
+	private int freq;
 
-    // second criteria (if first criteria is equal): the popularity
-    if (freq > a.freq) {
-      return 1;
-    }
+	/**
+	 * setter for freq.
+	 * @param f freq
+	 */
+	public void setFreq(final int f) {
+		freq = f;
+	}
 
-    if (freq < a.freq) {
-      return -1;
-    }
-    return 0;
-  }
+	/**
+	 * getter for freq.
+	 * @return freq
+	 */
+	public int getFreq() {
+		return freq;
+	}
+
+	/**
+	 * the suggested word.
+	 */
+	private String string;
+
+	/**
+	 * getter for String.
+	 * @return string
+	 */
+	public String getString() {
+		return string;
+	}
+
+	/**
+	 * Setter for string.
+	 * @param str string
+	 */
+	public void setString(final String str) {
+		string = str;
+	}
+
+	/**
+	 * compare.
+	 * @param a compare to elem.
+	 * @return comp.
+	 */
+	public int compareTo(final CustomSuggestWord a) {
+		// first criteria: the edit distance
+
+		if (score > a.score) {
+			return 1;
+		}
+		if (score < a.score) {
+			return -1;
+		}
+
+		// second criteria (if first criteria is equal): the popularity
+		if (freq > a.freq) {
+			return 1;
+		}
+
+		if (freq < a.freq) {
+			return -1;
+		}
+		return 0;
+	}
 }

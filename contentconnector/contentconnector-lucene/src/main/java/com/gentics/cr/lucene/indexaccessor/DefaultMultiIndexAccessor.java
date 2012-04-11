@@ -43,169 +43,165 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER =
-		Logger.getLogger(DefaultMultiIndexAccessor.class);
-  private final Map<Searcher, IndexAccessor> multiSearcherAccessors = new HashMap<Searcher, IndexAccessor>();
-  private final Map<IndexReader, IndexAccessor> multiReaderAccessors = new HashMap<IndexReader, IndexAccessor>();
+	private static final Logger LOGGER = Logger.getLogger(DefaultMultiIndexAccessor.class);
+	private final Map<Searcher, IndexAccessor> multiSearcherAccessors = new HashMap<Searcher, IndexAccessor>();
+	private final Map<IndexReader, IndexAccessor> multiReaderAccessors = new HashMap<IndexReader, IndexAccessor>();
 
-  private Similarity similarity;
-  
-  private Directory[] dirs;
+	private Similarity similarity;
 
-  /**
-   * Create new Instance
- * @param dirs 
-   */
-  public DefaultMultiIndexAccessor(Directory[] dirs) {
-    this.similarity = Similarity.getDefault();
-    this.dirs = dirs;
-  }
+	private Directory[] dirs;
 
-  /**
-   * Create new instance
- * @param dirs 
-   * @param similarity
-   */
-  public DefaultMultiIndexAccessor(Directory[] dirs,Similarity similarity) {
-    this.similarity = similarity;
-    this.dirs = dirs;
-  }
+	/**
+	 * Create new Instance
+	* @param dirs 
+	 */
+	public DefaultMultiIndexAccessor(Directory[] dirs) {
+		this.similarity = Similarity.getDefault();
+		this.dirs = dirs;
+	}
 
+	/**
+	 * Create new instance
+	* @param dirs 
+	 * @param similarity
+	 */
+	public DefaultMultiIndexAccessor(Directory[] dirs, Similarity similarity) {
+		this.similarity = similarity;
+		this.dirs = dirs;
+	}
 
-  
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.MultiIndexAccessor#release(org.apache.lucene.search.Searcher)
-   */
-  public synchronized void release(Searcher multiSearcher) {
-    Searchable[] searchers = ((MultiSearcher) multiSearcher).getSearchables();
-    for (Searchable searchable : searchers) {
-      multiSearcherAccessors.remove(searchable).release((Searcher) searchable);
-    }
-  }
+	/*
+	 * (non-Javadoc)
+	 * @see com.mhs.indexaccessor.MultiIndexAccessor#release(org.apache.lucene.search.Searcher)
+	 */
+	public synchronized void release(Searcher multiSearcher) {
+		Searchable[] searchers = ((MultiSearcher) multiSearcher).getSearchables();
+		for (Searchable searchable : searchers) {
+			multiSearcherAccessors.remove(searchable).release((Searcher) searchable);
+		}
+	}
 
-  	/**
-  	 * Closes all index accessors contained in the multi accessor
-  	 */
+	/**
+	 * Closes all index accessors contained in the multi accessor
+	 */
 	public void close() {
-		for (Entry<Searcher,IndexAccessor> iae : this.multiSearcherAccessors.entrySet()) {
+		for (Entry<Searcher, IndexAccessor> iae : this.multiSearcherAccessors.entrySet()) {
 			IndexAccessor ia = iae.getValue();
-			if(ia.isOpen())
+			if (ia.isOpen())
 				ia.close();
-	    }
-		for (Entry<IndexReader,IndexAccessor> iae : this.multiReaderAccessors.entrySet()) {
+		}
+		for (Entry<IndexReader, IndexAccessor> iae : this.multiReaderAccessors.entrySet()) {
 			IndexAccessor ia = iae.getValue();
-			if(ia.isOpen())
+			if (ia.isOpen())
 				ia.close();
-	    }
+		}
 	}
-	
+
 	public Searcher getPrioritizedSearcher() throws IOException {
-		
-		    Searcher[] searchers = new Searcher[this.dirs.length];
-		    
-		    IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		    int i=0;
-		    for (Directory index:this.dirs) {
-		      IndexAccessor indexAccessor = factory.getAccessor(index);
-		      searchers[i] = indexAccessor.getPrioritizedSearcher();
-		      multiSearcherAccessors.put(searchers[i], indexAccessor);
-		      i++;
-		    }
 
-		    MultiSearcher multiSearcher = new MultiSearcher(searchers);
+		Searcher[] searchers = new Searcher[this.dirs.length];
 
-		    return multiSearcher;
-	}
-	
-	public IndexReader getReader(boolean write) throws IOException {
-		if(write)throw new UnsupportedOperationException(); 
-		
-		IndexReader[] readers = new IndexReader[this.dirs.length];
-		
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-	    int i=0;
-	    for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      readers[i] = indexAccessor.getReader(false);
-	      multiReaderAccessors.put(readers[i], indexAccessor);
-	      i++;
-	    }
-		
-		MultiReader multiReader = new MultiReader(readers,true);
-		
+		int i = 0;
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			searchers[i] = indexAccessor.getPrioritizedSearcher();
+			multiSearcherAccessors.put(searchers[i], indexAccessor);
+			i++;
+		}
+
+		MultiSearcher multiSearcher = new MultiSearcher(searchers);
+
+		return multiSearcher;
+	}
+
+	public IndexReader getReader(boolean write) throws IOException {
+		if (write)
+			throw new UnsupportedOperationException();
+
+		IndexReader[] readers = new IndexReader[this.dirs.length];
+
+		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
+		int i = 0;
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			readers[i] = indexAccessor.getReader(false);
+			multiReaderAccessors.put(readers[i], indexAccessor);
+			i++;
+		}
+
+		MultiReader multiReader = new MultiReader(readers, true);
+
 		return multiReader;
 	}
-	
+
 	public Searcher getSearcher() throws IOException {
-		 	Searcher[] searchers = new Searcher[this.dirs.length];
-		    
-		    IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		    int i=0;
-		    for (Directory index:this.dirs) {
-		      IndexAccessor indexAccessor = factory.getAccessor(index);
-		      searchers[i] = indexAccessor.getSearcher(this.similarity,null);
-		      multiSearcherAccessors.put(searchers[i], indexAccessor);
-		      i++;
-		    }
+		Searcher[] searchers = new Searcher[this.dirs.length];
 
-		    MultiSearcher multiSearcher = new MultiSearcher(searchers);
+		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
+		int i = 0;
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			searchers[i] = indexAccessor.getSearcher(this.similarity, null);
+			multiSearcherAccessors.put(searchers[i], indexAccessor);
+			i++;
+		}
 
-		    return multiSearcher;
+		MultiSearcher multiSearcher = new MultiSearcher(searchers);
+
+		return multiSearcher;
 	}
-	
+
 	public Searcher getSearcher(IndexReader indexReader) throws IOException {
 		Searcher[] searchers = new Searcher[this.dirs.length];
-	    
-	    IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-	    int i=0;
-	    for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      searchers[i] = indexAccessor.getSearcher(this.similarity, indexReader);
-	      multiSearcherAccessors.put(searchers[i], indexAccessor);
-	      i++;
-	    }
 
-	    MultiSearcher multiSearcher = new MultiSearcher(searchers);
+		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
+		int i = 0;
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			searchers[i] = indexAccessor.getSearcher(this.similarity, indexReader);
+			multiSearcherAccessors.put(searchers[i], indexAccessor);
+			i++;
+		}
 
-	    return multiSearcher;
+		MultiSearcher multiSearcher = new MultiSearcher(searchers);
+
+		return multiSearcher;
 	}
-	
-	public Searcher getSearcher(Similarity similarity, IndexReader indexReader)throws IOException {
+
+	public Searcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException {
 		Searcher[] searchers = new Searcher[this.dirs.length];
-	    
-	    IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-	    int i=0;
-	    for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      searchers[i] = indexAccessor.getSearcher(similarity, indexReader);
-	      multiSearcherAccessors.put(searchers[i], indexAccessor);
-	      i++;
-	    }
 
-	    MultiSearcher multiSearcher = new MultiSearcher(searchers);
+		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
+		int i = 0;
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			searchers[i] = indexAccessor.getSearcher(similarity, indexReader);
+			multiSearcherAccessors.put(searchers[i], indexAccessor);
+			i++;
+		}
 
-	    return multiSearcher;
+		MultiSearcher multiSearcher = new MultiSearcher(searchers);
+
+		return multiSearcher;
 	}
-	
+
 	public IndexWriter getWriter() throws IOException {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public boolean isOpen() {
 		boolean open = true;
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      if(!indexAccessor.isOpen())
-	      {
-	    	  open = false;
-	      }
-	    }
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			if (!indexAccessor.isOpen()) {
+				open = false;
+			}
+		}
 		return open;
 	}
-	
+
 	public boolean isLocked() {
 		boolean locked = false;
 		for (Directory d : this.dirs) {
@@ -214,77 +210,77 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 			} catch (IOException e) {
 				LOGGER.error(e);
 			}
-			if(locked) {
+			if (locked) {
 				break;
 			}
 		}
 		return locked;
 	}
-	
+
 	public void open() {
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      indexAccessor.open();
-	    }
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			indexAccessor.open();
+		}
 	}
-	
+
 	public int readingReadersOut() {
 		int usecount = 0;
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      usecount += indexAccessor.readingReadersOut();
-	    }
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			usecount += indexAccessor.readingReadersOut();
+		}
 		return usecount;
 	}
-	
+
 	public void release(IndexReader reader, boolean write) {
 		IndexReader[] readers = ((MultiReader) reader).getSequentialSubReaders();
-	    for (IndexReader r : readers) {
-	      multiReaderAccessors.remove(r).release(r,write);
-	    }
+		for (IndexReader r : readers) {
+			multiReaderAccessors.remove(r).release(r, write);
+		}
 	}
-	
+
 	public void release(IndexWriter writer) {
-		throw new UnsupportedOperationException();		
+		throw new UnsupportedOperationException();
 	}
-	
+
 	public int searcherUseCount() {
 		int usecount = 0;
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      usecount += indexAccessor.searcherUseCount();
-	    }
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			usecount += indexAccessor.searcherUseCount();
+		}
 		return usecount;
 	}
-	
+
 	public int writerUseCount() {
 		int usecount = 0;
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      usecount += indexAccessor.writerUseCount();
-	    }
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			usecount += indexAccessor.writerUseCount();
+		}
 		return usecount;
 	}
-	
+
 	public int writingReadersUseCount() {
 		int usecount = 0;
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		for (Directory index:this.dirs) {
-	      IndexAccessor indexAccessor = factory.getAccessor(index);
-	      usecount += indexAccessor.writingReadersUseCount();
-	    }
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			usecount += indexAccessor.writingReadersUseCount();
+		}
 		return usecount;
 	}
 
 	public void reopen() throws IOException {
 		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-		for (Directory index:this.dirs) {
-		      IndexAccessor indexAccessor = factory.getAccessor(index);
-		      indexAccessor.reopen();
+		for (Directory index : this.dirs) {
+			IndexAccessor indexAccessor = factory.getAccessor(index);
+			indexAccessor.reopen();
 		}
 	}
 

@@ -30,10 +30,8 @@ import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
  * provide didyoumean search suggestions.
  * 
  */
-public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
-		IEventReceiver {
-	protected static final Logger log = Logger
-			.getLogger(DidyoumeanIndexExtension.class);
+public class DidyoumeanIndexExtension extends AbstractIndexExtension implements IEventReceiver {
+	protected static final Logger log = Logger.getLogger(DidyoumeanIndexExtension.class);
 
 	private static final String REINDEX_JOB = "reIndex";
 	private static final String CLEAR_JOB = "clearDidyoumeanIndex";
@@ -84,33 +82,25 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 	 * @param config
 	 * @param callingLocation
 	 */
-	public DidyoumeanIndexExtension(CRConfig config,
-			IndexLocation callingLocation) {
+	public DidyoumeanIndexExtension(CRConfig config, IndexLocation callingLocation) {
 		super(config, callingLocation);
 		this.config = config;
 		this.callingIndexLocation = callingLocation;
 
-		GenericConfiguration src_conf = (GenericConfiguration) config
-				.get(SOURCE_INDEX_KEY);
-		CRConfigUtil src_conf_util = new CRConfigUtil(src_conf,
-				"SOURCE_INDEX_KEY");
+		GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
+		CRConfigUtil src_conf_util = new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY");
 		if (src_conf_util.getPropertySize() > 0) {
-			sourceLocation = LuceneIndexLocation
-					.getIndexLocation(src_conf_util);
+			sourceLocation = LuceneIndexLocation.getIndexLocation(src_conf_util);
 		}
 		if (sourceLocation == null) {
 			sourceLocation = (LuceneIndexLocation) callingLocation;
 		}
 
-		GenericConfiguration didyou_conf = (GenericConfiguration) config
-				.get(DIDYOUMEAN_INDEX_KEY);
-		didyoumeanLocation = LuceneIndexLocation
-				.getIndexLocation(new CRConfigUtil(didyou_conf,
-						DIDYOUMEAN_INDEX_KEY));
+		GenericConfiguration didyou_conf = (GenericConfiguration) config.get(DIDYOUMEAN_INDEX_KEY);
+		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(didyou_conf, DIDYOUMEAN_INDEX_KEY));
 		didyoumeanLocation.registerDirectoriesSpecial();
 
-		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY,
-				didyoumeanfield);
+		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);
 		minDScore = config.getFloat(DIDYOUMEAN_MIN_DISTANCESCORE, (float) 0.0);
 		minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
 
@@ -126,17 +116,14 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 		}
 		reindexStrategy = initReindexStrategy(config);
 
-		subscribeToIndexFinished = config.getBoolean(
-				DIDYOUMEAN_SUBSCRIBE_TO_INDEX_FINISHED,
-				subscribeToIndexFinished);
+		subscribeToIndexFinished = config.getBoolean(DIDYOUMEAN_SUBSCRIBE_TO_INDEX_FINISHED, subscribeToIndexFinished);
 
 		if (subscribeToIndexFinished) {
 			EventManager.getInstance().register(this);
 		}
 
 		try {
-			spellchecker = new CustomSpellChecker(didyoumeanLocation,
-					minDScore, minDFreq);
+			spellchecker = new CustomSpellChecker(didyoumeanLocation, minDScore, minDFreq);
 		} catch (IOException e) {
 			log.debug("Could not create Spellchecker", e);
 			// without spellchecker the extension won't work - stop it
@@ -153,22 +140,19 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 	 * of the {@link IndexLocation} which fired the event
 	 */
 	public void processEvent(Event event) {
-		if (!subscribeToIndexFinished
-				|| !IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE
-					.equals(event.getType())) {
+		if (!subscribeToIndexFinished || !IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType())) {
 			return;
 		}
 
 		Object obj = event.getData();
 		LuceneIndexLocation callingLuceneLocation = (LuceneIndexLocation) callingIndexLocation;
 
-		if(!callingLuceneLocation.equals(obj)) {
+		if (!callingLuceneLocation.equals(obj)) {
 			return;
 		}
 
 		if (!reindexStrategy.skipReIndex(callingLuceneLocation)) {
-			AbstractUpdateCheckerJob job = new DidyoumeanIndexJob(
-					config, callingLuceneLocation, this);
+			AbstractUpdateCheckerJob job = new DidyoumeanIndexJob(config, callingLuceneLocation, this);
 			callingLuceneLocation.getQueue().addJob(job);
 		}
 
@@ -176,7 +160,6 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#stop()
 	 */
 	@Override
@@ -206,12 +189,10 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 		if (className != null && className.length() != 0) {
 			try {
 				Class<?> clazz = Class.forName(className);
-				Constructor<?> constructor = clazz
-						.getConstructor(CRConfig.class);
+				Constructor<?> constructor = clazz.getConstructor(CRConfig.class);
 				return (IReIndexStrategy) constructor.newInstance(config);
 			} catch (Exception e) {
-				log.warn("Cound not init configured "
-						+ REINDEXSTRATEGYCLASS_KEY + ": " + className, e);
+				log.warn("Cound not init configured " + REINDEXSTRATEGYCLASS_KEY + ": " + className, e);
 			}
 		}
 		return new ReIndexNoSkipStrategy(config);
@@ -219,10 +200,7 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang.
-	 * String)
+	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang. String)
 	 */
 	@Override
 	public void addJob(String name) throws NoSuchMethodException {
@@ -231,30 +209,24 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang.
-	 * String, com.gentics.cr.util.indexing.IndexLocation)
+	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#addJob(java.lang. String,
+	 * com.gentics.cr.util.indexing.IndexLocation)
 	 */
 	@Override
-	public void addJob(String name, IndexLocation indexLocation)
-			throws NoSuchMethodException {
+	public void addJob(String name, IndexLocation indexLocation) throws NoSuchMethodException {
 		IndexLocation actualLocation = callingIndexLocation;
 		if (indexLocation != null) {
 			actualLocation = indexLocation;
 		}
 
 		if (REINDEX_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = new DidyoumeanIndexJob(
-					this.config, actualLocation, this);
+			AbstractUpdateCheckerJob job = new DidyoumeanIndexJob(this.config, actualLocation, this);
 			actualLocation.getQueue().addJob(job);
 		} else if (CLEAR_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = new DidyoumeanIndexDeleteJob(
-					config, actualLocation, this);
+			AbstractUpdateCheckerJob job = new DidyoumeanIndexDeleteJob(config, actualLocation, this);
 			actualLocation.getQueue().addJob(job);
 		} else {
-			throw new NoSuchMethodException("No Job-Method by the name: "
-					+ name);
+			throw new NoSuchMethodException("No Job-Method by the name: " + name);
 		}
 	}
 
@@ -292,7 +264,6 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.gentics.cr.util.indexing.AbstractIndexExtension#getJobs()
 	 */
 	@Override

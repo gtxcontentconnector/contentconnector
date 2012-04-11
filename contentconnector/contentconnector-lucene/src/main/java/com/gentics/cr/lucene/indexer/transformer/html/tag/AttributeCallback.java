@@ -13,6 +13,5 @@ public interface AttributeCallback {
 	 * @param attributeName - name of the attribute to change
 	 * @param attributeValue - value of the attribute to change to
 	 */
-	void invokeCallback(final StringBuffer html, final String attributeName,
-			final String attributeValue);
+	void invokeCallback(final StringBuffer html, final String attributeName, final String attributeValue);
 }

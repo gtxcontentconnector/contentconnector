@@ -18,195 +18,192 @@ import org.apache.lucene.store.Directory;
 
 class WarmingIndexAccessor extends DefaultIndexAccessor {
 
-  private Query warmQuery;
-  // look into making a Set again
-  private List<IndexSearcher> retiredSearchers;
-  
-  /**
-   * Log4j logger for error and debug messages.
-   */
-  private static final Logger LOGGER =
-	  Logger.getLogger(WarmingIndexAccessor.class);
-  
-  /**
-   * Create new instance
-   * @param dir
-   * @param analyzer
-   * @param warmQuery
-   */
-  public WarmingIndexAccessor(Directory dir, Analyzer analyzer, Query warmQuery) {
-	  super(dir, analyzer);
+	private Query warmQuery;
+	// look into making a Set again
+	private List<IndexSearcher> retiredSearchers;
 
-	    this.warmQuery = warmQuery;
-	    retiredSearchers = new ArrayList<IndexSearcher>();
-  }
+	/**
+	 * Log4j logger for error and debug messages.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(WarmingIndexAccessor.class);
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.mhs.indexaccessor.IndexAccessor#close()
-   */
-  public synchronized void close() {
+	/**
+	 * Create new instance
+	 * @param dir
+	 * @param analyzer
+	 * @param warmQuery
+	 */
+	public WarmingIndexAccessor(Directory dir, Analyzer analyzer, Query warmQuery) {
+		super(dir, analyzer);
 
-    if (closed) {
-      return;
-    }
-    closed = true;
-    while ((readingReaderUseCount > 0) || (searcherUseCount > 0) || (writingReaderUseCount > 0)
-        || (writerUseCount > 0) || (numReopening > 0)) {
-      try {
-        wait();
-      } catch (InterruptedException e) {
-      }
-    }
+		this.warmQuery = warmQuery;
+		retiredSearchers = new ArrayList<IndexSearcher>();
+	}
 
-    closeCachedReadingReader();
-    closeCachedWritingReader();
-    closeCachedWriter();
+	/*
+	 * (non-Javadoc)
+	 * @see com.mhs.indexaccessor.IndexAccessor#close()
+	 */
+	public synchronized void close() {
 
-    // System.out.println("wait for warming s's:" + numSearchersForRetirment);
+		if (closed) {
+			return;
+		}
+		closed = true;
+		while ((readingReaderUseCount > 0) || (searcherUseCount > 0) || (writingReaderUseCount > 0)
+				|| (writerUseCount > 0) || (numReopening > 0)) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
 
-    retireSearchers();
-    while (numSearchersForRetirment > 0) {
+		closeCachedReadingReader();
+		closeCachedWritingReader();
+		closeCachedWriter();
 
-      try {
-        wait();
-      } catch (InterruptedException e) {
-      }
-      retireSearchers();
-    }
+		// System.out.println("wait for warming s's:" + numSearchersForRetirment);
 
-    closeCachedSearchers();
-    shutdownAndAwaitTermination(pool);
+		retireSearchers();
+		while (numSearchersForRetirment > 0) {
 
-    // int i = 0;
-    // for (IndexSearcher s : createdSearchers) {
-    // System.out.println(i++ + ":" + s.getIndexReader().refCount + " :" +
-    // s.getIndexReader());
-    // }
-  }
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+			retireSearchers();
+		}
 
-  /**
-   * Reopens all of the Searchers in the Searcher cache. This method is invoked
-   * in a synchronized context.
-   */
-  protected void reopenCachedSearchers() {
-    LOGGER.debug("reopening cached searchers (" + cachedSearchers.size() + "):"
-          + Thread.currentThread().getId());
-    Set<Similarity> keys = cachedSearchers.keySet();
-    for (Similarity key : keys) {
-      IndexSearcher searcher = cachedSearchers.get(key);
-      try {
-        IndexReader oldReader = searcher.getIndexReader();
-        IndexSearcher oldSearcher = searcher;
-        IndexReader newReader = oldReader.reopen();
+		closeCachedSearchers();
+		shutdownAndAwaitTermination(pool);
 
-        if (newReader != oldReader) {
+		// int i = 0;
+		// for (IndexSearcher s : createdSearchers) {
+		// System.out.println(i++ + ":" + s.getIndexReader().refCount + " :" +
+		// s.getIndexReader());
+		// }
+	}
 
-          retireSearchers();
-          IndexSearcher newSearcher = new IndexSearcher(newReader);
-          createdSearchers.add(newSearcher);
-          newSearcher.setSimilarity(oldSearcher.getSimilarity());
-          SearcherWarmer warmer = new SearcherWarmer(oldSearcher, newSearcher);
-          numSearchersForRetirment++;
-          numSearchersForRetirment++;
-          pool.execute(warmer);
+	/**
+	 * Reopens all of the Searchers in the Searcher cache. This method is invoked
+	 * in a synchronized context.
+	 */
+	protected void reopenCachedSearchers() {
+		LOGGER.debug("reopening cached searchers (" + cachedSearchers.size() + "):" + Thread.currentThread().getId());
+		Set<Similarity> keys = cachedSearchers.keySet();
+		for (Similarity key : keys) {
+			IndexSearcher searcher = cachedSearchers.get(key);
+			try {
+				IndexReader oldReader = searcher.getIndexReader();
+				IndexSearcher oldSearcher = searcher;
+				IndexReader newReader = oldReader.reopen();
 
-        }
+				if (newReader != oldReader) {
 
-      } catch (IOException e) {
-        LOGGER.error("error reopening cached Searcher", e);
-      }
-    }
+					retireSearchers();
+					IndexSearcher newSearcher = new IndexSearcher(newReader);
+					createdSearchers.add(newSearcher);
+					newSearcher.setSimilarity(oldSearcher.getSimilarity());
+					SearcherWarmer warmer = new SearcherWarmer(oldSearcher, newSearcher);
+					numSearchersForRetirment++;
+					numSearchersForRetirment++;
+					pool.execute(warmer);
 
-  }
+				}
 
-  private void retireSearchers() {
+			} catch (IOException e) {
+				LOGGER.error("error reopening cached Searcher", e);
+			}
+		}
 
-    Iterator<IndexSearcher> it = retiredSearchers.iterator();
+	}
 
-    while (it.hasNext()) {
+	private void retireSearchers() {
 
-      IndexSearcher s = it.next();
-        LOGGER.debug("closing retired searcher:" + s.getIndexReader());
+		Iterator<IndexSearcher> it = retiredSearchers.iterator();
 
-      try {
-        s.getIndexReader().close();
-      } catch (IOException e) {
-        LOGGER.error("error closing cached Searcher", e);
-      }
-      numSearchersForRetirment--;
-    }
-    retiredSearchers.clear();
+		while (it.hasNext()) {
 
-  }
+			IndexSearcher s = it.next();
+			LOGGER.debug("closing retired searcher:" + s.getIndexReader());
 
-  /**
-   * 
-   * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
-   * @version $Revision: 180 $
-   * @author $Author: supnig@constantinopel.at $
-   *
-   */
-  public class SearcherWarmer implements Runnable {
-    private IndexSearcher searcher;
-    private IndexSearcher oldSearcher;
-    /**
-     * Create new instance
-     * @param oldSearcher
-     * @param searcher
-     */
-    public SearcherWarmer(IndexSearcher oldSearcher, IndexSearcher searcher) {
-      this.searcher = searcher;
-      this.oldSearcher = oldSearcher;
+			try {
+				s.getIndexReader().close();
+			} catch (IOException e) {
+				LOGGER.error("error closing cached Searcher", e);
+			}
+			numSearchersForRetirment--;
+		}
+		retiredSearchers.clear();
 
-    }
+	}
 
-    public void run() {
-      LOGGER.debug("warming up searcher...");
-      try {
-        
-          searcher.search(warmQuery,new Collector() {
-              
-			@Override
-			public boolean acceptsDocsOutOfOrder() {
-				// TODO Auto-generated method stub
-				return false;
+	/**
+	 * 
+	 * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
+	 * @version $Revision: 180 $
+	 * @author $Author: supnig@constantinopel.at $
+	 *
+	 */
+	public class SearcherWarmer implements Runnable {
+		private IndexSearcher searcher;
+		private IndexSearcher oldSearcher;
+
+		/**
+		 * Create new instance
+		 * @param oldSearcher
+		 * @param searcher
+		 */
+		public SearcherWarmer(IndexSearcher oldSearcher, IndexSearcher searcher) {
+			this.searcher = searcher;
+			this.oldSearcher = oldSearcher;
+
+		}
+
+		public void run() {
+			LOGGER.debug("warming up searcher...");
+			try {
+
+				searcher.search(warmQuery, new Collector() {
+
+					@Override
+					public boolean acceptsDocsOutOfOrder() {
+						// TODO Auto-generated method stub
+						return false;
+					}
+
+					@Override
+					public void collect(int arg0) throws IOException {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void setNextReader(IndexReader arg0, int arg1) throws IOException {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void setScorer(Scorer arg0) throws IOException {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 
-			@Override
-			public void collect(int arg0) throws IOException {
-				// TODO Auto-generated method stub
-				
+			LOGGER.debug("warming done");
+
+			synchronized (WarmingIndexAccessor.this) {
+				retiredSearchers.add(cachedSearchers.put(searcher.getSimilarity(), searcher));
+				retiredSearchers.add(oldSearcher);
+
+				WarmingIndexAccessor.this.notifyAll();
 			}
-
-			@Override
-			public void setNextReader(IndexReader arg0, int arg1)
-					throws IOException {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void setScorer(Scorer arg0) throws IOException {
-				// TODO Auto-generated method stub
-				
-			}
-              });
-        
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-
-      LOGGER.debug("warming done");
-
-      synchronized (WarmingIndexAccessor.this) {
-        retiredSearchers.add(cachedSearchers.put(searcher.getSimilarity(), searcher));
-        retiredSearchers.add(oldSearcher);
-
-        WarmingIndexAccessor.this.notifyAll();
-      }
-    }
-  }
+		}
+	}
 
 }

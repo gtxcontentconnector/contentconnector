@@ -13,6 +13,7 @@ import org.apache.lucene.search.vectorhighlight.SimpleFragListBuilder;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+
 /**
  * VectorBolder.
  * Last changed: $Date: 2009-06-26 15:48:16 +0200 (Fr, 26 Jun 2009) $
@@ -24,7 +25,7 @@ public class VectorBolder extends AdvancedContentHighlighter {
 	/**
 		 * Log4j logger for error and debug messages.
 		 */
-		private static final Logger LOGGER = Logger.getLogger(VectorBolder.class);
+	private static final Logger LOGGER = Logger.getLogger(VectorBolder.class);
 	/**
 	 * Default max fragments.
 	 */
@@ -33,7 +34,7 @@ public class VectorBolder extends AdvancedContentHighlighter {
 	 * Default fragment size.
 	 */
 	private static final int DEFAULT_FRAGMENT_SIZE = 100;
-	
+
 	/**
 	 * max fragments.
 	 */
@@ -54,7 +55,6 @@ public class VectorBolder extends AdvancedContentHighlighter {
 		super(config);
 	}
 
-	
 	/**
 	 * highlight method.
 	 * @param parsedQuery 
@@ -64,28 +64,30 @@ public class VectorBolder extends AdvancedContentHighlighter {
 	 * @return highlighted text.
 	 * 
 	 */
-	public final String highlight(final Query parsedQuery,
-		 final IndexReader reader, final int docId, final String fieldName) {
-		UseCase uc = MonitorFactory.startUseCase(
-				"Highlight.VectorBolder.highlight()");
+	public final String highlight(final Query parsedQuery, final IndexReader reader, final int docId,
+			final String fieldName) {
+		UseCase uc = MonitorFactory.startUseCase("Highlight.VectorBolder.highlight()");
 		String result = "";
 		if (fieldName != null && parsedQuery != null) {
-			FastVectorHighlighter highlighter =
-				new FastVectorHighlighter(true, true, new SimpleFragListBuilder(),
-						new ScoreOrderFragmentsBuilder(new String[]{
-						getHighlightPrefix()}, new String[]{getHighlightPostfix()}));
+			FastVectorHighlighter highlighter = new FastVectorHighlighter(true, true, new SimpleFragListBuilder(),
+					new ScoreOrderFragmentsBuilder(new String[] { getHighlightPrefix() },
+							new String[] { getHighlightPostfix() }));
 			FieldQuery fieldQuery = highlighter.getFieldQuery(parsedQuery);
 			//highlighter.setTextFragmenter(new WordCountFragmenter(fragmentSize));
 
 			//TokenStream tokenStream = analyzer.tokenStream(
 			//		this.getHighlightAttribute(), new StringReader(attribute));
 			try {
-				UseCase ucFragments = MonitorFactory.startUseCase(
-				"Highlight.VectorBolder.highlight()#getFragments");
+				UseCase ucFragments = MonitorFactory.startUseCase("Highlight.VectorBolder.highlight()#getFragments");
 				//TextFragment[] frags = highlighter.getBestTextFragments(tokenStream,
 				//		attribute, true, numMaxFragments);
-				String[] frags = highlighter.getBestFragments(fieldQuery, reader, docId,
-						fieldName, fragmentSize, numMaxFragments);
+				String[] frags = highlighter.getBestFragments(
+					fieldQuery,
+					reader,
+					docId,
+					fieldName,
+					fragmentSize,
+					numMaxFragments);
 				ucFragments.stop();
 				boolean first = true;
 				if (frags != null) {
@@ -116,7 +118,5 @@ public class VectorBolder extends AdvancedContentHighlighter {
 	protected final int getDefaultMaxFragments() {
 		return DEFAULT_MAX_FRAGMENTS;
 	}
-
-
 
 }

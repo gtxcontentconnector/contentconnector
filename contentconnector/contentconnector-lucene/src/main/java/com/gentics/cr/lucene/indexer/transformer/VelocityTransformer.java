@@ -47,42 +47,38 @@ public class VelocityTransformer extends ContentTransformer {
 	/**
 	 * Configuration key for source attribute.
 	 */
-	private static final String TRANSFORMER_TEMPLATE_KEY =
-		"template";
+	private static final String TRANSFORMER_TEMPLATE_KEY = "template";
 
 	/**
 	 * Path to a velocity template to use for transformation.
 	 */
-	private static final String TRANSFORMER_TEMPLATE_PATH_KEY = 
-		"templatepath";
+	private static final String TRANSFORMER_TEMPLATE_PATH_KEY = "templatepath";
 
 	/**
 	 * optionally we can read the template form an attribute instead of a hardcoded template.
 	 */
 	private static final String TRANSFORMER_SOURCEATTRIBUTE_KEY = "sourceattribute";
-	
+
 	/**
 	 * Configuration key for target attribute.
 	 */
-	private static final String TRANSFORMER_TARGETATTRIBUTE_KEY =
-		"targetattribute";
-	
+	private static final String TRANSFORMER_TARGETATTRIBUTE_KEY = "targetattribute";
+
 	/**
 	 * Defines whether the parsed velocity should replace or be appended to the targetattribute.
 	 */
-	private static final String TRANSFORMER_APPEND_KEY = 
-		"append";
-	
+	private static final String TRANSFORMER_APPEND_KEY = "append";
+
 	/**
 	 * user can define additional contextvars in java properties format.
 	 */
 	private static final String TRANSFORMER_ADDITIONAL_CONTEXTVARS = "contextvars";
-	
+
 	/**
 	 * attribute name to store the rendered velocity template in.
 	 */
 	private String targetAttribute;
-	
+
 	/**
 	 * By default the parsed velocity is set onto the targetAttribute. 
 	 * Setting this option to "true" the parsed velocity can be appended to the end of the targetAttribute's value.
@@ -93,38 +89,37 @@ public class VelocityTransformer extends ContentTransformer {
 	 * additional attributes.
 	 */
 	private Map<String, Object> additionalAttributes = new HashMap<String, Object>();
-	
+
 	/**
 	 * Velocity template to render.
 	 */
 	private ITemplate tpl;
-	
+
 	/**
 	 * Name of the configuration for error messages.
 	 */
 	private String configName;
-	
+
 	/**
 	 * {@link VelocityTools} to deploy into the template context.
 	 */
 	private VelocityTools tools = new VelocityTools();
-	
+
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
 	private static Logger logger = Logger.getLogger(VelocityTransformer.class);
-	
+
 	/**
 	 * Configuration for the VelocityTransformer.
 	 */
 	private CRConfigUtil crConfigUtil;
 
-
 	/**
 	 * attribute name containing the source template.
 	 */
 	private String sourceAttribute;
-	
+
 	/**
 	 * Creates instance of MergeTransformer.
 	 * @param config configuration for the MergeTransformer
@@ -134,8 +129,7 @@ public class VelocityTransformer extends ContentTransformer {
 		if (config instanceof CRConfigUtil) {
 			crConfigUtil = (CRConfigUtil) config;
 		} else {
-			crConfigUtil = new CRConfigUtil(config,
-					"VelocityTransformerConfig");
+			crConfigUtil = new CRConfigUtil(config, "VelocityTransformerConfig");
 		}
 		configName = crConfigUtil.getName();
 		String template = (String) config.get(TRANSFORMER_TEMPLATE_KEY);
@@ -146,11 +140,11 @@ public class VelocityTransformer extends ContentTransformer {
 		if (append != null && (append.equals("1") || append.toLowerCase().equals("true"))) {
 			appendToTargetAttribute = true;
 		}
-		
+
 		if (sourceAttribute != null) {
 			// we use the source attribute as template ...
 		} else {
-			 if (template != null) {
+			if (template != null) {
 				logger.debug("Using template configured using var: " + TRANSFORMER_TEMPLATE_KEY + ".");
 				try {
 					tpl = new StringTemplate(template);
@@ -169,23 +163,22 @@ public class VelocityTransformer extends ContentTransformer {
 					logger.error("Could not find encoding", e);
 				}
 			} else {
-				logger.error("Neither " + TRANSFORMER_TEMPLATE_KEY + " nor " + TRANSFORMER_TEMPLATE_PATH_KEY 
-						+ " nor " + TRANSFORMER_SOURCEATTRIBUTE_KEY + " are configured. "
+				logger.error("Neither " + TRANSFORMER_TEMPLATE_KEY + " nor " + TRANSFORMER_TEMPLATE_PATH_KEY + " nor "
+						+ TRANSFORMER_SOURCEATTRIBUTE_KEY + " are configured. "
 						+ "This transformer won't work correctly.");
 			}
-				
+
 		}
 		if (targetAttribute == null) {
 			if (sourceAttribute != null) {
 				targetAttribute = sourceAttribute;
 			} else {
-				logger.error("Please configure " + TRANSFORMER_TARGETATTRIBUTE_KEY
-						+ " for my config.");
+				logger.error("Please configure " + TRANSFORMER_TARGETATTRIBUTE_KEY + " for my config.");
 			}
 		}
 		readAdditionalContextVars(config);
 	}
-	
+
 	/**
 	 * Load template from file.
 	 * @param templatePath Relative path of the template (CRConfigUtil.DEFAULT_TEMPLATE_PATH is prefixed).
@@ -194,13 +187,13 @@ public class VelocityTransformer extends ContentTransformer {
 	 * @throws CRException Exception creating the FileTemplate
 	 * @throws UnsupportedEncodingException 
 	 */
-	private FileTemplate getFileTemplate(final String templatePath) throws FileNotFoundException, 
-					CRException, UnsupportedEncodingException {
+	private FileTemplate getFileTemplate(final String templatePath) throws FileNotFoundException, CRException,
+			UnsupportedEncodingException {
 		File file = new File(templatePath);
 		if (!file.isAbsolute()) {
 			file = new File(CRConfigUtil.DEFAULT_TEMPLATE_PATH + File.separator + templatePath);
 		}
-		
+
 		FileInputStream inStream = new FileInputStream(file);
 		InputStreamReader streamReader = new InputStreamReader(inStream, "UTF-8");
 		BufferedReader bufferedReader = new BufferedReader(streamReader);
@@ -212,8 +205,7 @@ public class VelocityTransformer extends ContentTransformer {
 	 * @param config needed for getting the context vars from the config.
 	 */
 	private void readAdditionalContextVars(final GenericConfiguration config) {
-		String additionalContextVars = (String) config
-				.get(TRANSFORMER_ADDITIONAL_CONTEXTVARS);
+		String additionalContextVars = (String) config.get(TRANSFORMER_ADDITIONAL_CONTEXTVARS);
 		if (additionalContextVars != null) {
 			Properties props = new Properties();
 			try {
@@ -243,15 +235,14 @@ public class VelocityTransformer extends ContentTransformer {
 			}
 		}
 	}
-	
+
 	@Override
 	public final void processBean(final CRResolvableBean bean) {
 		ITemplateManager vtm = crConfigUtil.getTemplateManager();
 		vtm.put("page", bean);
 		vtm.put("tools", tools);
 		vtm.put("properties", parameters);
-		for (Iterator<Entry<String, Object>> i = additionalAttributes
-				.entrySet().iterator(); i.hasNext();) {
+		for (Iterator<Entry<String, Object>> i = additionalAttributes.entrySet().iterator(); i.hasNext();) {
 			Entry<String, Object> entry = i.next();
 			vtm.put(entry.getKey(), entry.getValue());
 		}
@@ -273,15 +264,14 @@ public class VelocityTransformer extends ContentTransformer {
 				}
 			}
 		} catch (CRException e) {
-			logger.error("Error while rendering template " + configName + " - "
-					+ TRANSFORMER_TEMPLATE_KEY + " for bean "
-					+ bean.getContentid(), e);
+			logger.error("Error while rendering template " + configName + " - " + TRANSFORMER_TEMPLATE_KEY
+					+ " for bean " + bean.getContentid(), e);
 		}
 	}
 
 	@Override
 	public void destroy() {
-		
+
 	}
 
 }

@@ -44,125 +44,123 @@ import org.apache.lucene.search.Similarity;
  * 
  */
 public interface IndexAccessor {
-  /**
-   * @return number of threads holding a Searcher
-   */
-  int searcherUseCount();
+	/**
+	 * @return number of threads holding a Searcher
+	 */
+	int searcherUseCount();
 
-  /**
-   * Releases any resources held by this IndexAccessor.
-   */
-  void close();
+	/**
+	 * Releases any resources held by this IndexAccessor.
+	 */
+	void close();
 
-  
-  /**
-   * Returns an IndexReader. Indicate whether the IndexReader is intended for
-   * read only purposes with the write flag. The read/write restriction must be
-   * honored by the caller to ensure defined behavior.
-   * 
-   * @param write
-   * @return
-   * @throws IOException
-   */
-  IndexReader getReader(boolean write) throws IOException;
+	/**
+	 * Returns an IndexReader. Indicate whether the IndexReader is intended for
+	 * read only purposes with the write flag. The read/write restriction must be
+	 * honored by the caller to ensure defined behavior.
+	 * 
+	 * @param write
+	 * @return
+	 * @throws IOException
+	 */
+	IndexReader getReader(boolean write) throws IOException;
 
-  
-  /**
+	/**
 	 * Fetches a double checked Searcher that has been checked for the presence of a reopen file
 	 * Note that it may occure that a prioritized Searcher may be reopened twice.
 	 * @param indexLocation 
 	 * @return
 	 * @throws IOException
 	 */
-  Searcher getPrioritizedSearcher() throws IOException;
-  
-  /**
-   * Returns a Searcher.
-   * 
-   * @return new or cached Searcher
-   * @throws IOException
-   */
-  Searcher getSearcher() throws IOException;
+	Searcher getPrioritizedSearcher() throws IOException;
 
-  /**
-   * Returns a Searcher that uses a supplied IndexReader.
-   * 
-   * @param indexReader
-   *          to create Searcher with
-   * @return new or cached Searcher
-   * @throws IOException
-   */
-  Searcher getSearcher(IndexReader indexReader) throws IOException;
+	/**
+	 * Returns a Searcher.
+	 * 
+	 * @return new or cached Searcher
+	 * @throws IOException
+	 */
+	Searcher getSearcher() throws IOException;
 
-  /**
-   * Returns a Searcher that uses a supplied IndexReader and Similarity.
-   * 
-   * @param similarity
-   *          to create Searcher with
-   * @param indexReader
-   *          to create Searcher with
-   * @return new or cached Searcher
-   * @throws IOException
-   */
-  Searcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException;
+	/**
+	 * Returns a Searcher that uses a supplied IndexReader.
+	 * 
+	 * @param indexReader
+	 *          to create Searcher with
+	 * @return new or cached Searcher
+	 * @throws IOException
+	 */
+	Searcher getSearcher(IndexReader indexReader) throws IOException;
 
-  /**
-   * @return
-   * @throws IOException
-   */
-  public IndexWriter getWriter() throws IOException;
+	/**
+	 * Returns a Searcher that uses a supplied IndexReader and Similarity.
+	 * 
+	 * @param similarity
+	 *          to create Searcher with
+	 * @param indexReader
+	 *          to create Searcher with
+	 * @return new or cached Searcher
+	 * @throws IOException
+	 */
+	Searcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException;
 
-  
-  /**
-   * @return
-   */
-  boolean isOpen();
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public IndexWriter getWriter() throws IOException;
 
-  /**
-   * 
-   * @return
-   */
-  boolean isLocked();
-  /**
-   * 
-   */
-  void open();
-  
-  /**
-   * @throws IOException 
-   * 
-   */
-  void reopen() throws IOException ;
+	/**
+	 * @return
+	 */
+	boolean isOpen();
 
-  /**
-   * @return
-   */
-  int readingReadersOut();
+	/**
+	 * 
+	 * @return
+	 */
+	boolean isLocked();
 
-  /**
-   * @param reader
-   * @param write
-   */
-  void release(IndexReader reader, boolean write);
+	/**
+	 * 
+	 */
+	void open();
 
-  /**
-   * @param writer
-   */
-  void release(IndexWriter writer);
+	/**
+	 * @throws IOException 
+	 * 
+	 */
+	void reopen() throws IOException;
 
-  /**
-   * @param searcher
-   */
-  void release(Searcher searcher);
+	/**
+	 * @return
+	 */
+	int readingReadersOut();
 
-  /**
-   * @return
-   */
-  int writerUseCount();
+	/**
+	 * @param reader
+	 * @param write
+	 */
+	void release(IndexReader reader, boolean write);
 
-  /**
-   * @return
-   */
-  int writingReadersUseCount();
+	/**
+	 * @param writer
+	 */
+	void release(IndexWriter writer);
+
+	/**
+	 * @param searcher
+	 */
+	void release(Searcher searcher);
+
+	/**
+	 * @return
+	 */
+	int writerUseCount();
+
+	/**
+	 * @return
+	 */
+	int writingReadersUseCount();
 
 }

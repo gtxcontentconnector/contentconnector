@@ -1,6 +1,5 @@
 package org.apache.lucene.search.spell;
 
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,7 +19,6 @@ package org.apache.lucene.search.spell;
 
 import org.apache.lucene.util.PriorityQueue;
 
-
 /**
  * Sorts SuggestWord instances.
  *
@@ -31,14 +29,13 @@ final class CustomSuggestWordQueue extends PriorityQueue<CustomSuggestWord> {
 	 * Constructor.
 	 * @param size size
 	 */
-  CustomSuggestWordQueue(final int size) {
-    initialize(size);
-  }
+	CustomSuggestWordQueue(final int size) {
+		initialize(size);
+	}
 
-  @Override
-  protected boolean lessThan(final CustomSuggestWord wa,
-		  final CustomSuggestWord wb) {
-    int val = wa.compareTo(wb);
-    return val < 0;
-  }
+	@Override
+	protected boolean lessThan(final CustomSuggestWord wa, final CustomSuggestWord wb) {
+		int val = wa.compareTo(wb);
+		return val < 0;
+	}
 }

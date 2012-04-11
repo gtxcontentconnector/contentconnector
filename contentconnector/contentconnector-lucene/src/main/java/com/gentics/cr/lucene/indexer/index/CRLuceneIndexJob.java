@@ -37,6 +37,7 @@ import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+
 /**
  * CRLuceneIndexJob handles the indexing of a Gentics ContentRepository into
  * Lucene.
@@ -53,15 +54,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	/**
 	 * static log4j {@link Logger} to log errors and debug.
 	 */
-	private static final Logger TR_LOG = Logger
-		.getLogger(ContentTransformer.class);
+	private static final Logger TR_LOG = Logger.getLogger(ContentTransformer.class);
 
 	/**
 	 * Name of class to use for IndexLocation, must extend
 	 * {@link com.gentics.cr.util.indexing.IndexLocation}.
 	 */
-	public static final String INDEXLOCATIONCLASS =
-		"com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
+	public static final String INDEXLOCATIONCLASS = "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation";
 
 	/**
 	 * Variable for RequestProcessor which gets us the objects for updating the
@@ -86,7 +85,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @param configmap TODO add javadoc comment here
 	 */
 	public CRLuceneIndexJob(final CRConfig config, final IndexLocation indexLoc,
-			final Hashtable<String, CRConfigUtil> configmap) {
+		final Hashtable<String, CRConfigUtil> configmap) {
 		super(config, indexLoc, configmap);
 		String ignoreoptimizeString = config.getString(OPTIMIZE_KEY);
 		if (ignoreoptimizeString != null) {
@@ -100,13 +99,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		try {
 			rp = config.getNewRequestProcessorInstance(1);
 		} catch (CRException e) {
-			log.error("Could not create RequestProcessor instance." 
-					+ config.getName(), e);
+			log.error("Could not create RequestProcessor instance." + config.getName(), e);
 		}
 
 		String timestampattributeString = config.getString(TIMESTAMP_ATTR_KEY);
-		if (timestampattributeString != null
-				&& !"".equals(timestampattributeString)) {
+		if (timestampattributeString != null && !"".equals(timestampattributeString)) {
 			this.timestampattribute = timestampattributeString;
 		}
 	}
@@ -114,7 +111,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	/**
 	 * Key to be used for saving state to contentstatus.
 	 */
-	public static final	String PARAM_LASTINDEXRUN = "lastindexrun";
+	public static final String PARAM_LASTINDEXRUN = "lastindexrun";
 	/**
 	 * Key to be used for saving state to contentstatus.
 	 */
@@ -124,7 +121,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * Configuration key for the rule of objects to index.
 	 */
 	private static final String RULE_KEY = "rule";
-	
+
 	/**
 	 * Configuration key for the attributes stored in the index.
 	 */
@@ -133,8 +130,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	/**
 	 * Configuration key for the attributes stored in the index.
 	 */
-	private static final String CONTAINED_ATTRIBUTES_KEY 
-			= "CONTAINEDATTRIBUTES";
+	private static final String CONTAINED_ATTRIBUTES_KEY = "CONTAINEDATTRIBUTES";
 
 	/**
 	 * Configuration key for the attributes which are indexed.
@@ -183,7 +179,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 */
 	private int batchSize = ONE_THOUSAND;
 
-
 	/**
 	 * Attribute to check if the element is newer than the one in the index.
 	 * @see #TIMESTAMP_ATTR_KEY
@@ -193,12 +188,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * Flag if TermVectors should be stored in the index or not.
 	 */
 	private boolean storeVectors = true;
-	
+
 	/**
 	 * Boostingmap.
 	 */
 	private HashMap<String, Float> boostvalue = new HashMap<String, Float>();
-	
+
 	/**
 	 * Fills the boostvalue map with the according 
 	 * values from "boostedattributes".
@@ -213,12 +208,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					boostvalue.put(t[0], Float.parseFloat(t[1]));
 				}
 			} catch (Exception e) {
-				log.error("Could not create boostvalues. Check your config! ("
-						+ booststring + ")", e);
+				log.error("Could not create boostvalues. Check your config! (" + booststring + ")", e);
 			}
 		}
 	}
-	
+
 	/**
 	 * Index a single configured ContentRepository.
 	 * @param indexLocation TODO javadoc
@@ -226,8 +220,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @throws CRException TODO javadoc
 	 */
 	@SuppressWarnings("unchecked")
-	protected void indexCR(final IndexLocation indexLocation,
-			final CRConfigUtil config) throws CRException {
+	protected void indexCR(final IndexLocation indexLocation, final CRConfigUtil config) throws CRException {
 
 		String crid = config.getName();
 		if (crid == null) {
@@ -246,12 +239,10 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			indexLocation.checkLock();
 			Collection<CRResolvableBean> slice = null;
 			try {
-				status.setCurrentStatusString("Writer accquired. Starting"
-						+ "index job.");
+				status.setCurrentStatusString("Writer accquired. Starting" + "index job.");
 
 				if (rp == null) {
-					throw new CRException("FATAL ERROR", 
-							"RequestProcessor not available");
+					throw new CRException("FATAL ERROR", "RequestProcessor not available");
 				}
 
 				String bsString = (String) config.get(BATCH_SIZE_KEY);
@@ -262,10 +253,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					try {
 						crBatchSize = Integer.parseInt(bsString);
 					} catch (NumberFormatException e) {
-						log.error("The configured " + BATCH_SIZE_KEY 
-								+ " for the Current CR"
-								+ " did not contain a parsable integer. ",
-								e);
+						log.error("The configured " + BATCH_SIZE_KEY + " for the Current CR"
+								+ " did not contain a parsable integer. ", e);
 					}
 				}
 
@@ -281,8 +270,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					rule = "(" + rule + ")";
 				}
 
-				List<ContentTransformer> transformerlist =
-					ContentTransformer.getTransformerList(config);
+				List<ContentTransformer> transformerlist = ContentTransformer.getTransformerList(config);
 
 				boolean create = true;
 
@@ -291,68 +279,51 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					log.debug("Index already exists.");
 				}
 				if (indexLocation instanceof LuceneIndexLocation) {
-					luceneIndexUpdateChecker = new LuceneIndexUpdateChecker(
-							(LuceneIndexLocation) indexLocation, CR_FIELD_KEY, 
-							crid, idAttribute);
+					luceneIndexUpdateChecker = new LuceneIndexUpdateChecker((LuceneIndexLocation) indexLocation,
+							CR_FIELD_KEY, crid, idAttribute);
 				} else {
-					log.error("IndexLocation is not created for Lucene. "
-							+ "Using the " + CRLuceneIndexJob.class.getName() 
-							+ " requires that you use the "
-							+ LuceneIndexLocation.class.getName() 
-							+ ". You can configure another Job by setting the " 
-							+ IndexLocation.UPDATEJOBCLASS_KEY
-							+ " key in your config.");
-					throw new CRException(
-							new CRError("Error", 
-								"IndexLocation is not created for Lucene."));
+					log.error("IndexLocation is not created for Lucene. " + "Using the "
+							+ CRLuceneIndexJob.class.getName() + " requires that you use the "
+							+ LuceneIndexLocation.class.getName() + ". You can configure another Job by setting the "
+							+ IndexLocation.UPDATEJOBCLASS_KEY + " key in your config.");
+					throw new CRException(new CRError("Error", "IndexLocation is not created for Lucene."));
 				}
 				Collection<CRResolvableBean> objectsToIndex = null;
 				//Clear Index and remove stale Documents
 				//if (!create) {
-					log.debug("Will do differential index.");
-					try {
-						CRRequest req = new CRRequest();
-						req.setRequestFilter(rule);
-						req.set(CR_FIELD_KEY, crid);
-						status
-							.setCurrentStatusString("Get objects to update "
-									+ "in the index ...");
-						objectsToIndex = getObjectsToUpdate(req, rp, false,
-								luceneIndexUpdateChecker);
-					} catch (Exception e) {
-						log.error("ERROR while cleaning index", e);
-					}
+				log.debug("Will do differential index.");
+				try {
+					CRRequest req = new CRRequest();
+					req.setRequestFilter(rule);
+					req.set(CR_FIELD_KEY, crid);
+					status.setCurrentStatusString("Get objects to update " + "in the index ...");
+					objectsToIndex = getObjectsToUpdate(req, rp, false, luceneIndexUpdateChecker);
+				} catch (Exception e) {
+					log.error("ERROR while cleaning index", e);
+				}
 				//}
 				//Obtain accessor and writer after clean
 				if (indexLocation instanceof LuceneIndexLocation) {
-					indexAccessor = ((LuceneIndexLocation) indexLocation)
-						.getAccessor();
+					indexAccessor = ((LuceneIndexLocation) indexLocation).getAccessor();
 					indexWriter = indexAccessor.getWriter();
 					indexReader = indexAccessor.getReader(false);
 				} else {
-					log.error("IndexLocation is not created for Lucene. "
-							+ "Using the " + CRLuceneIndexJob.class.getName() 
-							+ " requires that you use the "
-							+ LuceneIndexLocation.class.getName() 
-							+ ". You can configure another Job by setting the " 
-							+ IndexLocation.UPDATEJOBCLASS_KEY
-							+ " key in your config.");
-					throw new CRException(
-							new CRError("Error", 
-								"IndexLocation is not created for Lucene."));
+					log.error("IndexLocation is not created for Lucene. " + "Using the "
+							+ CRLuceneIndexJob.class.getName() + " requires that you use the "
+							+ LuceneIndexLocation.class.getName() + ". You can configure another Job by setting the "
+							+ IndexLocation.UPDATEJOBCLASS_KEY + " key in your config.");
+					throw new CRException(new CRError("Error", "IndexLocation is not created for Lucene."));
 				}
 				log.debug("Using rule: " + rule);
 				// prepare the map of indexed/stored attributes
-				Map<String, Boolean> attributes = new HashMap<String, 
-					Boolean>();
-				List<String> containedAttributes = IndexerUtil
-						.getListFromString(
-						config.getString(CONTAINED_ATTRIBUTES_KEY), ",");
+				Map<String, Boolean> attributes = new HashMap<String, Boolean>();
+				List<String> containedAttributes = IndexerUtil.getListFromString(
+					config.getString(CONTAINED_ATTRIBUTES_KEY),
+					",");
 				List<String> indexedAttributes = IndexerUtil.getListFromString(
-						config.getString(INDEXED_ATTRIBUTES_KEY), ",");
-				List<String> reverseAttributes =
-					((LuceneIndexLocation) indexLocation)
-					.getReverseAttributes();
+					config.getString(INDEXED_ATTRIBUTES_KEY),
+					",");
+				List<String> reverseAttributes = ((LuceneIndexLocation) indexLocation).getReverseAttributes();
 				// first put all indexed attributes into the map
 				for (String name : indexedAttributes) {
 					attributes.put(name, Boolean.FALSE);
@@ -365,15 +336,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				// finally, put the "contentid" (always contained)
 				attributes.put(idAttribute, Boolean.TRUE);
 
-				
 				if (objectsToIndex == null) {
 					log.debug("Rule returned no objects to index. Skipping...");
 					return;
 				}
 
 				status.setObjectCount(objectsToIndex.size());
-				log.debug(" index job with " + objectsToIndex.size()
-						+ " objects to index.");
+				log.debug(" index job with " + objectsToIndex.size() + " objects to index.");
 				// now get the first batch of objects from the collection
 				// (remove them from the original collection) and index them
 				slice = new Vector(crBatchSize);
@@ -381,9 +350,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
 				status.setCurrentStatusString("Starting to index slices.");
 				boolean interrupted = Thread.currentThread().isInterrupted();
-				for (Iterator<CRResolvableBean> iterator 
-						= objectsToIndex.iterator();
-						iterator.hasNext();) {
+				for (Iterator<CRResolvableBean> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
 					CRResolvableBean obj = iterator.next();
 					slice.add(obj);
 					iterator.remove();
@@ -394,11 +361,18 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					}
 					if (sliceCounter == crBatchSize) {
 						// index the current slice
-						log.debug("Indexing slice with " + slice.size() 
-								+ " objects.");
-						indexSlice(crid, indexWriter, indexReader, slice, 
-								attributes, rp, create, config,
-								transformerlist, reverseAttributes);
+						log.debug("Indexing slice with " + slice.size() + " objects.");
+						indexSlice(
+							crid,
+							indexWriter,
+							indexReader,
+							slice,
+							attributes,
+							rp,
+							create,
+							config,
+							transformerlist,
+							reverseAttributes);
 						// clear the slice and reset the counter
 						slice.clear();
 						sliceCounter = 0;
@@ -407,29 +381,33 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
 				if (!slice.isEmpty()) {
 					// index the last slice
-					indexSlice(crid, indexWriter, indexReader, slice, 
-							attributes, rp, create, config,
-							transformerlist, reverseAttributes);
+					indexSlice(
+						crid,
+						indexWriter,
+						indexReader,
+						slice,
+						attributes,
+						rp,
+						create,
+						config,
+						transformerlist,
+						reverseAttributes);
 				}
 				if (!interrupted) {
 					// Only Optimize the Index if the thread 
 					// has not been interrupted
 					if (optimize) {
 						log.debug("Executing optimize command.");
-						UseCase uc = MonitorFactory.startUseCase("optimize(" 
-								+ crid + ")");
+						UseCase uc = MonitorFactory.startUseCase("optimize(" + crid + ")");
 						try {
 							indexWriter.optimize();
 						} finally {
 							uc.stop();
 						}
 					} else if (maxSegmentsString != null) {
-						log.debug("Executing optimize command with max"
-								+ " segments: "
-								+ maxSegmentsString);
+						log.debug("Executing optimize command with max" + " segments: " + maxSegmentsString);
 						int maxs = Integer.parseInt(maxSegmentsString);
-						UseCase uc = MonitorFactory.startUseCase("optimize(" 
-								+ crid + ")");
+						UseCase uc = MonitorFactory.startUseCase("optimize(" + crid + ")");
 						try {
 							indexWriter.optimize(maxs);
 						} finally {
@@ -437,24 +415,20 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						}
 					}
 				} else {
-					log.debug("Job has been interrupted and will now be closed."
-							+ " Missing objects "
+					log.debug("Job has been interrupted and will now be closed." + " Missing objects "
 							+ "will be reindexed next run.");
 				}
 				finishedIndexJobSuccessfull = true;
 			} catch (Exception ex) {
-				log.error("Could not complete index run... indexed Objects: " 
-						+ status.getObjectsDone() 
+				log.error("Could not complete index run... indexed Objects: " + status.getObjectsDone()
 						+ ", trying to close index and remove lock.", ex);
 				finishedIndexJobWithError = true;
-				status.setError("Could not complete index run... indexed "
-						+ "Objects: " + status.getObjectsDone() 
+				status.setError("Could not complete index run... indexed " + "Objects: " + status.getObjectsDone()
 						+ ", trying to close index and remove lock.");
 			} finally {
-				if (!finishedIndexJobSuccessfull 
-						&& !finishedIndexJobWithError) {
-					log.fatal("There seems to be a run time exception from this"
-							+ " index job.\nLast slice was: " + slice);
+				if (!finishedIndexJobSuccessfull && !finishedIndexJobWithError) {
+					log.fatal("There seems to be a run time exception from this" + " index job.\nLast slice was: "
+							+ slice);
 				}
 				//Set status for job if it was not locked
 				status.setCurrentStatusString("Finished job.");
@@ -462,28 +436,23 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				log.debug("Indexed " + objectCount + " objects...");
 
 				if (indexAccessor != null && indexWriter != null) {
-						indexAccessor.release(indexWriter);
+					indexAccessor.release(indexWriter);
 				}
 				if (indexAccessor != null && indexReader != null) {
-						indexAccessor.release(indexReader, false);
+					indexAccessor.release(indexReader, false);
 				}
-				
 
 				if (objectCount > 0) {
 					indexLocation.createReopenFile();
 				}
-				UseCase ucFireEvent = MonitorFactory.startUseCase(
-						"indexCR(" + crid + ") fire IndexingFinishedEvent"); 
-				EventManager.getInstance().fireEvent(
-						new IndexingFinishedEvent(indexLocation));
+				UseCase ucFireEvent = MonitorFactory.startUseCase("indexCR(" + crid + ") fire IndexingFinishedEvent");
+				EventManager.getInstance().fireEvent(new IndexingFinishedEvent(indexLocation));
 				ucFireEvent.stop();
 			}
 		} catch (LockedIndexException ex) {
 			log.debug("LOCKED INDEX DETECTED. TRYING AGAIN IN NEXT JOB.");
-			if (this.indexLocation != null 
-					&& !this.indexLocation.hasLockDetection()) {
-				log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN "
-						+ "LOCKED. TRYING TO REMOVE THE LOCK", ex);
+			if (this.indexLocation != null && !this.indexLocation.hasLockDetection()) {
+				log.error("IT SEEMS THAT THE INDEX HAS UNEXPECTEDLY BEEN " + "LOCKED. TRYING TO REMOVE THE LOCK", ex);
 				((LuceneIndexLocation) this.indexLocation).forceRemoveLock();
 			}
 		} catch (Exception ex) {
@@ -506,31 +475,22 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @throws CRException TODO javadoc
 	 * @throws IOException TODO javadoc
 	 */
-	private void indexSlice(final String crid, final IndexWriter indexWriter,
-			final IndexReader indexReader,
-			final Collection<CRResolvableBean> slice,
-			final Map<String, Boolean> attributes, final RequestProcessor rp,
-			final boolean create, final CRConfigUtil config,
-			final List<ContentTransformer> transformerlist,
-			final List<String> reverseattributes) throws CRException,
-			IOException {
+	private void indexSlice(final String crid, final IndexWriter indexWriter, final IndexReader indexReader,
+			final Collection<CRResolvableBean> slice, final Map<String, Boolean> attributes, final RequestProcessor rp,
+			final boolean create, final CRConfigUtil config, final List<ContentTransformer> transformerlist,
+			final List<String> reverseattributes) throws CRException, IOException {
 		// prefill all needed attributes
 		UseCase uc = MonitorFactory.startUseCase("indexSlice(" + crid + ")");
 		try {
 			CRRequest req = new CRRequest();
-			String[] prefillAttributes = attributes.keySet()
-				.toArray(new String[0]);
+			String[] prefillAttributes = attributes.keySet().toArray(new String[0]);
 			req.setAttributeArray(prefillAttributes);
-			UseCase prefillCase = MonitorFactory
-				.startUseCase("indexSlice(" + crid
-					+ ").prefillAttributes");
+			UseCase prefillCase = MonitorFactory.startUseCase("indexSlice(" + crid + ").prefillAttributes");
 			rp.fillAttributes(slice, req, idAttribute);
 			prefillCase.stop();
 			for (Resolvable objectToIndex : slice) {
-				CRResolvableBean bean =
-					new CRResolvableBean(objectToIndex, prefillAttributes);
-				UseCase bcase = MonitorFactory.startUseCase("indexSlice(" + crid
-						+ ").indexBean");
+				CRResolvableBean bean = new CRResolvableBean(objectToIndex, prefillAttributes);
+				UseCase bcase = MonitorFactory.startUseCase("indexSlice(" + crid + ").indexBean");
 				try {
 					//CALL PRE INDEX PROCESSORS/TRANSFORMERS
 					//TODO This could be optimized for multicore servers with 
@@ -538,39 +498,30 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					if (transformerlist != null) {
 						for (ContentTransformer transformer : transformerlist) {
 							try {
-								
+
 								if (transformer.match(bean)) {
-									String msg = "TRANSFORMER: "
-										+ transformer.getTransformerKey() 
-										+ "; BEAN: " + bean
-										.get(idAttribute);
+									String msg = "TRANSFORMER: " + transformer.getTransformerKey() + "; BEAN: "
+											+ bean.get(idAttribute);
 									status.setCurrentStatusString(msg);
 									TR_LOG.debug(msg);
-									transformer.processBeanWithMonitoring(bean, 
-											indexWriter);
+									transformer.processBeanWithMonitoring(bean, indexWriter);
 								}
 							} catch (Exception e) {
 								//TODO Remember broken files
-								log.error("Error while Transforming Contentbean"
-										+ "with id: " + bean.get(idAttribute) 
-										+ " Transformer: "
-										+ transformer.getTransformerKey() + " "
+								log.error("Error while Transforming Contentbean" + "with id: " + bean.get(idAttribute)
+										+ " Transformer: " + transformer.getTransformerKey() + " "
 										+ transformer.getClass().getName(), e);
 							}
 						}
 					}
-					Term idTerm =
-						new Term(idAttribute, bean.getString(idAttribute));
-					Document docToUpdate = getUniqueDocument(indexReader,
-							idTerm, crid);
+					Term idTerm = new Term(idAttribute, bean.getString(idAttribute));
+					Document docToUpdate = getUniqueDocument(indexReader, idTerm, crid);
 					if (!create && docToUpdate != null) {
-						indexWriter.updateDocument(idTerm, getDocument(
-								docToUpdate, bean, attributes, config,
-								reverseattributes));
+						indexWriter.updateDocument(
+							idTerm,
+							getDocument(docToUpdate, bean, attributes, config, reverseattributes));
 					} else {
-						indexWriter.addDocument(getDocument(null, bean, 
-								attributes, config,
-								reverseattributes));
+						indexWriter.addDocument(getDocument(null, bean, attributes, config, reverseattributes));
 					}
 				} finally {
 					bcase.stop();
@@ -595,23 +546,21 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @param searchCRID crid.
 	 * @return document.
 	 */
-	private Document getUniqueDocument(final IndexReader indexReader, 
-			final Term idTerm, final String searchCRID) {
-	try {
-		TermDocs docs = indexReader.termDocs(idTerm);
-		while (docs.next()) {
-			Document doc = indexReader.document(docs.doc());
-			String crID = doc.get(CR_FIELD_KEY);
-			if (crID != null && crID.equals(searchCRID)) {
-				return doc;
+	private Document getUniqueDocument(final IndexReader indexReader, final Term idTerm, final String searchCRID) {
+		try {
+			TermDocs docs = indexReader.termDocs(idTerm);
+			while (docs.next()) {
+				Document doc = indexReader.document(docs.doc());
+				String crID = doc.get(CR_FIELD_KEY);
+				if (crID != null && crID.equals(searchCRID)) {
+					return doc;
+				}
 			}
+		} catch (IOException e) {
+			log.error("An error happend while fetching the document in the index.", e);
 		}
-	} catch (IOException e) {
-		log.error("An error happend while fetching the document in the index.",
-				e);
+		return null;
 	}
-	return null;
-}
 
 	/**
 	 * Convert a resolvable to a Lucene Document.
@@ -627,9 +576,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * order. This can be used to search faster for words ending with *ing.
 	 * @return Returns a Lucene Document, ready to be added to the index.
 	 */
-	private Document getDocument(final Document doc,
-			final Resolvable resolvable, final Map<String, Boolean> attributes,
-			final CRConfigUtil config, final List<String> reverseattributes) {
+	private Document getDocument(final Document doc, final Resolvable resolvable,
+			final Map<String, Boolean> attributes, final CRConfigUtil config, final List<String> reverseattributes) {
 		Document newDoc;
 		if (doc == null) {
 			newDoc = new Document();
@@ -640,26 +588,22 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		if (crID != null) {
 			newDoc.removeFields(CR_FIELD_KEY);
 			//Add content repository identification
-			newDoc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES,
-					Field.Index.NOT_ANALYZED));
+			newDoc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
 		if (!"".equals(timestampattribute)) {
 			Object updateTimestampObject = resolvable.get(timestampattribute);
 			if (updateTimestampObject == null) {
-				log.error("Indexing with an updateattribute (" 
-						+ timestampattribute 
-						+ ") has been configured but the attribute is " 
-						+ "not available in the current indexed object." 
+				log.error("Indexing with an updateattribute (" + timestampattribute
+						+ ") has been configured but the attribute is "
+						+ "not available in the current indexed object."
 						+ "If using the SQLRequestProcesser, remember to "
-						+ "configure the updateattribute column also in the "
-						+ "'columns' configuration parameter.");
-			
+						+ "configure the updateattribute column also in the " + "'columns' configuration parameter.");
+
 			} else {
 				String updateTimestamp = updateTimestampObject.toString();
 				if (updateTimestamp != null && !"".equals(updateTimestamp)) {
 					newDoc.removeField(timestampAttribute);
-					newDoc.add(new Field(timestampattribute,
-							updateTimestamp.toString(), Field.Store.YES,
+					newDoc.add(new Field(timestampattribute, updateTimestamp.toString(), Field.Store.YES,
 							Field.Index.NOT_ANALYZED));
 				}
 			}
@@ -672,8 +616,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			Object value = resolvable.getProperty(attributeName);
 
 			if (idAttribute.equalsIgnoreCase(attributeName) && !filled) {
-				newDoc.add(new Field(idAttribute, value.toString(),
-						Field.Store.YES, Field.Index.NOT_ANALYZED));
+				newDoc.add(new Field(idAttribute, value.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 			} else if (value != null) {
 				if (filled) {
 					newDoc.removeField(attributeName);
@@ -691,24 +634,19 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					storeTermVector = TermVector.NO;
 				}
 				if (value instanceof String || value instanceof Number) {
-					Field f = new Field(attributeName, value.toString(), 
-							storeFieldStore, Field.Index.ANALYZED,
+					Field f = new Field(attributeName, value.toString(), storeFieldStore, Field.Index.ANALYZED,
 							storeTermVector);
 					Float boostValue = boostvalue.get(attributeName);
-						if (boostValue != null) {
-							f.setBoost(boostValue);
-						}
-						newDoc.add(f);
+					if (boostValue != null) {
+						f.setBoost(boostValue);
+					}
+					newDoc.add(f);
 					//ADD REVERSEATTRIBUTE IF NEEDED
-					if (reverseattributes != null
-							&& reverseattributes.contains(attributeName)) {
-						String reverseAttributeName = attributeName
-							+ LuceneAnalyzerFactory.REVERSE_ATTRIBUTE_SUFFIX;
-						Field revField = new Field(reverseAttributeName, 
-								value.toString(), storeFieldStore, 
+					if (reverseattributes != null && reverseattributes.contains(attributeName)) {
+						String reverseAttributeName = attributeName + LuceneAnalyzerFactory.REVERSE_ATTRIBUTE_SUFFIX;
+						Field revField = new Field(reverseAttributeName, value.toString(), storeFieldStore,
 								Field.Index.ANALYZED, storeTermVector);
-						Float revBoostValue = boostvalue
-							.get(reverseAttributeName);
+						Float revBoostValue = boostvalue.get(reverseAttributeName);
 						if (revBoostValue != null) {
 							revField.setBoost(revBoostValue);
 						}
@@ -720,4 +658,3 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		return newDoc;
 	}
 }
-

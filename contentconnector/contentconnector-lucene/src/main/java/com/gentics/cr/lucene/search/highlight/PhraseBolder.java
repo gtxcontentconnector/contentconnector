@@ -18,6 +18,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+
 /**
  * PhraseBolder.
  * Last changed: $Date: 2009-06-26 15:48:16 +0200 (Fr, 26 Jun 2009) $
@@ -30,7 +31,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 	  * Log4j logger for error and debug messages.
 	  */
 	private static final Logger LOGGER = Logger.getLogger(PhraseBolder.class);
-	
+
 	/**
 	 * Default max fragments.
 	 */
@@ -44,7 +45,6 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 	 */
 	private Analyzer analyzer = null;
 
-	
 	/**
 	 * Create new Instance of PhraseBolder.
 	 * @param config configuration
@@ -60,10 +60,8 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 	 * @param tokenGroup 
 	 * @return highlightedterm
 	 */
-	public final String highlightTerm(final String originalTermText,
-			final TokenGroup tokenGroup) {
-		UseCase uc = MonitorFactory.startUseCase(
-		"Highlight.PhraseBolder.highlightTerm()");
+	public final String highlightTerm(final String originalTermText, final TokenGroup tokenGroup) {
+		UseCase uc = MonitorFactory.startUseCase("Highlight.PhraseBolder.highlightTerm()");
 		if (tokenGroup.getTotalScore() <= 0) {
 			uc.stop();
 			return originalTermText;
@@ -73,30 +71,24 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 
 	}
 
-
 	/**
 	 * @param attribute 
 	 * @param parsedQuery 
 	 * @return highlighted text
 	 * 
 	 */
-	public final String highlight(final String attribute,
-			final Query parsedQuery) {
-		UseCase uc = MonitorFactory.startUseCase(
-				"Highlight.PhraseBolder.highlight()");
+	public final String highlight(final String attribute, final Query parsedQuery) {
+		UseCase uc = MonitorFactory.startUseCase("Highlight.PhraseBolder.highlight()");
 		String result = "";
 		if (attribute != null && parsedQuery != null) {
-			Highlighter highlighter =
-				new Highlighter(this, new QueryScorer(parsedQuery));
+			Highlighter highlighter = new Highlighter(this, new QueryScorer(parsedQuery));
 			highlighter.setTextFragmenter(new WordCountFragmenter(getFragmentSize()));
 
-			TokenStream tokenStream = analyzer.tokenStream(
-					this.getHighlightAttribute(), new StringReader(attribute));
+			TokenStream tokenStream = analyzer.tokenStream(this.getHighlightAttribute(), new StringReader(attribute));
 			try {
-				UseCase ucFragments = MonitorFactory.startUseCase(
-				"Highlight.PhraseBolder.highlight()#getFragments");
-				TextFragment[] frags = highlighter.getBestTextFragments(tokenStream,
-						attribute, true, getMaxFragments());
+				UseCase ucFragments = MonitorFactory.startUseCase("Highlight.PhraseBolder.highlight()#getFragments");
+				TextFragment[] frags = highlighter
+						.getBestTextFragments(tokenStream, attribute, true, getMaxFragments());
 				ucFragments.stop();
 				boolean first = true;
 				int startPosition = -1;
@@ -106,14 +98,12 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 					fragment = fragment.replaceAll(REMOVE_TEXT_FROM_FRAGMENT_REGEX, "");
 					startPosition = attribute.indexOf(fragment);
 					endPosition = startPosition + fragment.length();
-					if (!first || (addSeperatorArroundAllFragments() 
-							&& startPosition != 0)) {
+					if (!first || (addSeperatorArroundAllFragments() && startPosition != 0)) {
 						result += getFragmentSeperator();
 					}
 					result += fragment;
 				}
-				if (addSeperatorArroundAllFragments() && endPosition != attribute.length()
-						&& result.length() != 0) {
+				if (addSeperatorArroundAllFragments() && endPosition != attribute.length() && result.length() != 0) {
 					result += getFragmentSeperator();
 				}
 			} catch (IOException e) {

@@ -36,6 +36,7 @@ import com.gentics.cr.lucene.search.query.CRQueryParserFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.generics.Lists;
+
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -48,54 +49,51 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	protected static Logger log = Logger.getLogger(LuceneRequestProcessor.class);
 	protected static Logger ext_log = Logger.getLogger(LuceneRequestProcessor.class);
 	private CRSearcher searcher = null;
-	protected String name=null;
-	
+	protected String name = null;
+
 	private boolean getStoredAttributes = false;
-	
+
 	/**
 	 * init CRMetaResolvableBean with or without parsed_query 
 	 */
 	private boolean showParsedQuery = false;
-	
+
 	private static final String SCORE_ATTRIBUTE_KEY = "SCOREATTRIBUTE";
 	private static final String GET_STORED_ATTRIBUTE_KEY = "GETSTOREDATTRIBUTES";
-	
-	private Hashtable<String,ContentHighlighter> highlighters;
-	
+
+	private Hashtable<String, ContentHighlighter> highlighters;
+
 	private static final String SEARCH_COUNT_KEY = "SEARCHCOUNT";
-	
+
 	private static final String ID_ATTRIBUTE_KEY = "idAttribute";
-	
-	
-	
+
 	/**
 	 * Key where to find the total hits of the search in the metaresolvable.
 	 * Metaresolvable has to be enabled => LuceneRequestProcessor.META_RESOLVABLE_KEY
 	 */
 	public static final String META_HITS_KEY = "totalhits";
-	
+
 	/**
 	 * Key where to find the start position of the search in the metaresolvable.
 	 * Metaresolvable has to be enabled => LuceneRequestProcessor.META_RESOLVABLE_KEY
 	 */
 	public static final String META_START_KEY = "start";
-	
+
 	/**
 	 * TODO
 	 */
 	public static final String META_COUNT_KEY = "count";
-	
+
 	/**
 	 * TODO
 	 */
 	public static final String META_QUERY_KEY = "query";
-	
+
 	/**
 	 * TODO
 	 */
 	public static final String META_MAXSCORE_KEY = "maxscore";
-	
-	
+
 	/**
 	 * Key where to find the query used for highlighting the content. Usually this is the 
 	 * searchqery without the permissions and meta search informations.
@@ -108,19 +106,18 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * attribute is given in the query.
 	 */
 	public static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
-	
+
 	/**
 	 * Key to store the parsed query in the meta resolvable.
 	 */
 	public static final String PARSED_QUERY_KEY = "parsed_query";
-	
+
 	/**
 	 * Key to configure if CRMetaResolvableBean should contain parsed_query
 	 * 
 	 * 
 	 */
 	private static final String SHOW_PARSED_QUERY_KEY = "showparsedquery";
-	
 
 	/**
 	 * Create new instance of LuceneRequestProcessor.
@@ -131,12 +128,9 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		super(config);
 		this.name = config.getName();
 		this.searcher = new CRSearcher(config);
-		getStoredAttributes = Boolean.parseBoolean(
-				(String) config.get(GET_STORED_ATTRIBUTE_KEY));
-		highlighters = ContentHighlighter.getTransformerTable(
-				(GenericConfiguration) config);
-		showParsedQuery = Boolean.parseBoolean(
-				(String) this.config.get(SHOW_PARSED_QUERY_KEY));
+		getStoredAttributes = Boolean.parseBoolean((String) config.get(GET_STORED_ATTRIBUTE_KEY));
+		highlighters = ContentHighlighter.getTransformerTable((GenericConfiguration) config);
+		showParsedQuery = Boolean.parseBoolean((String) this.config.get(SHOW_PARSED_QUERY_KEY));
 	}
 
 	/**
@@ -185,8 +179,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		UseCase ucSearch = startUseCase("LuceneRequestProcessor." + "getObjects(" + name + ")#search");
 		HashMap<String, Object> searchResult = null;
 		try {
-			searchResult = this.searcher.search(request.getRequestFilter(), getSearchedAttributes(), count, start,
-					doNavigation, request.getSortArray(), request);
+			searchResult = this.searcher.search(
+				request.getRequestFilter(),
+				getSearchedAttributes(),
+				count,
+				start,
+				doNavigation,
+				request.getSortArray(),
+				request);
 		} catch (IOException ex) {
 			log.error("Error while getting search results from index.");
 			throw new CRException(ex);
@@ -196,20 +196,18 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		/** * Get results */
 
 		if (log.isDebugEnabled()) {
-			if(searchResult != null) {
+			if (searchResult != null) {
 				for (Object res : searchResult.values()) {
 					if (res instanceof LinkedHashMap) {
-						LinkedHashMap<?, ?> documents =
-							(LinkedHashMap<?, ?>) res;
+						LinkedHashMap<?, ?> documents = (LinkedHashMap<?, ?>) res;
 						if (documents != null) {
-							for (Entry<?, ?> entry
-									: documents.entrySet()) {
+							for (Entry<?, ?> entry : documents.entrySet()) {
 								Object object = entry.getKey();
-								if(object instanceof Document) {
+								if (object instanceof Document) {
 									Document doc = (Document) object;
 									if (doc != null) {
-										log.debug("LuceneRequestProcessor.getObjects: " 
-											+ doc.getField("contentid").toString());
+										log.debug("LuceneRequestProcessor.getObjects: "
+												+ doc.getField("contentid").toString());
 									}
 								}
 							}
@@ -239,7 +237,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		ucGetObjects.stop();
 		return result;
 	}
-	
+
 	/**
 	 * Start a usecase.
 	 * @param message Use the specified message as description.
@@ -248,7 +246,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	private UseCase startUseCase(final String message) {
 		return MonitorFactory.startUseCase(message);
 	}
-	
+
 	/**
 	 * Get count (number of items to return) from request and validate it. Fall back to config count if not set.
 	 * @param request Request to get the count of.
@@ -302,20 +300,18 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * @return list of results with added metadata bean
 	 */
 	private ArrayList<CRResolvableBean> processMetaData(final ArrayList<CRResolvableBean> result,
-			final HashMap<String, Object> searchResult, final Query parsedQuery, final CRRequest request, 
+			final HashMap<String, Object> searchResult, final Query parsedQuery, final CRRequest request,
 			final int start, final int count) {
-		UseCase ucProcessSearchMeta = 
-			startUseCase("LuceneRequestProcessor.getObjects(" + name + ")#processSearch.Metaresolvables");
+		UseCase ucProcessSearchMeta = startUseCase("LuceneRequestProcessor.getObjects(" + name
+				+ ")#processSearch.Metaresolvables");
 
 		Object metaKey = request.get(META_RESOLVABLE_KEY);
 		if (metaKey != null && (Boolean) metaKey) {
 			final CRResolvableBean metaBean;
 			if (showParsedQuery) {
-				metaBean = new CRMetaResolvableBean(
-						searchResult, request, parsedQuery, start, count);
-			} else { 
-				metaBean = new CRMetaResolvableBean(
-						searchResult, request, start, count);
+				metaBean = new CRMetaResolvableBean(searchResult, request, parsedQuery, start, count);
+			} else {
+				metaBean = new CRMetaResolvableBean(searchResult, request, start, count);
 			}
 			result.add(metaBean);
 		}
@@ -334,11 +330,11 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 */
 	private ArrayList<CRResolvableBean> processSearchResolvables(final ArrayList<CRResolvableBean> result,
 			final HashMap<String, Object> searchResult, Query parsedQuery, final CRRequest request) {
-		UseCase ucProcessSearchResolvables =
-			startUseCase("LuceneRequestProcessor.getObjects(" + name + ")#processSearch.Resolvables");
+		UseCase ucProcessSearchResolvables = startUseCase("LuceneRequestProcessor.getObjects(" + name
+				+ ")#processSearch.Resolvables");
 
-		LinkedHashMap<Document, Float> docs = 
-			objectToLinkedHashMapDocuments(searchResult.get(CRSearcher.RESULT_RESULT_KEY));
+		LinkedHashMap<Document, Float> docs = objectToLinkedHashMapDocuments(searchResult
+				.get(CRSearcher.RESULT_RESULT_KEY));
 
 		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
@@ -347,7 +343,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			reader = indexAccessor.getReader(false);
 
 			parseHighlightQuery(request, reader, parsedQuery);
-			
+
 			processDocuments(docs, result, reader, parsedQuery);
 
 		} catch (IOException e) {
@@ -368,14 +364,17 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * @return highlighted query
 	 * @throws IOException if rewriting the query goes wrong this exception is thrown
 	 */
-	private Query parseHighlightQuery(final CRRequest request, final IndexReader reader, 
-			Query parsedQuery) throws IOException {
+	private Query parseHighlightQuery(final CRRequest request, final IndexReader reader, Query parsedQuery)
+			throws IOException {
 		//PARSE HIGHLIGHT QUERY
 		Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
 		if (highlightQuery != null) {
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) this.config);
-			QueryParser parser = 
-				CRQueryParserFactory.getConfiguredParser(getSearchedAttributes(), analyzer, request, config);
+			QueryParser parser = CRQueryParserFactory.getConfiguredParser(
+				getSearchedAttributes(),
+				analyzer,
+				request,
+				config);
 			try {
 				parsedQuery = parser.parse((String) highlightQuery);
 				parsedQuery = parsedQuery.rewrite(reader);
@@ -386,7 +385,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		}
 		return parsedQuery;
 	}
-	
+
 	/**
 	 * Perform highlighting for one document.
 	 * @param crBean bean to check if we need to highlight something and set the highlighting afterwards.
@@ -394,8 +393,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * @param parsedQuery rewritten Query
 	 * @param reader prepared index Reader
 	 */
-	private void doHighlighting(final CRResolvableBean crBean, final Document doc, 
-			final Query parsedQuery, final IndexReader reader) {
+	private void doHighlighting(final CRResolvableBean crBean, final Document doc, final Query parsedQuery,
+			final IndexReader reader) {
 
 		//IF HIGHLIGHTERS ARE CONFIGURED => DO HIGHLIGHTNING
 		if (highlighters != null) {
@@ -426,8 +425,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			ucProcessSearchHighlight.stop();
 		}
 	}
-	
-	private void processDocuments(LinkedHashMap<Document, Float> docs, final ArrayList<CRResolvableBean> result, 
+
+	private void processDocuments(LinkedHashMap<Document, Float> docs, final ArrayList<CRResolvableBean> result,
 			final IndexReader reader, final Query parsedQuery) {
 		String scoreAttribute = (String) config.get(SCORE_ATTRIBUTE_KEY);
 
@@ -467,8 +466,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * @return TODO javadoc
 	 */
 	@SuppressWarnings("unchecked")
-	private LinkedHashMap<Document, Float> objectToLinkedHashMapDocuments(
-			final Object obj) {
+	private LinkedHashMap<Document, Float> objectToLinkedHashMapDocuments(final Object obj) {
 		return (LinkedHashMap<Document, Float>) obj;
 	}
 
@@ -486,7 +484,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 
 	@Override
 	public void finalize() {
-		
+
 	}
 
 }

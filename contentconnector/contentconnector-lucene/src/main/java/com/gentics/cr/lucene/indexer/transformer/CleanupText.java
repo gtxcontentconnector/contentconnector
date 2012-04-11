@@ -10,7 +10,6 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 
-
 /**
  * Cleanup an attribute from not readable characters and not well readable
  * characters such es endless lines of point in the index pages of word
@@ -22,7 +21,7 @@ import com.gentics.cr.exceptions.CRException;
  *
  */
 public class CleanupText extends ContentTransformer {
-	
+
 	/**
 	 * int value of the unicode en whitespace character.
 	 */
@@ -67,7 +66,7 @@ public class CleanupText extends ContentTransformer {
 		 */
 		SPACES
 	}
-	
+
 	/**
 	 * State holds the current state of the replacer like buffers and the
 	 * replacing state.
@@ -76,8 +75,9 @@ public class CleanupText extends ContentTransformer {
 		/**
 		 * private constructor (checkstyle is so picky).
 		 */
-		private State() { }
-		
+		private State() {
+		}
+
 		/**
 		 * Result buffer.
 		 */
@@ -96,7 +96,7 @@ public class CleanupText extends ContentTransformer {
 		 * stores the active multi character replacing mode.
 		 */
 		private Replacing activeReplacing = Replacing.NONE;
-		
+
 		/**
 		 * set a new multicharacter replacing mode and empties all buffers
 		 * except the result buffer.
@@ -114,17 +114,17 @@ public class CleanupText extends ContentTransformer {
 			}
 		}
 	}
-	
+
 	/**
 	 * configuration key to read the attribute.
 	 */
 	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
-	
+
 	/**
 	 * attribute to cleanup in all beans.
 	 */
 	private String attribute = "";
-	
+
 	/**
 	 * Create Instance of the transformer.
 	 *  @param config - configuration of the transformer holding the following
@@ -137,8 +137,7 @@ public class CleanupText extends ContentTransformer {
 	}
 
 	@Override
-	public final void processBean(final CRResolvableBean bean)
-			throws CRException {
+	public final void processBean(final CRResolvableBean bean) throws CRException {
 		try {
 			if (attribute != null) {
 				Object obj = bean.get(attribute);
@@ -149,16 +148,13 @@ public class CleanupText extends ContentTransformer {
 					int cInt;
 					while ((cInt = reader.read()) != -1) {
 						char character = (char) cInt;
-						boolean whitespace =
-							checkWhitespaceCharacter(character, cInt);
-						if (character == '.' || (state.activeReplacing
-								== Replacing.INDEX_POINT && whitespace)) {
+						boolean whitespace = checkWhitespaceCharacter(character, cInt);
+						if (character == '.' || (state.activeReplacing == Replacing.INDEX_POINT && whitespace)) {
 							state.setReplacing(Replacing.INDEX_POINT);
 							if (whitespace) {
-								state.whitespacePending  = true;
+								state.whitespacePending = true;
 								changed = true;
-							} else if (state.buffer.length()
-									< INDEX_POINTS_TO_KEEP) {
+							} else if (state.buffer.length() < INDEX_POINTS_TO_KEEP) {
 								state.buffer.append(character);
 							} else {
 								changed = true;
@@ -184,29 +180,24 @@ public class CleanupText extends ContentTransformer {
 					}
 				}
 			} else {
-				log.error("Configured attribute is null. "
-						+ "Bean will not be processed");
+				log.error("Configured attribute is null. " + "Bean will not be processed");
 			}
 		} catch (IOException e) {
-			throw new CRException("Cannot read the attribute " + attribute
-					+ ".", e);
+			throw new CRException("Cannot read the attribute " + attribute + ".", e);
 		}
 	}
+
 	/**
 	 * check if the current character is a whitespace character.
 	 * @param character - char value of the character
 	 * @param cInt - int value of the character
 	 * @return <code>true</code> if the character is a whitespace character
 	 */
-	private boolean checkWhitespaceCharacter(final char character,
-			final int cInt) {
-		return character == '\r' || character == '\n' || character == '\t'
-			|| character == ' '
-			|| cInt == NON_BREAKING_WHITESPACE
-			|| cInt == EM_WHITESPACE
-			|| cInt == EN_WHITESPACE;
+	private boolean checkWhitespaceCharacter(final char character, final int cInt) {
+		return character == '\r' || character == '\n' || character == '\t' || character == ' '
+				|| cInt == NON_BREAKING_WHITESPACE || cInt == EM_WHITESPACE || cInt == EN_WHITESPACE;
 	}
-	
+
 	/**
 	 * convert the object to a StreamReader.
 	 * @param obj - object to convert
@@ -218,8 +209,7 @@ public class CleanupText extends ContentTransformer {
 			if (obj instanceof String) {
 				return new StringReader((String) obj);
 			} else if (obj instanceof byte[]) {
-				return new InputStreamReader(
-						new ByteArrayInputStream((byte[]) obj));
+				return new InputStreamReader(new ByteArrayInputStream((byte[]) obj));
 			}
 		}
 		return null;
@@ -227,7 +217,7 @@ public class CleanupText extends ContentTransformer {
 
 	@Override
 	public void destroy() {
-		
+
 	}
 
 }

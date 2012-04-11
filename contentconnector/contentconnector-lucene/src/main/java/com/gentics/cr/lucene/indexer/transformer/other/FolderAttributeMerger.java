@@ -9,6 +9,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
+
 /**
  * 
  * @author Friedreich Bernhard
@@ -17,18 +18,18 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 public class FolderAttributeMerger extends ContentTransformer {
 
 	private static final String FOLDERATTRIBUTE = "folder_id";
-	
+
 	private static final String CONTENTATTRIBUTES_KEY = "contentattributes";
 	private static final String FOLDERATTRIBUTES_KEY = "folderattributes";
 	private static final String TARGETATTRIBUTE_KEY = "targetattribute";
-	
+
 	private ArrayList<String> folderAttributes = new ArrayList<String>();
 	private ArrayList<String> contentAttributes = new ArrayList<String>();
-	
+
 	private String targetAttribute = new String();
-	
+
 	private static Logger logger = Logger.getLogger(FolderAttributeMerger.class);
-	
+
 	/**
 	 * Creates instance of FolderAttributeMerger.
 	 * @param config Configuration for Transformer
@@ -54,7 +55,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 	@Override
 	public void processBean(CRResolvableBean contentBean) {
 		String targetAttributeValues = "";
-		
+
 		Resolvable contentResolvable = contentBean.getResolvable();
 		CRResolvableBean folderBean = (CRResolvableBean) contentResolvable.get(FOLDERATTRIBUTE);
 		Resolvable folderResolvable = folderBean.getResolvable();
@@ -82,8 +83,8 @@ public class FolderAttributeMerger extends ContentTransformer {
 			if (folderBean != null) {
 				folderid = folderBean.getContentid();
 			}
-			logger.debug("contentid: " + contentid + " " 
-					+ " - folder: " + folderid + " - targetattribute: " + targetAttributeValues);
+			logger.debug("contentid: " + contentid + " " + " - folder: " + folderid + " - targetattribute: "
+					+ targetAttributeValues);
 			contentBean.set(targetAttribute, targetAttributeValues);
 		}
 	}

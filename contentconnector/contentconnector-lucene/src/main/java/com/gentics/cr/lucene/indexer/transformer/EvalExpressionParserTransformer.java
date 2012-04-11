@@ -57,18 +57,17 @@ public class EvalExpressionParserTransformer extends ContentTransformer {
 	 * @param resolvable Resolvable used to resolve properties (e.g. filename)
 	 * @return Result as string
 	 */
-	private static String evaluateString(final String expressionString, final Resolvable resolvable){
+	private static String evaluateString(final String expressionString, final Resolvable resolvable) {
 		String result = null;
 		ExpressionParser expressionParser = ExpressionParser.getInstance();
 		try {
 			EvaluableExpression expression = (EvaluableExpression) expressionParser.parse(expressionString);
-			ExpressionQueryRequest expressionQueryRequest =
-					new ExpressionQueryRequest(new PropertyResolver(resolvable), new HashMap<Object, Object>(0));
-			result =
-					(String) expression.evaluate(expressionQueryRequest, ExpressionEvaluator.OBJECTTYPE_STRING);
+			ExpressionQueryRequest expressionQueryRequest = new ExpressionQueryRequest(
+					new PropertyResolver(resolvable), new HashMap<Object, Object>(0));
+			result = (String) expression.evaluate(expressionQueryRequest, ExpressionEvaluator.OBJECTTYPE_STRING);
 		} catch (ExpressionParserException e) {
-			LOGGER.error("Error while evaluating the expression ("
-					+ expressionString + ") with the base resolvable (" + resolvable + ")", e);
+			LOGGER.error("Error while evaluating the expression (" + expressionString + ") with the base resolvable ("
+					+ resolvable + ")", e);
 		} catch (ParserException e) {
 			LOGGER.error("Error parsing the expression (" + expressionString + ").", e);
 		}

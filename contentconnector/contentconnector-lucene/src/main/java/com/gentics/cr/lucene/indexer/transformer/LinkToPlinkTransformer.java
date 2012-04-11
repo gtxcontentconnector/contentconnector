@@ -29,8 +29,7 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 	private String attribute = "content";
 	Pattern plinkResolverPattern = Pattern.compile("(href|src)=\"([^\"]+)\"");
 	Pattern parameterPattern = Pattern.compile("(#|\\?)(.*)");
-	Pattern excludeHostPattern = Pattern
-			.compile("^([a-zA-Z][a-zA-Z0-9^:]*:|#|<plink)");
+	Pattern excludeHostPattern = Pattern.compile("^([a-zA-Z][a-zA-Z0-9^:]*:|#|<plink)");
 
 	CRConfigUtil config;
 	LucenePathResolver pr;
@@ -114,8 +113,7 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 			}
 			//REAPPEND FINISHED LINK
 			//we need to escape $ as this kills the expression
-			matcher.appendReplacement(buf, linkform + "=\""
-					+ link.replace("$", "\\$") + "\"");
+			matcher.appendReplacement(buf, linkform + "=\"" + link.replace("$", "\\$") + "\"");
 		}
 		matcher.appendTail(buf);
 		return buf.toString();

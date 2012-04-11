@@ -26,8 +26,7 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 
 	private DidyoumeanIndexExtension didyoumean;
 
-	public DidyoumeanIndexJob(CRConfig updateCheckerConfig,
-			IndexLocation indexLoc, DidyoumeanIndexExtension didyoumean) {
+	public DidyoumeanIndexJob(CRConfig updateCheckerConfig, IndexLocation indexLoc, DidyoumeanIndexExtension didyoumean) {
 		super(updateCheckerConfig, indexLoc, null);
 
 		this.identifyer = identifyer.concat(":reIndex");
@@ -39,13 +38,11 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 	 * starts the job - is called by the IndexJobQueue
 	 */
 	@Override
-	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config)
-			throws CRException {
+	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException {
 		try {
 			reIndex();
 		} catch (IOException e) {
-			throw new CRException("Could not access the DidYouMean- index! "
-					+ e.getMessage());
+			throw new CRException("Could not access the DidYouMean- index! " + e.getMessage());
 		}
 
 	}
@@ -57,7 +54,7 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 		IndexAccessor sourceAccessor = didyoumean.getSourceLocation().getAccessor();
 		IndexReader sourceReader = sourceAccessor.getReader(false);
 		CustomSpellChecker spellchecker = didyoumean.getSpellchecker();
-		Collection<String> fields = null;		
+		Collection<String> fields = null;
 
 		if (didyoumean.isAll()) {
 			fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
@@ -66,12 +63,11 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 		}
 		try {
 			for (String fieldname : fields) {
-				LuceneDictionary dict = new LuceneDictionary(sourceReader,
-						fieldname);
+				LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname);
 				spellchecker.indexDictionary(dict);
-			}			
+			}
 		} finally {
-			if(sourceAccessor != null && sourceReader != null) {
+			if (sourceAccessor != null && sourceReader != null) {
 				sourceAccessor.release(sourceReader, false);
 			}
 		}

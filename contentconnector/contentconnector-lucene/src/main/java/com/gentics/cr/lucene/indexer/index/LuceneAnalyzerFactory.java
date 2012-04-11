@@ -32,7 +32,8 @@ public final class LuceneAnalyzerFactory {
 	/**
 	 * Private constructor.
 	 */
-	private LuceneAnalyzerFactory() { }
+	private LuceneAnalyzerFactory() {
+	}
 
 	/**
 	 * Log4j Logger for error and debug messages.
@@ -68,25 +69,23 @@ public final class LuceneAnalyzerFactory {
 	 * 	Reverse Attribute suffix.
 	 */
 	public static final String REVERSE_ATTRIBUTE_SUFFIX = "_REVERSE";
-	
+
 	/**
 	 * This Map stores the same information as the PerFieldAnalyzerWrapper, 
 	 * makes the used Analyzer class names (canonical names) per field accessible.
 	 * filled in the createAnalyzer method
 	 */
-	private static Map<String, String> configuredAnalyzerMap = new HashMap<String, String>();	
+	private static Map<String, String> configuredAnalyzerMap = new HashMap<String, String>();
 
 	/**
 	 * TODO javadoc.
 	 * @param config TODO javadoc
 	 * @return TODO javadoc
 	 */
-	public static List<String> getReverseAttributes(
-			final GenericConfiguration config) {
+	public static List<String> getReverseAttributes(final GenericConfiguration config) {
 		GenericConfiguration analyzerConfig = loadAnalyzerConfig(config);
 		if (analyzerConfig != null) {
-			String reverseAttributeString =
-				(String) analyzerConfig.get(REVERSE_ATTRIBUTES_KEY);
+			String reverseAttributeString = (String) analyzerConfig.get(REVERSE_ATTRIBUTES_KEY);
 			return IndexerUtil.getListFromString(reverseAttributeString, ",");
 		}
 		return null;
@@ -101,8 +100,7 @@ public final class LuceneAnalyzerFactory {
 		// Caching the analyzer instances is not possible as those do not implement Serializable
 		// TODO: cache the config (imho caching should be implemented in the config itself)
 
-		PerFieldAnalyzerWrapper analyzerWrapper =
-			new PerFieldAnalyzerWrapper(createDefaultAnalyzer(config));
+		PerFieldAnalyzerWrapper analyzerWrapper = new PerFieldAnalyzerWrapper(createDefaultAnalyzer(config));
 		configuredAnalyzerMap.clear();
 
 		//Load analyzer config
@@ -116,7 +114,7 @@ public final class LuceneAnalyzerFactory {
 					GenericConfiguration analyzerconfig = entry.getValue();
 					String fieldname = analyzerconfig.getString(FIELD_NAME_KEY);
 					String analyzerclass = analyzerconfig.getString(ANALYZER_CLASS_KEY);
-					
+
 					Analyzer analyzerInstance = createAnalyzer(analyzerclass, analyzerconfig);
 					analyzerWrapper.addAnalyzer(fieldname, analyzerInstance);
 					configuredAnalyzerMap.put(fieldname, analyzerInstance.getClass().getCanonicalName());
@@ -124,12 +122,12 @@ public final class LuceneAnalyzerFactory {
 					//ADD REVERSE ANALYZERS
 					if (reverseAttributes != null && reverseAttributes.contains(fieldname)) {
 						addedReverseAttributes.add(fieldname);
-						
+
 						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer(analyzerInstance);
 						analyzerWrapper.addAnalyzer(fieldname + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer);
 
-						configuredAnalyzerMap.put(fieldname + REVERSE_ATTRIBUTE_SUFFIX, 
-								reverseAnalyzer.getClass().getCanonicalName());
+						configuredAnalyzerMap.put(fieldname + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer.getClass()
+								.getCanonicalName());
 					}
 				}
 			}
@@ -138,11 +136,9 @@ public final class LuceneAnalyzerFactory {
 				for (String att : reverseAttributes) {
 					if (!addedReverseAttributes.contains(att)) {
 						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer(null);
-						analyzerWrapper.addAnalyzer(att 
-								+ REVERSE_ATTRIBUTE_SUFFIX,
-								reverseAnalyzer);
-						configuredAnalyzerMap.put(att + REVERSE_ATTRIBUTE_SUFFIX, 
-								reverseAnalyzer.getClass().getCanonicalName());
+						analyzerWrapper.addAnalyzer(att + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer);
+						configuredAnalyzerMap.put(att + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer.getClass()
+								.getCanonicalName());
 					}
 				}
 			}
@@ -155,9 +151,8 @@ public final class LuceneAnalyzerFactory {
 	 * @param config TODO javadoc
 	 * @return TODO javadoc
 	 */
-	private static GenericConfiguration loadAnalyzerConfig(
-			final GenericConfiguration config) {
-		if(config.hasSubConfig(ANALYZER_CONFIG_KEY)) {
+	private static GenericConfiguration loadAnalyzerConfig(final GenericConfiguration config) {
+		if (config.hasSubConfig(ANALYZER_CONFIG_KEY)) {
 			return config.getSubConfig(ANALYZER_CONFIG_KEY);
 		} else {
 			GenericConfiguration analyzerConfig = null;
@@ -165,11 +160,9 @@ public final class LuceneAnalyzerFactory {
 			if (confpath != null) {
 				analyzerConfig = new GenericConfiguration();
 				try {
-					CRConfigFileLoader.loadConfiguration(analyzerConfig,
-							confpath, null);
+					CRConfigFileLoader.loadConfiguration(analyzerConfig, confpath, null);
 				} catch (IOException e) {
-					LOGGER.error("Could not load analyzer configuration from " 
-							+ confpath, e);
+					LOGGER.error("Could not load analyzer configuration from " + confpath, e);
 				}
 			}
 			return analyzerConfig;
@@ -182,30 +175,25 @@ public final class LuceneAnalyzerFactory {
 	 * @param config TODO javadoc
 	 * @return TODO javadoc
 	 */
-	private static Analyzer createAnalyzer(final String analyzerclass,
-			final GenericConfiguration config) {
+	private static Analyzer createAnalyzer(final String analyzerclass, final GenericConfiguration config) {
 		Analyzer a = null;
 		try {
 			//First try to create an Analyzer that takes a config object
-			a = (Analyzer) Class.forName(analyzerclass).getConstructor(
-					new Class[]{GenericConfiguration.class})
-						.newInstance(config);
+			a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[] { GenericConfiguration.class })
+					.newInstance(config);
 		} catch (Exception e1) {
 			try {
 				//IF FIRST FAILS TRY SIMPLE CONSTRUCTOR
-				a = (Analyzer) Class.forName(analyzerclass).getConstructor()
-					.newInstance();
+				a = (Analyzer) Class.forName(analyzerclass).getConstructor().newInstance();
 			} catch (Exception e2) {
 				//IF SIMPLE FAILS, PROBABLY DID NOT FIND CONSTRUCTOR,
 				//TRYING WITH VERSION ADDED
 				try {
-					a = (Analyzer) Class.forName(analyzerclass).getConstructor(
-							new Class[]{Version.class}).newInstance(
-									LuceneVersion.getVersion());
+					a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[] { Version.class })
+							.newInstance(LuceneVersion.getVersion());
 				} catch (Exception e3) {
-					LOGGER.error("Could not instantiate Analyzer with class "
-						+ analyzerclass + ". Do you use some special" 
-						+ " Analyzer? Or do you need to use a Wrapper?", e3);
+					LOGGER.error("Could not instantiate Analyzer with class " + analyzerclass
+							+ ". Do you use some special" + " Analyzer? Or do you need to use a Wrapper?", e3);
 				}
 			}
 		}
@@ -217,27 +205,21 @@ public final class LuceneAnalyzerFactory {
 	 * @param config TODO javadoc
 	 * @return TODO javadoc
 	 */
-	private static Analyzer createDefaultAnalyzer(
-			final GenericConfiguration config) {
+	private static Analyzer createDefaultAnalyzer(final GenericConfiguration config) {
 		//Update/add Documents
 		Analyzer analyzer;
-		File stopWordFile = IndexerUtil.getFileFromPath(
-				(String) config.get(STOP_WORD_FILE_KEY));
+		File stopWordFile = IndexerUtil.getFileFromPath((String) config.get(STOP_WORD_FILE_KEY));
 		if (stopWordFile != null) {
 			//initialize Analyzer with stop words
 			try {
-				analyzer =	new StandardAnalyzer(LuceneVersion.getVersion(), 
-							stopWordFile);
+				analyzer = new StandardAnalyzer(LuceneVersion.getVersion(), stopWordFile);
 				return analyzer;
 			} catch (IOException ex) {
-				LOGGER.error("Could not open stop words file. "
-						+ "Will create standard "
-						+ "analyzer.", ex);
+				LOGGER.error("Could not open stop words file. " + "Will create standard " + "analyzer.", ex);
 			}
 		}
-		
-		analyzer = new StandardAnalyzer(LuceneVersion.getVersion(),
-				CharArraySet.EMPTY_SET);
+
+		analyzer = new StandardAnalyzer(LuceneVersion.getVersion(), CharArraySet.EMPTY_SET);
 		return analyzer;
 	}
 

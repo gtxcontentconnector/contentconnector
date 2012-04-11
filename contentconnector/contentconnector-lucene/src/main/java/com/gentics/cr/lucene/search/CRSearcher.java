@@ -151,8 +151,9 @@ public class CRSearcher {
 		if (didyoumeanenabled) {
 			didyoumeanprovider = new DidYouMeanProvider(config);
 			didyoumeanbestquery = config.getBoolean(DIDYOUMEAN_BESTQUERY_KEY, didyoumeanbestquery);
-			advanceddidyoumeanbestquery = config.getBoolean(ADVANCED_DIDYOUMEAN_BESTQUERY_KEY,
-					advanceddidyoumeanbestquery);
+			advanceddidyoumeanbestquery = config.getBoolean(
+				ADVANCED_DIDYOUMEAN_BESTQUERY_KEY,
+				advanceddidyoumeanbestquery);
 			didyoumeanactivatelimit = config.getInteger(DIDYOUMEAN_ACTIVATE_KEY, didyoumeanactivatelimit);
 		}
 
@@ -175,7 +176,7 @@ public class CRSearcher {
 			try {
 				genericCollectorClass = Class.forName(collectorClassName);
 				GenericConfiguration collectorConfiguration = config.getSubConfigs().get(
-						COLLECTOR_CONFIG_KEY.toUpperCase());
+					COLLECTOR_CONFIG_KEY.toUpperCase());
 				Object[][] prioritizedParameters = new Object[3][];
 				prioritizedParameters[0] = new Object[] { searcher, hits, collectorConfiguration, userPermissions };
 				prioritizedParameters[1] = new Object[] { searcher, hits, collectorConfiguration };
@@ -185,15 +186,21 @@ public class CRSearcher {
 					coll = (TopDocsCollector<?>) collectorObject;
 				}
 			} catch (ClassNotFoundException e) {
-				log.error("Cannot find configured collector class: \"" + collectorClassName + "\" in "
-						+ config.getName(), e);
+				log.error(
+					"Cannot find configured collector class: \"" + collectorClassName + "\" in " + config.getName(),
+					e);
 			}
 
 		}
 		if (coll == null && sorting != null) {
 			// TODO make collector configurable
-			coll = TopFieldCollector.create(createSort(sorting), hits, true, computescores, computescores,
-					computescores);
+			coll = TopFieldCollector.create(
+				createSort(sorting),
+				hits,
+				true,
+				computescores,
+				computescores,
+				computescores);
 		}
 		if (coll == null) {
 			coll = TopScoreDocCollector.create(hits, true);
@@ -326,9 +333,9 @@ public class CRSearcher {
 	 * @throws CRException in case maxclausecount is reached and failOnMaxClauses is enabled in the config object
 	 */
 	@SuppressWarnings("unchecked")
-	public final HashMap<String, Object> search(final String query, final String[] searchedAttributes,
-			final int count, final int start, final boolean explain, final String[] sorting,
-			final CRRequest request) throws IOException, CRException {
+	public final HashMap<String, Object> search(final String query, final String[] searchedAttributes, final int count,
+			final int start, final boolean explain, final String[] sorting, final CRRequest request)
+			throws IOException, CRException {
 
 		Searcher searcher;
 		Analyzer analyzer;
@@ -350,8 +357,11 @@ public class CRSearcher {
 			analyzer = LuceneAnalyzerFactory.createAnalyzer(this.config);
 
 			if (searchedAttributes != null && searchedAttributes.length > 0 && query != null && !query.equals("")) {
-				QueryParser parser = CRQueryParserFactory.getConfiguredParser(searchedAttributes, analyzer, request,
-						config);
+				QueryParser parser = CRQueryParserFactory.getConfiguredParser(
+					searchedAttributes,
+					analyzer,
+					request,
+					config);
 
 				Query parsedQuery = parser.parse(query);
 				// GENERATE A NATIVE QUERY
@@ -385,16 +395,22 @@ public class CRSearcher {
 					result.put(RESULT_MAXSCORE_KEY, maxScore);
 
 					// PLUG IN DIDYOUMEAN
-					boolean didyoumeanEnabledForRequest = StringUtils.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY),
-							true);
+					boolean didyoumeanEnabledForRequest = StringUtils.getBoolean(
+						request.get(DIDYOUMEAN_ENABLED_KEY),
+						true);
 					if (start == 0
 							&& didyoumeanenabled
 							&& didyoumeanEnabledForRequest
-							&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1
-							|| maxScore < this.didyoumeanminscore)) {
+							&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1 || maxScore < this.didyoumeanminscore)) {
 
-						HashMap<String, Object> didyoumeanResult = didyoumean(query, parsedQuery, indexAccessor,
-								parser, searcher, sorting, userPermissions);
+						HashMap<String, Object> didyoumeanResult = didyoumean(
+							query,
+							parsedQuery,
+							indexAccessor,
+							parser,
+							searcher,
+							sorting,
+							userPermissions);
 						result.putAll(didyoumeanResult);
 					}
 
@@ -447,8 +463,10 @@ public class CRSearcher {
 			Set<Term> termset = new HashSet<Term>();
 			rwQuery.extractTerms(termset);
 
-			Map<Term, Term[]> suggestions = this.didyoumeanprovider.getSuggestionTerms(termset,
-					this.didyoumeansuggestcount, reader);
+			Map<Term, Term[]> suggestions = this.didyoumeanprovider.getSuggestionTerms(
+				termset,
+				this.didyoumeansuggestcount,
+				reader);
 			boolean containswildcards = (originalQuery.indexOf('*') != -1);
 			if (suggestions.size() == 0 && containswildcards) {
 				String newSuggestionQuery = originalQuery.replaceAll(":\\*?([^*]*)\\*?", ":$1");
@@ -458,8 +476,10 @@ public class CRSearcher {
 					// REWRITE NEWLY PARSED QUERY
 					rwQuery = rwQuery.rewrite(reader);
 					rwQuery.extractTerms(termset);
-					suggestions = this.didyoumeanprovider.getSuggestionTerms(termset, this.didyoumeansuggestcount,
-							reader);
+					suggestions = this.didyoumeanprovider.getSuggestionTerms(
+						termset,
+						this.didyoumeansuggestcount,
+						reader);
 
 				} catch (ParseException e) {
 					log.error("Cannot Parse Suggestion Query.", e);
@@ -481,13 +501,16 @@ public class CRSearcher {
 					Term term = e.getKey();
 					Term[] suggestionsForTerm = e.getValue();
 					if (advanceddidyoumeanbestquery) {
-						TreeMap<Integer, HashMap<String, Object>> suggestionsResults =
-								new TreeMap<Integer, HashMap<String, Object>>(Collections.reverseOrder());
+						TreeMap<Integer, HashMap<String, Object>> suggestionsResults = new TreeMap<Integer, HashMap<String, Object>>(
+								Collections.reverseOrder());
 						for (Term suggestedTerm : suggestionsForTerm) {
 							Query newquery = BooleanQueryRewriter.replaceTerm(rwQuery, term, suggestedTerm);
 
-							HashMap<String, Object> resultOfNewQuery = getResultsForQuery(newquery, searcher, sorting,
-									userPermissions);
+							HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
+								newquery,
+								searcher,
+								sorting,
+								userPermissions);
 							if (resultOfNewQuery != null) {
 								resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY, suggestedTerm.text());
 								resultOfNewQuery.put(RESULT_ORIGTERM_KEY, term.text());
@@ -501,8 +524,11 @@ public class CRSearcher {
 						result.put(RESULT_BESTQUERY_KEY, suggestionsResults);
 					} else {
 						Query newquery = BooleanQueryRewriter.replaceTerm(rwQuery, term, suggestionsForTerm[0]);
-						HashMap<String, Object> resultOfNewQuery = getResultsForQuery(newquery, searcher, sorting,
-								userPermissions);
+						HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
+							newquery,
+							searcher,
+							sorting,
+							userPermissions);
 						result.putAll(resultOfNewQuery);
 					}
 				}

@@ -52,12 +52,10 @@ public class IndexAccessorFactory {
 	 * Holds an single instance of {@link IndexAccessorFactory} to give it to
 	 * others who want to read a lucene index.
 	 */
-	private static final IndexAccessorFactory INDEXACCESSORFACTORY =
-		new IndexAccessorFactory();
+	private static final IndexAccessorFactory INDEXACCESSORFACTORY = new IndexAccessorFactory();
 
-	private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors =
-		new ConcurrentHashMap<Directory, IndexAccessor>();
-	
+	private ConcurrentHashMap<Directory, IndexAccessor> indexAccessors = new ConcurrentHashMap<Directory, IndexAccessor>();
+
 	private Vector<IndexAccessorToken> consumer = new Vector<IndexAccessorToken>();
 
 	/**
@@ -67,8 +65,7 @@ public class IndexAccessorFactory {
 
 	static {
 		LogManager manager = LogManager.getLogManager();
-		InputStream is = ClassLoader.getSystemResourceAsStream(
-				"logger.properties");
+		InputStream is = ClassLoader.getSystemResourceAsStream("logger.properties");
 
 		if (is != null) {
 			try {
@@ -91,19 +88,16 @@ public class IndexAccessorFactory {
 	private IndexAccessorFactory() {
 		// prevent instantiation.
 	}
-	
-	public synchronized IndexAccessorToken registerConsumer()
-	{
+
+	public synchronized IndexAccessorToken registerConsumer() {
 		IndexAccessorToken token = new IndexAccessorToken();
 		this.consumer.add(token);
 		return token;
 	}
-	
-	public synchronized void releaseConsumer(IndexAccessorToken token)
-	{
+
+	public synchronized void releaseConsumer(IndexAccessorToken token) {
 		this.consumer.remove(token);
-		if(this.consumer.size()==0)
-		{
+		if (this.consumer.size() == 0) {
 			close();
 		}
 	}
@@ -120,7 +114,7 @@ public class IndexAccessorFactory {
 			}
 			indexAccessors.clear();
 			wasClosed = true;
-			if(logger.isDebugEnabled()) {
+			if (logger.isDebugEnabled()) {
 				try {
 					throw new Exception("Closing index accessory factory lucene search is now disabled.");
 				} catch (Exception e) {
@@ -139,6 +133,7 @@ public class IndexAccessorFactory {
 	public void createAccessor(Directory dir, Analyzer analyzer) throws IOException {
 		createAccessor(dir, analyzer, null, null);
 	}
+
 	/**
 	 * 
 	 * @param dir
@@ -150,8 +145,7 @@ public class IndexAccessorFactory {
 		createAccessor(dir, analyzer, query, null);
 	};
 
-	private void createAccessor(Directory dir, Analyzer analyzer, Query query, Set<Sort> sortFields)
-			throws IOException {
+	private void createAccessor(Directory dir, Analyzer analyzer, Query query, Set<Sort> sortFields) throws IOException {
 		IndexAccessor accessor = null;
 		if (query != null) {
 			accessor = new WarmingIndexAccessor(dir, analyzer, query);
@@ -189,6 +183,7 @@ public class IndexAccessorFactory {
 		return indexAccessor;
 
 	}
+
 	/**
 	 * Check if an Accessor is already created for that directory
 	 * @param indexDir directory in which contains the index file
@@ -196,7 +191,7 @@ public class IndexAccessorFactory {
 	 */
 	public boolean hasAccessor(Directory indexDir) {
 		IndexAccessor indexAccessor = indexAccessors.get(indexDir);
-		if(indexAccessor == null){
+		if (indexAccessor == null) {
 			return false;
 		}
 		return true;
@@ -208,7 +203,7 @@ public class IndexAccessorFactory {
 	 */
 	public IndexAccessor getMultiIndexAccessor(Directory[] dirs) {
 		IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
-		
+
 		return multiIndexAccessor;
 	}
 }

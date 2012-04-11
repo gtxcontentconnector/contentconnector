@@ -25,32 +25,30 @@ public class WhitespaceVectorBolderTest extends AbstractLuceneTest {
 		super(name);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	SimpleLucene lucene;
-	
+
 	GenericConfiguration config;
-	
+
 	QueryParser parser;
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
-		
+
 		lucene = new SimpleLucene();
 		lucene.add(SimpleLucene.CONTENT_ATTRIBUTE + ":this word9 the word1 tat", "node_id:1");
-		
+
 		config = new GenericConfiguration();
 		config.set("class", "com.gentics.cr.lucene.search.highlight.WhitespaceVectorBolder");
 		config.set("attribute", SimpleLucene.CONTENT_ATTRIBUTE);
 		config.set("rule", "1==1");
 		config.set("fragments", "2");
 		config.set("fragmentsize", "24");
-		
-		parser = new QueryParser(LuceneVersion.getVersion(),
-				SimpleLucene.CONTENT_ATTRIBUTE, new StandardAnalyzer(LuceneVersion.getVersion(),
-						CharArraySet.EMPTY_SET));
+
+		parser = new QueryParser(LuceneVersion.getVersion(), SimpleLucene.CONTENT_ATTRIBUTE, new StandardAnalyzer(
+				LuceneVersion.getVersion(), CharArraySet.EMPTY_SET));
 	}
-	
-	
+
 	public void testHighlighting() throws ParseException, CorruptIndexException, IOException {
 		AdvancedContentHighlighter advancedHighlighter = new WhitespaceVectorBolder(config);
 		IndexReader reader = lucene.getReader();
@@ -60,17 +58,14 @@ public class WhitespaceVectorBolderTest extends AbstractLuceneTest {
 		//CONFIGURE LOWER CASE EXPANDED TERMS (useful for WhitespaceAnalyzer)
 		parser.setLowercaseExpandedTerms(true);
 
-
 		//ADD SUPPORT FOR LEADING WILDCARDS
 		parser.setAllowLeadingWildcard(true);
-			parser.setMultiTermRewriteMethod(MultiTermQuery
-					.SCORING_BOOLEAN_QUERY_REWRITE);
+		parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
 		Query parsedQuery = parser.parse("content:t*");
 		IndexSearcher searcher = lucene.getSearcher();
 		parsedQuery = searcher.rewrite(parsedQuery);
 		Document d = reader.document(0);
-		String highlighted = advancedHighlighter.highlight(parsedQuery,
-				reader,	0, SimpleLucene.CONTENT_ATTRIBUTE);
+		String highlighted = advancedHighlighter.highlight(parsedQuery, reader, 0, SimpleLucene.CONTENT_ATTRIBUTE);
 		System.out.println(highlighted);
 		assertEquals("Could not properly highlight", "<b>this</b> word9 <b>the</b> word1 <b>tat</b>", highlighted);
 	}

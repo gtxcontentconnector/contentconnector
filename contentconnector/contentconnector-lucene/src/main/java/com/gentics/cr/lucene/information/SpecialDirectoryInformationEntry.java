@@ -23,8 +23,7 @@ public class SpecialDirectoryInformationEntry {
 	/**
 	 * Logger.
 	 */
-	protected static final Logger LOG = Logger
-	.getLogger(SpecialDirectoryInformationEntry.class);
+	protected static final Logger LOG = Logger.getLogger(SpecialDirectoryInformationEntry.class);
 	/**
 	 * directory.
 	 */
@@ -33,6 +32,7 @@ public class SpecialDirectoryInformationEntry {
 	 * identifyer.
 	 */
 	private String id;
+
 	/**
 	 * Constructor.
 	 * @param dir directory
@@ -41,7 +41,7 @@ public class SpecialDirectoryInformationEntry {
 		directory = dir;
 		id = createDirectoryIdentifyer(dir);
 	}
-	
+
 	/**
 	 * Create a identifyer.
 	 * @param dir directory.
@@ -58,6 +58,7 @@ public class SpecialDirectoryInformationEntry {
 		}
 		return id;
 	}
+
 	/**
 	 * Get Identifyer.
 	 * @return identifyer.
@@ -65,7 +66,7 @@ public class SpecialDirectoryInformationEntry {
 	public final String getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Get the directory size in bytes.
 	 * @return size in bytes
@@ -73,14 +74,13 @@ public class SpecialDirectoryInformationEntry {
 	public final long indexSize() {
 		long size = 0;
 		if (directory instanceof FSDirectory) {
-			size = FileUtils.sizeOfDirectory(
-					((FSDirectory) directory).getDirectory());
+			size = FileUtils.sizeOfDirectory(((FSDirectory) directory).getDirectory());
 		} else if (directory instanceof RAMDirectory) {
 			size = ((RAMDirectory) directory).sizeInBytes();
 		}
 		return size;
 	}
-	
+
 	/**
 	 * get the index size in MegaBytes.
 	 * @return index size in MegaBytes
@@ -110,29 +110,29 @@ public class SpecialDirectoryInformationEntry {
 	 */
 	public final boolean isOptimized() {
 		boolean ret = false;
-		IndexReader reader	= null;
+		IndexReader reader = null;
+		try {
+			reader = IndexReader.open(directory);
+			ret = reader.isOptimized();
+		} catch (IOException ex) {
+			LOG.error("IOException happened during test of index. ", ex);
+		} finally {
 			try {
-				reader = IndexReader.open(directory);
-				ret = reader.isOptimized();
-			} catch (IOException ex) {
-				LOG.error("IOException happened during test of index. ", ex);
-			} finally {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					LOG.error("IOException happened during test of index. ", e);
-				}
+				reader.close();
+			} catch (IOException e) {
+				LOG.error("IOException happened during test of index. ", e);
 			}
-			
+		}
+
 		return ret;
 	}
-	
+
 	/**
 	 * Get the number of documents in the index.
 	 * @return number of docs
 	 */
 	public final int getDocCount() {
-		IndexReader reader	= null;
+		IndexReader reader = null;
 		int count = 0;
 		try {
 			reader = IndexReader.open(directory);
@@ -146,10 +146,10 @@ public class SpecialDirectoryInformationEntry {
 				LOG.error("IOException happened during test of index. ", e);
 			}
 		}
-		
+
 		return count;
 	}
-	
+
 	/**
 	 * Check if directory is locked.
 	 * @return true if locked.
@@ -160,8 +160,8 @@ public class SpecialDirectoryInformationEntry {
 			ret = IndexWriter.isLocked(directory);
 		} catch (IOException ex) {
 			LOG.error("IOException happened during test of index. ", ex);
-		} 
-			
+		}
+
 		return ret;
 	}
 }

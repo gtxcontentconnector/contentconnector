@@ -19,5 +19,5 @@ public interface LuceneContentTransformer {
 	 * @param bean
 	 * @throws CRException throws exception if bean could not be processed
 	 */
-	public abstract void processBean(CRResolvableBean bean, IndexWriter writer)throws CRException;
+	public abstract void processBean(CRResolvableBean bean, IndexWriter writer) throws CRException;
 }
