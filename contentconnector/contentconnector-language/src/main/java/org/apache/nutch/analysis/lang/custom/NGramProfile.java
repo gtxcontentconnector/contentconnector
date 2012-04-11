@@ -130,7 +130,7 @@ public class NGramProfile {
 	 * @param word is the word to add
 	 */
 	public void add(StringBuffer word) {
-		for (int i = minLength; (i <= maxLength) && (i < word.length()); i++) {
+		for (int i = minLength; i <= maxLength && i < word.length(); i++) {
 			add(word, i);
 		}
 	}
@@ -288,7 +288,7 @@ public class NGramProfile {
 			while (i.hasNext()) {
 				NGramEntry other = i.next();
 				if (ngrams.containsKey(other.seq)) {
-					sum += Math.abs((other.frequency - ngrams.get(other.seq).frequency)) / 2;
+					sum += Math.abs(other.frequency - ngrams.get(other.seq).frequency) / 2;
 				} else {
 					sum += other.frequency;
 				}
@@ -297,7 +297,7 @@ public class NGramProfile {
 			while (i.hasNext()) {
 				NGramEntry other = i.next();
 				if (another.ngrams.containsKey(other.seq)) {
-					sum += Math.abs((other.frequency - another.ngrams.get(other.seq).frequency)) / 2;
+					sum += Math.abs(other.frequency - another.ngrams.get(other.seq).frequency) / 2;
 				} else {
 					sum += other.frequency;
 				}
@@ -328,7 +328,7 @@ public class NGramProfile {
 				int spacepos = line.indexOf(' ');
 				String ngramsequence = line.substring(0, spacepos).trim();
 				int len = ngramsequence.length();
-				if ((len >= minLength) && (len <= maxLength)) {
+				if (len >= minLength && len <= maxLength) {
 					int ngramcount = Integer.parseInt(line.substring(spacepos + 1));
 					NGramEntry en = new NGramEntry(ngramsequence, ngramcount);
 					ngrams.put(en.getSeq(), en);
@@ -352,7 +352,7 @@ public class NGramProfile {
 		NGramProfile newProfile = new NGramProfile(name, ABSOLUTE_MIN_NGRAM_LENGTH, ABSOLUTE_MAX_NGRAM_LENGTH);
 		BufferedInputStream bis = new BufferedInputStream(is);
 
-		byte buffer[] = new byte[4096];
+		byte[] buffer = new byte[4096];
 		StringBuilder text = new StringBuilder();
 		int len;
 
@@ -414,7 +414,7 @@ public class NGramProfile {
 	 * 
 	 * @param args
 	 */
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 
 		String usage = "Usage: NGramProfile " + "[-create profilename filename encoding] "
 				+ "[-similarity file1 file2] " + "[-score profile-name filename encoding]";
@@ -580,7 +580,7 @@ public class NGramProfile {
 			if (diff != 0) {
 				return diff;
 			} else {
-				return (toString().compareTo(ngram.toString()));
+				return toString().compareTo(ngram.toString());
 			}
 		}
 
@@ -633,7 +633,7 @@ public class NGramProfile {
 
 	private class QuickStringBuffer implements CharSequence {
 
-		private char value[];
+		private char[] value;
 
 		private int count;
 
@@ -667,7 +667,7 @@ public class NGramProfile {
 				newCapacity = minimumCapacity;
 			}
 
-			char newValue[] = new char[newCapacity];
+			char[] newValue = new char[newCapacity];
 			System.arraycopy(value, 0, newValue, 0, count);
 			value = newValue;
 		}

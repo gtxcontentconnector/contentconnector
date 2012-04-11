@@ -40,7 +40,7 @@ public class LinkToTag extends TagSupport {
 		 * @see javax.servlet.jsp.tagext.TagExtraInfo#getVariableInfo(javax.servlet.jsp.tagext.TagData)
 		 */
 		public VariableInfo[] getVariableInfo(TagData tagData) {
-			VariableInfo vi[] = null;
+			VariableInfo[] vi = null;
 			String var = tagData.getAttributeString("var");
 			if (var != null) {
 				vi = new VariableInfo[1];

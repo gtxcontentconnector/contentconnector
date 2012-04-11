@@ -105,9 +105,9 @@ public class JavaXmlContentRepository extends ContentRepository {
 			CRResolvableBean bean = it.next();
 			HashMap<String, Object> attributes = (HashMap<String, Object>) bean.getAttrMap();
 			if (attributes.containsKey("binarycontent")) {
-				String ccr_bin_url = "ccr_bin?contentid=" + bean.getContentid();
+				String ccrBinUrl = "ccr_bin?contentid=" + bean.getContentid();
 				attributes.remove("binarycontent");
-				attributes.put("binarycontenturl", ccr_bin_url);
+				attributes.put("binarycontenturl", ccrBinUrl);
 				bean.setAttrMap(attributes);
 			}
 			if (!bean.getChildRepository().isEmpty()) {

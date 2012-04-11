@@ -94,7 +94,7 @@ public class LanguageIdentifier {
 			StringBuffer list = new StringBuffer("Language identifier plugin supports:");
 			HashMap<NGramEntry, List<NGramEntry>> tmpIdx = new HashMap<NGramEntry, List<NGramEntry>>();
 			while (alllanguages.hasMoreElements()) {
-				String lang = (String) (alllanguages.nextElement());
+				String lang = (String) alllanguages.nextElement();
 
 				InputStream is = LanguageIdentifier.class.getResourceAsStream(lang + "." + NGramProfile.FILE_EXTENSION);
 
@@ -152,7 +152,7 @@ public class LanguageIdentifier {
 	 * </pre>
 	 * @param args arguments.
 	 */
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 
 		String usage = "Usage: LanguageIdentifier " + "[-identifyrows filename maxlines] "
 				+ "[-identifyfile charset filename] " + "[-identifyfileset charset files] " + "[-identifytext text] "
@@ -196,8 +196,9 @@ public class LanguageIdentifier {
 
 			if (args[i].equals("-identifytext")) {
 				command = IDTEXT;
-				for (i++; i < args.length - 1; i++)
+				for (i++; i < args.length - 1; i++) {
 					text += args[i] + " ";
+				}
 			}
 
 			if (args[i].equals("-identifyfileset")) {
@@ -315,7 +316,7 @@ public class LanguageIdentifier {
 	public String identify(StringBuilder content) {
 
 		StringBuilder text = content;
-		if ((analyzeLength > 0) && (content.length() > analyzeLength)) {
+		if (analyzeLength > 0 && content.length() > analyzeLength) {
 			text = new StringBuilder().append(content);
 			text.setLength(analyzeLength);
 		}
@@ -384,13 +385,13 @@ public class LanguageIdentifier {
 		byte[] buffer = new byte[2048];
 		int len = 0;
 
-		while (((len = is.read(buffer)) != -1) && ((analyzeLength == 0) || (out.size() < analyzeLength))) {
+		while ((len = is.read(buffer)) != -1 && (analyzeLength == 0 || out.size() < analyzeLength)) {
 			if (analyzeLength != 0) {
 				len = Math.min(len, analyzeLength - out.size());
 			}
 			out.write(buffer, 0, len);
 		}
-		return identify((charset == null) ? out.toString() : out.toString(charset));
+		return identify(charset == null ? out.toString() : out.toString(charset));
 	}
 
 }

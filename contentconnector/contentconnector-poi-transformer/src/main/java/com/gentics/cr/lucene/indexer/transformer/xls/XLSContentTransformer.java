@@ -64,8 +64,8 @@ public class XLSContentTransformer extends ContentTransformer {
 						for (int r = 0; r < Rcount; r++) {
 							HSSFRow row = sheet.getRow(r);
 							if (row != null) {
-								int Ccount = row.getPhysicalNumberOfCells();
-								for (int c = 0; c < Ccount; c++) {
+								int cCount = row.getPhysicalNumberOfCells();
+								for (int c = 0; c < cCount; c++) {
 									HSSFCell cell = row.getCell(c);
 									if (cell != null) {
 										int celltype = cell.getCellType();

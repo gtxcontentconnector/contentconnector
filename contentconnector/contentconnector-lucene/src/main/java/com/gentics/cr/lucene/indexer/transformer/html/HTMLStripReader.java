@@ -62,8 +62,9 @@ public class HTMLStripReader extends Reader {
 	public static void main(String[] args) throws IOException {
 		Reader in = new HTMLStripReader(new InputStreamReader(System.in));
 		int ch;
-		while ((ch = in.read()) != -1)
+		while ((ch = in.read()) != -1) {
 			System.out.print((char) ch);
+		}
 	}
 
 	/**
@@ -119,8 +120,9 @@ public class HTMLStripReader extends Reader {
 
 	private int nextSkipWS() throws IOException {
 		int ch = next();
-		while (isSpace(ch))
+		while (isSpace(ch)) {
 			ch = next();
+		}
 		return ch;
 	}
 
@@ -151,7 +153,7 @@ public class HTMLStripReader extends Reader {
 	}
 
 	private boolean isHex(int ch) {
-		return (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+		return ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z';
 	}
 
 	private boolean isAlpha(int ch) {
@@ -258,8 +260,9 @@ public class HTMLStripReader extends Reader {
 
 	private int readEntity() throws IOException {
 		int ch = next();
-		if (ch == '#')
+		if (ch == '#') {
 			return readNumericEntity();
+		}
 
 		//read an entity reference
 
@@ -319,20 +322,22 @@ public class HTMLStripReader extends Reader {
 	private int readBang(boolean inScript) throws IOException {
 		// at this point, "<!" has been read
 		int ret = readComment(inScript);
-		if (ret == MATCH)
+		if (ret == MATCH) {
 			return MATCH;
+		}
 
-		if ((numRead - lastMark) < readAheadLimitMinus1 || peek() == '>') {
+		if (numRead - lastMark < readAheadLimitMinus1 || peek() == '>') {
 
 			int ch = next();
-			if (ch == '>')
+			if (ch == '>') {
 				return MATCH;
+			}
 
 			// if it starts with <! and isn't a comment,
 			// simply read until ">"
 			//since we did readComment already, it may be the case that we are already deep into the read ahead buffer
 			//so, we may need to abort sooner
-			while ((numRead - lastMark) < readAheadLimitMinus1) {
+			while (numRead - lastMark < readAheadLimitMinus1) {
 				ch = next();
 				if (ch == '>') {
 					return MATCH;
@@ -368,22 +373,25 @@ public class HTMLStripReader extends Reader {
 			return MISMATCH;
 		}
 		/* two extra calls to next() here, so make sure we don't read past our mark */
-		while ((numRead - lastMark) < readAheadLimitMinus1 - 3) {
+		while (numRead - lastMark < readAheadLimitMinus1 - 3) {
 			ch = next();
-			if (ch < 0)
+			if (ch < 0) {
 				return MISMATCH;
+			}
 			if (ch == '-') {
 				ch = next();
-				if (ch < 0)
+				if (ch < 0) {
 					return MISMATCH;
+				}
 				if (ch != '-') {
 					push(ch);
 					continue;
 				}
 
 				ch = next();
-				if (ch < 0)
+				if (ch < 0) {
 					return MISMATCH;
+				}
 				if (ch != '>') {
 					push(ch);
 					push('-');
@@ -417,7 +425,7 @@ public class HTMLStripReader extends Reader {
 
 		sb.setLength(0);
 		sb.append((char) ch);
-		while ((numRead - lastMark) < readAheadLimitMinus1) {
+		while (numRead - lastMark < readAheadLimitMinus1) {
 
 			ch = next();
 			if (isIdChar(ch)) {
@@ -442,15 +450,16 @@ public class HTMLStripReader extends Reader {
 
 		if (ch != '>') {
 			// process attributes
-			while ((numRead - lastMark) < readAheadLimitMinus1) {
+			while (numRead - lastMark < readAheadLimitMinus1) {
 				ch = next();
 				if (isSpace(ch)) {
 					continue;
 				} else if (isFirstIdChar(ch)) {
 					push(ch);
 					int ret = readAttr2();
-					if (ret == MISMATCH)
+					if (ret == MISMATCH) {
 						return ret;
+					}
 				} else if (ch == '/') {
 					// read end tag '/>' or '/ >', etc
 					return nextSkipWS() == '>' ? MATCH : MISMATCH;
@@ -461,7 +470,7 @@ public class HTMLStripReader extends Reader {
 				}
 
 			}
-			if ((numRead - lastMark) >= readAheadLimitMinus1) {
+			if (numRead - lastMark >= readAheadLimitMinus1) {
 				return MISMATCH;//exit out if we exceeded the buffer
 			}
 		}
@@ -500,15 +509,16 @@ public class HTMLStripReader extends Reader {
 	// TODO: do I need to worry about CDATA sections "<![CDATA["  ?
 	int findEndTag() throws IOException {
 
-		while ((numRead - lastMark) < readAheadLimitMinus1) {
+		while (numRead - lastMark < readAheadLimitMinus1) {
 			int ch = next();
 			if (ch == '<') {
 				ch = next();
 				// skip looking for end-tag in comments
 				if (ch == '!') {
 					int ret = readBang(true);
-					if (ret == MATCH)
+					if (ret == MATCH) {
 						continue;
+					}
 					// yikes... what now?  It wasn't a comment, but I can't get
 					// back to the state I was at.  Just continue from where I
 					// am I guess...
@@ -520,11 +530,13 @@ public class HTMLStripReader extends Reader {
 					continue;
 				}
 				int ret = readName(false);
-				if (ret == MISMATCH)
+				if (ret == MISMATCH) {
 					return MISMATCH;
+				}
 				ch = nextSkipWS();
-				if (ch != '>')
+				if (ch != '>') {
 					return MISMATCH;
+				}
 				return MATCH;
 			} else if (ch == '\'' || ch == '"') {
 				// read javascript string to avoid a false match.
@@ -532,8 +544,9 @@ public class HTMLStripReader extends Reader {
 				int ret = readScriptString();
 				// what to do about a non-match (non-terminated string?)
 				// play it safe and index the rest of the data I guess...
-				if (ret == MISMATCH)
+				if (ret == MISMATCH) {
 					return MISMATCH;
+				}
 			} else if (ch < 0) {
 				return MISMATCH;
 			}
@@ -545,14 +558,15 @@ public class HTMLStripReader extends Reader {
 	// read a string escaped by backslashes
 	private int readScriptString() throws IOException {
 		int quoteChar = next();
-		if (quoteChar != '\'' && quoteChar != '"')
+		if (quoteChar != '\'' && quoteChar != '"') {
 			return MISMATCH;
+		}
 
-		while ((numRead - lastMark) < readAheadLimitMinus1) {
+		while (numRead - lastMark < readAheadLimitMinus1) {
 			int ch = next();
-			if (ch == quoteChar)
+			if (ch == quoteChar) {
 				return MATCH;
-			else if (ch == '\\') {
+			} else if (ch == '\\') {
 				ch = next();
 			} else if (ch < 0) {
 				return MISMATCH;
@@ -565,19 +579,23 @@ public class HTMLStripReader extends Reader {
 	}
 
 	private int readName(boolean checkEscaped) throws IOException {
-		StringBuilder builder = (checkEscaped && escapedTags != null) ? new StringBuilder() : null;
+		StringBuilder builder = checkEscaped && escapedTags != null ? new StringBuilder() : null;
 		int ch = read();
-		if (builder != null)
+		if (builder != null) {
 			builder.append((char) ch);
-		if (!isFirstIdChar(ch))
+		}
+		if (!isFirstIdChar(ch)) {
 			return MISMATCH;
+		}
 		ch = read();
-		if (builder != null)
+		if (builder != null) {
 			builder.append((char) ch);
+		}
 		while (isIdChar(ch)) {
 			ch = read();
-			if (builder != null)
+			if (builder != null) {
 				builder.append((char) ch);
+			}
 		}
 		if (ch != -1) {
 			push(ch);
@@ -604,16 +622,18 @@ public class HTMLStripReader extends Reader {
 	// mess up the quote handling.
 	//  <a href="a/<!--#echo "path"-->">
 	private int readAttr2() throws IOException {
-		if ((numRead - lastMark < readAheadLimitMinus1)) {
+		if (numRead - lastMark < readAheadLimitMinus1) {
 			int ch = read();
-			if (!isFirstIdChar(ch))
+			if (!isFirstIdChar(ch)) {
 				return MISMATCH;
+			}
 			ch = read();
-			while (isIdChar(ch) && ((numRead - lastMark) < readAheadLimitMinus1 - 1)) {
+			while (isIdChar(ch) && numRead - lastMark < readAheadLimitMinus1 - 1) {
 				ch = read();
 			}
-			if (isSpace(ch))
+			if (isSpace(ch)) {
 				ch = nextSkipWS();
+			}
 
 			// attributes may not have a value at all!
 			// if (ch != '=') return MISMATCH;
@@ -625,11 +645,11 @@ public class HTMLStripReader extends Reader {
 			int quoteChar = nextSkipWS();
 
 			if (quoteChar == '"' || quoteChar == '\'') {
-				while ((numRead - lastMark) < readAheadLimitMinus1) {
+				while (numRead - lastMark < readAheadLimitMinus1) {
 					ch = next();
-					if (ch < 0)
+					if (ch < 0) {
 						return MISMATCH;
-					else if (ch == '<') {
+					} else if (ch == '<') {
 						eatSSI();
 					} else if (ch == quoteChar) {
 						return MATCH;
@@ -640,11 +660,11 @@ public class HTMLStripReader extends Reader {
 				}
 			} else {
 				// unquoted attribute
-				while ((numRead - lastMark) < readAheadLimitMinus1) {
+				while (numRead - lastMark < readAheadLimitMinus1) {
 					ch = next();
-					if (ch < 0)
+					if (ch < 0) {
 						return MISMATCH;
-					else if (isSpace(ch)) {
+					} else if (isSpace(ch)) {
 						push(ch);
 						return MATCH;
 					} else if (ch == '>') {
@@ -694,7 +714,7 @@ public class HTMLStripReader extends Reader {
 
 	private int readProcessingInstruction() throws IOException {
 		// "<?" has already been read
-		while ((numRead - lastMark) < readAheadLimitMinus1) {
+		while (numRead - lastMark < readAheadLimitMinus1) {
 			int ch = next();
 			if (ch == '?' && peek() == '>') {
 				next();
@@ -729,8 +749,9 @@ public class HTMLStripReader extends Reader {
 				case '&':
 					saveState();
 					ch = readEntity();
-					if (ch >= 0)
+					if (ch >= 0) {
 						return ch;
+					}
 					if (ch == MISMATCH) {
 						restoreState();
 
@@ -762,7 +783,7 @@ public class HTMLStripReader extends Reader {
 					if (ret == MATCH) {
 						//break;//was
 						//return whitespace from
-						numWhitespace = (numRead - lastNumRead) - 1;//tack on the -1 since we are returning a space right now
+						numWhitespace = numRead - lastNumRead - 1;//tack on the -1 since we are returning a space right now
 						return ' ';
 					}
 
@@ -787,17 +808,19 @@ public class HTMLStripReader extends Reader {
 	* @throws IOException 
 	 * 
 	 */
-	public int read(char cbuf[], int off, int len) throws IOException {
+	public int read(char[] cbuf, int off, int len) throws IOException {
 		int i = 0;
 		for (i = 0; i < len; i++) {
 			int ch = read();
-			if (ch == -1)
+			if (ch == -1) {
 				break;
+			}
 			cbuf[off++] = (char) ch;
 		}
 		if (i == 0) {
-			if (len == 0)
+			if (len == 0) {
 				return 0;
+			}
 			return -1;
 		}
 		return i;
