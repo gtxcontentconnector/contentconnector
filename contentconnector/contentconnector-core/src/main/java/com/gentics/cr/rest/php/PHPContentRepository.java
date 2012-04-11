@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
@@ -29,7 +31,7 @@ public class PHPContentRepository extends ContentRepository {
 	 */
 	private static final long serialVersionUID = -4131893655763487202L;
 	private PHPSerializer PHPSerializer;
-	private Hashtable<String, Object> cr;
+	private Map<String, Object> cr;
 
 	/**
 	 * Create new Instance
@@ -41,7 +43,7 @@ public class PHPContentRepository extends ContentRepository {
 		super(attr);
 		this.setResponseEncoding("UTF-8");
 		PHPSerializer = new PHPSerializer(this.getResponseEncoding());
-		cr = new Hashtable<String, Object>();
+		cr = new LinkedHashMap<String, Object>();
 
 	}
 
@@ -55,7 +57,7 @@ public class PHPContentRepository extends ContentRepository {
 		super(attr);
 		this.setResponseEncoding(encoding);
 		PHPSerializer = new PHPSerializer(this.getResponseEncoding());
-		cr = new Hashtable<String, Object>();
+		cr = new LinkedHashMap<String, Object>();
 
 	}
 
@@ -70,7 +72,7 @@ public class PHPContentRepository extends ContentRepository {
 		super(attr, encoding, options);
 		//this.setResponseEncoding(encoding);
 		PHPSerializer = new PHPSerializer(this.getResponseEncoding());
-		cr = new Hashtable<String, Object>();
+		cr = new LinkedHashMap<String, Object>();
 
 	}
 
@@ -94,7 +96,7 @@ public class PHPContentRepository extends ContentRepository {
 		this.cr.clear();
 		this.cr.put("status", "error");
 
-		HashMap<String, Object> error = new HashMap<String, Object>();
+		Map<String, Object> error = new LinkedHashMap<String, Object>();
 		error.put("type", ex.getType());
 		error.put("message", ex.getMessage());
 
@@ -129,7 +131,7 @@ public class PHPContentRepository extends ContentRepository {
 
 				CRResolvableBean crBean = it.next();
 
-				Hashtable<String, Object> objElement = processElement(crBean);
+				Map<String, Object> objElement = processElement(crBean);
 
 				this.cr.put(crBean.getContentid(), objElement);
 			}
@@ -148,8 +150,8 @@ public class PHPContentRepository extends ContentRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Hashtable<String, Object> processElement(CRResolvableBean crBean) {
-		Hashtable<String, Object> objElement = new Hashtable<String, Object>();
+	private Map<String, Object> processElement(CRResolvableBean crBean) {
+		Map<String, Object> objElement = new LinkedHashMap<String, Object>();
 
 		objElement.put("contentid", "" + crBean.getContentid());
 		objElement.put("obj_id", "" + crBean.getObj_id());
@@ -227,13 +229,13 @@ public class PHPContentRepository extends ContentRepository {
 			objElement.put("attributes", attribContainer);
 		}
 		if (crBean.hasChildren()) {
-			Hashtable<String, Hashtable<String, Object>> childContainer = new Hashtable<String, Hashtable<String, Object>>();
+			Map<String, Map<String, Object>> childContainer = new LinkedHashMap<String, Map<String, Object>>();
 
 			for (Iterator<CRResolvableBean> it = crBean.getChildRepository().iterator(); it.hasNext();) {
 
 				CRResolvableBean chBean = it.next();
 
-				Hashtable<String, Object> chElement = processElement(chBean);
+				Map<String, Object> chElement = processElement(chBean);
 				childContainer.put(chBean.getContentid(), chElement);
 			}
 			//Text t = doc.createCDATASection("Count: "+crBean.getChildRepository().size());
