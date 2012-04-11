@@ -44,8 +44,7 @@ public class LinkToTag extends TagSupport {
 			String var = tagData.getAttributeString("var");
 			if (var != null) {
 				vi = new VariableInfo[1];
-				vi[0] = new VariableInfo(var, "java.lang.String", true,
-						VariableInfo.AT_BEGIN);
+				vi[0] = new VariableInfo(var, "java.lang.String", true, VariableInfo.AT_BEGIN);
 			}
 			return vi;
 		}
@@ -95,14 +94,11 @@ public class LinkToTag extends TagSupport {
 	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
 	 */
 	public int doStartTag() throws JspException {
-		Object renderResponseObject = pageContext
-				.findAttribute("javax.portlet.response");
+		Object renderResponseObject = pageContext.findAttribute("javax.portlet.response");
 		if (renderResponseObject instanceof RenderResponse) {
-			portletURL = ((RenderResponse) renderResponseObject)
-					.createActionURL();
+			portletURL = ((RenderResponse) renderResponseObject).createActionURL();
 		} else {
-			throw new JspException(
-					"error while creation of actionURL: could not find renderResponse");
+			throw new JspException("error while creation of actionURL: could not find renderResponse");
 		}
 		return Tag.EVAL_BODY_INCLUDE;
 	}
@@ -114,8 +110,7 @@ public class LinkToTag extends TagSupport {
 		try {
 			if (portletURL != null) {
 				if (var != null) {
-					pageContext.setAttribute(var, portletURL.toString(),
-							PageContext.REQUEST_SCOPE);
+					pageContext.setAttribute(var, portletURL.toString(), PageContext.REQUEST_SCOPE);
 				} else {
 					pageContext.getOut().print(portletURL.toString());
 				}

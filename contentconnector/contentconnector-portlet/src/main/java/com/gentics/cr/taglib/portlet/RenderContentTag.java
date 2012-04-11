@@ -38,7 +38,7 @@ public class RenderContentTag extends TagSupport {
 	 * Name of the render request attribute for the instance of {@link ContentRenderer}
 	 */
 	public final static String RENDERER_PARAM = "rendercontenttag.renderer";
-	
+
 	/**
 	 * Name of the config attribute for the instance of {@link GenericConfiguration}
 	 */
@@ -48,8 +48,7 @@ public class RenderContentTag extends TagSupport {
 	 * Name of the request attribute for the instance of {@link RenderRequest}
 	 */
 	public final static String REQUEST_PARAM = "rendercontenttag.request";
-	
-	
+
 	/**
 	 * Name of the render request attribute for the instance of {@link PLinkReplacer}
 	 */
@@ -59,17 +58,18 @@ public class RenderContentTag extends TagSupport {
 	 * Rendered object
 	 */
 	protected CRResolvableBean object;
-	
+
 	/**
 	 * 
 	 */
-	public static final String SESSION_KEY_CONTENTPOSTPROCESSOR_CONF = RenderContentTag.class.getName() + "|ContentPostProcessor|confs";
+	public static final String SESSION_KEY_CONTENTPOSTPROCESSOR_CONF = RenderContentTag.class.getName()
+			+ "|ContentPostProcessor|confs";
 
 	/**
 	 * name of the rendered attribute
 	 */
 	protected String contentAttribute = "content";
-	
+
 	protected String var = null;
 
 	/**
@@ -94,7 +94,7 @@ public class RenderContentTag extends TagSupport {
 	public void setContentAttribute(String contentAttribute) {
 		this.contentAttribute = contentAttribute;
 	}
-	
+
 	/**
 	 * Set the flag if the returned content should be url-encoded
 	 * @param urlencode 
@@ -103,7 +103,7 @@ public class RenderContentTag extends TagSupport {
 	public void setUrlencode(String urlencode) {
 		this.urlencode = "true".equals(urlencode);
 	}
-	
+
 	/**
 	 * 
 	 * @param var
@@ -111,65 +111,67 @@ public class RenderContentTag extends TagSupport {
 	public void setVar(String var) {
 		this.var = var;
 	}
-	
+
 	/**
 	 * @return 
 	 * @throws JspException 
 	 * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
 	 */
-	
+
 	public int doEndTag() throws JspException {
 		// get the ContentRenderer
 		RenderRequest renderRequest = getRenderRequest();
 		PortletSession session = renderRequest.getPortletSession();
 
-		ContentRenderer renderer = (ContentRenderer)renderRequest.getAttribute(RENDERER_PARAM);
-		PLinkReplacer pLinkReplacer = (PLinkReplacer)renderRequest.getAttribute(PLINK_PARAM);
-		CRConfigUtil crConf = (CRConfigUtil)renderRequest.getAttribute(CRCONF_PARAM);
-		
-		
+		ContentRenderer renderer = (ContentRenderer) renderRequest.getAttribute(RENDERER_PARAM);
+		PLinkReplacer pLinkReplacer = (PLinkReplacer) renderRequest.getAttribute(PLINK_PARAM);
+		CRConfigUtil crConf = (CRConfigUtil) renderRequest.getAttribute(CRCONF_PARAM);
+
 		try {
 			if (object != null) {
 				try {
 					String content = renderer.renderContent(object, contentAttribute, true, pLinkReplacer, false, null);
-					
-					/* Get the ContentPostProcessor-Config from the PortletSession or instance it from the Config*/
+
+					/* Get the ContentPostProcessor-Config from the PortletSession or instance it from the Config */
 					@SuppressWarnings("unchecked")
-					Hashtable<String,ContentPostProcesser> confs = (Hashtable<String, ContentPostProcesser>) session.getAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, PortletSession.APPLICATION_SCOPE);
-					if (confs == null){
+					Hashtable<String, ContentPostProcesser> confs = (Hashtable<String, ContentPostProcesser>) session
+							.getAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, PortletSession.APPLICATION_SCOPE);
+					if (confs == null) {
 						confs = ContentPostProcesser.getProcessorTable(crConf);
-						if (confs != null){
-							session.setAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, confs, PortletSession.APPLICATION_SCOPE);
+						if (confs != null) {
+							session.setAttribute(
+								SESSION_KEY_CONTENTPOSTPROCESSOR_CONF,
+								confs,
+								PortletSession.APPLICATION_SCOPE);
 							logger.debug("Put ContentPostProcessor config into session of " + crConf.getName() + "!");
 						}
 					}
 					if (confs != null) {
-						for(ContentPostProcesser p:confs.values()) {
+						for (ContentPostProcesser p : confs.values()) {
 							content = p.processString(content, renderRequest);
 						}
 					}
-					
-					if (urlencode && content!=null) {
+
+					if (urlencode && content != null) {
 						content = URLEncoder.encode(content, "UTF-8");
 					}
-					
+
 					if (var != null) {
-						if (content!=null && "".equals(content)) {
+						if (content != null && "".equals(content)) {
 							content = null;
 						}
 						pageContext.setAttribute(var, content, PageContext.REQUEST_SCOPE);
 					} else {
 						pageContext.getOut().write(content);
 					}
-					
+
 				} catch (CRException e) {
-					throw new JspException("Error while rendering object "
-							+ object.getContentid(), e);
+					throw new JspException("Error while rendering object " + object.getContentid(), e);
 				}
 			} else {
 				pageContext.getOut().write(" -- no object set --");
 			}
-		}catch(IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return super.doEndTag();
@@ -183,14 +185,12 @@ public class RenderContentTag extends TagSupport {
 	 *             when the render request could not be found
 	 */
 	protected RenderRequest getRenderRequest() throws JspException {
-		Object renderRequestObject = pageContext.findAttribute(
-				"javax.portlet.request");
+		Object renderRequestObject = pageContext.findAttribute("javax.portlet.request");
 
 		if (renderRequestObject instanceof RenderRequest) {
 			return (RenderRequest) renderRequestObject;
 		} else {
-			throw new JspException(
-					"Error while rendering tag: could not find javax.portlet.request");
+			throw new JspException("Error while rendering tag: could not find javax.portlet.request");
 		}
 	}
 
