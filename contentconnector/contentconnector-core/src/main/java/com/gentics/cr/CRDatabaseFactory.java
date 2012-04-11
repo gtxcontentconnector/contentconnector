@@ -28,7 +28,7 @@ public final class CRDatabaseFactory {
   /**
    * Static instance.
    */
-  private static CRDatabaseFactory instance;
+  private static CRDatabaseFactory instance = new CRDatabaseFactory();
   
   /**
    * Count of active datasources.
@@ -40,9 +40,6 @@ public final class CRDatabaseFactory {
    * @return returns singleton instance.
    */
   private static CRDatabaseFactory getInstance() {
-    if (instance == null) {
-    	instance = new CRDatabaseFactory();
-    }
     return instance;
   }
 
