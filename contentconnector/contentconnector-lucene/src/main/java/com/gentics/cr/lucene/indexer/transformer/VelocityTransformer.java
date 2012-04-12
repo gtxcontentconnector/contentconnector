@@ -10,8 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -121,8 +121,8 @@ public class VelocityTransformer extends ContentTransformer {
 	private String sourceAttribute;
 
 	/**
-	 * Creates instance of MergeTransformer.
-	 * @param config configuration for the MergeTransformer
+	 * Creates instance of VelocityTransformer.
+	 * @param config configuration for the VelocityTransformer
 	 */
 	public VelocityTransformer(final GenericConfiguration config) {
 		super(config);
