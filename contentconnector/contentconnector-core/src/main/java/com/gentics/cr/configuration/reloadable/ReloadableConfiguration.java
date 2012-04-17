@@ -102,7 +102,8 @@ public abstract class ReloadableConfiguration {
 			public void run() {
 				while (!Thread.currentThread().isInterrupted()) {
 					try {
-						Thread.sleep(getCheckInterval() * Constants.MILLISECONDS_IN_A_SECOND);
+						Thread.sleep(getCheckInterval()
+								* Constants.MILLISECONDS_IN_A_SECOND);
 						if (hasConfigChanged()) {
 							if (listener != null) {
 								listener.onBeforeReload();
