@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 /**
  * Resolves property placeholders in strings.
  * @author bigbear3001
- *
  */
 public final class CRUtilResolver {
 
@@ -23,8 +22,7 @@ public final class CRUtilResolver {
 	/**
 	 * pattern to find contentconnector properties.
 	 */
-	private static Pattern findContentConnectorProperties = Pattern
-			.compile("\\&\\{([a-zA-Z0-9_-]+).([a-zA-Z0-9\\._-]+)\\}");
+	private static Pattern findContentConnectorProperties = Pattern.compile("\\&\\{([a-zA-Z0-9_-]+).([a-zA-Z0-9\\._-]+)\\}");
 
 	/**
 	 * Callback for replacing ContentConnector properties.
@@ -34,8 +32,7 @@ public final class CRUtilResolver {
 	/**
 	 * private Constructor to prevent instanciation.
 	 */
-	private CRUtilResolver() {
-	};
+	private CRUtilResolver() {}
 
 	/**
 	 * Resolve  properties with the specified pattern.
@@ -45,8 +42,7 @@ public final class CRUtilResolver {
 	 * @param callback - Callback to use for a match
 	 * @return String with replaced system properties
 	 */
-	public static String resolvePropertiesWithCallback(final String string, final Pattern pattern,
-			final Callback callback) {
+	public static String resolvePropertiesWithCallback(final String string, final Pattern pattern, final Callback callback) {
 		// create a matcher
 		Matcher m = pattern.matcher(string);
 		StringBuffer output = new StringBuffer();
@@ -69,15 +65,12 @@ public final class CRUtilResolver {
 
 	/**
 	 * Resolve the content connector properties.
-	 * @param string - String to resolve the system properties in
-	 * @return String with replaced system properties
+	 * @param string - String to resolve the contentconnector properties in
+	 * @return String with replaced contentconnector properties
 	 */
 
 	public static String resolveContentConnectorProperties(final String string) {
-		return CRUtilResolver.resolvePropertiesWithCallback(
-			string,
-			findContentConnectorProperties,
-			contentConnectorCallback);
+		return CRUtilResolver.resolvePropertiesWithCallback(string, findContentConnectorProperties, contentConnectorCallback);
 	}
 
 	/**
