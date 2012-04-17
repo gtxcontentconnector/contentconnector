@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import com.gentics.cr.util.AccessibleBean;
 
@@ -65,7 +65,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	 * @return properties or null if there are no containing properties
 	 */
 	public final Properties getProperties() {
-		return (this.properties);
+		return this.properties;
 	}
 
 	/**
@@ -107,14 +107,13 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 				String subConfKey = e.getKey();
 				GenericConfiguration subVal = e.getValue();
 
-				for (Entry<Object, Object> se : ((GenericConfiguration) subVal).getRebuiltPropertyTree().entrySet()) {
+				for (Entry<Object, Object> se : subVal.getRebuiltPropertyTree().entrySet()) {
 					String key = subConfKey + "." + se.getKey();
 					ret.put(key, se.getValue());
 				}
-
 			}
 		}
-		return (ret);
+		return ret;
 	}
 
 	/**
@@ -183,7 +182,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 				ret.put(key, this.subconfigs.get(key));
 			}
 		}
-		return (ret);
+		return ret;
 
 	}
 
@@ -197,7 +196,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 		if (this.properties != null) {
 			return this.properties.size();
 		}
-		return (0);
+		return 0;
 	}
 
 	/**
@@ -207,9 +206,9 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	 */
 	public final int getSubConfigSize() {
 		if (this.subconfigs != null) {
-			return (this.subconfigs.size());
+			return this.subconfigs.size();
 		}
-		return (0);
+		return 0;
 	}
 
 	/**
@@ -219,7 +218,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	 * @return count
 	 */
 	public final int getChildSize() {
-		return (getSubConfigSize() + getPropertySize());
+		return getSubConfigSize() + getPropertySize();
 	}
 
 	/**
@@ -234,7 +233,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 		if (obj != null && obj instanceof GenericConfiguration) {
 			return ((GenericConfiguration) obj).getPropertiesAsSortedCollection();
 		}
-		return (null);
+		return null;
 	}
 
 	/**
@@ -251,9 +250,9 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 			for (Object k : v) {
 				ret.add(this.properties.getProperty((String) k));
 			}
-			return (ret);
+			return ret;
 		}
-		return (null);
+		return null;
 
 	}
 
@@ -279,7 +278,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 			if (this.subconfigs != null) {
 				GenericConfiguration subConf = this.subconfigs.get(getSubConfigKey(key));
 				if (subConf != null) {
-					return (subConf.get(getSubKey(key)));
+					return subConf.get(getSubKey(key));
 				}
 			}
 		} else if (this.properties != null || this.subconfigs != null) {
@@ -290,7 +289,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 			if (prop == null && subconfigs != null) {
 				prop = subconfigs.get(key);
 			}
-			return (prop);
+			return prop;
 		}
 		return null;
 	}
@@ -348,7 +347,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 				ret = true;
 			}
 		}
-		return (ret);
+		return ret;
 	}
 
 	/**
@@ -370,7 +369,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 				}
 			}
 		}
-		return (sub);
+		return sub;
 	}
 
 	/**
@@ -389,7 +388,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 				sub = arr[0];
 			}
 		}
-		return (sub);
+		return sub;
 	}
 
 	/**
