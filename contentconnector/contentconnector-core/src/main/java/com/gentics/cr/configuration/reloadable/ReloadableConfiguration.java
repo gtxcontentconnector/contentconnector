@@ -18,7 +18,8 @@ public abstract class ReloadableConfiguration {
 	/**
 	* Log4j logger for error and debug messages.
 	*/
-	private static Logger logger = Logger.getLogger(CachedCRRequestProcessor.class);
+	private static Logger logger = 
+			Logger.getLogger(CachedCRRequestProcessor.class);
 
 	/**
 	 * Interval for checking for new jobs.
@@ -38,7 +39,7 @@ public abstract class ReloadableConfiguration {
 	/**
 	 * Object for synchronizing method blocks.
 	 */
-	private Object syn = "";
+	private Object syn = new Object();
 
 	/**
 	 * Sets the current check interval.
