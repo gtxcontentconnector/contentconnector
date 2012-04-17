@@ -24,7 +24,7 @@ public final class EventManager {
 	/**
 	 * Singleton instance of the EventManager.
 	 */
-	private static EventManager instance;
+	private static EventManager instance = new EventManager();
 
 	/**
 	 * Private constructor prevents instantiation.
@@ -38,9 +38,6 @@ public final class EventManager {
 	 * @return singleton instance of EventManager.
 	 */
 	public static EventManager getInstance() {
-		if (instance == null) {
-			instance = new EventManager();
-		}
 		return instance;
 	}
 
