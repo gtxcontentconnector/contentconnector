@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -107,9 +106,8 @@ public class PHPContentRepository extends ContentRepository {
 		this.cr.put("Error", error);
 
 		try {
-			stream.write((this.PHPSerializer.serialize(this.cr)).getBytes());
+			stream.write(this.PHPSerializer.serialize(this.cr).getBytes());
 		} catch (IOException e) {
-			;
 		}
 	}
 
@@ -156,10 +154,10 @@ public class PHPContentRepository extends ContentRepository {
 		objElement.put("contentid", "" + crBean.getContentid());
 		objElement.put("obj_id", "" + crBean.getObj_id());
 		objElement.put("obj_type", "" + crBean.getObj_type());
-		objElement.put("mother_id", ((crBean.getMother_id() == null) ? "" : "" + crBean.getMother_id()));
-		objElement.put("mother_type", ((crBean.getMother_type() == null) ? "" : "" + crBean.getMother_type()));
+		objElement.put("mother_id", crBean.getMother_id() == null ? "" : "" + crBean.getMother_id());
+		objElement.put("mother_type", crBean.getMother_type() == null ? "" : "" + crBean.getMother_type());
 
-		if (crBean.getAttrMap() != null && (!crBean.getAttrMap().isEmpty())) {
+		if (crBean.getAttrMap() != null && !crBean.getAttrMap().isEmpty()) {
 			Hashtable<String, Object> attribContainer = new Hashtable<String, Object>();
 			Iterator<String> bit = crBean.getAttrMap().keySet().iterator();
 			while (bit.hasNext()) {
@@ -169,13 +167,13 @@ public class PHPContentRepository extends ContentRepository {
 				Object bValue = crBean.getAttrMap().get(entry);
 
 				if (bValue != null) {
-					if ((!entry.equals("binarycontent"))
-							&& (bValue.getClass().isArray() || bValue.getClass() == ArrayList.class)) {
+					if (!entry.equals("binarycontent") && (bValue.getClass().isArray() || bValue.getClass() == ArrayList.class)) {
 						Object[] value;
-						if (bValue.getClass() == ArrayList.class)
+						if (bValue.getClass() == ArrayList.class) {
 							value = ((ArrayList<Object>) bValue).toArray();
-						else
+						} else {
 							value = (Object[]) bValue;
+						}
 
 						attribContainer.put(entry, value);
 					} else {
