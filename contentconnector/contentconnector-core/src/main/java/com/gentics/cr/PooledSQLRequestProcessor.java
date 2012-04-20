@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import com.gentics.cr.exceptions.CRException;
 
 /**
- * 
+ * PooledSQLRequestProcessor.
  * Last changed: $Date: 2010-04-01 15:24:02 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 541 $
  * @author $Author: supnig@constantinopel.at $
@@ -23,14 +23,35 @@ import com.gentics.cr.exceptions.CRException;
  */
 public class PooledSQLRequestProcessor extends RequestProcessor {
 
-	private static Logger log = Logger.getLogger(PooledSQLRequestProcessor.class);
+	/**
+	 * Logger.
+	 */
+	private static Logger log = Logger.getLogger(
+			PooledSQLRequestProcessor.class);
+	/**
+	 * Table key.
+	 */
 	private static final String TABLEATTRIBUTE = "table";
+	/**
+	 * ID-Column key.
+	 */
 	private static final String IDCOLUMNKEY = "idcolumn";
 
+	/**
+	 * Table.
+	 */
 	private String table = "";
+	/**
+	 * ID-Column.
+	 */
 	private String idcolumn = "";
 
-	public PooledSQLRequestProcessor(CRConfig config) throws CRException {
+	/**
+	 * Constructor. Create a new PooledSQLRequestProcessor.
+	 * @param config configuration
+	 * @throws CRException exception in case of error.
+	 */
+	public PooledSQLRequestProcessor(final CRConfig config) throws CRException {
 		super(config);
 		Properties dsprops = ((CRConfigUtil) config).getDatasourceProperties();
 		table = dsprops.getProperty(TABLEATTRIBUTE);
@@ -38,7 +59,7 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 	}
 
 	@Override
-	public void finalize() {
+	public final void finalize() {
 		try {
 			((CRConfigUtil) this.config).releaseJDBCPool();
 		} catch (Exception s) {
@@ -46,11 +67,19 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 		}
 
 	}
-
+	
+	/**
+	 * Pattern.
+	 */
 	private static final Pattern CONTAINSONEOFPATTERN = Pattern
 			.compile("object\\.([a-zA-Z0-9_]*)[ ]*CONTAINSONEOF[ ]*\\[(.*)\\]");
 
-	private String translate(String requestFilter) {
+	/**
+	 * Translate.
+	 * @param requestFilter request filter
+	 * @return translation
+	 */
+	private String translate(final String requestFilter) {
 		//TANSLATE CONTAINSONEOF
 		Matcher matcher = CONTAINSONEOFPATTERN.matcher(requestFilter);
 
@@ -62,13 +91,20 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 		}
 		matcher.appendTail(buf);
 
-		requestFilter = buf.toString();
+		String buffer = buf.toString();
 
-		return requestFilter.replaceAll("==", "=").replaceAll("\"", "'");
+		return buffer.replaceAll("==", "=").replaceAll("\"", "'");
 
 	}
 
-	private String getStatement(String requestFilter, String[] attributes) {
+	/**
+	 * Create Statement.
+	 * @param requestFilter requestFIlter
+	 * @param attributes attributes
+	 * @return statement
+	 */
+	private String getStatement(final String requestFilter,
+			final String[] attributes) {
 		String statement = "SELECT ";
 		if (attributes == null || attributes.length == 0) {
 			statement += "*";
@@ -83,12 +119,15 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 				statement += att;
 			}
 		}
-		statement += " FROM " + this.table + " WHERE " + translate(requestFilter);
+		statement += " FROM " + this.table + " WHERE "
+				+ translate(requestFilter);
 		return statement;
 	}
 
 	@Override
-	public Collection<CRResolvableBean> getObjects(CRRequest request, boolean doNavigation) throws CRException {
+	public final Collection<CRResolvableBean> getObjects(
+			final CRRequest request,
+			final boolean doNavigation) throws CRException {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rset = null;
@@ -98,9 +137,10 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 			conn = ((CRConfigUtil) this.config).getPooledJDBCConnection();
 
 			stmt = conn.createStatement();
-			String s_statement = getStatement(request.getRequestFilter(), request.getAttributeArray(idcolumn));
-			log.debug("Using statement: " + s_statement);
-			rset = stmt.executeQuery(s_statement);
+			String stringStatement = getStatement(request.getRequestFilter(),
+					request.getAttributeArray(idcolumn));
+			log.debug("Using statement: " + stringStatement);
+			rset = stmt.executeQuery(stringStatement);
 
 			int numcols = rset.getMetaData().getColumnCount();
 			String[] colnames = new String[numcols];
@@ -112,8 +152,9 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 			while (rset.next()) {
 				CRResolvableBean bean = new CRResolvableBean();
 				for (int i = 1; i <= numcols; i++) {
-					if (rset.getObject(i) != null)
+					if (rset.getObject(i) != null) {
 						bean.set(colnames[i - 1], rset.getObject(i));
+					}
 				}
 				result.add(bean);
 			}
@@ -123,19 +164,25 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 			throw new CRException(ex);
 		} finally {
 			try {
-				if (rset != null)
+				if (rset != null) {
 					rset.close();
-			} catch (Exception e) {
+				}
+			} catch (SQLException e) {
+				throw new CRException(e);
 			}
 			try {
-				if (stmt != null)
+				if (stmt != null) {
 					stmt.close();
-			} catch (Exception e) {
+				}
+			} catch (SQLException e) {
+				throw new CRException(e);
 			}
 			try {
-				if (conn != null)
+				if (conn != null) {
 					conn.close();
-			} catch (Exception e) {
+				}
+			} catch (SQLException e) {
+				throw new CRException(e);
 			}
 		}
 		return result;
