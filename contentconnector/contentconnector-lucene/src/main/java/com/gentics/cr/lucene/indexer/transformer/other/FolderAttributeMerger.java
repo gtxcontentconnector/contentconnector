@@ -80,9 +80,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 		if (!targetAttributeValues.equals("")) {
 			String contentid = contentBean.getContentid();
 			String folderid = "";
-			if (folderBean != null) {
-				folderid = folderBean.getContentid();
-			}
+			folderid = folderBean.getContentid();
 			logger.debug("contentid: " + contentid + " " + " - folder: " + folderid + " - targetattribute: "
 					+ targetAttributeValues);
 			contentBean.set(targetAttribute, targetAttributeValues);
