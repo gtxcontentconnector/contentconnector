@@ -11,11 +11,15 @@ public class ComparableDocument {
 	public ComparableDocument(Document doc) {
 		document = doc;
 	}
+	
+	public Document getDocument() {
+		return document;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Document) {
-			Document givenDocument = (Document) obj;
+		if (obj instanceof ComparableDocument) {
+			Document givenDocument = ((ComparableDocument) obj).getDocument();
 			for (Fieldable field : givenDocument.getFields()) {
 				Field myField = document.getField(field.name());
 				//TODO: check binary or not stored fields to.
