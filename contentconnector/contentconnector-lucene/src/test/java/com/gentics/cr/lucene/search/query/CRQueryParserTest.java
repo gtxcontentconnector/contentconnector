@@ -78,25 +78,25 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 
 	public void testReplaceBooleanMnoGoSearchQuery() throws ParseException, CorruptIndexException, IOException {
 
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("word1 | word2"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("word1 | word2")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(0), documents.get(1) });
 
-		matchedDocuments = lucene.find(parser.parse("word1 & word9"));
+		matchedDocuments = wrapComparable(lucene.find(parser.parse("word1 & word9")));
 		containsOnly(matchedDocuments, documents.get(0));
 
-		matchedDocuments = lucene.find(parser.parse("word1&word9"));
+		matchedDocuments = wrapComparable(lucene.find(parser.parse("word1&word9")));
 		containsOnly(matchedDocuments, documents.get(0));
 	}
 
 	public void testSearchAttributes() throws ParseException, CorruptIndexException, IOException {
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("word1"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("word1")));
 		containsOnly(matchedDocuments, documents.get(0));
 	}
 
 	public void testWordMatchSub() throws ParseException, CorruptIndexException, IOException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("word"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("word")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(0), documents.get(1), documents.get(2),
 				documents.get(4), documents.get(5), documents.get(6), documents.get(7), documents.get(8) });
 	}
@@ -104,7 +104,7 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 	public void testWordMatchBeg() throws ParseException, CorruptIndexException, IOException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "beg");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("word"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("word")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(0), documents.get(1), documents.get(2),
 				documents.get(4), documents.get(5), documents.get(6), documents.get(7) });
 	}
@@ -112,7 +112,7 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 	public void testWordMatchEnd() throws ParseException, CorruptIndexException, IOException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "end");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("word"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("word")));
 		containsOnly(matchedDocuments, documents.get(8));
 	}
 
@@ -126,45 +126,45 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 	public void testWordMatchComplexSub() throws ParseException, CorruptIndexException, IOException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("word AND node_id:1"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("word AND node_id:1")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(0), documents.get(1) });
 	}
 
 	public void testWordMatchComplexSubMultipleTerms() throws ParseException, CorruptIndexException, IOException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("content:(word1 word9) AND node_id:1"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("content:(word1 word9) AND node_id:1")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(0), documents.get(1) });
 	}
 
 	public void testWordMatchComplexSubGroupMultipleTerms() throws ParseException, CorruptIndexException, IOException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("content:\"word1 word9\" AND node_id:1"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("content:\"word1 word9\" AND node_id:1")));
 		assertTrue(matchedDocuments.size() == 0);
-		matchedDocuments = lucene.find(parser.parse("content:\"word9 word1\" AND node_id:1"));
+		matchedDocuments = wrapComparable(lucene.find(parser.parse("content:\"word9 word1\" AND node_id:1")));
 		containsOnly(matchedDocuments, documents.get(0));
 	}
 
 	public void testWordMatchComplexSubRangeOperator() throws ParseException, CorruptIndexException, IOException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser
-				.parse("content:word AND edittimestamp:[1304510397 TO 1314627329]"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser
+				.parse("content:word AND edittimestamp:[1304510397 TO 1314627329]")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(4), documents.get(5), documents.get(6),
 				documents.get(7) });
 
 		crRequest.set(CRRequest.WORDMATCH_KEY, "wrd");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), new String[] { "edittimestamp" }, STANDARD_ANALYZER,
 				crRequest);
-		matchedDocuments = lucene.find(parser.parse("[1304510397 TO 1314627329]"));
+		matchedDocuments = wrapComparable(lucene.find(parser.parse("[1304510397 TO 1314627329]")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(4), documents.get(5), documents.get(6),
 				documents.get(7) });
 
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), new String[] { "edittimestamp" }, STANDARD_ANALYZER,
 				crRequest);
-		matchedDocuments = lucene.find(parser.parse("[1304510397 TO 1314627329]"));
+		matchedDocuments = wrapComparable(lucene.find(parser.parse("[1304510397 TO 1314627329]")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(4), documents.get(5), documents.get(6),
 				documents.get(7) });
 	}
@@ -172,45 +172,45 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 	public void testWordMatchComplexSubGroupAddSign() throws CorruptIndexException, IOException, ParseException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("+(word1 word9)"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("+(word1 word9)")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(0), documents.get(1), documents.get(2) });
 	}
 
 	public void testMinus() throws CorruptIndexException, IOException, ParseException {
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("with\\-minusinit"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("with\\-minusinit")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(3), documents.get(4) });
-		matchedDocuments = lucene.find(parser.parse("with-minusinit"));
+		matchedDocuments = wrapComparable(lucene.find(parser.parse("with-minusinit")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(3), documents.get(4) });
 	}
 
 	public void testMultipleEscapedMinus() throws CorruptIndexException, IOException, ParseException {
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("with-minus-in-it"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("with-minus-in-it")));
 		containsOnly(matchedDocuments, documents.get(3));
 	}
 
 	public void testEscapedMinusWordMatch() throws CorruptIndexException, IOException, ParseException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("with\\-minusinit"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("with\\-minusinit")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(3), documents.get(4) });
 	}
 
 	public void testNumberWithSlashes() throws CorruptIndexException, IOException, ParseException {
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("01/23456789"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("01/23456789")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(8) });
 	}
 
 	public void testNumberWithSlashesAndWildcard() throws CorruptIndexException, IOException, ParseException {
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("01/2*"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("01/2*")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(8) });
 	}
 
 	public void testNumberWithSlashesAndWildcards() throws CorruptIndexException, IOException, ParseException {
 		crRequest.set(CRRequest.WORDMATCH_KEY, "sub");
 		parser = new CRQueryParser(LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-		Collection<Document> matchedDocuments = lucene.find(parser.parse("01/23456789"));
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("01/23456789")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(8) });
-		matchedDocuments = lucene.find(parser.parse("01/23"));
+		matchedDocuments = wrapComparable(lucene.find(parser.parse("01/23")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(8) });
 	}
 }

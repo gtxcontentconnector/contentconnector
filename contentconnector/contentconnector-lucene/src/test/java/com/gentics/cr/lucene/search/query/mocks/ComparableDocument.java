@@ -15,6 +15,11 @@ public class ComparableDocument {
 	public Document getDocument() {
 		return document;
 	}
+	
+	@Override
+	public int hashCode() {
+		return document.hashCode();
+	}
 
 	@Override
 	public boolean equals(Object obj) {

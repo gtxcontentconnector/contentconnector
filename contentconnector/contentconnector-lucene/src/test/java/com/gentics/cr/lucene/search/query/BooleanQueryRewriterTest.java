@@ -82,7 +82,7 @@ public class BooleanQueryRewriterTest extends AbstractLuceneTest {
 		Query newQuery = BooleanQueryRewriter.replaceTerm(orginalQuery, new Term(SimpleLucene.CONTENT_ATTRIBUTE,
 				"word1"), new Term(SimpleLucene.CONTENT_ATTRIBUTE, "word3"));
 
-		Collection<Document> matchedDocuments = lucene.find(newQuery);
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(newQuery));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(1), documents.get(2) });
 	}
 
@@ -95,7 +95,7 @@ public class BooleanQueryRewriterTest extends AbstractLuceneTest {
 
 		Query newQuery = BooleanQueryRewriter.replaceTerms(orginalQuery, replacements);
 
-		Collection<Document> matchedDocuments = lucene.find(newQuery);
+		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(newQuery));
 		containsOnly(matchedDocuments, documents.get(2));
 	}
 }
