@@ -58,125 +58,124 @@ public class CMSPageLanguageFallbackRequestProcessor extends RequestProcessor {
 		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
-		if (request != null) {
-			//GENERATE LANG REQUEST
-			CRRequest myREQ = request.Clone();
-			myREQ.setCountString("-1");
-			myREQ.setStartString("0");
+	
+		//GENERATE LANG REQUEST
+		CRRequest myREQ = request.Clone();
+		myREQ.setCountString("-1");
+		myREQ.setStartString("0");
 
-			// Parse the given expression and create a datasource filter
-			try {
-				ds = this.config.getDatasource();
-				if (ds == null) {
-					throw (new DatasourceException("No Datasource available."));
-				}
-
-				dsFilter = myREQ.getPreparedFilter(config, ds);
-
-				// add base resolvables
-				if (this.resolvables != null) {
-					for (Iterator<String> it = this.resolvables.keySet().iterator(); it.hasNext();) {
-						String name = it.next();
-						dsFilter.addBaseResolvable(name, this.resolvables.get(name));
-					}
-				}
-
-				Collection<Resolvable> fallbackedColl = new ArrayList<Resolvable>();
-				// do the query
-				Collection<Resolvable> col = this.toResolvableCollection(ds.getResult(
-					dsFilter,
-					langPrefills.toArray(new String[] {}),
-					myREQ.getStart().intValue(),
-					myREQ.getCount().intValue(),
-					myREQ.getSorting()));
-
-				//REMOVE ALL NONFITTING RESOS
-				int count = request.getCount().intValue();
-				int start = request.getStart().intValue();
-				boolean all = count == -1;
-				int objectsToProcess = start + count;
-				for (Resolvable reso : col) {
-					boolean found = false;
-					if (langs != null) {
-
-						for (String lang : langs) {
-							Resolvable langVersion = (Resolvable) reso.get("contentid_" + lang);
-							if (langVersion != null) {
-								found = true;
-								if (!fallbackedColl.contains(langVersion)) {
-									fallbackedColl.add(langVersion);
-								}
-								break;
-							}
-						}
-
-					}
-					if (!found) {
-						fallbackedColl.add(reso);
-					}
-					if (!all && (fallbackedColl.size() >= objectsToProcess)) {
-						break;
-					}
-				}
-
-				if (count != 0) {
-					Collection<Resolvable> sizedColl = new ArrayList<Resolvable>();
-					Iterator<Resolvable> it = fallbackedColl.iterator();
-					int counter = 0;
-					while (it.hasNext() && counter < objectsToProcess) {
-						Resolvable r = it.next();
-						if (counter >= start) {
-							sizedColl.add(r);
-						}
-						counter++;
-					}
-					fallbackedColl = sizedColl;
-				}
-
-				//PREFILL THE COLLECTION
-				String[] prefillAttributes = request.getAttributeArray();
-				CRResolvableBean meta = new CRResolvableBean();
-				meta.set("objects", fallbackedColl);
-				myREQ.addObjectForFilterDeployment("meta", meta);
-				myREQ.setRequestFilter(createPrefillFilter("contentid"));
-				dsFilter = myREQ.getPreparedFilter(config, ds);
-				col = this.toResolvableCollection(ds.getResult(
-					dsFilter,
-					prefillAttributes,
-					myREQ.getStart().intValue(),
-					myREQ.getCount().intValue(),
-					myREQ.getSorting()));
-
-				// convert all objects to serializeable beans
-				if (col != null) {
-					for (Resolvable reso : col) {
-						CRResolvableBean crBean = new CRResolvableBean(reso, request.getAttributeArray());
-						if (this.config.getFolderType().equals(crBean.getObj_type()) && doNavigation) {
-							//Process child elements
-							String fltr = "object.folder_id=='" + crBean.getContentid() + "'";
-							if (request.getChildFilter() != null) {
-								fltr += "AND (" + request.getChildFilter() + ")";
-							}
-							//If object is a folder => retrieve the children of
-							//the object
-							CRRequest childReq = request.Clone();
-							childReq.setRequestFilter(fltr);
-							crBean.fillChildRepository(this.getNavigation(childReq));
-						}
-						collection.add(this.replacePlinks(crBean, request));
-					}
-				}
-
-			} catch (ParserException e) {
-				logger.error("Error getting filter for Datasource.", e);
-				throw new CRException(e);
-			} catch (ExpressionParserException e) {
-				logger.error("Error getting filter for Datasource.", e);
-				throw new CRException(e);
-			} catch (DatasourceException e) {
-				logger.error("Error getting result from Datasource.", e);
-				throw new CRException(e);
+		// Parse the given expression and create a datasource filter
+		try {
+			ds = this.config.getDatasource();
+			if (ds == null) {
+				throw (new DatasourceException("No Datasource available."));
 			}
+
+			dsFilter = myREQ.getPreparedFilter(config, ds);
+
+			// add base resolvables
+			if (this.resolvables != null) {
+				for (Iterator<String> it = this.resolvables.keySet().iterator(); it.hasNext();) {
+					String name = it.next();
+					dsFilter.addBaseResolvable(name, this.resolvables.get(name));
+				}
+			}
+
+			Collection<Resolvable> fallbackedColl = new ArrayList<Resolvable>();
+			// do the query
+			Collection<Resolvable> col = this.toResolvableCollection(ds.getResult(
+				dsFilter,
+				langPrefills.toArray(new String[] {}),
+				myREQ.getStart().intValue(),
+				myREQ.getCount().intValue(),
+				myREQ.getSorting()));
+
+			//REMOVE ALL NONFITTING RESOS
+			int count = request.getCount().intValue();
+			int start = request.getStart().intValue();
+			boolean all = count == -1;
+			int objectsToProcess = start + count;
+			for (Resolvable reso : col) {
+				boolean found = false;
+				if (langs != null) {
+
+					for (String lang : langs) {
+						Resolvable langVersion = (Resolvable) reso.get("contentid_" + lang);
+						if (langVersion != null) {
+							found = true;
+							if (!fallbackedColl.contains(langVersion)) {
+								fallbackedColl.add(langVersion);
+							}
+							break;
+						}
+					}
+
+				}
+				if (!found) {
+					fallbackedColl.add(reso);
+				}
+				if (!all && (fallbackedColl.size() >= objectsToProcess)) {
+					break;
+				}
+			}
+
+			if (count != 0) {
+				Collection<Resolvable> sizedColl = new ArrayList<Resolvable>();
+				Iterator<Resolvable> it = fallbackedColl.iterator();
+				int counter = 0;
+				while (it.hasNext() && counter < objectsToProcess) {
+					Resolvable r = it.next();
+					if (counter >= start) {
+						sizedColl.add(r);
+					}
+					counter++;
+				}
+				fallbackedColl = sizedColl;
+			}
+
+			//PREFILL THE COLLECTION
+			String[] prefillAttributes = request.getAttributeArray();
+			CRResolvableBean meta = new CRResolvableBean();
+			meta.set("objects", fallbackedColl);
+			myREQ.addObjectForFilterDeployment("meta", meta);
+			myREQ.setRequestFilter(createPrefillFilter("contentid"));
+			dsFilter = myREQ.getPreparedFilter(config, ds);
+			col = this.toResolvableCollection(ds.getResult(
+				dsFilter,
+				prefillAttributes,
+				myREQ.getStart().intValue(),
+				myREQ.getCount().intValue(),
+				myREQ.getSorting()));
+
+			// convert all objects to serializeable beans
+			if (col != null) {
+				for (Resolvable reso : col) {
+					CRResolvableBean crBean = new CRResolvableBean(reso, request.getAttributeArray());
+					if (this.config.getFolderType().equals(crBean.getObj_type()) && doNavigation) {
+						//Process child elements
+						String fltr = "object.folder_id=='" + crBean.getContentid() + "'";
+						if (request.getChildFilter() != null) {
+							fltr += "AND (" + request.getChildFilter() + ")";
+						}
+						//If object is a folder => retrieve the children of
+						//the object
+						CRRequest childReq = request.Clone();
+						childReq.setRequestFilter(fltr);
+						crBean.fillChildRepository(this.getNavigation(childReq));
+					}
+					collection.add(this.replacePlinks(crBean, request));
+				}
+			}
+
+		} catch (ParserException e) {
+			logger.error("Error getting filter for Datasource.", e);
+			throw new CRException(e);
+		} catch (ExpressionParserException e) {
+			logger.error("Error getting filter for Datasource.", e);
+			throw new CRException(e);
+		} catch (DatasourceException e) {
+			logger.error("Error getting result from Datasource.", e);
+			throw new CRException(e);
 		}
 		return collection;
 	}
