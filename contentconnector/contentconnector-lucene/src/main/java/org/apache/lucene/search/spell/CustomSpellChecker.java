@@ -592,17 +592,11 @@ public class CustomSpellChecker implements java.io.Closeable {
 				// if documents where added to the index create a reopen file and
 				// optimize the writer
 				if (obj_count > 0) {
-					if (writer != null) {
-						writer.optimize();
-					}
+					writer.optimize();
 					this.spellIndex.createReopenFile();
 				}
-				if (accessor != null && writer != null) {
-					accessor.release(writer);
-				}
-				if (accessor != null && indexSearcher != null) {
-					accessor.release(indexSearcher);
-				}
+				accessor.release(writer);
+				accessor.release(indexSearcher);
 			}
 		}
 	}
