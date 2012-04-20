@@ -21,15 +21,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.rest.ContentRepository;
 import com.gentics.cr.util.Constants;
 
 /**
@@ -39,27 +34,12 @@ import com.gentics.cr.util.Constants;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class CSSitemapContentRepository extends ContentRepository {
+public class CSSitemapContentRepository extends XmlContentRepository {
 
 	/**
 	 * generated serial version unique id.
 	 */
 	private static final long serialVersionUID = -6929053170765114770L;
-
-	/**
-	 * the root element in the xml code.
-	 */
-	private Element rootElement;
-
-	/**
-	 * the xml document to write to the stream.
-	 */
-	private Document doc;
-
-	/**
-	 * The {@link DOMSource} to write the elements into.
-	 */
-	private DOMSource src;
 
 	/**
 	 * Initialize a new {@link CSSitemapContentRepository}.
@@ -78,7 +58,6 @@ public class CSSitemapContentRepository extends ContentRepository {
 	 */
 	public CSSitemapContentRepository(final String[] attr, final String encoding) {
 		this(attr, encoding, null);
-
 	}
 
 	/**
@@ -112,64 +91,6 @@ public class CSSitemapContentRepository extends ContentRepository {
 	 */
 	public final String getContentType() {
 		return "text/xml";
-	}
-
-	/**
-	 * clear the given element from all attributes.
-	 */
-	private void clearElement(Element elem) {
-		if (elem != null) {
-			NodeList list = elem.getChildNodes();
-
-			//int len = list.getLength();
-			for (int i = 0; i < list.getLength(); i++) {
-				elem.removeChild(list.item(i));
-			}
-			NamedNodeMap map = elem.getAttributes();
-			//len =map.getLength();
-			for (int i = 0; i < map.getLength(); i++) {
-				elem.removeAttribute(map.item(i).getNodeName());
-			}
-		}
-	}
-
-	/**
-	 * Write an error to the specified stream.
-	 * @param stream Stream to write the error into
-	 * @param ex exception to write into the stream
-	 * @param isDebug specifies if debug is enabled (e.g. Output the stacktrace)
-	 */
-	@Override
-	public final void respondWithError(final OutputStream stream, final CRException ex, final boolean isDebug) {
-		// Create Root Element
-		this.rootElement = doc.createElement("Contentrepository");
-		doc.appendChild(rootElement);
-		clearElement(this.rootElement);
-		Element errElement = doc.createElement("Error");
-		errElement.setAttribute("type", ex.getType());
-		errElement.setAttribute("messge", ex.getMessage());
-		if (isDebug) {
-			Element stackTrace = doc.createElement("StackTrace");
-			Text text = doc.createCDATASection(ex.getStringStackTrace());
-			stackTrace.appendChild(text);
-			errElement.appendChild(stackTrace);
-		}
-
-		this.rootElement.setAttribute("status", "error");
-		this.rootElement.appendChild(errElement);
-
-		StreamResult strRes = new StreamResult(stream);
-		try {
-
-			TransformerFactory.newInstance().newTransformer().transform(this.src, strRes);
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	/**
@@ -220,7 +141,7 @@ public class CSSitemapContentRepository extends ContentRepository {
 
 		objElement.setAttribute("id", "" + crBean.getObj_id());
 		Map<String, Object> attributes = crBean.getAttrMap();
-		if (attributes != null && (!attributes.isEmpty())) {
+		if (attributes != null && !attributes.isEmpty()) {
 			for (String attributeName : attributes.keySet()) {
 				if (!"".equals(attributeName)) {
 					Object bValue = attributes.get(attributeName);

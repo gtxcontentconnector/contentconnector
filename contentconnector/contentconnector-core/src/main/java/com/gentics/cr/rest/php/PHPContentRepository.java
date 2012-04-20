@@ -26,28 +26,28 @@ import com.gentics.cr.rest.ContentRepository;
 public class PHPContentRepository extends ContentRepository {
 
 	/**
-	 * 
+	 * Serial ID.
 	 */
 	private static final long serialVersionUID = -4131893655763487202L;
+
 	private PHPSerializer PHPSerializer;
+
 	private Map<String, Object> cr;
 
 	/**
-	 * Create new Instance
+	 * Create new Instance.
 	 * 	Set response encoding to UTF-8
 	 * @param attr
 	 */
-	public PHPContentRepository(String[] attr) {
-
+	public PHPContentRepository(final String[] attr) {
 		super(attr);
 		this.setResponseEncoding("UTF-8");
 		PHPSerializer = new PHPSerializer(this.getResponseEncoding());
 		cr = new LinkedHashMap<String, Object>();
-
 	}
 
 	/**
-	 * Create new Instance
+	 * Create new Instance.
 	 * @param attr
 	 * @param encoding
 	 */
@@ -57,41 +57,35 @@ public class PHPContentRepository extends ContentRepository {
 		this.setResponseEncoding(encoding);
 		PHPSerializer = new PHPSerializer(this.getResponseEncoding());
 		cr = new LinkedHashMap<String, Object>();
-
 	}
 
 	/**
-	 * Create new instace
+	 * Create new instace.
 	 * @param attr
 	 * @param encoding
 	 * @param options
 	 */
 	public PHPContentRepository(String[] attr, String encoding, String[] options) {
-
 		super(attr, encoding, options);
-		//this.setResponseEncoding(encoding);
 		PHPSerializer = new PHPSerializer(this.getResponseEncoding());
 		cr = new LinkedHashMap<String, Object>();
-
 	}
 
 	/**
-	 * returns "application/serialized_PHP_variable"
+	 * returns "application/serialized_PHP_variable".
 	 * @return 
 	 */
 	public String getContentType() {
 		return "application/serialized_PHP_variable";
-		//return("text/plain");
 	}
 
 	/**
-	 * Responts with an PHP Serialized ERROR Object
+	 * Responts with an PHP Serialized ERROR Object.
 	 * @param stream 
 	 * @param ex 
 	 * @param isDebug 
-	 * 
 	 */
-	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
+	public void respondWithError(final OutputStream stream, final CRException ex, final boolean isDebug) {
 		this.cr.clear();
 		this.cr.put("status", "error");
 
@@ -108,17 +102,17 @@ public class PHPContentRepository extends ContentRepository {
 		try {
 			stream.write(this.PHPSerializer.serialize(this.cr).getBytes());
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * 
-	 * Writes the CRResolvableBeans to a Stream
+	 * Writes the CRResolvableBeans to a Stream.
 	 * @param stream 
 	 * @throws CRException 
 	 * 
 	 */
-	public void toStream(OutputStream stream) throws CRException {
+	public void toStream(final OutputStream stream) throws CRException {
 		if (this.resolvableColl.isEmpty()) {
 			//No Data Found
 
@@ -126,11 +120,8 @@ public class PHPContentRepository extends ContentRepository {
 		} else {
 			this.cr.put("status", "ok");
 			for (Iterator<CRResolvableBean> it = this.resolvableColl.iterator(); it.hasNext();) {
-
 				CRResolvableBean crBean = it.next();
-
 				Map<String, Object> objElement = processElement(crBean);
-
 				this.cr.put(crBean.getContentid(), objElement);
 			}
 		}
@@ -148,7 +139,7 @@ public class PHPContentRepository extends ContentRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> processElement(CRResolvableBean crBean) {
+	private Map<String, Object> processElement(final CRResolvableBean crBean) {
 		Map<String, Object> objElement = new LinkedHashMap<String, Object>();
 
 		objElement.put("contentid", "" + crBean.getContentid());
@@ -161,9 +152,7 @@ public class PHPContentRepository extends ContentRepository {
 			Hashtable<String, Object> attribContainer = new Hashtable<String, Object>();
 			Iterator<String> bit = crBean.getAttrMap().keySet().iterator();
 			while (bit.hasNext()) {
-
 				String entry = bit.next();
-				// Element attrElement = doc.createElement(entry);
 				Object bValue = crBean.getAttrMap().get(entry);
 
 				if (bValue != null) {
@@ -189,40 +178,17 @@ public class PHPContentRepository extends ContentRepository {
 									e.printStackTrace();
 								}
 							}
-							//TODO return proper binary content
-							//value=(String) bValue.toString();
 						} else {
 							if (bValue.getClass() == String.class) {
 
 								value = (String) bValue;
 							} else {
 								value = bValue.toString();
-								//								try {
-								//									value = new String(getBytes(bValue));
-								//									
-								//								} catch (IOException e) {
-								//									// TODO Auto-generated catch block
-								//									e.printStackTrace();
-								//								}
 							}
-
-							//						if(bValue.getClass()==String.class)
-							//						{
-							//							value=(String) bValue;
-							//						}
-							//						else
-							//						{
-							//							value=(String) bValue.toString();
-							//						}
-
 						}
 						attribContainer.put(entry, value);
 					}
 				}
-				/*
-				 * if (value == null) { value = ""; }
-				 */
-
 			}
 			objElement.put("attributes", attribContainer);
 		}
@@ -230,14 +196,10 @@ public class PHPContentRepository extends ContentRepository {
 			Map<String, Map<String, Object>> childContainer = new LinkedHashMap<String, Map<String, Object>>();
 
 			for (Iterator<CRResolvableBean> it = crBean.getChildRepository().iterator(); it.hasNext();) {
-
 				CRResolvableBean chBean = it.next();
-
 				Map<String, Object> chElement = processElement(chBean);
 				childContainer.put(chBean.getContentid(), chElement);
 			}
-			//Text t = doc.createCDATASection("Count: "+crBean.getChildRepository().size());
-			//childContainer.appendChild(t);
 
 			objElement.put("children", childContainer);
 		}

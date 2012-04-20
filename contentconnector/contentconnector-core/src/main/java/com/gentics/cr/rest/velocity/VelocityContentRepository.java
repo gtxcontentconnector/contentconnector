@@ -143,8 +143,7 @@ public class VelocityContentRepository extends ContentRepository {
 	 * @param options TODO javadoc
 	 * @param configUtil TODO javadoc
 	 */
-	public VelocityContentRepository(final String[] attr, final String encoding, final String[] options,
-		final CRConfigUtil configUtil) {
+	public VelocityContentRepository(final String[] attr, final String encoding, final String[] options, final CRConfigUtil configUtil) {
 		super(attr, encoding, options);
 		config = configUtil;
 		templateReloading = Boolean.parseBoolean((String) config.get(TEMPLATERELOADING_KEY));
@@ -259,8 +258,9 @@ public class VelocityContentRepository extends ContentRepository {
 							header = StringUtils.readUntil((InputStream) content, framePlaceholder);
 							footer = StringUtils.streamToString((InputStream) content);
 						} else {
-							logger.error("Error reading frame source" + framePath, new CRException(
-									"Unknown response type (" + content.getClass() + ")"));
+							logger.error(
+								"Error reading frame source" + framePath,
+								new CRException("Unknown response type (" + content.getClass() + ")"));
 						}
 						cache.put(framePath + HEADER_CACHE_KEY_SUFFIX, header);
 						cache.put(framePath + FOOTER_CACHE_KEY_SUFFIX, footer);
@@ -303,8 +303,7 @@ public class VelocityContentRepository extends ContentRepository {
 	 * @throws CRException TODO javadoc
 	 */
 	private void loadTemplate(final boolean loadErrorTemplate) throws CRException {
-		if ((template == null && !loadErrorTemplate) || (errorTemplate == null && loadErrorTemplate)
-				|| templateReloading) {
+		if (template == null && !loadErrorTemplate || errorTemplate == null && loadErrorTemplate || templateReloading) {
 			String templatePath = config.getString(TEMPLATEPATH_KEY);
 			try {
 				if (loadErrorTemplate) {

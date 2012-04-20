@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,13 +19,10 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.rest.ContentRepository;
 
 /**
  * 
@@ -33,21 +31,15 @@ import com.gentics.cr.rest.ContentRepository;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class MnogosearchXmlContentRepository extends ContentRepository {
+public class MnogosearchXmlContentRepository extends XmlContentRepository {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4197488418716139110L;
 
-	private Element rootElement;
-
-	private Document doc;
-
-	private DOMSource src;
-
 	/**
-	 * Create Instance
+	 * Create Instance.
 	 * 	Set response encoding to utf-8
 	 * @param attr
 	 */
@@ -77,7 +69,7 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * @param attr
 	 * @param encoding
 	 */
@@ -107,33 +99,13 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create Instance
+	 * Create Instance.
 	 * @param attr
 	 * @param encoding
 	 * @param options
 	 */
 	public MnogosearchXmlContentRepository(String[] attr, String encoding, String[] options) {
-
-		super(attr, encoding, options);
-
-		// Create XML Document
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder;
-		//this.setResponseEncoding(encoding);
-		try {
-
-			builder = factory.newDocumentBuilder();
-			this.doc = builder.newDocument();
-
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-
-		this.src = new DOMSource(doc);
-
-		// Create Root Element
-		this.rootElement = doc.createElement("search");
-		doc.appendChild(rootElement);
+		super(attr, encoding, options, "search");
 	}
 
 	/**
@@ -144,60 +116,6 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 	 */
 	public String getContentType() {
 		return "text/xml";
-	}
-
-	private void clearElement(Element elem) {
-		if (elem != null) {
-			NodeList list = elem.getChildNodes();
-
-			//int len = list.getLength();
-			for (int i = 0; i < list.getLength(); i++) {
-				elem.removeChild(list.item(i));
-			}
-			NamedNodeMap map = elem.getAttributes();
-			//len =map.getLength();
-			for (int i = 0; i < map.getLength(); i++) {
-				elem.removeAttribute(map.item(i).getNodeName());
-			}
-		}
-	}
-
-	/**
-	 * @param stream 
-	 * @param ex 
-	 * @param isDebug 
-	 * 
-	 */
-	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
-		clearElement(this.rootElement);
-		Element errElement = doc.createElement("Error");
-		errElement.setAttribute("type", ex.getType());
-		errElement.setAttribute("messge", ex.getMessage());
-		if (isDebug) {
-			Element stackTrace = doc.createElement("StackTrace");
-			Text text = doc.createCDATASection(ex.getStringStackTrace());
-			stackTrace.appendChild(text);
-			errElement.appendChild(stackTrace);
-		}
-
-		this.rootElement.setAttribute("status", "error");
-		this.rootElement.appendChild(errElement);
-
-		//		 output xml
-		StreamResult strRes = new StreamResult(stream);
-
-		try {
-
-			TransformerFactory.newInstance().newTransformer().transform(this.src, strRes);
-
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	/**
@@ -222,7 +140,7 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 
 			for (Iterator<CRResolvableBean> it = this.resolvableColl.iterator(); it.hasNext();) {
 
-				CRResolvableBean crBean = (CRResolvableBean) it.next();
+				CRResolvableBean crBean = it.next();
 
 				Element objElement = processElement(crBean);
 				this.rootElement.appendChild(objElement);
@@ -300,7 +218,7 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 	@SuppressWarnings("unchecked")
 	private Element processElement(CRResolvableBean crBean) {
 		Element objElement = doc.createElement("res");
-		if (crBean.getAttrMap() != null && (!crBean.getAttrMap().isEmpty())) {
+		if (crBean.getAttrMap() != null && !crBean.getAttrMap().isEmpty()) {
 			//Element attrContainer = doc.createElement("attributes");
 			Iterator<String> bit = crBean.getAttrMap().keySet().iterator();
 			while (bit.hasNext()) {
@@ -312,14 +230,14 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 					String value = "";
 					if (bValue != null) {
 
-						if ((!entry.equals("binarycontent"))
-								&& (bValue.getClass().isArray() || bValue.getClass() == ArrayList.class)) {
+						if (!entry.equals("binarycontent") && (bValue.getClass().isArray() || bValue.getClass() == ArrayList.class)) {
 
 							Object[] arr;
-							if (bValue.getClass() == ArrayList.class)
+							if (bValue.getClass() == ArrayList.class) {
 								arr = ((ArrayList<Object>) bValue).toArray();
-							else
+							} else {
 								arr = (Object[]) bValue;
+							}
 							for (int i = 0; i < arr.length; i++) {
 								Element attrElement = doc.createElement(entry);
 								objElement.appendChild(attrElement);
@@ -402,7 +320,7 @@ public class MnogosearchXmlContentRepository extends ContentRepository {
 
 			for (Iterator<CRResolvableBean> it = crBean.getChildRepository().iterator(); it.hasNext();) {
 
-				CRResolvableBean chBean = (CRResolvableBean) it.next();
+				CRResolvableBean chBean = it.next();
 
 				Element chElement = processElement(chBean);
 				childContainer.appendChild(chElement);

@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRResolvableBean;
@@ -36,12 +39,12 @@ import com.gentics.cr.util.filter.Filter;
 public abstract class ContentRepository implements Serializable {
 
 	/**
-	 * 
+	 * Serial Id.
 	 */
 	private static final long serialVersionUID = -3367665528658725618L;
 
 	/**
-	 * property name for config to define if the metaresolvable should be deployed to the repository
+	 * property name for config to define if the metaresolvable should be deployed to the repository.
 	 */
 	public static final String DEPLOYMETARESOLVABLE_KEY = "cr.deploymetaresolvable";
 
@@ -99,7 +102,7 @@ public abstract class ContentRepository implements Serializable {
 			return "utf-8";
 
 		} else {
-			return (this.response_encoding);
+			return this.response_encoding;
 		}
 	}
 
@@ -136,14 +139,21 @@ public abstract class ContentRepository implements Serializable {
 	 * @return true if this is the root repository and has no fathers.
 	 */
 	public final boolean isRoot() {
-		return (this.isRoot);
+		return this.isRoot;
 	}
 
+	/**
+	 * root element.
+	 */
 	private boolean isRoot = true;
+
+	/**
+	 * Log4J logger.
+	 */
 	protected static Logger log = Logger.getLogger(ContentRepository.class);
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * 
 	 * @param attr
 	 */
@@ -154,7 +164,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * 
 	 * @param attr
 	 * @param encoding
@@ -166,7 +176,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * create instance
+	 * create instance.
 	 * 
 	 * @param attr
 	 * @param encoding
@@ -180,7 +190,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * 
 	 * @param attr
 	 * @param root
@@ -193,7 +203,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Gets the contenttype as string "text/plain"
+	 * Gets the contenttype as string "text/plain".
 	 * 
 	 * @return
 	 */
@@ -202,7 +212,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Add a resolvable bean
+	 * Add a resolvable bean.
 	 * @param resolvableBean
 	 */
 	public void addObject(CRResolvableBean resolvableBean) {
@@ -210,7 +220,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * add all given objects to the ContentRepository
+	 * add all given objects to the ContentRepository.
 	 * 
 	 * @param objects
 	 *            Collection of CRResolvableBeans to be added
@@ -220,7 +230,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Writes repository to a stream
+	 * Writes repository to a stream.
 	 * 
 	 * @param stream
 	 * @throws CRException
@@ -228,16 +238,16 @@ public abstract class ContentRepository implements Serializable {
 	public abstract void toStream(OutputStream stream) throws CRException;
 
 	/**
-	 * Responds with an Error to the stream
+	 * Responds with an Error to the stream.
 	 * 
 	 * @param stream
 	 * @param ex
 	 * @param isDebug
 	 */
-	public abstract void respondWithError(OutputStream stream, CRException ex, boolean isDebug);
+	public abstract void respondWithError(final OutputStream stream, final CRException ex, final boolean isDebug);
 
 	/**
-	 * Apply Filters on the ContentRepository
+	 * Apply Filters on the ContentRepository.
 	 * 
 	 * @param crConf
 	 * @return
@@ -247,7 +257,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Apply Filters
+	 * Apply Filters.
 	 * 
 	 * @param crConf
 	 * @param request
@@ -299,7 +309,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Get attribute array
+	 * Get attribute array.
 	 * 
 	 * @return
 	 */
@@ -308,7 +318,7 @@ public abstract class ContentRepository implements Serializable {
 	}
 
 	/**
-	 * Serialize Object
+	 * Serialize Object.
 	 * 
 	 * @param obj
 	 * @return
@@ -337,7 +347,7 @@ public abstract class ContentRepository implements Serializable {
 	 * @return objects contained in the ContentRepository
 	 */
 	public Collection<CRResolvableBean> getObjects() {
-		return (Collection<CRResolvableBean>) resolvableColl;
+		return resolvableColl;
 	}
 
 	/**
@@ -381,6 +391,25 @@ public abstract class ContentRepository implements Serializable {
 		}
 		resolvableColl = (Vector<CRResolvableBean>) objects;
 
+	}
+
+	/**
+	 * clear the given element from all attributes.
+	 */
+	protected void clearElement(Element elem) {
+		if (elem != null) {
+			NodeList list = elem.getChildNodes();
+
+			//int len = list.getLength();
+			for (int i = 0; i < list.getLength(); i++) {
+				elem.removeChild(list.item(i));
+			}
+			NamedNodeMap map = elem.getAttributes();
+			//len =map.getLength();
+			for (int i = 0; i < map.getLength(); i++) {
+				elem.removeAttribute(map.item(i).getNodeName());
+			}
+		}
 	}
 
 }
