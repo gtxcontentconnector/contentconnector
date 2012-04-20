@@ -118,7 +118,9 @@ public class SpecialDirectoryInformationEntry {
 			LOG.error("IOException happened during test of index. ", ex);
 		} finally {
 			try {
-				reader.close();
+				if (reader != null) {
+					reader.close();
+				}
 			} catch (IOException e) {
 				LOG.error("IOException happened during test of index. ", e);
 			}
@@ -141,7 +143,9 @@ public class SpecialDirectoryInformationEntry {
 			LOG.error("IOException happened during test of index. ", ex);
 		} finally {
 			try {
-				reader.close();
+				if (reader != null) {
+					reader.close();
+				}
 			} catch (IOException e) {
 				LOG.error("IOException happened during test of index. ", e);
 			}
