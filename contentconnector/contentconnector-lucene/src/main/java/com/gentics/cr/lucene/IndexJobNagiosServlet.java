@@ -22,12 +22,29 @@ import com.gentics.cr.util.indexing.IndexLocation;
  */
 public class IndexJobNagiosServlet extends HttpServlet {
 
+	/**
+	 * Serial version.
+	 */
 	private static final long serialVersionUID = -1686996634146038875L;
 
+	/**
+	 * Log4J logger.
+	 */
 	private static final Logger LOGGER = Logger.getLogger(IndexJobNagiosServlet.class);
+
+	/**
+	 * IndexController to access the indixes for fetching the needed information.
+	 */
 	protected IndexController indexer;
+
+	/**
+	 * Index param.
+	 */
 	private static final String NAGIOS_PARAM = "nagios";
 
+	/**
+	 * 
+	 */
 	public void init(final ServletConfig config) throws ServletException {
 		super.init(config);
 		this.indexer = initIndexController(config);
@@ -36,7 +53,7 @@ public class IndexJobNagiosServlet extends HttpServlet {
 	/**
 	 * implemented as own method to change executed context.
 	 * 
-	 * @param config
+	 * @param config ServletConfig
 	 * @return indexController
 	 */
 	public IndexController initIndexController(final ServletConfig config) {
@@ -50,8 +67,13 @@ public class IndexJobNagiosServlet extends HttpServlet {
 		}
 	}
 
-	public final void doService(final HttpServletRequest request, final HttpServletResponse response)
-			throws IOException {
+	/**
+	 * Perform the actual display of nagios status.
+	 * @param request Request to get all parameters from.
+	 * @param response Write the status into the response.
+	 * @throws IOException in case writing to response fails.
+	 */
+	public final void doService(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
 		LOGGER.debug("Request:" + request.getQueryString());
 
