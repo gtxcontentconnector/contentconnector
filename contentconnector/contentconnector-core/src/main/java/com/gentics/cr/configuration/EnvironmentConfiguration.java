@@ -87,19 +87,19 @@ public final class EnvironmentConfiguration {
 	public static void loadLoggerProperties() {
 		Properties logprops = new Properties();
 		String confpath = CRUtil.resolveSystemProperties(loggerFilePath);
-		String errorMessage = "Could not find nodelog.properties at: " + confpath;
+		StringBuilder errorMessage = new StringBuilder("Could not find nodelog.properties at: ").append(confpath);
 		try {
 			logprops.load(new FileInputStream(confpath));
 			PropertyConfigurator.configure(logprops);
 			log = Logger.getLogger(EnvironmentConfiguration.class);
 		} catch (IOException e) {
 			if (!loggerInitFailed) {
-				System.out.println(errorMessage);
+				System.out.println(errorMessage.toString());
 				loggerInitFailed = true;
 			}
 		} catch (NullPointerException e) {
 			if (!loggerInitFailed) {
-				System.out.println(errorMessage);
+				System.out.println(errorMessage.toString());
 				loggerInitFailed = true;
 			}
 		}
@@ -116,11 +116,11 @@ public final class EnvironmentConfiguration {
 	 * Load Property file for JCS cache.
 	 */
 	public static void loadCacheProperties() {
-		String errorMessage = "Could not load cache configuration. Perhaps you are " + "missing the file cache.ccf in "
-				+ CRUtil.resolveSystemProperties(configurationPath + "/") + "!";
+		String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
+		StringBuilder errorMessage = new StringBuilder("Could not load cache configuration. Perhaps you are missing the file cache.ccf in ").append(confpath).append("!");
+		logDebug("Loading cache configuration from " + confpath);
 		try {
 			//LOAD CACHE CONFIGURATION
-			String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
 			Properties cacheProps = new Properties();
 			cacheProps.load(new FileInputStream(confpath));
 			if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY)
@@ -133,17 +133,17 @@ public final class EnvironmentConfiguration {
 			}
 		} catch (NullPointerException e) {
 			if (!cacheInitFailed) {
-				logError(errorMessage);
+				logError(errorMessage.toString());
 				cacheInitFailed = true;
 			}
 		} catch (FileNotFoundException e) {
 			if (!cacheInitFailed) {
-				logError(errorMessage);
+				logError(errorMessage.toString());
 				cacheInitFailed = true;
 			}
 		} catch (IOException e) {
 			if (!cacheInitFailed) {
-				logError(errorMessage);
+				logError(errorMessage.toString());
 				cacheInitFailed = true;
 			}
 		}
@@ -182,7 +182,7 @@ public final class EnvironmentConfiguration {
 			loadLoggerProperties();
 		}
 		if (loggerInitialized()) {
-			log.error(message);
+			log.debug(message);
 		} else {
 			System.out.println(message);
 		}
