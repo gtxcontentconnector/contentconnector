@@ -9,6 +9,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<scm>
+		<url>https://gtxcontentconnector.googlecode.com/svn/trunk/contentconnector</url>
+	</scm>
 	<modules>
 		<module>contentconnector-core</module>
 		<module>contentconnector-apihelper</module>
