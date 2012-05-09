@@ -99,14 +99,10 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 					documentUpdateTimestamp = documentUpdateTimestamp.toString();
 				}
 				if (documentUpdateTimestamp == null || !documentUpdateTimestamp.equals(timestampString)) {
-					if (log.isTraceEnabled()) {
-						log.debug(identifyer + ": object is not up to date.");
-					}
+					log.debug(identifyer + ": object is not up to date.");
 					return false;
 				}
-				if (log.isTraceEnabled()) {
-					log.debug(identifyer + ": object is up to date.");
-				}
+				log.debug(identifyer + ": object is up to date.");
 				return true;
 			} catch (IOException e) {
 				//TODO specify witch index is not readable
