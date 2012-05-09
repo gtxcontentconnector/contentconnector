@@ -20,14 +20,12 @@ import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
 
 /**
- * 
- * Lucene Implementation of IndexUpdateChecker
+ * Lucene Implementation of IndexUpdateChecker.
  * Walks an Index and compares Identifyer/Timestamp pairs to the Objects in the Index
  * 
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
  * @version $Revision: 180 $
  * @author $Author: supnig@constantinopel.at $
- *
  */
 public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 
@@ -49,8 +47,8 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	 * method {@link #checkUpToDate(String, int)} is present.
 	 * @throws IOException 
 	 */
-	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation, final String termKey,
-		final String termValue, final String idAttribute) throws IOException {
+	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation, final String termKey, final String termValue,
+		final String idAttribute) throws IOException {
 		this.indexLocation = indexLocation;
 		indexAccessor = indexLocation.getAccessor();
 		IndexReader reader = indexAccessor.getReader(true);
@@ -69,8 +67,8 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	}
 
 	@Override
-	protected final boolean checkUpToDate(final String identifyer, final Object timestamp,
-			final String timestampattribute, final Resolvable object) {
+	protected final boolean checkUpToDate(final String identifyer, final Object timestamp, final String timestampattribute,
+			final Resolvable object) {
 		String timestampString;
 		if (timestamp == null) {
 			return false;
@@ -102,12 +100,12 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				}
 				if (documentUpdateTimestamp == null || !documentUpdateTimestamp.equals(timestampString)) {
 					if (log.isTraceEnabled()) {
-						log.trace(identifyer + ": object is not up to date.");
+						log.debug(identifyer + ": object is not up to date.");
 					}
 					return false;
 				}
 				if (log.isTraceEnabled()) {
-					log.trace(identifyer + ": object is up to date.");
+					log.debug(identifyer + ": object is up to date.");
 				}
 				return true;
 			} catch (IOException e) {
@@ -131,8 +129,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		log.debug(checkedDocuments.size() + " objects checked, " + docs.size() + " objects already in the index.");
 		IndexReader writeReader = null;
 		boolean readerNeedsWrite = true;
-		UseCase deleteStale = MonitorFactory.startUseCase("LuceneIndexUpdateChecker.deleteStaleObjects("
-				+ indexLocation.getName() + ")");
+		UseCase deleteStale = MonitorFactory.startUseCase("LuceneIndexUpdateChecker.deleteStaleObjects(" + indexLocation.getName() + ")");
 		try {
 			boolean objectsDeleted = false;
 			for (String contentId : docs.keySet()) {
@@ -161,8 +158,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		checkedDocuments.clear();
 	}
 
-	private LinkedHashMap<String, Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute)
-			throws IOException {
+	private LinkedHashMap<String, Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute) throws IOException {
 		LinkedHashMap<String, Integer> tmp = new LinkedHashMap<String, Integer>();
 
 		while (termDocs.next()) {

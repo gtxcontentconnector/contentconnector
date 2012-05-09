@@ -131,8 +131,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 			return;
 		}
 		closed = true;
-		while ((readingReaderUseCount > 0) || (searcherUseCount > 0) || (writingReaderUseCount > 0)
-				|| (writerUseCount > 0) || (numReopening > 0)) {
+		while (readingReaderUseCount > 0 || searcherUseCount > 0 || writingReaderUseCount > 0 || writerUseCount > 0 || numReopening > 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -237,7 +236,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 		checkClosed();
 
 		if (cachedReadingReader != null) {
-			LOGGER.trace("returning cached reading reader");
+			LOGGER.debug("returning cached reading reader");
 			readingReaderUseCount++;
 		} else {
 			LOGGER.debug("opening new reading reader and caching it");
@@ -301,8 +300,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.search.Similarity,
-	 * org.apache.lucene.index.IndexReader)
+	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.search.Similarity, org.apache.lucene.index.IndexReader)
 	 */
 	public synchronized Searcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException {
 
@@ -628,8 +626,9 @@ class DefaultIndexAccessor implements IndexAccessor {
 			if (!pool.awaitTermination(20, TimeUnit.SECONDS)) {
 				pool.shutdownNow(); // Cancel currently executing tasks
 				// Wait a while for tasks to respond to being cancelled
-				if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+				if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
 					System.err.println("Pool did not terminate");
+				}
 			}
 		} catch (InterruptedException ie) {
 			// (Re-)Cancel if current thread also interrupted
@@ -641,7 +640,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	/** This method assumes it is invoked in a synchronized context. */
 	private void waitForReadersAndReopenCached() {
-		while ((readingReaderUseCount > 0) || (searcherUseCount > 0)) {
+		while (readingReaderUseCount > 0 || searcherUseCount > 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
