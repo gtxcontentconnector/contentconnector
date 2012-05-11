@@ -28,7 +28,6 @@ import com.gentics.cr.template.ITemplateManager;
  * Last changed: $Date: 2010-01-25 12:05:57 +0100 (Mo, 25 Jän 2010) $
  * @version $Revision: 406 $
  * @author $Author: supnig@constantinopel.at $
- *
  */
 public class PlinkProcessor {
 
@@ -48,7 +47,7 @@ public class PlinkProcessor {
 	private boolean plinkcache = true;
 
 	/**
-	 * Create new instance of plink processor
+	 * Create new instance of plink processor.
 	 * @param config
 	 */
 	public PlinkProcessor(CRConfig config) {
@@ -57,7 +56,8 @@ public class PlinkProcessor {
 		contextObjects = new HashMap<String, Resolvable>();
 		if (config != null && config.getPortalNodeCompMode()) {
 			//Servlet will run in portal.node compatibility mode => no velocity available
-			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n Therefore Velocity scripts will not work in the content.");
+			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n" +
+					"Therefore Velocity scripts will not work in the content.");
 		}
 		String s_plinkcache = null;
 		if (config != null) {
@@ -89,7 +89,7 @@ public class PlinkProcessor {
 	}
 
 	/**
-	 * Deploy objects to the velocity context
+	 * Deploy objects to the velocity context.
 	 * @param map
 	 */
 	public void deployObjects(Map<String, Resolvable> map) {
@@ -101,12 +101,12 @@ public class PlinkProcessor {
 	}
 
 	/**
-	 * get a generated link according to the information in plinkinformation
+	 * get a generated link according to the information in plinkinformation.
 	 * @param plink
 	 * @param request
 	 * @return
 	 */
-	public String getLink(PLinkInformation plink, CRRequest request) {
+	public String getLink(final PLinkInformation plink, final CRRequest request) {
 
 		// starttime
 		long start = new Date().getTime();
