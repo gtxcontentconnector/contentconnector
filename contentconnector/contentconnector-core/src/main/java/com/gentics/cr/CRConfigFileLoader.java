@@ -78,6 +78,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 			loadConfigFile(CONFIG_DIR + subdir + modePath + name + ".properties");
 		}
 
+		
 		// initialize datasource with handle_props and dsprops
 		initDS();
 
