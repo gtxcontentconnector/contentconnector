@@ -21,7 +21,7 @@ import com.gentics.cr.util.CRUtil;
 public final class EnvironmentConfiguration {
 
 	/**
-	 * Path were the configuration files are found
+	 * Path were the configuration files are found.
 	 */
 	private static String configurationPath = "${" + CRUtil.PORTALNODE_CONFPATH + "}";
 
@@ -69,6 +69,7 @@ public final class EnvironmentConfiguration {
 	 * private constructor to prevent initializing of the utility class.
 	 */
 	private EnvironmentConfiguration() {
+
 	}
 
 	/**
@@ -117,16 +118,15 @@ public final class EnvironmentConfiguration {
 	 */
 	public static void loadCacheProperties() {
 		String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
-		StringBuilder errorMessage = new StringBuilder("Could not load cache configuration. Perhaps you are missing the file cache.ccf in ").append(confpath).append("!");
+		StringBuilder errorMessage = new StringBuilder("Could not load cache configuration. Perhaps you are missing the file cache.ccf in ")
+				.append(confpath).append("!");
 		logDebug("Loading cache configuration from " + confpath);
 		try {
 			//LOAD CACHE CONFIGURATION
 			Properties cacheProps = new Properties();
 			cacheProps.load(new FileInputStream(confpath));
-			if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY)
-					&& Boolean.parseBoolean(cacheProps.getProperty(USE_PORTAL_CACHE_KEY))) {
-				logDebug("Will not initialize ContentConnector Cache - Using the "
-						+ "cache configured by portalnode instead.");
+			if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY) && Boolean.parseBoolean(cacheProps.getProperty(USE_PORTAL_CACHE_KEY))) {
+				logDebug("Will not initialize ContentConnector Cache - Using the " + "cache configured by portalnode instead.");
 			} else {
 				CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
 				cManager.configure(cacheProps);
@@ -197,9 +197,9 @@ public final class EnvironmentConfiguration {
 
 	/**
 	 * set a new logger configuration file path where the log4j properties file is located from .
-	 * @param newCacheFilePath - path for the log4j configuration file
+	 * @param newLoggerFilePath - path for the log4j configuration file.
 	 */
-	public static void setLoggerConfigPath(String newLoggerFilePath) {
+	public static void setLoggerConfigPath(final String newLoggerFilePath) {
 		loggerFilePath = newLoggerFilePath;
 	}
 
@@ -207,7 +207,7 @@ public final class EnvironmentConfiguration {
 	 * set the path for the configuration files.
 	 * @param configLocation - directory which contains the configuration files
 	 */
-	public static void setConfigPath(String configLocation) {
+	public static void setConfigPath(final String configLocation) {
 		configurationPath = configLocation;
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, configLocation);
 		loggerFilePath = configurationPath + "/nodelog.properties";
@@ -232,7 +232,7 @@ public final class EnvironmentConfiguration {
 	 * set a new cache file path where the jcs cache.ccf is located.
 	 * @param newCacheFilePath - path for the jcs cache configuration file
 	 */
-	public static void setCacheFilePath(String newCacheFilePath) {
+	public static void setCacheFilePath(final String newCacheFilePath) {
 		cacheFilePath = newCacheFilePath;
 	}
 }
