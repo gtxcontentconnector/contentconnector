@@ -36,7 +36,7 @@ public class CRConfigUtil extends CRConfig {
 	/**
 	 * Key under which the RequestProcessorConfigs are stored.
 	 */
-	private static final String REQUEST_PROCESSOR_KEY = "RP";
+	public static final String REQUEST_PROCESSOR_KEY = "RP";
 
 	/**
 	 * Lazy init mode key. If lazy init is set to true in configuration, 
