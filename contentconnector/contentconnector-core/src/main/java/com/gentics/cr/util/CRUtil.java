@@ -26,6 +26,13 @@ import com.gentics.cr.util.resolver.CRUtilResolver;
 public class CRUtil {
 
 	/**
+	 * Utility class.
+	 */
+	private CRUtil() {
+		
+	}
+	
+	/**
 	 * marker for properties that shouldn't be resolved.
 	 */
 	private static final String DONOTRESOLVE_MARKER = "DONOTRESOLVE";
@@ -37,7 +44,7 @@ public class CRUtil {
 	/**
 	 * Log4J Logger for debugging purposes.
 	 */
-	private final static Logger LOGGER = Logger.getLogger(CRUtil.class);
+	private static final Logger LOGGER = Logger.getLogger(CRUtil.class);
 
 	/**
 	 * Convert a String like "contentid:asc,name:desc" into an Sorting Array.
@@ -46,7 +53,7 @@ public class CRUtil {
 	 * @param sortingString like "contentid:asc,name:desc"
 	 * @return a Sorting[] Array suitable for contentrepository queries
 	 */
-	public final static Sorting[] convertSorting(String sortingString) {
+	public static final Sorting[] convertSorting(final String sortingString) {
 
 		String[] sortingArray;
 		HashSet<Sorting> sortingColl = new HashSet<Sorting>();
@@ -75,23 +82,18 @@ public class CRUtil {
 			}
 		}
 
-		// convert hashmap to uncomfortable Array :-/ and return that or return
-		// null if converting need not succed for any reason.
-		if (sortingColl != null) {
-			return (Sorting[]) sortingColl.toArray(new Sorting[sortingColl.size()]);
-		} else {
-			return null;
-		}
+		// convert hashmap to uncomfortable Array :-/ and return that
+		return (Sorting[]) sortingColl.toArray(new Sorting[sortingColl.size()]);
 	}
 
 	/**
 	 * Convert a HTML-conform sorting request multivalue parameter array
-	 * to a Sorting[], suitable for the contentrepository queries
+	 * to a Sorting[], suitable for the contentrepository queries.
 	 * 
 	 * @param sortingArray like ["contentid:asc","name:desc"]
 	 * @return a Sorting[] Array suitable for contentrepository queries
 	 */
-	public final static Sorting[] convertSorting(String[] sortingArray) {
+	public final static Sorting[] convertSorting(final String[] sortingArray) {
 		Sorting[] ret = new Sorting[0];
 		ArrayList<Sorting> sortingColl = new ArrayList<Sorting>();
 		if (sortingArray != null) {
@@ -118,23 +120,27 @@ public class CRUtil {
 	}
 
 	/**
-	 * Convert an array of strings to an array that can be usen in a filter rule
+	 * Convert an array of strings to an array that can be usen in a filter rule.
 	 * @param arr
 	 * @return rule ready string
 	 */
-	public static String prepareParameterArrayForRule(String[] arr) {
-		String ret = "[";
+	public static String prepareParameterArrayForRule(final String[] arr) {
+		StringBuilder ret = new StringBuilder("[");
 		int arrlen = arr.length;
 		if (arrlen > 0) {
-			ret += "'" + arr[0] + "'";
+			ret.append("'");
+			ret.append(arr[0]);
+			ret.append("'");
 			if (arrlen > 1) {
 				for (int i = 1; i < arrlen; i++) {
-					ret += ",'" + arr[i] + "'";
+					ret.append(",'");
+					ret.append(arr[i]);
+					ret.append("'");
 				}
 			}
 		}
-		ret += "]";
-		return ret;
+		ret.append("]");
+		return ret.toString();
 	}
 
 	/**
@@ -153,16 +159,17 @@ public class CRUtil {
 		}
 		//init com.gentics.portalnode.confpath if it isn't set
 		if (System.getProperty(PORTALNODE_CONFPATH) == null || System.getProperty(PORTALNODE_CONFPATH).equals("")) {
-			String defaultConfPath = System.getProperty("catalina.base") + File.separator + "conf" + File.separator
-					+ "gentics" + File.separator;
+			String defaultConfPath = System.getProperty("catalina.base") + File.separator + "conf" + File.separator + "gentics"
+					+ File.separator;
 			System.setProperty(PORTALNODE_CONFPATH, defaultConfPath);
 		} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith("file:/")) {
 			File confFile = null;
 			try {
 				confFile = new File(new URI(System.getProperty(PORTALNODE_CONFPATH)));
 			} catch (URISyntaxException e) {
-				LOGGER.error("Could not convert PORTALNODE_CONFPATH (" + System.getProperty(PORTALNODE_CONFPATH)
-						+ ") to an absolutePath", e);
+				LOGGER.error(
+					"Could not convert PORTALNODE_CONFPATH (" + System.getProperty(PORTALNODE_CONFPATH) + ") to an absolutePath",
+					e);
 			}
 			String confFilePath = confFile.getAbsolutePath();
 			System.setProperty(PORTALNODE_CONFPATH, confFilePath);
@@ -188,12 +195,12 @@ public class CRUtil {
 	}
 
 	/**
-	 * Slurps a Reader into a String
+	 * Slurps a Reader into a String.
 	 * @param in
 	 * @return
 	 * @throws IOException
 	 */
-	public static String readerToString(Reader in) throws IOException {
+	public static String readerToString(final Reader in) throws IOException {
 		StringBuffer out = new StringBuffer();
 		char[] b = new char[4096];
 		for (int n; (n = in.read(b)) != -1;) {
@@ -203,12 +210,12 @@ public class CRUtil {
 	}
 
 	/**
-	 * Slurps a Reader into a String and strips the character 0
+	 * Slurps a Reader into a String and strips the character 0.
 	 * @param in
 	 * @return
 	 * @throws IOException
 	 */
-	public static String readerToPrintableCharString(Reader in) throws IOException {
+	public static String readerToPrintableCharString(final Reader in) throws IOException {
 		StringBuffer out = new StringBuffer();
 		int n;
 		while ((n = in.read()) != -1) {
@@ -220,7 +227,7 @@ public class CRUtil {
 		return out.toString();
 	}
 
-	public static boolean isEmpty(String s) {
+	public static boolean isEmpty(final String s) {
 		boolean isempty = false;
 
 		if (s == null || s.length() == 0 || s.equals("")) {
@@ -238,8 +245,8 @@ public class CRUtil {
 		do {
 			attemptCount++;
 			if (attemptCount > maxAttempts) {
-				throw new IOException("The highly improbable has occurred! Failed to "
-						+ "create a unique temporary directory after " + maxAttempts + " attempts.");
+				throw new IOException("The highly improbable has occurred! Failed to " + "create a unique temporary directory after "
+						+ maxAttempts + " attempts.");
 			}
 			String dirName = UUID.randomUUID().toString();
 			newTempDir = new File(sysTempDir, dirName);
