@@ -8,10 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.util.CRUtil;
 
 public class GenericConfigurationTest {
@@ -27,11 +28,6 @@ public class GenericConfigurationTest {
 		EnvironmentConfiguration.loadCacheProperties();
 	}
 
-	@After
-	public void cleanup() throws Exception {
-
-	}
-
 	@Test
 	public void testReadSimpleEntry() throws IOException {
 		GenericConfiguration config = new GenericConfiguration();
@@ -41,6 +37,8 @@ public class GenericConfigurationTest {
 		assertNull("non existing property exists", config.get("nonexisting"));
 
 		assertEquals("wrong output", "ROOTZWIKI", config.get("a.test"));
+
+		assertEquals("wrong output", "ROOTZWIKI", config.get("A.TEST"));
 
 		assertEquals("wrong output", "XDA", config.get("a.b"));
 
@@ -77,11 +75,63 @@ public class GenericConfigurationTest {
 		assertNotNull("system property could not be resolved", config.get("systempath"));
 	}
 
-	/*
-	 * @Test public void testResolvePropertyFromDifferentFile() throws IOException { GenericConfiguration config = new
-	 * GenericConfiguration(); GenericConfigurationFileLoader.load(config, "${" + CRUtil.PORTALNODE_CONFPATH + "}/subconfig.properties"); }
-	 * @Test public void testResolvePropertyTreeFromDifferentFile() throws IOException { GenericConfiguration config = new
-	 * GenericConfiguration(); GenericConfigurationFileLoader.load(config, "${" + CRUtil.PORTALNODE_CONFPATH + "}/subconfig.properties"); }
-	 */
+	@Test
+	@Ignore
+	public void testResolveFromDifferentFile() throws IOException {
+		GenericConfiguration config = new GenericConfiguration();
+		GenericConfigurationFileLoader.load(config, "${" + CRUtil.PORTALNODE_CONFPATH + "}/subconfig.properties");
+
+		assertNull("must be null", config.get("f"));
+		assertNull("must be null", config.get("e"));
+
+		/**
+		 * Test uppercase and lowercase resolving.
+		 */
+		assertEquals("not of class genericconfiguration", GenericConfiguration.class, config.get("PARENTA").getClass());
+		assertEquals("not equals", "DDDD", config.get("PARENTA.d"));
+		assertEquals("not equals", "EEEE", config.get("PARENTA.e"));
+		assertEquals("not equals", "DDDD", config.get("parentA.d"));
+		assertNotNull("must not be null", config.get("REFA"));
+		assertEquals("must be set", "blub", config.get("REFA"));
+		assertEquals("not equals", "DDDD", config.get("PARENTAVAR"));
+		assertEquals("not of class genericconfiguration", GenericConfiguration.class, config.get("parenta").getClass());
+		assertEquals("not equals", "DDDD", config.get("parenta.d"));
+		assertEquals("not equals", "EEEE", config.get("parenta.e"));
+		assertEquals("not equals", "DDDD", config.get("parenta.d"));
+		assertNotNull("must not be null", config.get("refa"));
+		assertEquals("must be set", "blub", config.get("refa"));
+		assertEquals("not equals", "DDDD", config.get("parentavar"));
+
+		/**
+		 * test other case in the config file.
+		 */
+		assertEquals("not of class genericconfiguration", GenericConfiguration.class, config.get("parentb").getClass());
+		assertEquals("not equals", "DDDD", config.get("parentb.d"));
+		assertEquals("not equals", "EEEE", config.get("parentb.e"));
+		assertEquals("not equals", "DDDD", config.get("parentb.d"));
+		assertNotNull("must not be null", config.get("refb"));
+		assertEquals("must be set", "blub", config.get("refb"));
+		assertEquals("not equals", "DDDD", config.get("parentbvar"));
+
+		assertEquals("not of class genericconfiguration", GenericConfiguration.class, config.get("c").getClass());
+		assertEquals("not equals", "DDDD", config.get("d"));
+
+		assertEquals("multiline string concatenated to one line", String.class, config.get("template").getClass());
+
+		assertNotNull("requestprocessor must be set", config.get("rp"));
+		assertNotNull("referenced request processor config", config.get("rp.1.highlighter.2.highlightpostfix"));
+	}
+
+	@Test
+	public void testJsonRequestProcessorConfig() throws IOException {
+		GenericConfiguration config = new GenericConfiguration();
+		GenericConfigurationFileLoader.load(config, "${" + CRUtil.PORTALNODE_CONFPATH + "}/baseconfig.properties");
+
+		Object obj = config.get(CRConfigUtil.REQUEST_PROCESSOR_KEY + "." + 1);
+
+		if (obj != null && obj instanceof GenericConfiguration) {
+			System.out.println("success");
+		}
+	}
 
 }
