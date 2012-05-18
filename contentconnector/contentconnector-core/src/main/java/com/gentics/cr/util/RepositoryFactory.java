@@ -1,6 +1,6 @@
 package com.gentics.cr.util;
 
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.gentics.cr.rest.ContentRepository;
 
@@ -15,7 +15,7 @@ public class RepositoryFactory {
 	/**
 	 * additional repositories that are registered by external classes.
 	 */
-	private static Hashtable<String, String> registeredClasses = new Hashtable<String, String>();
+	private static ConcurrentHashMap<String, String> registeredClasses = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * Enumeration containing the values of the repository types.
@@ -76,20 +76,20 @@ public class RepositoryFactory {
 	}
 
 	/**
-	 * {@link Hashtable} containing the assignment of the
+	 * {@link ConcurrentHashMap} containing the assignment of the
 	 * {@link RepositoryType}s to their classes.
 	 * @see #init()
 	 */
-	private static Hashtable<RepositoryType, Class<? extends ContentRepository>> classmap = null;
+	private static ConcurrentHashMap<RepositoryType, Class<? extends ContentRepository>> classmap = null;
 
 	/**
-	 * get a {@link Hashtable} containing the assignment of
+	 * get a {@link ConcurrentHashMap} containing the assignment of
 	 * {@link RepositoryType}s as strings to their implementation classe names.
-	 * @return {@link Hashtable} with the implementation classe names as strings
+	 * @return {@link ConcurrentHashMap} with the implementation classe names as strings
 	 */
-	public static Hashtable<String, String> getStringClassMap() {
+	public static ConcurrentHashMap<String, String> getStringClassMap() {
 		init();
-		Hashtable<String, String> result = new Hashtable<String, String>(classmap.size());
+		ConcurrentHashMap<String, String> result = new ConcurrentHashMap<String, String>(classmap.size());
 		for (RepositoryType type : classmap.keySet()) {
 			result.put(type.name(), classmap.get(type).getName());
 		}
@@ -100,11 +100,11 @@ public class RepositoryFactory {
 	}
 
 	/**
-	 * get a {@link Hashtable} containing the assignment of
+	 * get a {@link ConcurrentHashMap} containing the assignment of
 	 * {@link RepositoryType}s to their implementation classes.
-	 * @return {@link Hashtable} with the implementation classes.
+	 * @return {@link ConcurrentHashMap} with the implementation classes.
 	 */
-	public static Hashtable<RepositoryType, Class<? extends ContentRepository>> getContentRepositoryMap() {
+	public static ConcurrentHashMap<RepositoryType, Class<? extends ContentRepository>> getContentRepositoryMap() {
 		init();
 		return classmap;
 	}
@@ -125,7 +125,7 @@ public class RepositoryFactory {
 	private static synchronized void init() {
 		if (classmap == null) {
 			int size = RepositoryType.values().length;
-			classmap = new Hashtable<RepositoryType, Class<? extends ContentRepository>>(size);
+			classmap = new ConcurrentHashMap<RepositoryType, Class<? extends ContentRepository>>(size);
 			//ADD DEFAULT ENTRIES
 			//CLASSMAP.put(RepositoryType.JSON, com.gentics.cr.rest.json.JSONContentRepository.class);
 			classmap.put(RepositoryType.PHP, com.gentics.cr.rest.php.PHPContentRepository.class);

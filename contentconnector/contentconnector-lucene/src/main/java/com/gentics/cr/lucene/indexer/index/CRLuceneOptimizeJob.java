@@ -1,7 +1,7 @@
 package com.gentics.cr.lucene.indexer.index;
 
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
@@ -15,7 +15,7 @@ import com.gentics.cr.util.indexing.IndexLocation;
 
 public class CRLuceneOptimizeJob extends AbstractUpdateCheckerJob {
 
-	public CRLuceneOptimizeJob(CRConfig config, IndexLocation indexLoc, Hashtable<String, CRConfigUtil> configmap) {
+	public CRLuceneOptimizeJob(CRConfig config, IndexLocation indexLoc, ConcurrentHashMap<String, CRConfigUtil> configmap) {
 		super(config, indexLoc, configmap);
 		log = Logger.getLogger(CRLuceneOptimizeJob.class);
 		// TODO Auto-generated constructor stub

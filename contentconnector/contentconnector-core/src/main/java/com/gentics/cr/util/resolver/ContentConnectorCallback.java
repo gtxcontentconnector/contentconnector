@@ -1,9 +1,8 @@
 package com.gentics.cr.util.resolver;
 
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
@@ -27,7 +26,7 @@ public class ContentConnectorCallback implements Callback {
 	/**
 	 * configuration cache.
 	 */
-	private Map<String, CRConfigUtil> configs = new Hashtable<String, CRConfigUtil>();
+	private ConcurrentHashMap<String, CRConfigUtil> configs = new ConcurrentHashMap<String, CRConfigUtil>();
 
 	/**
 	 * List to prevent recursions when resolving.

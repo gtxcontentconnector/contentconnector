@@ -10,10 +10,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -68,7 +68,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 
 	private Collection<CRResolvableBean> childRepository;
 
-	private Hashtable<String, Object> attrMap;
+	private ConcurrentHashMap<String, Object> attrMap;
 
 	private String contentid;
 
@@ -210,7 +210,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 				this.mother_type = givenResolvable.get("mother_obj_type").toString();
 			}
 
-			this.attrMap = new Hashtable<String, Object>();
+			this.attrMap = new ConcurrentHashMap<String, Object>();
 			if (attributeNames != null) {
 				ArrayList<String> attributeList = new ArrayList<String>(Arrays.asList(attributeNames));
 				String[] cleanedAttributeNames = attributeList.toArray(attributeNames);
@@ -292,15 +292,15 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * attributes.
 	 * 
 	 * @param attr
-	 *            Checks if attr is instance of Hashtable. If true, it sets attr
-	 *            as the new attribute map. If false, a new Hashtable with the
+	 *            Checks if attr is instance of ConcurrentHashMap. If true, it sets attr
+	 *            as the new attribute map. If false, a new ConcurrentHashMap with the
 	 *            given map as basis is being generated.
 	 */
 	public void setAttrMap(Map<String, Object> attr) {
-		if (attr instanceof Hashtable<?, ?>) {
-			this.attrMap = (Hashtable<String, Object>) attr;
+		if (attr instanceof ConcurrentHashMap<?, ?>) {
+			this.attrMap = (ConcurrentHashMap<String, Object>) attr;
 		} else {
-			this.attrMap = new Hashtable<String, Object>(attr);
+			this.attrMap = new ConcurrentHashMap<String, Object>(attr);
 		}
 	}
 
@@ -557,7 +557,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 			}
 		} else if (obj != null && attribute != null) {
 			if (this.attrMap == null) {
-				this.attrMap = new Hashtable<String, Object>();
+				this.attrMap = new ConcurrentHashMap<String, Object>();
 			}
 			this.attrMap.put(attribute, obj);
 		}

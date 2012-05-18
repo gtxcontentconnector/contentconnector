@@ -3,12 +3,12 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -85,7 +85,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @param configmap TODO add javadoc comment here
 	 */
 	public CRLuceneIndexJob(final CRConfig config, final IndexLocation indexLoc,
-		final Hashtable<String, CRConfigUtil> configmap) {
+		final ConcurrentHashMap<String, CRConfigUtil> configmap) {
 		super(config, indexLoc, configmap);
 		String ignoreoptimizeString = config.getString(OPTIMIZE_KEY);
 		if (ignoreoptimizeString != null) {

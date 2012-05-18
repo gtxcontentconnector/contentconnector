@@ -1,7 +1,7 @@
 package com.gentics.cr.util.indexing;
 
-import java.util.Hashtable;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +40,7 @@ public class IndexController {
 	/**
 	 * 
 	 */
-	private Hashtable<String, IndexLocation> indextable;
+	private ConcurrentHashMap<String, IndexLocation> indextable;
 
 	/**
 	 * Create new instance of IndexController.
@@ -74,7 +74,7 @@ public class IndexController {
 	 * Get table of configured indexes.
 	 * @return
 	 */
-	public Hashtable<String, IndexLocation> getIndexes() {
+	public ConcurrentHashMap<String, IndexLocation> getIndexes() {
 		return this.indextable;
 	}
 
@@ -83,11 +83,11 @@ public class IndexController {
 	 * Reads the config with the index_key, reads all subconfigs and creates IndexLocations for each Index.
 	 * @return IndexLocation hash identified by the indexkey.indexname
 	 */
-	private Hashtable<String, IndexLocation> buildIndexTable() {
-		Hashtable<String, IndexLocation> indexes = new Hashtable<String, IndexLocation>(1);
+	private ConcurrentHashMap<String, IndexLocation> buildIndexTable() {
+		ConcurrentHashMap<String, IndexLocation> indexes = new ConcurrentHashMap<String, IndexLocation>(1);
 		GenericConfiguration indexConfiguration = (GenericConfiguration) crconfig.get(INDEX_KEY);
 		if (indexConfiguration != null) {
-			Hashtable<String, GenericConfiguration> configs = indexConfiguration.getSubConfigs();
+			ConcurrentHashMap<String, GenericConfiguration> configs = indexConfiguration.getSubConfigs();
 
 			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				String indexLocationName = e.getKey();

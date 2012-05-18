@@ -1,9 +1,9 @@
 package com.gentics.cr.util;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
@@ -463,9 +463,9 @@ public class CRRequestBuilder {
 	 * 
 	 * @return
 	 */
-	private Hashtable<String, String> getRepositoryClassMap() {
+	private ConcurrentHashMap<String, String> getRepositoryClassMap() {
 
-		Hashtable<String, String> classmap = RepositoryFactory.getStringClassMap();
+		ConcurrentHashMap<String, String> classmap = RepositoryFactory.getStringClassMap();
 
 		// values from other projects
 		// TODO this should be moved to the packages adding additional
@@ -499,7 +499,7 @@ public class CRRequestBuilder {
 	public ContentRepository getContentRepository(String encoding, CRConfigUtil configUtil) {
 		ContentRepository cr = null;
 
-		Hashtable<String, String> classmap = getRepositoryClassMap();
+		ConcurrentHashMap<String, String> classmap = getRepositoryClassMap();
 
 		String cls = classmap.get(this.getRepositoryType().toUpperCase());
 		if (cls != null) {

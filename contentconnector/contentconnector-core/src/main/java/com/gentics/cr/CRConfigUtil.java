@@ -3,10 +3,10 @@ package com.gentics.cr;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -170,7 +170,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications binary type.
 	 * @param type
 	 */
-	public void setBinaryType(String type) {
+	public void setBinaryType(final String type) {
 		this.set(BINARY_TYPE_KEY, type);
 	}
 
@@ -190,7 +190,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications folder type.
 	 * @param type
 	 */
-	public void setFolderType(String type) {
+	public void setFolderType(final String type) {
 		this.set(FOLDER_TYPE_KEY, type);
 	}
 
@@ -210,7 +210,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications page type.
 	 * @param type
 	 */
-	public void setPageType(String type) {
+	public void setPageType(final String type) {
 		this.set(PAGE_TYPE_KEY, type);
 	}
 
@@ -226,7 +226,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the application rule.
 	 * @param rule
 	 */
-	public void setApplicationRule(String rule) {
+	public void setApplicationRule(final String rule) {
 		this.set(APPRULE_KEY, rule);
 	}
 
@@ -242,7 +242,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications PLink Template.
 	 * @param template
 	 */
-	public void setPlinkTemplate(String template) {
+	public void setPlinkTemplate(final String template) {
 		this.set(PLINK_TEMPLATE_KEY, template);
 	}
 
@@ -320,7 +320,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the response encoding of the application.
 	 * @param response_encoding
 	 */
-	public void setEncoding(String response_encoding) {
+	public void setEncoding(final String response_encoding) {
 		this.set(ENCODING_KEY, response_encoding);
 	}
 
@@ -341,7 +341,7 @@ public class CRConfigUtil extends CRConfig {
 	 *     - only RP configs have RP classes.
 	 * @param requestProcessorClass
 	 */
-	public void setRequestProcessorClass(String requestProcessorClass) {
+	public void setRequestProcessorClass(final String requestProcessorClass) {
 		this.set(RP_CLASS_KEY, requestProcessorClass);
 	}
 
@@ -358,7 +358,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications objectperissionattribute.
 	 * @param objectpermissionattribute
 	 */
-	public void setObjectPermissionAttribute(String objectpermissionattribute) {
+	public void setObjectPermissionAttribute(final String objectpermissionattribute) {
 		this.set(OBJECT_PERMISSION_ATTR_KEY, objectpermissionattribute);
 	}
 
@@ -374,7 +374,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications userperissionattribute.
 	 * @param userpermissionattribute
 	 */
-	public void setUserPermissionAttribute(String userpermissionattribute) {
+	public void setUserPermissionAttribute(final String userpermissionattribute) {
 		this.set(USER_PERMISSION_ATTR_KEY, userpermissionattribute);
 	}
 
@@ -390,7 +390,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications XML url.
 	 * @param xmlUrl
 	 */
-	public void setXmlUrl(String xmlUrl) {
+	public void setXmlUrl(final String xmlUrl) {
 		this.set(XML_URL_KEY, xmlUrl);
 	}
 
@@ -406,7 +406,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications Xslt url.
 	 * @param xsltUrl
 	 */
-	public void setXsltUrl(String xsltUrl) {
+	public void setXsltUrl(final String xsltUrl) {
 		this.set(XSLT_URL_KEY, xsltUrl);
 	}
 
@@ -422,7 +422,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications Contentid Regex.
 	 * @param contentid_regex
 	 */
-	public void setContentidRegex(String contentid_regex) {
+	public void setContentidRegex(final String contentid_regex) {
 		this.set(CONTENTID_REGEX_KEY, contentid_regex);
 	}
 
@@ -451,7 +451,7 @@ public class CRConfigUtil extends CRConfig {
 		if (getSubConfigSize() > 0) {
 			GenericConfiguration requestProcessorsConfigs = (GenericConfiguration) get(REQUEST_PROCESSOR_KEY);
 			if (requestProcessorsConfigs != null) {
-				Hashtable<String, GenericConfiguration> requestProcessorTable = requestProcessorsConfigs
+				ConcurrentHashMap<String, GenericConfiguration> requestProcessorTable = requestProcessorsConfigs
 						.getSubConfigs();
 				if (requestProcessorTable != null && !requestProcessorTable.isEmpty()) {
 					return requestProcessorTable.keySet();
@@ -478,7 +478,7 @@ public class CRConfigUtil extends CRConfig {
 	 * @param requestProcessorId Number of the RequestProcessor
 	 * @return Configuration of the specified RequestProcessor. null in case something bad happens
 	 */
-	public CRConfigUtil getRequestProcessorConfig(int requestProcessorId) {
+	public CRConfigUtil getRequestProcessorConfig(final int requestProcessorId) {
 		return (getRequestProcessorConfig("" + requestProcessorId));
 	}
 
@@ -487,7 +487,7 @@ public class CRConfigUtil extends CRConfig {
 	 * @param requestProcessorId Number of the RequestProcessor
 	 * @return Configuration of the specified RequestProcessor. null in case something bad happens
 	 */
-	public CRConfigUtil getRequestProcessorConfig(String requestProcessorId) {
+	public CRConfigUtil getRequestProcessorConfig(final String requestProcessorId) {
 		Object obj = get(REQUEST_PROCESSOR_KEY + "." + requestProcessorId);
 
 		if (obj != null && obj instanceof GenericConfiguration) {
@@ -549,7 +549,7 @@ public class CRConfigUtil extends CRConfig {
 	 * Sets the applications portalnode compatibility mode.
 	 * @param mode
 	 */
-	public void setPortalNodeCompMode(String mode) {
+	public void setPortalNodeCompMode(final String mode) {
 		this.set(PORTALNODE_COMPATIBILITY_MODE_KEY, mode);
 	}
 
@@ -587,7 +587,7 @@ public class CRConfigUtil extends CRConfig {
 	 * @param sharedCache
 	 * @return value of sharedcache after it has been set
 	 */
-	public boolean useSharedCache(boolean sharedCache) {
+	public boolean useSharedCache(final boolean sharedCache) {
 		this.set(SHARED_CACHE_KEY, Boolean.toString(sharedCache));
 		return useSharedCache();
 	}

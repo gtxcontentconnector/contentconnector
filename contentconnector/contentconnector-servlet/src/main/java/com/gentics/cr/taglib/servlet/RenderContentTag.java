@@ -2,9 +2,8 @@ package com.gentics.cr.taglib.servlet;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
@@ -16,14 +15,13 @@ import org.apache.log4j.Logger;
 import com.gentics.api.portalnode.connector.PLinkReplacer;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
-import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rendering.ContentRenderer;
 import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
 
 /**
+ * Implementation of a tag that renders content with plink replacing and velocity.
  * @author norbert
- * Implementation of a tag that renders content with plink replacing and velocity
  */
 public class RenderContentTag extends TagSupport {
 	/**
@@ -33,27 +31,27 @@ public class RenderContentTag extends TagSupport {
 	private Logger logger = Logger.getLogger("com.gentics.cr.rendering");
 
 	/**
-	 * Name of the render request attribute for the instance of {@link ContentRenderer}
+	 * Name of the render request attribute for the instance of {@link ContentRenderer}.
 	 */
 	public final static String RENDERER_PARAM = "rendercontenttag.renderer";
 
 	/**
-	 * Name of the config attribute for the instance of {@link GenericConfiguration}
+	 * Name of the config attribute for the instance of {@link GenericConfiguration}.
 	 */
 	public final static String CRCONF_PARAM = "rendercontenttag.crconf";
 
 	/**
-	 * Name of the request attribute for the instance of {@link RenderRequest}
+	 * Name of the request attribute for the instance of {@link RenderRequest}.
 	 */
 	public final static String REQUEST_PARAM = "rendercontenttag.request";
 
 	/**
-	 * Name of the render request attribute for the instance of {@link PLinkReplacer}
+	 * Name of the render request attribute for the instance of {@link PLinkReplacer}.
 	 */
 	public final static String PLINK_PARAM = "rendercontenttag.plinkreplacer";
 
 	/**
-	 * Rendered object
+	 * Rendered object.
 	 */
 	protected CRResolvableBean object;
 	/**
@@ -63,14 +61,14 @@ public class RenderContentTag extends TagSupport {
 			+ "|ContentPostProcessor|confs";
 
 	/**
-	 * name of the rendered attribute
+	 * name of the rendered attribute.
 	 */
 	protected String contentAttribute = "content";
 
 	protected String var = null;
 
 	/**
-	 * flag if the output should be urlencoded
+	 * flag if the output should be urlencoded.
 	 */
 	protected boolean urlencode = false;
 
@@ -85,7 +83,7 @@ public class RenderContentTag extends TagSupport {
 	}
 
 	/**
-	 * Set the content attribute to be rendered
+	 * Set the content attribute to be rendered.
 	 * @param contentAttribute name of the rendered content attribute
 	 */
 	public void setContentAttribute(String contentAttribute) {
@@ -93,7 +91,7 @@ public class RenderContentTag extends TagSupport {
 	}
 
 	/**
-	 * Set the flag if the returned content should be url-encoded
+	 * Set the flag if the returned content should be url-encoded.
 	 * @param urlencode 
 	 * 
 	 */
@@ -130,7 +128,7 @@ public class RenderContentTag extends TagSupport {
 
 					/* Get the ContentPostProcessor-Config from the PortletSession or instance it from the Config */
 					@SuppressWarnings("unchecked")
-					Hashtable<String, ContentPostProcesser> confs = (Hashtable<String, ContentPostProcesser>) session
+					ConcurrentHashMap<String, ContentPostProcesser> confs = (ConcurrentHashMap<String, ContentPostProcesser>) session
 							.getAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF);
 					if (confs == null) {
 						confs = ContentPostProcesser.getProcessorTable(crConf);

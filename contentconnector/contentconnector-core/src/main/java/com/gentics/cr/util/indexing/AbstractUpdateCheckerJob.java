@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -78,10 +78,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 */
 	protected String timestampAttribute = "";
 
-	/**
-	 * TODO javadoc.
-	 */
-	private Hashtable<String, CRConfigUtil> configmap;
+	private ConcurrentHashMap<String, CRConfigUtil> configmap;
 
 	/**
 	 * index location to compare the objects with.
@@ -106,7 +103,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	 * @param updateCheckerConfigmap TODO javadoc
 	 */
 	public AbstractUpdateCheckerJob(final CRConfig updateCheckerConfig, final IndexLocation indexLoc,
-		final Hashtable<String, CRConfigUtil> updateCheckerConfigmap) {
+		final ConcurrentHashMap<String, CRConfigUtil> updateCheckerConfigmap) {
 		config = updateCheckerConfig;
 		configmap = updateCheckerConfigmap;
 		if (configmap == null) {

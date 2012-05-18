@@ -2,7 +2,7 @@ package com.gentics.cr.taglib.portlet;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
@@ -134,7 +134,7 @@ public class RenderContentTag extends TagSupport {
 
 					/* Get the ContentPostProcessor-Config from the PortletSession or instance it from the Config */
 					@SuppressWarnings("unchecked")
-					Hashtable<String, ContentPostProcesser> confs = (Hashtable<String, ContentPostProcesser>) session
+					ConcurrentHashMap<String, ContentPostProcesser> confs = (ConcurrentHashMap<String, ContentPostProcesser>) session
 							.getAttribute(SESSION_KEY_CONTENTPOSTPROCESSOR_CONF, PortletSession.APPLICATION_SCOPE);
 					if (confs == null) {
 						confs = ContentPostProcesser.getProcessorTable(crConf);

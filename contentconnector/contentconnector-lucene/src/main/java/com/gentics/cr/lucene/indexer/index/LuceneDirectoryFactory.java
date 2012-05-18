@@ -2,7 +2,7 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.store.Directory;
@@ -25,9 +25,9 @@ public final class LuceneDirectoryFactory {
 	protected static final String RAM_IDENTIFICATION_KEY = "RAM";
 
 	/**
-	 * Hashtable to cache directories.
+	 * ConcurrentHashMap to cache directories.
 	 */
-	private static Hashtable<String, Directory> cachedDirectories = new Hashtable<String, Directory>();
+	private static ConcurrentHashMap<String, Directory> cachedDirectories = new ConcurrentHashMap<String, Directory>();
 
 	/**
 	 * Private constructor.

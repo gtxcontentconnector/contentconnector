@@ -3,7 +3,7 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,7 +26,7 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
  */
 public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 
-	Hashtable<String, Directory> dirs = new Hashtable<String, Directory>();
+	ConcurrentHashMap<String, Directory> dirs = new ConcurrentHashMap<String, Directory>();
 
 	/**
 	 * Timestamp to store the lastmodified value of the reopen file.

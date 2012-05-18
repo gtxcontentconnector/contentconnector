@@ -4,9 +4,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -57,7 +57,7 @@ public abstract class IndexLocation {
 	 * periodical execution flag of the indexer.
 	 */
 	private static final String PERIODICALCLASS_KEY = "periodicalClass";
-	private static Hashtable<Object, IndexLocation> indexmap;
+	private static ConcurrentHashMap<Object, IndexLocation> indexmap;
 	private static final String LOCK_DETECTION_KEY = "LOCKDETECTION";
 
 	/**
@@ -106,7 +106,7 @@ public abstract class IndexLocation {
 	/**
 	 * Holds the time when each index part was checked.
 	 */
-	private Hashtable<String, Date> indexJobCreationTimes = new Hashtable<String, Date>();
+	private ConcurrentHashMap<String, Date> indexJobCreationTimes = new ConcurrentHashMap<String, Date>();
 
 	protected HashMap<String, IndexExtension> extensions;
 
@@ -140,10 +140,8 @@ public abstract class IndexLocation {
 	/**
 	 * Get the interval used to create new jobs for a specific part.
 	 * 
-	 * @param indexJobConfiguration
-	 *            configuration of the index Job
-	 * @return interval as integer, -1 in case no special interval for this
-	 *         index part is defined
+	 * @param indexJobConfiguration configuration of the index Job
+	 * @return interval as integer, -1 in case no special interval for this index part is defined
 	 */
 	public final int getInterval(final String partName) {
 		if (indexIntervals != null) {
@@ -162,8 +160,7 @@ public abstract class IndexLocation {
 	/**
 	 * Checks Lock and throws Exception if lock exists.
 	 * 
-	 * @throws Exception
-	 *             if lock already exists
+	 * @throws Exception if lock already exists
 	 */
 	public abstract void checkLock() throws Exception;
 
@@ -223,7 +220,7 @@ public abstract class IndexLocation {
 	 * indexIntervals.
 	 */
 	private void initIndexIntervals() {
-		Hashtable<String, CRConfigUtil> indexParts = getCRMap();
+		ConcurrentHashMap<String, CRConfigUtil> indexParts = getCRMap();
 		for (String indexPartName : indexParts.keySet()) {
 			CRConfigUtil indexPartConfig = indexParts.get(indexPartName);
 			int interval = indexPartConfig.getInteger(PERIODICAL_INTERVAL_KEY, -1);
@@ -296,7 +293,7 @@ public abstract class IndexLocation {
 			return null;
 		}
 		if (indexmap == null) {
-			indexmap = new Hashtable<Object, IndexLocation>();
+			indexmap = new ConcurrentHashMap<Object, IndexLocation>();
 			dir = createNewIndexLocation(config);
 			indexmap.put(key, dir);
 		} else {
@@ -313,10 +310,8 @@ public abstract class IndexLocation {
 	 * Create new IndexLocation for the configured Implementation of
 	 * {@link AbstractUpdateCheckerJob}.
 	 * 
-	 * @param config
-	 *            {@link CRConfig} of the actual indexLocation
-	 * @return IndexLocation that can be used for all configured Implementations
-	 *         of {@link AbstractUpdateCheckerJob}
+	 * @param config {@link CRConfig} of the actual indexLocation
+	 * @return IndexLocation that can be used for all configured Implementations of {@link AbstractUpdateCheckerJob}
 	 */
 	private static IndexLocation createNewIndexLocation(final CRConfig config) {
 		Class<? extends IndexLocation> indexLocationClass = getIndexLocationClass(config);
@@ -408,8 +403,7 @@ public abstract class IndexLocation {
 	/**
 	 * Helper method to get Class of UpdateJobImplementation.
 	 * 
-	 * @param config
-	 *            {@link CRConfig} to
+	 * @param config {@link CRConfig} to
 	 * @return
 	 */
 	private static Class<? extends AbstractUpdateCheckerJob> getDeleteJobImplementationClass(CRConfig config) {
@@ -434,8 +428,7 @@ public abstract class IndexLocation {
 	/**
 	 * Helper method to get Class of UpdateJobImplementation.
 	 * 
-	 * @param config
-	 *            {@link CRConfig} to
+	 * @param config {@link CRConfig} to
 	 * @return
 	 */
 	private static Class<? extends AbstractUpdateCheckerJob> getOptimizeJobImplementationClass(CRConfig config) {
@@ -484,7 +477,7 @@ public abstract class IndexLocation {
 	}
 
 	/**
-	 * Get number of documents in Index
+	 * Get number of documents in Index.
 	 * 
 	 * @return doccount
 	 */
@@ -510,19 +503,18 @@ public abstract class IndexLocation {
 	public abstract boolean isLocked();
 
 	/**
-	 * Creates a new CRIndexJob for the given CRConfig and adds the job to the
-	 * queue
+	 * Creates a new CRIndexJob for the given CRConfig and adds the job to the queue.
 	 * 
 	 * @param config
 	 * @param configmap
 	 * @return
 	 */
-	public boolean createCRIndexJob(CRConfig config, Hashtable<String, CRConfigUtil> configmap) {
+	public boolean createCRIndexJob(CRConfig config, ConcurrentHashMap<String, CRConfigUtil> configmap) {
 		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass = getUpdateJobImplementationClass(config);
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
 			Constructor<? extends AbstractUpdateCheckerJob> updatejobImplementationClassConstructor = updatejobImplementationClass
-					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, Hashtable.class });
+					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, ConcurrentHashMap.class });
 			Object indexJobObject = updatejobImplementationClassConstructor.newInstance(config, this, configmap);
 			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
 			updateIndexJobCreationTime(config);
@@ -563,7 +555,7 @@ public abstract class IndexLocation {
 	 * resets all creation times for index jobs.
 	 */
 	public final void resetIndexJobCreationTimes() {
-		indexJobCreationTimes = new Hashtable<String, Date>();
+		indexJobCreationTimes = new ConcurrentHashMap<String, Date>();
 	}
 
 	private static final String CR_KEY = "CR";
@@ -573,7 +565,7 @@ public abstract class IndexLocation {
 	 */
 	public final void createAllCRIndexJobs() {
 
-		Hashtable<String, CRConfigUtil> configs = getCRMap();
+		ConcurrentHashMap<String, CRConfigUtil> configs = getCRMap();
 
 		for (Entry<String, CRConfigUtil> e : configs.entrySet()) {
 
@@ -613,7 +605,7 @@ public abstract class IndexLocation {
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
 			Constructor<? extends AbstractUpdateCheckerJob> deletejobImplementationClassConstructor = deletejobImplementationClass
-					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, Hashtable.class });
+					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, ConcurrentHashMap.class });
 			Object indexJobObject = deletejobImplementationClassConstructor.newInstance(config, this, null);
 			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
 			return this.queue.addJob(indexJob);
@@ -645,7 +637,7 @@ public abstract class IndexLocation {
 		AbstractUpdateCheckerJob indexJob = null;
 		try {
 			Constructor<? extends AbstractUpdateCheckerJob> optimizejobImplementationClassConstructor = optimizejobImplementationClass
-					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, Hashtable.class });
+					.getConstructor(new Class[] { CRConfig.class, IndexLocation.class, ConcurrentHashMap.class });
 			Object indexJobObject = optimizejobImplementationClassConstructor.newInstance(config, this, null);
 			indexJob = (AbstractUpdateCheckerJob) indexJobObject;
 			return this.queue.addJob(indexJob);
@@ -670,11 +662,11 @@ public abstract class IndexLocation {
 	/**
 	 * @return a map of the configured CRs
 	 */
-	public final Hashtable<String, CRConfigUtil> getCRMap() {
-		Hashtable<String, CRConfigUtil> map = new Hashtable<String, CRConfigUtil>();
+	public final ConcurrentHashMap<String, CRConfigUtil> getCRMap() {
+		ConcurrentHashMap<String, CRConfigUtil> map = new ConcurrentHashMap<String, CRConfigUtil>();
 		GenericConfiguration crConfigs = (GenericConfiguration) config.get(CR_KEY);
 		if (crConfigs != null) {
-			Hashtable<String, GenericConfiguration> configs = crConfigs.getSubConfigs();
+			ConcurrentHashMap<String, GenericConfiguration> configs = crConfigs.getSubConfigs();
 
 			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				try {
@@ -700,7 +692,7 @@ public abstract class IndexLocation {
 	}
 
 	/**
-	 * Returns the IndexJobQueue
+	 * Returns the IndexJobQueue.
 	 * 
 	 * @return
 	 */
@@ -709,7 +701,7 @@ public abstract class IndexLocation {
 	}
 
 	/**
-	 * Tests if this IndexLocation has turned on periodical indexing
+	 * Tests if this IndexLocation has turned on periodical indexing.
 	 * 
 	 * @return
 	 */
@@ -722,7 +714,7 @@ public abstract class IndexLocation {
 	}
 
 	/**
-	 * Stops all Index workers
+	 * Stops all Index workers.
 	 */
 	public void stop() {
 		if (this.periodical_thread != null && this.periodical_thread.isAlive()) {
@@ -759,7 +751,7 @@ public abstract class IndexLocation {
 
 	/**
 	 * is called in the constructor - creates instances of all IndexExtension as
-	 * configured in the config and stores them
+	 * configured in the config and stores them.
 	 * 
 	 * @param config
 	 *            the config for the IndexLocation
@@ -768,7 +760,7 @@ public abstract class IndexLocation {
 		HashMap<String, IndexExtension> extensionMap = new HashMap<String, IndexExtension>();
 		GenericConfiguration extensionConfiguration = (GenericConfiguration) config.get(INDEX_EXTENSIONS_KEY);
 		if (extensionConfiguration != null) {
-			Hashtable<String, GenericConfiguration> configs = extensionConfiguration.getSubConfigs();
+			ConcurrentHashMap<String, GenericConfiguration> configs = extensionConfiguration.getSubConfigs();
 
 			for (Entry<String, GenericConfiguration> e : configs.entrySet()) {
 				String indexExtensionName = e.getKey();

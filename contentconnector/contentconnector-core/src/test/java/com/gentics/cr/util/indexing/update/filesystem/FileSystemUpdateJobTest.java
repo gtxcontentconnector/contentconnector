@@ -7,8 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -27,7 +27,7 @@ import com.gentics.cr.util.indexing.DummyIndexLocationFactory;
 public class FileSystemUpdateJobTest {
 
 	static CRConfigUtil config = new CRConfigUtil();
-	static Hashtable<String, CRConfigUtil> configMap = new Hashtable<String, CRConfigUtil>();
+	static ConcurrentHashMap<String, CRConfigUtil> configMap = new ConcurrentHashMap<String, CRConfigUtil>();
 
 	FileSystemUpdateJob job;
 

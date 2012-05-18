@@ -2,7 +2,7 @@ package com.gentics.cr.rest;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
@@ -12,7 +12,7 @@ import com.gentics.cr.exceptions.CRException;
 
 public class DummyRequestProcessor extends RequestProcessor {
 
-	private static Hashtable<String, CRResolvableBean> beans = new Hashtable<String, CRResolvableBean>();
+	private static ConcurrentHashMap<String, CRResolvableBean> beans = new ConcurrentHashMap<String, CRResolvableBean>();
 
 	public static void addBean(CRResolvableBean bean) {
 		beans.put(bean.getContentid(), bean);

@@ -1,8 +1,8 @@
 package com.gentics.cr.util.generics;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Helper Class to help you with maps containing objects.
@@ -30,7 +30,7 @@ public final class Maps {
 		if (map instanceof HashMap) {
 			result = new HashMap<K, V>(map.size());
 		} else {
-			result = new Hashtable<K, V>(map.size());
+			result = new ConcurrentHashMap<K, V>(map.size());
 		}
 		for (Object keyObject : map.keySet()) {
 			if (keyClass.isInstance(keyObject)) {

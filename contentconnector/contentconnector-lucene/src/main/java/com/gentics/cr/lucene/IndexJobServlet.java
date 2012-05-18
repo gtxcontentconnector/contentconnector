@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
@@ -72,14 +72,14 @@ public class IndexJobServlet extends VelocityServlet {
 			skipRenderingVelocity();
 		} else {
 			response.setContentType("text/html");
-			Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
+			ConcurrentHashMap<String, IndexLocation> indexTable = indexer.getIndexes();
 
 			setTemplateVariables(request);
 
 			for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
 				IndexLocation loc = e.getValue();
 				IndexJobQueue queue = loc.getQueue();
-				Hashtable<String, CRConfigUtil> map = loc.getCRMap();
+				ConcurrentHashMap<String, CRConfigUtil> map = loc.getCRMap();
 				if (e.getKey().equalsIgnoreCase(index)) {
 					if ("stopWorker".equalsIgnoreCase(action)) {
 						queue.pauseWorker();
@@ -179,7 +179,7 @@ public class IndexJobServlet extends VelocityServlet {
 	 * @param request .
 	 */
 	protected final void setTemplateVariables(final HttpServletRequest request) {
-		Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
+		ConcurrentHashMap<String, IndexLocation> indexTable = indexer.getIndexes();
 		String nc = "&t=" + System.currentTimeMillis();
 		String selectedIndex = request.getParameter("index");
 		Long totalMemory = Runtime.getRuntime().totalMemory();

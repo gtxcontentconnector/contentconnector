@@ -1,7 +1,8 @@
 package com.gentics.cr.lucene.search.highlight;
 
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Query;
@@ -247,12 +248,12 @@ public abstract class ContentHighlighter {
 	 * @param config configuration.
 	 * @return transformer table
 	 */
-	public static Hashtable<String, ContentHighlighter> getTransformerTable(final GenericConfiguration config) {
+	public static ConcurrentHashMap<String, ContentHighlighter> getTransformerTable(final GenericConfiguration config) {
 		GenericConfiguration tconf = (GenericConfiguration) config.get(HIGHLIGHTER_KEY);
 		if (tconf != null) {
-			Hashtable<String, GenericConfiguration> confs = tconf.getSubConfigs();
+			ConcurrentHashMap<String, GenericConfiguration> confs = tconf.getSubConfigs();
 			if (confs != null && confs.size() > 0) {
-				Hashtable<String, ContentHighlighter> ret = new Hashtable<String, ContentHighlighter>(confs.size());
+				ConcurrentHashMap<String, ContentHighlighter> ret = new ConcurrentHashMap<String, ContentHighlighter>(confs.size());
 				for (Map.Entry<String, GenericConfiguration> e : confs.entrySet()) {
 					try {
 						GenericConfiguration c = e.getValue();

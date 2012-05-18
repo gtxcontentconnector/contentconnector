@@ -1,7 +1,7 @@
 package com.gentics.cr.lucene;
 
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
@@ -81,7 +81,7 @@ public class IndexJobNagiosServlet extends HttpServlet {
 
 		String index = request.getParameter("idx");
 		response.setContentType("text/plain");
-		Hashtable<String, IndexLocation> indexTable = indexer.getIndexes();
+		ConcurrentHashMap<String, IndexLocation> indexTable = indexer.getIndexes();
 		for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
 			if (e.getKey().equalsIgnoreCase(index)) {
 				IndexLocation loc = e.getValue();

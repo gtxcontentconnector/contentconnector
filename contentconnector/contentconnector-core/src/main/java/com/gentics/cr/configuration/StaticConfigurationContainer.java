@@ -1,6 +1,6 @@
 package com.gentics.cr.configuration;
 
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -22,7 +22,7 @@ public final class StaticConfigurationContainer {
 	/**
 	 * Cache for parsed configs.
 	 */
-	private static Hashtable<String, CRConfigFileLoader> configmap = new Hashtable<String, CRConfigFileLoader>(2);
+	private static ConcurrentHashMap<String, CRConfigFileLoader> configmap = new ConcurrentHashMap<String, CRConfigFileLoader>(2);
 
 	/**
 	 * Prevent instantiation.
@@ -77,7 +77,7 @@ public final class StaticConfigurationContainer {
 	 */
 	private static void assertStaticAttributesInitialized() {
 		if (configmap == null) {
-			configmap = new Hashtable<String, CRConfigFileLoader>(2);
+			configmap = new ConcurrentHashMap<String, CRConfigFileLoader>(2);
 		}
 		if (log == null) {
 			log = Logger.getLogger(StaticConfigurationContainer.class);

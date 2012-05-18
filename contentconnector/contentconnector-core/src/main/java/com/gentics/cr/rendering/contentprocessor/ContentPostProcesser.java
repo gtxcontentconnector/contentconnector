@@ -1,7 +1,7 @@
 package com.gentics.cr.rendering.contentprocessor;
 
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.ServletRequest;
@@ -62,11 +62,11 @@ public abstract class ContentPostProcesser {
 	private static final String FILTERCHAIN_CLASS_KEY = "processorclass";
 
 	/**
-	 * Create table of ContentTransformers configured in config
+	 * Create table of ContentTransformers configured in config.
 	 * @param config
 	 * @return
 	 */
-	public static Hashtable<String, ContentPostProcesser> getProcessorTable(GenericConfiguration config) {
+	public static ConcurrentHashMap<String, ContentPostProcesser> getProcessorTable(GenericConfiguration config) {
 		GenericConfiguration tconf = null;
 
 		/** Needn't be configured, if not set, dont use it */
@@ -77,9 +77,10 @@ public abstract class ContentPostProcesser {
 		}
 
 		if (tconf != null) {
-			Hashtable<String, GenericConfiguration> confs = tconf.getSubConfigs();
+			ConcurrentHashMap<String, GenericConfiguration> confs = tconf.getSubConfigs();
 			if (confs != null && confs.size() > 0) {
-				Hashtable<String, ContentPostProcesser> ret = new Hashtable<String, ContentPostProcesser>(confs.size());
+				ConcurrentHashMap<String, ContentPostProcesser> ret 
+					= new ConcurrentHashMap<String, ContentPostProcesser>(confs.size());
 				int i = 0;
 				for (Map.Entry<String, GenericConfiguration> e : confs.entrySet()) {
 					GenericConfiguration c = e.getValue();

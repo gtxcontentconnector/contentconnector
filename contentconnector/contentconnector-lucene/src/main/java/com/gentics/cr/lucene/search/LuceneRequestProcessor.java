@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -54,14 +55,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	private boolean getStoredAttributes = false;
 
 	/**
-	 * init CRMetaResolvableBean with or without parsed_query 
+	 * init CRMetaResolvableBean with or without parsed_query.
 	 */
 	private boolean showParsedQuery = false;
 
 	private static final String SCORE_ATTRIBUTE_KEY = "SCOREATTRIBUTE";
 	private static final String GET_STORED_ATTRIBUTE_KEY = "GETSTOREDATTRIBUTES";
 
-	private Hashtable<String, ContentHighlighter> highlighters;
+	private ConcurrentHashMap<String, ContentHighlighter> highlighters;
 
 	private static final String SEARCH_COUNT_KEY = "SEARCHCOUNT";
 
@@ -113,9 +114,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	public static final String PARSED_QUERY_KEY = "parsed_query";
 
 	/**
-	 * Key to configure if CRMetaResolvableBean should contain parsed_query
-	 * 
-	 * 
+	 * Key to configure if CRMetaResolvableBean should contain parsed_query.
 	 */
 	private static final String SHOW_PARSED_QUERY_KEY = "showparsedquery";
 
@@ -371,10 +370,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		if (highlightQuery != null) {
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) this.config);
 			QueryParser parser = CRQueryParserFactory.getConfiguredParser(
-				getSearchedAttributes(),
-				analyzer,
-				request,
-				config);
+				getSearchedAttributes(), analyzer, request, config);
 			try {
 				parsedQuery = parser.parse((String) highlightQuery);
 				parsedQuery = parsedQuery.rewrite(reader);
@@ -426,7 +422,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		}
 	}
 
-	private void processDocuments(LinkedHashMap<Document, Float> docs, final ArrayList<CRResolvableBean> result,
+	private void processDocuments(final LinkedHashMap<Document, Float> docs, final ArrayList<CRResolvableBean> result,
 			final IndexReader reader, final Query parsedQuery) {
 		String scoreAttribute = (String) config.get(SCORE_ATTRIBUTE_KEY);
 

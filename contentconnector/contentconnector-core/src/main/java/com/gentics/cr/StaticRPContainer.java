@@ -1,6 +1,6 @@
 package com.gentics.cr;
 
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -22,7 +22,7 @@ public final class StaticRPContainer {
 	/**
 	 * Table with cached request processors.
 	 */
-	private static Hashtable<String, RequestProcessor> rpmap = new Hashtable<String, RequestProcessor>(2);
+	private static ConcurrentHashMap<String, RequestProcessor> rpmap = new ConcurrentHashMap<String, RequestProcessor>(2);
 
 	/**
 	 * private constructor to prevent instantiation.

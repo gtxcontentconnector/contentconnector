@@ -1,7 +1,7 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public abstract class ContentTransformer {
 	/**
 	 * Parameters for the ContentTransformer which can be used for processing (e.g. the request could be set).
 	 */
-	protected Hashtable<String, Object> parameters = new Hashtable<String, Object>();
+	protected ConcurrentHashMap<String, Object> parameters = new ConcurrentHashMap<String, Object>();
 
 	/**
 	 * Gets the Transformerkey of current Transformer
@@ -173,7 +173,7 @@ public abstract class ContentTransformer {
 	}
 
 	/**
-	 * Get a parameter from the parameters hashtable.
+	 * Get a parameter from the parameters ConcurrentHashMap.
 	 * @param key Key used for retrieval.
 	 * @return Value stored as an object
 	 */

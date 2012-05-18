@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
@@ -149,7 +149,7 @@ public class PHPContentRepository extends ContentRepository {
 		objElement.put("mother_type", crBean.getMother_type() == null ? "" : "" + crBean.getMother_type());
 
 		if (crBean.getAttrMap() != null && !crBean.getAttrMap().isEmpty()) {
-			Hashtable<String, Object> attribContainer = new Hashtable<String, Object>();
+			ConcurrentHashMap<String, Object> attribContainer = new ConcurrentHashMap<String, Object>();
 			Iterator<String> bit = crBean.getAttrMap().keySet().iterator();
 			while (bit.hasNext()) {
 				String entry = bit.next();

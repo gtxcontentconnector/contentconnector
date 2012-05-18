@@ -1,7 +1,7 @@
 package com.gentics.cr.lucene.information;
 
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.lucene.store.Directory;
 
@@ -19,7 +19,7 @@ public final class SpecialDirectoryRegistry {
 	/**
 	 * Directory map.
 	 */
-	private Hashtable<String, SpecialDirectoryInformationEntry> dirMap = new Hashtable<String, SpecialDirectoryInformationEntry>();
+	private ConcurrentHashMap<String, SpecialDirectoryInformationEntry> dirMap = new ConcurrentHashMap<String, SpecialDirectoryInformationEntry>();
 
 	/**
 	 * Prevent instantiation.

@@ -3,12 +3,12 @@ package com.gentics.cr.configuration;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.gentics.cr.util.AccessibleBean;
 
@@ -51,7 +51,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	/**
 	 * Container for subconfigs.
 	 */
-	private Hashtable<String, GenericConfiguration> subconfigs;
+	private ConcurrentHashMap<String, GenericConfiguration> subconfigs;
 
 	/**
 	 * Create new instance of Generic Configuration.
@@ -119,10 +119,10 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	/**
 	 * Returns the containing sub configurations.
 	 *       
-	 * @return hashtable of configurations with keys or null 
+	 * @return map of configurations with keys or null 
 	 * if there are no containing sub configs
 	 */
-	public final Hashtable<String, GenericConfiguration> getSubConfigs() {
+	public final ConcurrentHashMap<String, GenericConfiguration> getSubConfigs() {
 		return subconfigs;
 	}
 
@@ -130,7 +130,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	 * Set the sub configurations for this configuration instance.
 	 * @param newSubConfigs sub configurations
 	 */
-	public final void setSubConfigs(final Hashtable<String, GenericConfiguration> newSubConfigs) {
+	public final void setSubConfigs(final ConcurrentHashMap<String, GenericConfiguration> newSubConfigs) {
 		subconfigs = newSubConfigs;
 	}
 
@@ -145,13 +145,13 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	}
 
 	/**
-	 * Set a sub configuration
+	 * Set a sub configuration.
 	 * @param key - key to set for the sub configuration
 	 * @param config - sub configuration to add with the given key
 	 */
 	public void setSubConfig(String key, GenericConfiguration config) {
 		if (subconfigs == null) {
-			subconfigs = new Hashtable<String, GenericConfiguration>();
+			subconfigs = new ConcurrentHashMap<String, GenericConfiguration>();
 		}
 		subconfigs.put(convertKey(key), config);
 	}
@@ -167,7 +167,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 
 	/**
 	 * Returns the containing sub configurations sorted by key.
-	 * @return hashtable of configurations with keys or null 
+	 * @return map of configurations with keys or null 
 	 * if there are no containing sub configs
 	 */
 	public final synchronized Map<String, GenericConfiguration> getSortedSubconfigs() {
@@ -316,7 +316,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 		String key = convertKey(resolvingKey);
 		if (isSubKey(key)) {
 			if (this.subconfigs == null) {
-				this.subconfigs = new Hashtable<String, GenericConfiguration>();
+				this.subconfigs = new ConcurrentHashMap<String, GenericConfiguration>();
 			}
 			String confKey = getSubConfigKey(key);
 			if (this.subconfigs.get(confKey) == null) {

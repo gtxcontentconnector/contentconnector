@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
 
@@ -21,7 +21,7 @@ import com.gentics.cr.util.indexing.DummyIndexLocation;
 import com.gentics.cr.util.indexing.IndexLocation;
 
 /**
- * Update the files in a directory
+ * Update the files in a directory.
  * @author bigbear3001
  *
  */
@@ -33,19 +33,22 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	File directory;
 
 	/**
-	 * defines if we should ignore the pub_dir attribute of the resolvables. if <code>true</code> all files are put into one directory, therefore files with the same filename can override each other.
+	 * defines if we should ignore the pub_dir attribute of the resolvables. 
+	 * if <code>true</code> all files are put into one directory, therefore files with the same filename can override each other.
 	 */
 	boolean ignorePubDir;
 
 	/**
-	 * Create a new FileSystemUpdateJob
+	 * Create a new FileSystemUpdateJob.
 	 * @param config - configuration of the job.
-	 * @param indexLoc - index location in this case just a {@link DummyIndexLocation} as currently the directory is gotten from the config parameter "updatejob.directory"
+	 * @param indexLoc - index location in this case just a {@link DummyIndexLocation} as currently the 
+	 * directory is gotten from the config parameter "updatejob.directory"
 	 * @param updateCheckerConfigmap - map with all configured index parts
-	 * @throws FileNotFoundException in case the directory doesn't exist and creation of the directory is deactivated or the directory cannot be created.
+	 * @throws FileNotFoundException in case the directory doesn't exist and creation of the directory is 
+	 * deactivated or the directory cannot be created.
 	 */
 	public FileSystemUpdateJob(CRConfig config, IndexLocation indexLoc,
-		Hashtable<String, CRConfigUtil> updateCheckerConfigmap) throws FileNotFoundException {
+			ConcurrentHashMap<String, CRConfigUtil> updateCheckerConfigmap) throws FileNotFoundException {
 		super(config, indexLoc, updateCheckerConfigmap);
 
 		try {
