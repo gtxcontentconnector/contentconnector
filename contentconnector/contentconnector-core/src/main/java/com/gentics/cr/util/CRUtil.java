@@ -45,6 +45,11 @@ public class CRUtil {
 	 * Log4J Logger for debugging purposes.
 	 */
 	private static final Logger LOGGER = Logger.getLogger(CRUtil.class);
+	
+	/**
+	 * File protocol handler.
+	 */
+	private static final String FILE_PROTOCOL_IDENTIFIER = "file:/";
 
 	/**
 	 * Convert a String like "contentid:asc,name:desc" into an Sorting Array.
@@ -83,7 +88,7 @@ public class CRUtil {
 		}
 
 		// convert hashmap to uncomfortable Array :-/ and return that
-		return (Sorting[]) sortingColl.toArray(new Sorting[sortingColl.size()]);
+		return sortingColl.toArray(new Sorting[sortingColl.size()]);
 	}
 
 	/**
@@ -116,7 +121,7 @@ public class CRUtil {
 				}
 			}
 		}
-		return (sortingColl.toArray(ret));
+		return sortingColl.toArray(ret);
 	}
 
 	/**
@@ -162,7 +167,7 @@ public class CRUtil {
 			String defaultConfPath = System.getProperty("catalina.base") + File.separator + "conf" + File.separator + "gentics"
 					+ File.separator;
 			System.setProperty(PORTALNODE_CONFPATH, defaultConfPath);
-		} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith("file:/")) {
+		} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith(FILE_PROTOCOL_IDENTIFIER)) {
 			File confFile = null;
 			try {
 				confFile = new File(new URI(System.getProperty(PORTALNODE_CONFPATH)));
@@ -227,14 +232,13 @@ public class CRUtil {
 		return out.toString();
 	}
 
-	public static boolean isEmpty(final String s) {
-		boolean isempty = false;
-
-		if (s == null || s.length() == 0 || s.equals("")) {
-			isempty = true;
-		}
-
-		return isempty;
+	/**
+	 * Checks if a string is empty (null, length == 0 && equals "").
+	 * @param string variable to check
+	 * @return if all conditions are true.
+	 */
+	public static boolean isEmpty(final String string) {
+		return (string == null || string.length() == 0 || string.equals(""));
 	}
 
 	public static File createTempDir() throws IOException {
