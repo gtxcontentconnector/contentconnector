@@ -1,16 +1,10 @@
 package com.gentics.cr;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.junit.Before;
 
 import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.PlinkProcessor;
-import com.gentics.cr.util.CRUtil;
-import com.gentics.portalnode.cnintegration.PLinkProcessor;
 
 public class CRRequestProcessorTest extends RequestProcessorTest {
 
