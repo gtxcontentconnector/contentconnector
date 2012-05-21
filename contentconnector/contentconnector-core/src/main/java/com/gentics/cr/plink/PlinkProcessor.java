@@ -42,7 +42,7 @@ public class PlinkProcessor {
 	/**
 	 * configuration key to enable (default) or disable the JCS cache for resolving PLinks.
 	 */
-	public static String PLINK_CACHE_ACTIVATION_KEY = "plinkcache";
+	public final static String PLINK_CACHE_ACTIVATION_KEY = "plinkcache";
 
 	private boolean plinkcache = true;
 
@@ -50,7 +50,7 @@ public class PlinkProcessor {
 	 * Create new instance of plink processor.
 	 * @param config
 	 */
-	public PlinkProcessor(CRConfig config) {
+	public PlinkProcessor(final CRConfig config) {
 
 		this.config = config;
 		contextObjects = new HashMap<String, Resolvable>();
@@ -59,12 +59,12 @@ public class PlinkProcessor {
 			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n" +
 					"Therefore Velocity scripts will not work in the content.");
 		}
-		String s_plinkcache = null;
+		String plinkCacheEnabledString = null;
 		if (config != null) {
-			s_plinkcache = config.getString(PLINK_CACHE_ACTIVATION_KEY);
+			plinkCacheEnabledString = config.getString(PLINK_CACHE_ACTIVATION_KEY);
 		}
-		if (s_plinkcache != null && !"".equals(s_plinkcache)) {
-			plinkcache = Boolean.parseBoolean(s_plinkcache);
+		if (plinkCacheEnabledString != null && !"".equals(plinkCacheEnabledString)) {
+			plinkcache = Boolean.parseBoolean(plinkCacheEnabledString);
 		}
 
 		if (plinkcache) {
@@ -92,7 +92,7 @@ public class PlinkProcessor {
 	 * Deploy objects to the velocity context.
 	 * @param map
 	 */
-	public void deployObjects(Map<String, Resolvable> map) {
+	public void deployObjects(final Map<String, Resolvable> map) {
 		Iterator<String> it = map.keySet().iterator();
 		while (it.hasNext()) {
 			String key = it.next();
