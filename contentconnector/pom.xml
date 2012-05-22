@@ -13,8 +13,29 @@
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 	</properties>
 	<scm>
+		<connection>scm:svn:https://gtxcontentconnector.googlecode.com/svn/trunk/contentconnector</connection>
 		<url>https://gtxcontentconnector.googlecode.com/svn/trunk/contentconnector</url>
 	</scm>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<goals>deploy</goals>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<tagNameFormat>@{project.version}</tagNameFormat>
+					<tagBase>https://gtxcontentconnector.googlecode.com/svn/branches/</tagBase>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.4.1</version>
+			</plugin>
+		</plugins>
+	</build>
 	<modules>
 		<module>contentconnector-core</module>
 		<module>contentconnector-apihelper</module>
