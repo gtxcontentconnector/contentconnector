@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -43,30 +42,67 @@ import com.gentics.cr.util.generics.Lists;
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 545 $
  * @author $Author: supnig@constantinopel.at $
- *
  */
 public class LuceneRequestProcessor extends RequestProcessor {
 
-	protected static Logger log = Logger.getLogger(LuceneRequestProcessor.class);
-	protected static Logger ext_log = Logger.getLogger(LuceneRequestProcessor.class);
+	/**
+	 * Log4j logger.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(LuceneRequestProcessor.class);
+	
+	/**
+	 * Initialized in the constructor with the provided CRConfig.
+	 * Used to search in the contentrepository and retrieve the objects.
+	 */
 	private CRSearcher searcher = null;
-	protected String name = null;
+	
+	/**
+	 * Name of the provided config. Initialized on constructor initialization.
+	 */
+	private String name = null;
 
-	private boolean getStoredAttributes = false;
 
 	/**
 	 * init CRMetaResolvableBean with or without parsed_query.
 	 */
 	private boolean showParsedQuery = false;
 
+	/**
+	 * The score of a document provides information about the relevance of the document for the searchquery.
+	 * Key: SCOREATTRIBUTE
+	 */
 	private static final String SCORE_ATTRIBUTE_KEY = "SCOREATTRIBUTE";
+	
+	/**
+	 * Provide the documents as is - that means no indexing has happend on the documents yet.
+	 * Key: GETSTOREDATTRIBUTES
+	 */
 	private static final String GET_STORED_ATTRIBUTE_KEY = "GETSTOREDATTRIBUTES";
 
-	private ConcurrentHashMap<String, ContentHighlighter> highlighters;
+	/**
+	 * Provide the stored attributes.
+	 * Default value: false
+	 * Can be overwritten in config using key {@link LuceneRequestProcessor#GET_STORED_ATTRIBUTE_KEY}.
+	 */
+	private boolean getStoredAttributes = false;
 
+	/**
+	 * Define the maximum number of results to return.
+	 * Key: SEARCHCOUNT
+	 */
 	private static final String SEARCH_COUNT_KEY = "SEARCHCOUNT";
 
+	/**
+	 * Id of the document to use for creating a CRResolvableBean.
+	 * In most cases this should be: contentid
+	 */
 	private static final String ID_ATTRIBUTE_KEY = "idAttribute";
+	
+	/**
+	 * Map of all highlighters to use for content highlighting.
+	 * This map is created by {@link ContentHighlighter#getTransformerTable(GenericConfiguration)}
+	 */
+	private ConcurrentHashMap<String, ContentHighlighter> highlighters;
 
 	/**
 	 * Key where to find the total hits of the search in the metaresolvable.
@@ -81,17 +117,20 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	public static final String META_START_KEY = "start";
 
 	/**
-	 * TODO
+	 * Key where to find the total number of objects that have been retrieved (may be unequal to the number of totalhits).
+	 * Metaresolvable has to be enabled => LuceneRequestProcessor.META_RESOLVABLE_KEY
 	 */
 	public static final String META_COUNT_KEY = "count";
 
 	/**
-	 * TODO
+	 * Key where to find the query used for searching.
+	 * Metaresolvable has to be enabled => LuceneRequestProcessor.META_RESOLVABLE_KEY
 	 */
 	public static final String META_QUERY_KEY = "query";
 
 	/**
-	 * TODO
+	 * Key where to find the highest score for a document. 
+	 * Metaresolvable has to be enabled => LuceneRequestProcessor.META_RESOLVABLE_KEY
 	 */
 	public static final String META_MAXSCORE_KEY = "maxscore";
 
@@ -103,8 +142,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	public static final String HIGHLIGHT_QUERY_KEY = "highlightquery";
 
 	/**
-	 * Configuration key for the attributes to be searched when no explizit
-	 * attribute is given in the query.
+	 * Configuration key for the attributes to be searched when no explicit attribute is given in the query.
 	 */
 	public static final String SEARCHED_ATTRIBUTES_KEY = "searchedAttributes";
 
@@ -120,8 +158,8 @@ public class LuceneRequestProcessor extends RequestProcessor {
 
 	/**
 	 * Create new instance of LuceneRequestProcessor.
-	 * @param config
-	 * @throws CRException
+	 * @param config CRConfig to use for initializing the searcher, highlighters and configuring this class.
+	 * @throws CRException {@link RequestProcessor} throws CRExcpetion in case of no config or cache initialization exception
 	 */
 	public LuceneRequestProcessor(final CRConfig config) throws CRException {
 		super(config);
@@ -187,14 +225,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				request.getSortArray(),
 				request);
 		} catch (IOException ex) {
-			log.error("Error while getting search results from index.");
+			LOGGER.error("Error while getting search results from index.");
 			throw new CRException(ex);
 		}
 		ucSearch.stop();
-		log.debug("Search in Index took " + (System.currentTimeMillis() - indexSearchStartTime) + "ms");
+		LOGGER.debug("Search in Index took " + (System.currentTimeMillis() - indexSearchStartTime) + "ms");
 		/** * Get results */
 
-		if (log.isDebugEnabled()) {
+		if (LOGGER.isDebugEnabled()) {
 			if (searchResult != null) {
 				for (Object res : searchResult.values()) {
 					if (res instanceof LinkedHashMap) {
@@ -205,7 +243,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 								if (object instanceof Document) {
 									Document doc = (Document) object;
 									if (doc != null) {
-										log.debug("LuceneRequestProcessor.getObjects: "
+										LOGGER.debug("LuceneRequestProcessor.getObjects: "
 												+ doc.getField("contentid").toString());
 									}
 								}
@@ -214,7 +252,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 					}
 				}
 			} else {
-				log.debug("No results found.");
+				LOGGER.debug("No results found.");
 			}
 		}
 		/**
@@ -254,19 +292,18 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 */
 	private int getCount(final CRRequest request) throws CRException {
 		int count = request.getCount();
-		//IF COUNT IS NOT SET IN THE REQUEST, USE DEFAULT VALUE LOADED FROM
-		//CONFIG
+		//IF COUNT IS NOT SET IN THE REQUEST, USE DEFAULT VALUE LOADED FROM CONFIG
 		if (count <= 0) {
-			String cstring = (String) this.config.get(SEARCH_COUNT_KEY);
-			if (cstring != null) {
-				count = new Integer(cstring);
+			String countConfigValue = (String) this.config.get(SEARCH_COUNT_KEY);
+			if (countConfigValue != null) {
+				count = Integer.valueOf(countConfigValue);
 			}
 		}
 		if (count <= 0) {
 			String message = "Default count is lower or equal to 0! This will "
 					+ "result in an error. Overthink your config (insert rp."
 					+ "<number>.searchcount=<value> in your properties file)!";
-			log.error(message);
+			LOGGER.error(message);
 			throw new CRException(new CRError("Error", message));
 		}
 		return count;
@@ -282,7 +319,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		int start = request.getStart();
 		if (start < 0) {
 			String message = "Bad request: start is lower than 0!";
-			log.error(message);
+			LOGGER.error(message);
 			throw new CRException(new CRError("Error", message));
 		}
 		return start;
@@ -346,7 +383,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			processDocuments(docs, result, reader, parsedQuery);
 
 		} catch (IOException e) {
-			log.error("Cannot get Index reader for highlighting", e);
+			LOGGER.error("Cannot get Index reader for highlighting", e);
 		} finally {
 			indexAccessor.release(reader, false);
 		}
@@ -376,7 +413,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				parsedQuery = parsedQuery.rewrite(reader);
 
 			} catch (ParseException e) {
-				log.error("Error while parsing hightlight query", e);
+				LOGGER.error("Error while parsing hightlight query", e);
 			}
 		}
 		return parsedQuery;
@@ -417,7 +454,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 					}
 				}
 			}
-			log.debug("Highlighters took " + (System.currentTimeMillis() - s2) + "ms");
+			LOGGER.debug("Highlighters took " + (System.currentTimeMillis() - s2) + "ms");
 			ucProcessSearchHighlight.stop();
 		}
 	}
@@ -450,7 +487,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				//DO HIGHLIGHTING
 				doHighlighting(crBean, doc, parsedQuery, reader);
 
-				ext_log.debug("Found " + crBean.getContentid() + " with score " + score.toString());
+				LOGGER.debug("Found " + crBean.getContentid() + " with score " + score.toString());
 				result.add(crBean);
 			}
 		}
