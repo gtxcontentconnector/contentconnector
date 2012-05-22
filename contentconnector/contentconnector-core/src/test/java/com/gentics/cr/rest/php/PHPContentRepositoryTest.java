@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Vector;
 
 import org.junit.Before;
@@ -47,18 +48,103 @@ public class PHPContentRepositoryTest {
 		children.add(c2);
 		b3.setChildRepository(children);
 	}
-
 	@Test
-	public void phpTransformerTest() throws CRException, UnsupportedEncodingException {
+	public void phpTransformerTest() throws CRException, UnsupportedEncodingException, BadFormatException {
 		PHPContentRepository cr = new PHPContentRepository(new String[] { "updatetimestamp" });
 		cr.addObjects(beanCollection);
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		cr.toStream(stream);
 		String s = stream.toString("utf-8");
-		assertEquals(
-			"Coult not render PHP.",
-			"a:5:{s:6:\"status\";s:2:\"ok\";s:7:\"10002.1\";a:6:{s:9:\"contentid\";s:7:\"10002.1\";s:6:\"obj_id\";s:4:\"null\";s:8:\"obj_type\";s:4:\"null\";s:9:\"mother_id\";s:0:\"\";s:11:\"mother_type\";s:0:\"\";s:10:\"attributes\";a:1:{s:15:\"updatetimestamp\";s:9:\"111111111\";}}s:7:\"10002.2\";a:6:{s:9:\"contentid\";s:7:\"10002.2\";s:6:\"obj_id\";s:4:\"null\";s:8:\"obj_type\";s:4:\"null\";s:9:\"mother_id\";s:0:\"\";s:11:\"mother_type\";s:0:\"\";s:10:\"attributes\";a:1:{s:15:\"updatetimestamp\";s:9:\"111211111\";}}s:7:\"10002.3\";a:7:{s:9:\"contentid\";s:7:\"10002.3\";s:6:\"obj_id\";s:4:\"null\";s:8:\"obj_type\";s:4:\"null\";s:9:\"mother_id\";s:0:\"\";s:11:\"mother_type\";s:0:\"\";s:10:\"attributes\";a:1:{s:15:\"updatetimestamp\";s:9:\"131111011\";}s:8:\"children\";a:2:{s:7:\"10002.5\";a:6:{s:9:\"contentid\";s:7:\"10002.5\";s:6:\"obj_id\";s:4:\"null\";s:8:\"obj_type\";s:4:\"null\";s:9:\"mother_id\";s:0:\"\";s:11:\"mother_type\";s:0:\"\";s:10:\"attributes\";a:1:{s:15:\"updatetimestamp\";s:9:\"141111011\";}}s:7:\"10002.6\";a:6:{s:9:\"contentid\";s:7:\"10002.6\";s:6:\"obj_id\";s:4:\"null\";s:8:\"obj_type\";s:4:\"null\";s:9:\"mother_id\";s:0:\"\";s:11:\"mother_type\";s:0:\"\";s:10:\"attributes\";a:2:{s:11:\"permissions\";a:1:{s:1:\"0\";s:13:\"mar, sal, soc\";}s:15:\"updatetimestamp\";s:9:\"151111011\";}}}}s:7:\"10002.4\";a:6:{s:9:\"contentid\";s:7:\"10002.4\";s:6:\"obj_id\";s:4:\"null\";s:8:\"obj_type\";s:4:\"null\";s:9:\"mother_id\";s:0:\"\";s:11:\"mother_type\";s:0:\"\";s:10:\"attributes\";a:1:{s:15:\"updatetimestamp\";s:9:\"111111011\";}}}",
-			s);
+		
+		PHPSerializer serializer = new PHPSerializer("utf-8");
+		Map<Object, Object> map = (Map<Object, Object>) serializer.unserialize(s);
+		assertEquals(resolvePath(map, "status"), "ok");
+		
+		assertEquals("10002.1", resolvePath(map, "'10002.1'.contentid"));
+		assertEquals("null", resolvePath(map, "'10002.1'.obj_id"));
+		assertEquals("null", resolvePath(map, "'10002.1'.obj_type"));
+		assertEquals("", resolvePath(map, "'10002.1'.mother_id"));
+		assertEquals("", resolvePath(map, "'10002.1'.mother_type"));
+		assertEquals( "111111111", resolvePath(map, "'10002.1'.attributes.updatetimestamp"));
+		assertEquals(1, ((Map<Object, Object>) resolvePath(map, "'10002.1'.attributes")).size());
+		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.1'")).size());
+		
+		assertEquals("10002.2", resolvePath(map, "'10002.2'.contentid"));
+		assertEquals("null", resolvePath(map, "'10002.2'.obj_id"));
+		assertEquals("null", resolvePath(map, "'10002.2'.obj_type"));
+		assertEquals("", resolvePath(map, "'10002.2'.mother_id"));
+		assertEquals("", resolvePath(map, "'10002.2'.mother_type"));
+		assertEquals( "111211111", resolvePath(map, "'10002.2'.attributes.updatetimestamp"));
+		assertEquals(1, ((Map<Object, Object>) resolvePath(map, "'10002.2'.attributes")).size());
+		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.2'")).size());
+		
+		assertEquals("10002.3", resolvePath(map, "'10002.3'.contentid"));
+		assertEquals("null", resolvePath(map, "'10002.3'.obj_id"));
+		assertEquals("null", resolvePath(map, "'10002.3'.obj_type"));
+		assertEquals("", resolvePath(map, "'10002.3'.mother_id"));
+		assertEquals("", resolvePath(map, "'10002.3'.mother_type"));
+		assertEquals("131111011", resolvePath(map, "'10002.3'.attributes.updatetimestamp"));
+		assertEquals(1, ((Map<Object, Object>) resolvePath(map, "'10002.3'.attributes")).size());
+		
+		
+		
+		assertEquals("10002.5", resolvePath(map, "'10002.3'.children.'10002.5'.contentid"));
+		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.5'.obj_id"));
+		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.5'.obj_type"));
+		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.5'.mother_id"));
+		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.5'.mother_type"));
+		assertEquals("141111011", resolvePath(map, "'10002.3'.children.'10002.5'.attributes.updatetimestamp"));
+		assertEquals(1, ((Map<Object, Object>) resolvePath(map, "'10002.3'.children.'10002.5'.attributes")).size());
+		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.3'.children.'10002.5'")).size());
+
+		assertEquals("10002.6", resolvePath(map, "'10002.3'.children.'10002.6'.contentid"));
+		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.6'.obj_id"));
+		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.6'.obj_type"));
+		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.6'.mother_id"));
+		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.6'.mother_type"));
+		assertEquals("151111011", resolvePath(map, "'10002.3'.children.'10002.6'.attributes.updatetimestamp"));
+		assertEquals("mar, sal, soc", resolvePath(map, "'10002.3'.children.'10002.6'.attributes.permissions.0"));
+		assertEquals(1, ((Map<Object, Object>) resolvePath(map, "'10002.3'.children.'10002.6'.attributes.permissions")).size());
+		assertEquals(2, ((Map<Object, Object>) resolvePath(map, "'10002.3'.children.'10002.6'.attributes")).size());
+		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.3'.children.'10002.6'")).size());
+		assertEquals(2, ((Map<Object, Object>) resolvePath(map, "'10002.3'.children")).size());
+		assertEquals(7, ((Map<Object, Object>) resolvePath(map, "'10002.3'")).size());
+		
+		assertEquals(resolvePath(map, "'10002.4'.contentid"), "10002.4");
+		assertEquals("null", resolvePath(map, "'10002.4'.obj_id"));
+		assertEquals("null", resolvePath(map, "'10002.4'.obj_type"));
+		assertEquals("", resolvePath(map, "'10002.4'.mother_id"));
+		assertEquals("", resolvePath(map, "'10002.4'.mother_type"));
+		assertEquals("111111011", resolvePath(map, "'10002.4'.attributes.updatetimestamp"));
+		assertEquals(1, ((Map<Object, Object>) resolvePath(map, "'10002.4'.attributes")).size());
+		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.4'")).size());
+		
+		assertEquals(map.size(), 5);
+	}
+	private Object resolvePath(Map<Object, Object> map, String path) {
+		int pos = -1;
+		if(path.indexOf("'") == 0 && (pos = path.indexOf("'", 2)) != -1) {
+			String elementPath = path.substring(1, pos);
+			if (path.length() > pos + 1 && path.charAt(pos + 1) == '.') {
+				String remainingPath = path.substring(pos + 2);
+				Object element = map.get(elementPath);
+				if (element instanceof Map) {
+					return resolvePath((Map<Object, Object>) element, remainingPath);
+				}
+			} else if(path.length() == pos + 1) {
+				return map.get(elementPath);
+			}
+			throw new AssertionError("cannot resolve " + path + " on " + map);
+		} else if ((pos = path.indexOf(".")) != -1) {
+			String elementPath = path.substring(0, pos);
+			String remainingPath = path.substring(pos + 1);
+			Object element = map.get(elementPath);
+			if (element instanceof Map) {
+				return resolvePath((Map<Object, Object>) element, remainingPath);
+			}
+			throw new AssertionError("cannot resolve " + path + " on " + map);
+		}
+		return map.get(path);
 	}
 
 }
