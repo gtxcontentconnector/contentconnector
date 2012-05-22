@@ -51,14 +51,6 @@
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>com.gentics.public_snapshots</id>
-			<name>Archiva Managed Public Repository</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
-			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
