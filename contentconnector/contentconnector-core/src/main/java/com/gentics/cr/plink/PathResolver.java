@@ -265,11 +265,14 @@ public class PathResolver {
 		} else {
 			// no filename or path could be resolved
 			// return a dynamic URL instead
-			if (linkedObject.get("contentid") != null) {
+			if (linkedObject != null && linkedObject.get("contentid") != null) {
 				log.warn("Object " + linkedObject.get("contentid") + " has no filename.");
 				return getDynamicUrl((String) linkedObject.get("contentid"));
 			} else {
 				log.warn("Contentid of linkObject could not be resolved " + "therefore no filename can be looked up");
+				if (linkedObject != null) {
+					log.debug("The resolvable (linkObject) provides the following information: " + linkedObject);
+				}
 				return null;
 			}
 		}
