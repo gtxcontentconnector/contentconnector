@@ -14,6 +14,8 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.LucenePathResolver;
 
 /**
+ * Converts links within the provided content to plinks.
+ * Existing plinks are ignored by the class.
  * 
  * Last changed: $Date: 2009-06-24 17:10:19 +0200 (Mi, 24 Jun 2009) $
  * @version $Revision: 99 $
@@ -21,26 +23,68 @@ import com.gentics.cr.plink.LucenePathResolver;
  *
  */
 public class LinkToPlinkTransformer extends ContentTransformer {
+
+	/**
+	 * Log4j logger.
+	 */
 	private static Logger log = Logger.getLogger(LinkToPlinkTransformer.class);
+	
+	/**
+	 * Config identifier to set the attribute for content parsing.
+	 */
 	private static final String ATTRIBUTE_KEY = "attribute";
+
+	/**
+	 * Default value for attribute to use for content parsing.
+	 */
+	private String attribute = "content";
+	
+	/**
+	 * Config identifier to set the static prefix in the config.
+	 */
 	private static final String STATIC_PREFIX_KEY = "staticprefix";
+	
+	/**
+	 * Config identifier to set the hostprefix in the config.
+	 */
 	private static final String HOST_PREFIX_KEY = "hostprefix";
 
-	private String attribute = "content";
-	Pattern plinkResolverPattern = Pattern.compile("(href|src)=\"([^\"]+)\"");
-	Pattern parameterPattern = Pattern.compile("(#|\\?)(.*)");
-	Pattern excludeHostPattern = Pattern.compile("^([a-zA-Z][a-zA-Z0-9^:]*:|#|<plink)");
+	
+	/**
+	 * Find all links (href, src) within the content.
+	 */
+	private Pattern plinkResolverPattern = Pattern.compile("(href|src)=\"([^\"]+)\"");
+	
+	/**
+	 * Filter all parameter from the url (?contentid).
+	 */
+	private Pattern parameterPattern = Pattern.compile("(#|\\?)(.*)");
+	
+	private Pattern excludeHostPattern = Pattern.compile("^([a-zA-Z][a-zA-Z0-9^:]*:|#|<plink)");
 
+	/**
+	 * configuration for the LinkToPlinkTransformer.
+	 * provides staticprefix, hostprefix, rule, searchconfig, indexconfig, attribute to use for content
+	 */
 	private CRConfigUtil config;
+	
 	private LucenePathResolver pr;
+	
+	/**
+	 * e.g.: /Portal.Node/public/content/ .
+	 */
 	private String staticprefix = null;
+	
+	/**
+	 * e.g.: https://www.test.at .
+	 */
 	private String hostprefix = null;
 
 	/**
 	 * Create new Instance.
 	 * @param config
 	 */
-	public LinkToPlinkTransformer(GenericConfiguration config) {
+	public LinkToPlinkTransformer(final GenericConfiguration config) {
 		super(config);
 		this.config = new CRConfigUtil(config, "link_to_plinktransformer");
 		String attString = config.getString(ATTRIBUTE_KEY);
@@ -55,7 +99,7 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 	}
 
 	@Override
-	public void processBean(CRResolvableBean bean) throws CRException {
+	public void processBean(final CRResolvableBean bean) throws CRException {
 		String content = (String) bean.get(this.attribute);
 		if (content != null) {
 			// starttime
@@ -67,7 +111,12 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 		}
 	}
 
-	private String resolveLinks(String content) {
+	/**
+	 * Resolve absolute urls in content to plinks. Plinks are ignored as the regex doesn't capture those.
+	 * @param content for parsing.
+	 * @return complete url
+	 */
+	private String resolveLinks(final String content) {
 		Matcher matcher = plinkResolverPattern.matcher(content);
 		StringBuffer buf = new StringBuffer();
 		while (matcher.find()) {
@@ -99,9 +148,10 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 					String contentid = bean.getContentid();
 					link = "<plink id=\"" + contentid + "\">";
 				} else {
+					// this warning may be triggered pretty often in case of plink usage in the content
 					log.warn("Could not resolve internal link: " + link);
 				}
-				log.warn("would be resolving");
+				log.warn("link is not null and either it is an absolute url or a plink has been created for it");
 			}
 
 			//ADD PARAMETERS
