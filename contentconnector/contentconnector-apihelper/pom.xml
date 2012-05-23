@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>contentconnector</artifactId>
@@ -52,12 +53,12 @@
 		<dependency>
 			<groupId>gentics-portalnode</groupId>
 			<artifactId>gentics-portalnode</artifactId>
-			<version>4_build_12026</version>
+			<version>4_build_12084-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>gentics-portalnode</groupId>
 			<artifactId>gentics-portalnode-api</artifactId>
-			<version>4_build_12026</version>
+			<version>4_build_12084-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.portlet</groupId>
@@ -87,4 +88,17 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>com.gentics.public</id>
+			<name>Gentics Public Maven Repository (releases)</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>
