@@ -331,8 +331,10 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 
 	/**
 	 * Get the parent folder of the current bean.
+	 * This method uses non api objects and should not be used!
 	 * @return GenticsContentObjectImpl representing the parent folder.
 	 */
+	@Deprecated
 	public GenticsContentObjectImpl getMother() {
 		try {
 			GenticsContentObjectImpl r = (GenticsContentObjectImpl) resolvable;
