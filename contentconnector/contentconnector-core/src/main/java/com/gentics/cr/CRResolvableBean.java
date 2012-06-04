@@ -565,7 +565,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * @param attributeName - name of the attribute to remove
 	 */
 	public final void remove(final String attributeName) {
-		if (this.attrMap != null && this.attrMap.contains(attributeName)) {
+		if (this.attrMap != null && this.attrMap.containsKey(attributeName)) {
 			this.attrMap.remove(attributeName);
 		}
 	}
