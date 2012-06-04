@@ -13,7 +13,7 @@ public class HttpSessionWrapper extends ResolvableWrapper {
 	private HttpSession session;
 
 	/**
-	 * Create new instance
+	 * Create new instance.
 	 * @param session
 	 */
 	public HttpSessionWrapper(HttpSession session) {
@@ -21,13 +21,11 @@ public class HttpSessionWrapper extends ResolvableWrapper {
 	}
 
 	/**
-	 * 
-	 * Get Property
+	 * Get Property from the session if the key equals ATTRIBUTES or call the getter for the key.
 	 * @param key 
-	 * @return 
-	 * 
+	 * @return Object represented by the key.
 	 */
-	public Object get(String key) {
+	public Object get(final String key) {
 		try {
 			Object value;
 			if (key.equalsIgnoreCase("ATTRIBUTES")) {

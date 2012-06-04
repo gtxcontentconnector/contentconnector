@@ -33,7 +33,7 @@ public class JSONContentRepository extends ContentRepository {
 	private JSONObject rootObject;
 
 	/**
-	 * Create instance Set response encoding to UTF-8
+	 * Create instance Set response encoding to UTF-8.
 	 * 
 	 * @param attr
 	 */
@@ -45,7 +45,7 @@ public class JSONContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * 
 	 * @param attr
 	 * @param encoding
@@ -58,7 +58,7 @@ public class JSONContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * 
 	 * @param attr
 	 * @param encoding
@@ -72,11 +72,7 @@ public class JSONContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * 
-	 * Returns "application/jsonrequest"
-	 * 
-	 * @return
-	 * 
+	 * @return "application/jsonrequest"
 	 */
 	public String getContentType() {
 		// return "text/javascript";
@@ -84,7 +80,7 @@ public class JSONContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Responds with a JSON ERROR OBject
+	 * Responds with a JSON ERROR Object.
 	 * 
 	 * @param stream
 	 * @param ex
@@ -115,7 +111,7 @@ public class JSONContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Writes the objects as JSON Stream
+	 * Writes the objects as JSON Stream.
 	 * 
 	 * @param stream
 	 * @throws CRException

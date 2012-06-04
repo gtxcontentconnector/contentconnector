@@ -16,34 +16,34 @@ import com.gentics.portalnode.portal.Portal;
 public class PortalNodeInteractor {
 
 	/**
-	 * Get a configured Instance of Datasource from a running Portal.Node Instance
+	 * Get a configured Instance of Datasource from a running Portal.Node Instance.
 	 * @param key datasource identifyer e.g.: ccr, pcr,...
-	 * @return
+	 * @return get a new datasource instance created by createDatasource called on Portal#getCurrentPortal().
 	 */
-	public static Datasource getPortalnodeDatasource(String key) {
+	public static Datasource getPortalnodeDatasource(final String key) {
 		return (Portal.getCurrentPortal().createDatasource(key));
 	}
 
 	/**
-	 * Get a TemplateProcessor from a running Portal.Node Instance
+	 * Get a TemplateProcessor from a running Portal.Node Instance.
 	 * @param portlet
-	 * @return
+	 * @return TemplateProcessor used by the provided portlet
 	 */
 	@SuppressWarnings("deprecation")
-	public static TemplateProcessor getPortletTemplateProcessor(GenticsPortlet portlet) {
+	public static TemplateProcessor getPortletTemplateProcessor(final GenticsPortlet portlet) {
 		//TODO Get not depricated method from DEV
 		return (portlet.getTemplateProcessor(null, null));
 	}
 
 	/**
-	 * Use Portal.Node functionality to resize Images
+	 * Use Portal.Node functionality to resize Images.
 	 * @param binary - the image data as byte array
 	 * @param width - the desired with
 	 * @param height - the desired height
 	 * @param imageType - the image type e.g. png
-	 * @return
+	 * @return resized image (resized by GenticsImageResizer) as byte array.
 	 */
-	public static byte[] resizeImage(byte[] binary, int width, int height, String imageType) {
+	public static byte[] resizeImage(final byte[] binary, final int width, final int height, final String imageType) {
 		return GenticsImageResizer.resize(binary, Math.max(width, 0), Math.max(height, 0), imageType);
 	}
 }

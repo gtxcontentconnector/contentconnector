@@ -25,28 +25,32 @@ import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
  */
 public class RenderContentTag extends TagSupport {
 	/**
-	 * 
+	 * unique serialization id.
 	 */
 	private static final long serialVersionUID = -5724484220477278975L;
+
+	/**
+	 * log4j logger.
+	 */
 	private Logger logger = Logger.getLogger("com.gentics.cr.rendering");
 
 	/**
-	 * Name of the render request attribute for the instance of {@link ContentRenderer}.
+	 * Name of the render request attribute for the instance of {@link com.gentics.cr.rendering.ContentRenderer}.
 	 */
 	public final static String RENDERER_PARAM = "rendercontenttag.renderer";
 
 	/**
-	 * Name of the config attribute for the instance of {@link GenericConfiguration}.
+	 * Name of the config attribute for the instance of {@link com.gentics.cr.configuration.GenericConfiguration}.
 	 */
 	public final static String CRCONF_PARAM = "rendercontenttag.crconf";
 
 	/**
-	 * Name of the request attribute for the instance of {@link RenderRequest}.
+	 * Name of the request attribute for the instance of RenderRequest.
 	 */
 	public final static String REQUEST_PARAM = "rendercontenttag.request";
 
 	/**
-	 * Name of the render request attribute for the instance of {@link PLinkReplacer}.
+	 * Name of the render request attribute for the instance of {@link com.gentics.api.portalnode.connector.PLinkReplacer}.
 	 */
 	public final static String PLINK_PARAM = "rendercontenttag.plinkreplacer";
 
@@ -73,10 +77,10 @@ public class RenderContentTag extends TagSupport {
 	protected boolean urlencode = false;
 
 	/**
-	 * Set the object to be rendered. Must be an instance of {@link CRResolvableBean}.
+	 * Set the object to be rendered. Must be an instance of {@link com.gentics.cr.CRResolvableBean}.
 	 * @param object rendered object
 	 */
-	public void setObject(Object object) {
+	public void setObject(final Object object) {
 		if (object instanceof CRResolvableBean) {
 			this.object = (CRResolvableBean) object;
 		}
@@ -86,7 +90,7 @@ public class RenderContentTag extends TagSupport {
 	 * Set the content attribute to be rendered.
 	 * @param contentAttribute name of the rendered content attribute
 	 */
-	public void setContentAttribute(String contentAttribute) {
+	public void setContentAttribute(final String contentAttribute) {
 		this.contentAttribute = contentAttribute;
 	}
 
@@ -95,7 +99,7 @@ public class RenderContentTag extends TagSupport {
 	 * @param urlencode 
 	 * 
 	 */
-	public void setUrlencode(String urlencode) {
+	public void setUrlencode(final String urlencode) {
 		this.urlencode = "true".equals(urlencode);
 	}
 
@@ -103,14 +107,12 @@ public class RenderContentTag extends TagSupport {
 	 * 
 	 * @param var
 	 */
-	public void setVar(String var) {
+	public void setVar(final String var) {
 		this.var = var;
 	}
 
 	/**
-	 * @return 
 	 * @throws JspException 
-	 * 
 	 */
 	public int doEndTag() throws JspException {
 		// get the ContentRenderer
@@ -169,11 +171,10 @@ public class RenderContentTag extends TagSupport {
 	}
 
 	/**
-	 * Get the servlet request
+	 * Get the servlet request.
 	 * 
 	 * @return servlet request
-	 * @throws JspException
-	 *             when the servlet request could not be found
+	 * @throws JspException when the servlet request could not be found
 	 */
 	protected ServletRequest getServletRequest() throws JspException {
 		return (pageContext.getRequest());

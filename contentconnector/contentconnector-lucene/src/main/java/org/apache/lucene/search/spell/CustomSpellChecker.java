@@ -142,12 +142,9 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * Use the given directory as a spell checker index. The directory is
 	 * created if it doesn't exist yet.
 	 * 
-	 * @param sspellIndex
-	 *            the spell index directory
-	 * @param xsd
-	 *            the {@link StringDistance} measurement to use
-	 * @throws IOException
-	 *             if Spellchecker can not open the directory
+	 * @param sspellIndex the spell index directory
+	 * @param xsd the {@link org.apache.lucene.search.spell.StringDistance} measurement to use
+	 * @throws IOException if Spellchecker can not open the directory
 	 */
 	public CustomSpellChecker(final LuceneIndexLocation sspellIndex, final StringDistance xsd) throws IOException {
 		setSpellIndex(sspellIndex);
@@ -156,17 +153,14 @@ public class CustomSpellChecker implements java.io.Closeable {
 
 	/**
 	 * Use the given directory as a spell checker index with a
-	 * {@link LevensteinDistance} as the default {@link StringDistance}. The
+	 * {@link org.apache.lucene.search.spell.LevensteinDistance} as the default 
+	 * {@link org.apache.lucene.search.spell.StringDistance}. The
 	 * directory is created if it doesn't exist yet.
 	 * 
-	 * @param xminScore
-	 *            min score
-	 * @param xminDfreq
-	 *            min d freq
-	 * @param sspellIndex
-	 *            the spell index directory
-	 * @throws IOException
-	 *             if spellchecker can not open the directory
+	 * @param xminScore min score
+	 * @param xminDfreq min d freq
+	 * @param sspellIndex the spell index directory
+	 * @throws IOException if spellchecker can not open the directory
 	 */
 	public CustomSpellChecker(final LuceneIndexLocation sspellIndex, final Float xminScore, final Integer xminDfreq)
 		throws IOException {
@@ -184,10 +178,8 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * index if <code>spellIndex</code> is the same value as given in the
 	 * constructor.
 	 * 
-	 * @param spellIndexDir
-	 *            the spell directory to use
-	 * @throws IOException
-	 *             if spellchecker can not open the directory
+	 * @param spellIndexDir the spell directory to use
+	 * @throws IOException if spellchecker can not open the directory
 	 */
 	// TODO: we should make this final as it is called in the constructor
 	public final void setSpellIndex(final LuceneIndexLocation spellIndexDir) throws IOException {
@@ -200,23 +192,22 @@ public class CustomSpellChecker implements java.io.Closeable {
 	}
 
 	/**
-	 * Sets the {@link StringDistance} implementation for this
-	 * {@link SpellChecker} instance.
+	 * Sets the {@link org.apache.lucene.search.spell.StringDistance} implementation for this 
+	 * {@link org.apache.lucene.search.spell.SpellChecker} instance.
 	 * 
-	 * @param xsd
-	 *            the {@link StringDistance} implementation for this
-	 *            {@link SpellChecker} instance
+	 * @param xsd the {@link org.apache.lucene.search.spell.StringDistance} implementation for 
+	 * this {@link org.apache.lucene.search.spell.SpellChecker} instance
 	 */
 	public final void setStringDistance(final StringDistance xsd) {
 		this.sd = xsd;
 	}
 
 	/**
-	 * Returns the {@link StringDistance} instance used by this
-	 * {@link SpellChecker} instance.
+	 * Returns the {@link org.apache.lucene.search.spell.StringDistance} instance used by this
+	 * {@link org.apache.lucene.search.spell.SpellChecker} instance.
 	 * 
-	 * @return the {@link StringDistance} instance used by this
-	 *         {@link SpellChecker} instance.
+	 * @return the {@link org.apache.lucene.search.spell.StringDistance} instance used by this
+	 *         {@link org.apache.lucene.search.spell.SpellChecker} instance.
 	 */
 	public final StringDistance getStringDistance() {
 		return sd;
@@ -247,12 +238,9 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * Thus, you should set this value to <b>at least</b> 5 for a good
 	 * suggestion.
 	 * 
-	 * @param word
-	 *            the word you want a spell check done on
-	 * @param numSug
-	 *            the number of suggested words
-	 * @throws IOException
-	 *             if the underlying index throws an {@link IOException}
+	 * @param word the word you want a spell check done on
+	 * @param numSug the number of suggested words
+	 * @throws IOException if the underlying index throws an {@link IOException}
 	 * @return String[]
 	 */
 	public final String[] suggestSimilar(final String word, final int numSug) throws IOException {
@@ -274,13 +262,9 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * Thus, you should set this value to <b>at least</b> 5 for a good
 	 * suggestion.
 	 * 
-	 * @param word
-	 *            the word you want a spell check done on
-	 * @param numSug
-	 *            the number of suggested words
-	 * @param ir
-	 *            the indexReader of the user index (can be null see field
-	 *            param)
+	 * @param word the word you want a spell check done on
+	 * @param numSug the number of suggested words
+	 * @param ir the indexReader of the user index (can be null see field param)
 	 * @param field
 	 *            the field of the user index: if field is not null, the
 	 *            suggested words are restricted to the words present in this
@@ -450,14 +434,10 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Add a clause to a boolean query.
 	 * 
-	 * @param q
-	 *            query
-	 * @param name
-	 *            name
-	 * @param value
-	 *            value
-	 * @param boost
-	 *            boost
+	 * @param q query
+	 * @param name name
+	 * @param value value
+	 * @param boost boost
 	 */
 	private static void add(final BooleanQuery q, final String name, final String value, final float boost) {
 		Query tq = new TermQuery(new Term(name, value));
@@ -468,12 +448,9 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Add a clause to a boolean query.
 	 * 
-	 * @param q
-	 *            query
-	 * @param name
-	 *            name
-	 * @param value
-	 *            value
+	 * @param q query
+	 * @param name name
+	 * @param value value
 	 */
 	private static void add(final BooleanQuery q, final String name, final String value) {
 		q.add(new BooleanClause(new TermQuery(new Term(name, value)), BooleanClause.Occur.SHOULD));
@@ -482,12 +459,9 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Form all ngrams for a given word.
 	 * 
-	 * @param text
-	 *            the word to parse
-	 * @param ng
-	 *            the ngram length e.g. 3
-	 * @return an array of all ngrams in the word and note that duplicates are
-	 *         not removed
+	 * @param text the word to parse
+	 * @param ng the ngram length e.g. 3
+	 * @return an array of all ngrams in the word and note that duplicates are not removed
 	 */
 	private static String[] formGrams(final String text, final int ng) {
 		int len = text.length();
@@ -501,8 +475,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Removes all terms from the spell check index.
 	 * 
-	 * @throws IOException
-	 *             in case of error
+	 * @throws IOException in case of error
 	 */
 	public final void clearIndex() throws IOException {
 		ensureOpen();
@@ -521,10 +494,8 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Check whether the word exists in the index.
 	 * 
-	 * @param word
-	 *            word
-	 * @throws IOException
-	 *             in case of error
+	 * @param word word
+	 * @throws IOException in case of error
 	 * @return true if the word exists in the index
 	 */
 	public final boolean exist(final String word) throws IOException {
@@ -548,14 +519,10 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Indexes the data from the given {@link Dictionary}.
 	 * 
-	 * @param dict
-	 *            Dictionary to index
-	 * @param mergeFactor
-	 *            mergeFactor to use when indexing
-	 * @param ramMB
-	 *            the max amount or memory in MB to use
-	 * @throws IOException
-	 *             in case of error
+	 * @param dict Dictionary to index
+	 * @param mergeFactor mergeFactor to use when indexing
+	 * @param ramMB the max amount or memory in MB to use
+	 * @throws IOException in case of error
 	 */
 	public final void indexDictionary(final Dictionary dict) throws IOException {
 		synchronized (modifyCurrentIndexLock) {
@@ -621,10 +588,8 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Indexes the data from the given {@link Dictionary}.
 	 * 
-	 * @param dict
-	 *            the dictionary to index
-	 * @throws IOException
-	 *             in case of error
+	 * @param dict the dictionary to index
+	 * @throws IOException in case of error
 	 */
 	// public final void indexDictionary(final Dictionary dict) throws
 	// IOException {
@@ -652,7 +617,6 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * get max.
 	 * 
 	 * @param l
-	 *            l
 	 * @return max
 	 */
 	private static int getMax(final int l) {
@@ -668,12 +632,9 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * create document.
 	 * 
-	 * @param text
-	 *            t
-	 * @param ng1
-	 *            ng
-	 * @param ng2
-	 *            ng
+	 * @param text t
+	 * @param ng1 ng
+	 * @param ng2 ng
 	 * @return document
 	 */
 	private static Document createDocument(final String text, final int ng1, final int ng2) {
@@ -687,14 +648,10 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * add Gram.
 	 * 
-	 * @param text
-	 *            t
-	 * @param doc
-	 *            d
-	 * @param ng1
-	 *            n
-	 * @param ng2
-	 *            n
+	 * @param text t
+	 * @param doc d
+	 * @param ng1 n
+	 * @param ng2 n
 	 */
 	private static void addGram(final String text, final Document doc, final int ng1, final int ng2) {
 		int len = text.length();
