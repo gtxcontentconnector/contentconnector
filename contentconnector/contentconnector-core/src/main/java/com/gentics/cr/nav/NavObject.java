@@ -32,7 +32,7 @@ public class NavObject {
 	private Map<String, Object> objects;
 
 	/**
-	 * Create new instance of NavObject
+	 * Create new instance of NavObject.
 	 * @param conf
 	 * @param bean
 	 * @param level
@@ -56,7 +56,7 @@ public class NavObject {
 	}
 
 	/**
-	 * gets the current object
+	 * gets the current object.
 	 * @return object as CRResolvableBean
 	 */
 	public CRResolvableBean getObject() {
@@ -64,7 +64,7 @@ public class NavObject {
 	}
 
 	/**
-	 * gets level of current object (starts with level 0)
+	 * gets level of current object (starts with level 0).
 	 * @return level as int
 	 */
 	public int getLevel() {
@@ -72,26 +72,26 @@ public class NavObject {
 	}
 
 	/**
-	 * returns true if the given contentid is in the path (root object of this tree and current object)
+	 * returns true if the given contentid is in the path (root object of this tree and current object).
 	 * @param contentid 
 	 * @param bean
 	 * @return true if in path
 	 */
-	public boolean isInPath(String contentid) {
+	public boolean isInPath(final String contentid) {
 		return (this.path.contains(contentid));
 	}
 
 	/**
-	 * returns true if the given CRResolvableBean is in the path (root object of this tree and current object)
+	 * returns true if the given CRResolvableBean is in the path (root object of this tree and current object).
 	 * @param bean
 	 * @return true if in path
 	 */
-	public boolean isInPath(CRResolvableBean bean) {
+	public boolean isInPath(final CRResolvableBean bean) {
 		return (this.isInPath(bean.getContentid()));
 	}
 
 	/**
-	 * renders the current object with the given template
+	 * renders the current object with the given template.
 	 * 
 	 * the current object can be accessed in the template using "nav" as key
 	 * @return rendered object (can include subtree if accessed in template)
@@ -113,14 +113,15 @@ public class NavObject {
 	}
 
 	/**
-	 * gets the rendered subtree as string
+	 * gets the rendered subtree as string.
 	 * @return subtree
 	 */
 	@SuppressWarnings("unchecked")
 	public String getSubTree() {
 		String ret = "";
-		if (this.path == null)
+		if (this.path == null) {
 			this.path = new Vector<String>();
+		}
 		Vector<String> p = (Vector<String>) this.path.clone();
 		p.add(this.bean.getContentid());
 		for (CRResolvableBean child : this.bean.getChildRepository()) {
@@ -135,7 +136,7 @@ public class NavObject {
 	}
 
 	/**
-	 * alias for getSubTree
+	 * alias for getSubTree.
 	 * @return subtree as string
 	 */
 	public String getSubtree() {

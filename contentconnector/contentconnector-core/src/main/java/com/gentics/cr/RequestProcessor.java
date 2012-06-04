@@ -73,7 +73,7 @@ public abstract class RequestProcessor {
 	 * @throws CRException if no config is given, or the PlinkProcessor could not
 	 * be initialized.
 	 */
-	public RequestProcessor(CRConfig config) throws CRException {
+	public RequestProcessor(final CRConfig config) throws CRException {
 
 		this.config = config;
 		this.plinkProc = new PlinkProcessor(config);
@@ -106,7 +106,7 @@ public abstract class RequestProcessor {
 	 * @param request
 	 * @return CRResolvableBean with replaced Plinks
 	 */
-	public CRResolvableBean replacePlinks(CRResolvableBean crBean, CRRequest request) {
+	public CRResolvableBean replacePlinks(final CRResolvableBean crBean, final CRRequest request) {
 		String[] plinkAttrArray = request.getPlinkAttributeArray();
 		if (plinkAttrArray != null) {
 
@@ -128,7 +128,7 @@ public abstract class RequestProcessor {
 	 * @return first matching object
 	 * @throws CRException
 	 */
-	public CRResolvableBean getFirstMatchingResolvable(CRRequest request) throws CRException {
+	public CRResolvableBean getFirstMatchingResolvable(final CRRequest request) throws CRException {
 		request.setCountString("1");
 		Collection<CRResolvableBean> coll = getObjects(request);
 		if (coll != null && !coll.isEmpty()) {
@@ -147,7 +147,7 @@ public abstract class RequestProcessor {
 	 * @return Collection of CRResolvableBeans
 	 * @throws CRException
 	 */
-	public Collection<CRResolvableBean> getObjects(CRRequest request) throws CRException {
+	public Collection<CRResolvableBean> getObjects(final CRRequest request) throws CRException {
 		return (this.getObjects(request, false));
 	}
 
@@ -171,12 +171,12 @@ public abstract class RequestProcessor {
 	}
 
 	/**
-	 * Returns a object bean for binary output from a url.
-	 * @param request 
-	 * @return 
+	 * Fetch the content bean using an url.
+	 * @param request needed for retreiving the url.
+	 * @return Returns a object bean for binary output from a url.
 	 * @throws CRException 
 	 */
-	public CRResolvableBean getContentByUrl(CRRequest request) throws CRException {
+	public CRResolvableBean getContentByUrl(final CRRequest request) throws CRException {
 		Resolvable reso = getBeanByURL(request);
 		if (reso == null) {
 			log.error("Cannot get Object for path '" + request.getUrl() + "'");
@@ -206,11 +206,10 @@ public abstract class RequestProcessor {
 	/**
 	 * Returns a object bean for binary output from a contentid.
 	 * @param request 
-	 * @return
+	 * @return first object found matching the request
 	 * @throws CRException 
 	 */
 	public CRResolvableBean getContent(CRRequest request) throws CRException {
-
 		CRResolvableBean reso = null;
 
 		reso = this.getFirstMatchingResolvable(request);
@@ -370,7 +369,7 @@ public abstract class RequestProcessor {
 	/**
 	 * Converts a Collection of Resolvables to a parameterized collection of Resolvables.
 	 * @param col
-	 * @return
+	 * @return Collection parameterized to Resolvables
 	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<Resolvable> toResolvableCollection(final Collection col) {
@@ -379,9 +378,9 @@ public abstract class RequestProcessor {
 	}
 
 	/**
-	 * Converts a Object being an instanc of a Collection of Resolvables to a parameterized collection of Resolvables.
+	 * Converts a Object being an instance of a Collection of Resolvables to a parameterized collection of Resolvables.
 	 * @param col
-	 * @return
+	 * @return  Collection parameterized to Resolvables
 	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<Resolvable> toResolvableCollection(final Object col) {
@@ -392,10 +391,10 @@ public abstract class RequestProcessor {
 	}
 
 	/**
-	 * Converts a Object being an instanc of a Collection of CRResolvableBeans 
+	 * Converts a Object being an instance of a Collection of CRResolvableBeans 
 	 * to a parameterized collection of CRResolvableBeans.
 	 * @param col
-	 * @return
+	 * @return either this methods throws an IllegalArgumentException or returns a collection of Collection&lt;CRResolvableBean&gt;
 	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<CRResolvableBean> toCRResolvableBeanCollection(Object col) {
@@ -409,7 +408,7 @@ public abstract class RequestProcessor {
 	/**
 	 * Converts a Collection of CRResolvableBeans to a parameterized collection of CRResolvableBeans.
 	 * @param col
-	 * @return
+	 * @return Collection parameterized to CRResolvableBean
 	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<CRResolvableBean> toCRResolvableBeanCollection(Collection col) {

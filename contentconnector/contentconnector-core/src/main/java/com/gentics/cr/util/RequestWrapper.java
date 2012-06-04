@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 public class RequestWrapper implements ServletRequest, PortletRequest {
 
 	/**
-	 * Log4j logger for debug and error messages
+	 * Log4j logger for debug and error messages.
 	 */
 	private final static Logger logger = Logger.getLogger(RequestWrapper.class);
 
@@ -59,7 +59,7 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 	}
 
 	/**
-	 * Wraps a {@link Portlet} into the {@link RequestWrapper}.
+	 * Wraps a {@link javax.portlet.Portlet} into the {@link RequestWrapper}.
 	 * @param request {@link PortletRequest} to wrap
 	 */
 	public RequestWrapper(final PortletRequest request) {

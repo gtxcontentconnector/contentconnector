@@ -150,13 +150,11 @@ public class PathResolver {
 
 	/**
 	 * The Method looks in the repository with the expression initialized in the
-	 * constructor and tries to find a corrisponding object. This only works
+	 * constructor and tries to find a corresponding object. This only works
 	 * correctly when only one node is in the repository, otherwise there may
 	 * bee more object with the same URL in the repository.
 	 * @param request 
-	 * 
-	 * @param url
-	 * @return a Resolvalbe Object based on the passed URL.
+	 * @return a Resolvable Object based on the passed URL.
 	 */
 	@SuppressWarnings("unchecked")
 	public CRResolvableBean getObject(CRRequest request) {

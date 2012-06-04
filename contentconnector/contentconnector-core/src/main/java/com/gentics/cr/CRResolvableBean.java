@@ -105,8 +105,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 
 	/**
 	 * Returns if this CRResolvableBean has a filled children list.
-	 * 
-	 * @return
+	 * @return default:false
 	 */
 	public boolean hasChildren() {
 		boolean children = false;
@@ -172,11 +171,8 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	/**
 	 * make a CRResolvableBean out of a Resolvable.
 	 * 
-	 * @param resolvable
-	 *            The Resolvable to be converted to a CRResolveableBean
-	 * @param attributeNames
-	 *            The attributenames as an array of strings that should be
-	 *            fetched from the Resolveable
+	 * @param resolvable The Resolvable to be converted to a CRResolveableBean
+	 * @param attributeNames The attributenames as an array of strings that should be fetched from the Resolveable
 	 */
 	public CRResolvableBean(final Resolvable resolvable, final String[] attributeNames) {
 		init(resolvable, attributeNames);
@@ -187,9 +183,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * sets the Resolvable as member.
 	 * 
 	 * @param givenResolvable
-	 *            TODO javadoc
 	 * @param attributeNames
-	 *            TODO javadoc
 	 */
 	private void init(final Resolvable givenResolvable, final String[] attributeNames) {
 		if (givenResolvable != null) {
@@ -431,7 +425,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 
 	/**
 	 * Gets the mimetype of the CRResolvableBean.
-	 * @return
+	 * @return mimetype set in the attrMaps of the resolvable as string.
 	 */
 	public String getMimetype() {
 		return (String) this.attrMap.get("mimetype");
@@ -498,7 +492,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 
 	/**
 	 * Gets the binary content as InputStream if it is set otherwise returns null.
-	 * @return
+	 * @return returns a ByteArrayInputStream by default containing the binaryContent
 	 */
 	public InputStream getBinaryContentAsStream() {
 		byte[] buf = getBinaryContent();

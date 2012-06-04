@@ -29,7 +29,15 @@ import com.gentics.cr.util.RequestWrapper;
  * 
  */
 public class CRRequest implements Cloneable, Serializable {
+
+	/**
+	 * non unique serialization id.
+	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Log4j logger.
+	 */
 	private static Logger log = Logger.getLogger(CRRequest.class);
 	/**
 	 * key for storing the wordmatch parameter into.
@@ -299,18 +307,16 @@ public class CRRequest implements Cloneable, Serializable {
 	 * Sets an array of attribute names that are to be prefilled for the
 	 * requested objects.
 	 * 
-	 * @param attributeArray
+	 * @param attributeArray array to use for prefilling
 	 */
-	public void setAttributeArray(String[] attributeArray) {
+	public void setAttributeArray(final String[] attributeArray) {
 		this.set("attributeArray", attributeArray);
 	}
 
 	/**
 	 * Gets an array of attribute names that are to be prefilled for the
-	 * requested objects. Defaults to String[] { "contentid" }
-	 * 
-	 * @param attributeArray
-	 * @return
+	 * requested objects. 
+	 * @return Defaults to String[] { "contentid" }
 	 */
 	public String[] getAttributeArray() {
 		return getAttributeArray("contentid");
@@ -589,11 +595,9 @@ public class CRRequest implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Returns true if this request instance is configured as URL request
-	 * (RequestFilter parameter not is set and contentid is not set and URL is
-	 * set)
-	 * 
-	 * @return boolean
+	 * Get if the current request is an urlrequest.
+	 * @return true if this request instance is configured as URL request
+	 * (if RequestFilter parameter is not set and contentid is not set and URL is set)
 	 */
 	public boolean isUrlRequest() {
 		boolean urlrequest = false;
@@ -624,7 +628,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * 
 	 * @param contentid
 	 */
-	public void setContentid(String contentid) {
+	public void setContentid(final String contentid) {
 		this.set("contentid", contentid);
 	}
 
@@ -668,7 +672,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param key
 	 * @param value
 	 */
-	public void set(String key, Object value) {
+	public void set(final String key, final Object value) {
 		this.params.put(key, value);
 	}
 
@@ -685,7 +689,7 @@ public class CRRequest implements Cloneable, Serializable {
 	}
 
 	/**
-	 * @return
+	 * @return hashcode of the current CRRequest.
 	 */
 	@Override
 	public int hashCode() {
@@ -695,7 +699,7 @@ public class CRRequest implements Cloneable, Serializable {
 
 	/**
 	 * @param obj
-	 * @return
+	 * @return equals if the parameters are equal and the objectsToDeploy are also equals.
 	 */
 	@Override
 	public boolean equals(final Object obj) {

@@ -25,7 +25,7 @@ public abstract class CRConfig extends GenericConfiguration {
 
 	/*
 	 * Reserved Attributes for Advanced Plinkreplacing without Velocity
-	 * @see com.gentics.cr.plink.PathResolver and com.gentics.cr.plink.PlinkProcessor
+	 * @link com.gentics.cr.plink.PathResolver and com.gentics.cr.plink.PlinkProcessor
 	 */
 
 	/**
@@ -56,10 +56,7 @@ public abstract class CRConfig extends GenericConfiguration {
 
 	/**
 	 * property key to configure multiple indexes.
-	 * @see com.gentics.cr.lucene.indexer.CRIndexer.BackgroundJob
-	 * #recreateIndex()
-	 * @see com.gentics.cr.util.indexing.IndexLocation
-	 * #getIndexLocationClass(CRConfig)
+	 * {@link com.gentics.cr.util.indexing.IndexLocation#getIndexLocation(CRConfig)}
 	 */
 	public static final String CR_KEY = "CR";
 

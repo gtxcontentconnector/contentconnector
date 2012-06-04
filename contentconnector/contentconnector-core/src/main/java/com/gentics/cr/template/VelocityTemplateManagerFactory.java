@@ -35,10 +35,11 @@ public class VelocityTemplateManagerFactory {
 	private static JCS cache;
 
 	/**
-	 * Get a configured VelocityTemplateManager
+	 * Get a configured VelocityTemplateManager.
 	 * @param encoding if null defaults to utf-8
 	 * @param macropath
-	 * @return
+	 * @return {@link com.gentics.cr.template.VelocityTemplateManagerFactory
+	 * #getConfiguredVelocityTemplateManagerInstance(String, String, String)}
 	 * @throws Exception
 	 */
 	public static synchronized VelocityTemplateManager getConfiguredVelocityTemplateManagerInstance(String encoding,
@@ -48,17 +49,18 @@ public class VelocityTemplateManagerFactory {
 	}
 
 	/**
-	 * Get a configured VelocityTemplateManager and 
+	 * Get a configured VelocityTemplateManager.
 	 * @param encoding if null defaults to utf-8
 	 * @param macropath
 	 * @param propFile
-	 * @return
+	 * @return new instance of {@link com.gentics.cr.template.VelocityTemplateManager} with the specified encoding.
 	 * @throws Exception
 	 */
 	public static synchronized VelocityTemplateManager getConfiguredVelocityTemplateManagerInstance(String encoding,
 			String macropath, String propFile) throws Exception {
-		if (encoding == null)
+		if (encoding == null) {
 			encoding = "utf-8";
+		}
 		if (!configured) {
 			configure(encoding, macropath, propFile);
 			configured = true;
@@ -68,11 +70,11 @@ public class VelocityTemplateManagerFactory {
 	}
 
 	/**
-	 * Create a Velocity template with the given name and source
+	 * Create a Velocity template with the given name and source.
 	 * @param name
 	 * @param source 
 	 * @param encoding encoding as string or null => defaults to utf-8
-	 * @return
+	 * @return template (either a cached one, found using the key: name + source or a newly created one).
 	 */
 	public static Template getTemplate(String name, String source, String encoding) {
 		if (encoding == null)

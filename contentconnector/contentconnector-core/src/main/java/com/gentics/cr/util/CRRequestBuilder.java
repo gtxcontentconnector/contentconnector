@@ -70,45 +70,38 @@ public class CRRequestBuilder {
 	private static final String ADD_PERMISSIONS_TO_RULE_KEY = "addPermissionsToRule";
 
 	/**
-	 * Initializes the CRRequestBuilder from a {@link Portlet}.
+	 * Initializes the CRRequestBuilder from a {@link javax.portlet.Portlet}.
 	 * 
-	 * @param portletRequest
-	 *            request from the {@link Portlet}
+	 * @param portletRequest request from the {@link javax.portlet.Portlet}
 	 */
 	public CRRequestBuilder(final PortletRequest portletRequest) {
 		this(portletRequest, null);
 	}
 
 	/**
-	 * Initializes the CRRequestBuilder from a {@link Portlet}.
+	 * Initializes the CRRequestBuilder from a {@link javax.portlet.Portlet}.
 	 * 
-	 * @param portletRequest
-	 *            request from the {@link Portlet}
-	 * @param requestBuilderConfiguration
-	 *            configuration for the request builder
+	 * @param portletRequest request from the {@link javax.portlet.Portlet}
+	 * @param requestBuilderConfiguration configuration for the request builder
 	 */
 	public CRRequestBuilder(final PortletRequest portletRequest, final GenericConfiguration requestBuilderConfiguration) {
 		this(new RequestWrapper(portletRequest), requestBuilderConfiguration);
 	}
 
 	/**
-	 * Initializes the CRRequestBuilder from a {@link Servlet}.
+	 * Initializes the CRRequestBuilder from a {@link javax.servlet.http.HttpServletRequest}.
 	 * 
-	 * @param servletRequest
-	 *            request from the {@link Servlet}
+	 * @param servletRequest request from the {@link javax.servlet.http.HttpServletRequest}
 	 */
 	public CRRequestBuilder(final HttpServletRequest servletRequest) {
 		this(servletRequest, null);
 	}
 
 	/**
-	 * Initializes the CRRequestBuilder from a {@link Servlet}.
+	 * Initializes the CRRequestBuilder from a {@link javax.servlet.http.HttpServletRequest}.
 	 * 
-	 * @param servletRequest
-	 *            request from the {@link Servlet}
-	 * @param conf
-	 *            configuration for the request builder where we get the default
-	 *            parameters from.
+	 * @param servletRequest request from the {@link javax.servlet.http.HttpServletRequest}
+	 * @param conf configuration for the request builder where we get the default parameters from.
 	 */
 	public CRRequestBuilder(final HttpServletRequest servletRequest, final GenericConfiguration conf) {
 		this(new RequestWrapper(servletRequest), conf);
@@ -116,12 +109,10 @@ public class CRRequestBuilder {
 
 	/**
 	 * Initializes the CRRequestBuilder in a general manner that is compatible
-	 * with {@link Portlet}s and {@link Servlet}s.
+	 * with {@link Portlet}s and {@link javax.servlet.http.HttpServletRequest}s.
 	 * 
-	 * @param requestWrapper
-	 *            wrapped request from a {@link Servlet} or a {@link Portlet}
-	 * @param requestBuilderConfiguration
-	 *            configuration for the request builder
+	 * @param requestWrapper wrapped request from a {@link javax.servlet.http.HttpServletRequest} or a {@link Portlet}
+	 * @param requestBuilderConfiguration configuration for the request builder
 	 */
 	public CRRequestBuilder(final RequestWrapper requestWrapper, final GenericConfiguration requestBuilderConfiguration) {
 
@@ -191,7 +182,7 @@ public class CRRequestBuilder {
 	 * Calculates the start value from the number of pages * count per page.
 	 * @param numberOfPageStr
 	 */
-	private void calcStartFromCount(String numberOfPageStr) {
+	private void calcStartFromCount(final String numberOfPageStr) {
 		int numberOfPage;
 		if (numberOfPageStr != null) {
 			numberOfPage = Integer.parseInt(numberOfPageStr);
@@ -409,10 +400,8 @@ public class CRRequestBuilder {
 	 * Wrapps filter rule with the given set of permissions.
 	 * 
 	 * @param objectFilter
-	 *            TODO javadoc
 	 * @param userPermissions
-	 *            TODO javadoc
-	 * @return TODO javadoc
+	 * @return
 	 */
 	protected final String createPermissionsRule(final String objectFilter, final String[] userPermissions) {
 		String ret = objectFilter;
@@ -459,7 +448,7 @@ public class CRRequestBuilder {
 	}
 
 	/**
-	 * gets a class map containing the names of
+	 * gets a class map containing the names of.
 	 * 
 	 * @return
 	 */
@@ -489,14 +478,12 @@ public class CRRequestBuilder {
 	 * Create the ContentRepository for this request and give it the
 	 * configuration. This is needed for the VelocityContentRepository
 	 * 
-	 * @param encoding
-	 *            Output encoding should be used
-	 * @param configUtil
-	 *            Config to get the Velocity Engine from
+	 * @param encoding Output encoding should be used
+	 * @param configUtil Config to get the Velocity Engine from
 	 * @return ContentRepository with the given settings.
 	 */
 
-	public ContentRepository getContentRepository(String encoding, CRConfigUtil configUtil) {
+	public ContentRepository getContentRepository(final String encoding, final CRConfigUtil configUtil) {
 		ContentRepository cr = null;
 
 		ConcurrentHashMap<String, String> classmap = getRepositoryClassMap();

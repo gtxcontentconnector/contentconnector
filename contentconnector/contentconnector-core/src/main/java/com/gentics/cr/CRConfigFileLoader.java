@@ -162,12 +162,10 @@ public class CRConfigFileLoader extends CRConfigUtil {
 	 * Loads configuration properties into a GenericConfig instance and resolves
 	 * system variables.
 	 * @param emptyConfig - configuration to load the properties into.
-	 * @param properties - properties to load into the configuration
-	 * @param webapproot - root directory of the web application for resolving
-	 * ${webapproot} in property values.
-	 * @throws IOException - if configuration file cannot be read.
+	 * @param props - properties to load into the configuration
+	 * @param webapproot - root directory of the web application for resolving ${webapproot} in property values.
 	 */
-	public static void loadConfiguration(final GenericConfiguration emptyConfig, Properties props,
+	public static void loadConfiguration(final GenericConfiguration emptyConfig, final Properties props,
 			final String webapproot) {
 		for (Entry<Object, Object> entry : props.entrySet()) {
 			Object value = entry.getValue();

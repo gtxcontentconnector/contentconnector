@@ -28,23 +28,25 @@ public class VelocityTemplateManager implements ITemplateManager {
 	private String encoding;
 	private HashMap<String, Object> objectstoput;
 
-	//Templatecache
+	/**
+	 * Templatecache.
+	 */
 	private HashMap<String, Template> templates;
 
 	/**
-	 * Create Instance
+	 * Create Instance.
 	 * @param encoding
 	 */
-	public VelocityTemplateManager(String encoding) {
+	public VelocityTemplateManager(final String encoding) {
 		this.encoding = encoding;
 		this.objectstoput = new HashMap<String, Object>();
 		this.templates = new HashMap<String, Template>();
 	}
 
 	/**
-	 * @see com.gentics.cr.template.ITemplateManager#put(java.lang.Object)
+	 * @see {@link com.gentics.cr.template.ITemplateManager#put(String, Object)}.
 	 */
-	public void put(String key, Object value) {
+	public void put(final String key, final Object value) {
 		if (value != null) {
 			this.objectstoput.put(key, value);
 		}

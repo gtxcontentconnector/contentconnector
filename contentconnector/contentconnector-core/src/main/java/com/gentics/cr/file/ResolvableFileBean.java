@@ -253,7 +253,7 @@ public class ResolvableFileBean extends CRResolvableBean {
 	}
 
 	/**
-	 * get the name of the file
+	 * get the name of the file.
 	 * @return name of the file as string, null in case the file is a directory.
 	 */
 	public String getFileName() {
@@ -265,7 +265,7 @@ public class ResolvableFileBean extends CRResolvableBean {
 	}
 
 	/**
-	 * gets the directory name of the file
+	 * gets the directory name of the file.
 	 * @return absolute name of the directory of the file or the directory itself.
 	 */
 	public String getPubDir() {
@@ -278,8 +278,8 @@ public class ResolvableFileBean extends CRResolvableBean {
 
 	/**
 	 * get object type.
-	 * @return if file is a directory it returns {@value #DIROBJTYPE} else it returns
-	 * {@value #FILEOBJTYPE}.
+	 * @return if file is a directory it returns {@value com.gentics.cr.file.ResolvableFileBean#DIROBJTYPE} else it returns
+	 * {@value com.gentics.cr.file.ResolvableFileBean#FILEOBJTYPE}.
 	 */
 	public String getObjType() {
 		if (file.isDirectory()) {

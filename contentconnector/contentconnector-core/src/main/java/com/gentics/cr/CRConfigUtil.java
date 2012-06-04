@@ -45,7 +45,7 @@ public class CRConfigUtil extends CRConfig {
 	 */
 	private static final String DB_LAZY_INIT_MODE_KEY = "dblazyinit";
 	/**
-	 * Path where the {@link VelocityContentRepository} looks for templates when no other path is specified.
+	 * Path where the {@link com.gentics.cr.rest.velocity.VelocityContentRepository} looks for templates when no other path is specified.
 	 */
 	public static final String DEFAULT_TEMPLATE_PATH = CRUtil
 			.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/");
@@ -156,7 +156,7 @@ public class CRConfigUtil extends CRConfig {
 
 	/**
 	 * Gets the applications binary type.
-	 * @return 
+	 * @return by default this is 10008 but can be overriden using the {@link com.gentics.cr.CRConfigUtil#BINARY_TYPE_KEY}
 	 */
 	public String getBinaryType() {
 		String bt = (String) this.get(BINARY_TYPE_KEY);
@@ -277,7 +277,7 @@ public class CRConfigUtil extends CRConfig {
 	 * 
 	 * ATTENTION: The pool has to be released when the application shuts down using the releaseJDBCPool method
 	 * 
-	 * @return
+	 * @return pooled jdbc connection.
 	 * @throws Exception
 	 */
 	public synchronized Connection getPooledJDBCConnection() throws Exception {
@@ -512,9 +512,9 @@ public class CRConfigUtil extends CRConfig {
 	}
 
 	/**
-	 * Returns a new instance of the {@link RrequestProcessor} configured in the
+	 * Returns a new instance of the {@link com.gentics.cr.RequestProcessor} configured in the
 	 * configuration with the given requestProcessorId.
-	 * @param requestProcessorName Name of the ReuqestProcessor
+	 * @param requestProcessorName Name of the RequestProcessor
 	 * @return RequestProcessor RequestProcessor from configuration
 	 * @throws CRException when the RequestProcessor cannot be created
 	 */

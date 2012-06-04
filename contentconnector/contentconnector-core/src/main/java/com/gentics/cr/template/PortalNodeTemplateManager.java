@@ -40,7 +40,7 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 	}
 
 	/**
-	 * @see com.gentics.cr.template.ITemplateManager#render(java.lang.String, java.lang.String, java.lang.Object, java.lang.Object)
+	 * @see {@link com.gentics.cr.template.ITemplateManager#render(String, String)}
 	 */
 	public String render(String templatename, String templatesource) throws CRException {
 		String renderedTemplate = null;

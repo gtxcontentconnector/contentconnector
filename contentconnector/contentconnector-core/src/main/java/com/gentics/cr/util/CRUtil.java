@@ -186,9 +186,9 @@ public class CRUtil {
 
 	/**
 	 * Slurps a InputStream into a String.
-	 * @param in - TODO javadoc
-	 * @return TODO javadoc
-	 * @throws IOException TODO javadoc
+	 * @param in
+	 * @return
+	 * @throws IOException
 	 */
 	public static String inputStreamToString(final InputStream in) throws IOException {
 		StringBuffer out = new StringBuffer();
