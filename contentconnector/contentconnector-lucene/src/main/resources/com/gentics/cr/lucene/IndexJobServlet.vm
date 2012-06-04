@@ -120,10 +120,10 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			
 			.partsnjobs:hover { border-left: 1px solid #C0C0C0; border-right: 1px solid #C0C0C0; border-bottom: 1px solid #C0C0C0; margin: 0 -1px -1px -1px; }
 			.indexblock.active .partsnjobs:hover { border-left: 1px solid #FFDC87; border-right: 1px solid #FFDC87; border-bottom: 1px solid #FFDC87; margin: 0 -1px -1px -1px; }
-			.indexblock:hover { position: relative; z-index: 3; height: 23.2em; outline: 4px solid #FFFFFF; }
+			.indexblock:hover { position: relative; z-index: 3; height: 22.95em; outline: 4px solid #FFFFFF; }
 			
-			.lastjobs, .currentjob, .parts .smallbox { height: 1.7em; overflow: hidden; }
-			.lastjobs:hover, .currentjob:hover, .parts .smallbox:hover { height: auto; min-height: 1.7em; }
+			.lastjobs, .currentjob, .parts { height: 1.7em; overflow: hidden; }
+			.lastjobs:hover, .currentjob:hover, .parts:hover { height: auto; min-height: 1.7em; }
 			
 			.oldjob { border: 1px solid #888888; background-color: #FEFEFE; margin-top: 0.3em; margin-bottom: 0.3em; padding: 2px; }
 			.oldjob.error { background-color: #F06969; }
@@ -204,7 +204,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 						<div class="clear"></div>
 					</div>
 					<div class="partsnjobs">
-						<div class="row #getnextrow() small parts">
+						<div class="row #getnextrow() small">
 							<div class="key">all Parts</div>
 							<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=all$nc">add</a></div>
 							<div class="clear"></div>
@@ -214,16 +214,18 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 							<div class="key">optimize Index</div>
 							<div class="value right"><a class="optlink" href="?action=optimize&idx=$e.getKey()$nc">optimize</a></div>
 							<div class="clear"></div>
-							<div class="smallheader">index parts (#if($map.size()==0)-#{else}$map.size()#end)</div>
-							<div class="smallbox">
-								<div class="clear"></div>
-							#foreach($crc in $map.entrySet())
-								#set($crcName = $crc.getKey())
-								#set($crcCheckTime = $loc.getInterval($crcName))
-								<div class="key">$crcName#if($crcCheckTime != -1) (every #humanreadableTime($crcCheckTime "s"))#end</div>
-								<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=$crc.getKey()$nc">add</a></div>
-								<div class="clear"></div>
-							#end
+							<div class="parts">
+								<div class="smallheader">index parts (#if($map.size()==0)-#{else}$map.size()#end)</div>
+								<div class="smallbox">
+									<div class="clear"></div>
+								#foreach($crc in $map.entrySet())
+									#set($crcName = $crc.getKey())
+									#set($crcCheckTime = $loc.getInterval($crcName))
+									<div class="key">$crcName#if($crcCheckTime != -1) (every #humanreadableTime($crcCheckTime "s"))#end</div>
+									<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=$crc.getKey()$nc">add</a></div>
+									<div class="clear"></div>
+								#end
+								</div>
 							</div>
 						</div>
 						#if($extensions.size() > 0)
