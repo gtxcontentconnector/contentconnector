@@ -97,7 +97,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			
 			.captioncontainer { width: 150px; float: left; font-style: italic; }
 			.indexcontainer { /*float: left;*/ margin-left: 200px; }
-			.indexblock { float: left; min-width: 200px; width: 200px; border: 1px solid #C0C0C0; margin-left: 4px; margin-bottom: 4px; }
+			.indexblock { float: left; min-width: 200px; width: 200px; border: 1px solid #C0C0C0; margin-left: 4px; margin-bottom: 4px; height: 22.95em; }
 			
 			.indexblock.active { border: 1px solid #FFDC87;}
 			.indexblock.active .row.header, .indexblock.active .row.header.odd { background: #FFBD1F; }
@@ -120,7 +120,7 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			
 			.partsnjobs:hover { border-left: 1px solid #C0C0C0; border-right: 1px solid #C0C0C0; border-bottom: 1px solid #C0C0C0; margin: 0 -1px -1px -1px; }
 			.indexblock.active .partsnjobs:hover { border-left: 1px solid #FFDC87; border-right: 1px solid #FFDC87; border-bottom: 1px solid #FFDC87; margin: 0 -1px -1px -1px; }
-			.indexblock:hover { position: relative; z-index: 3; height: 22.95em; outline: 4px solid #FFFFFF; }
+			.indexblock:hover { position: relative; z-index: 3; outline: 4px solid #FFFFFF; }
 			
 			.lastjobs, .currentjob, .parts { height: 1.7em; overflow: hidden; }
 			.lastjobs:hover, .currentjob:hover, .parts:hover { height: auto; min-height: 1.7em; }
