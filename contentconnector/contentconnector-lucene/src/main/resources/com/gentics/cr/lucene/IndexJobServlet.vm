@@ -96,26 +96,35 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 			.margintop_50 { margin-top:50px; }
 			
 			.captioncontainer { width: 150px; float: left; font-style: italic; }
-			.indexcontainer { float: left; }
-			.indexblock { float: left; min-width: 200px; width: 200px; border: 1px solid #C0C0C0; border-top: 0px; margin-left: 4px; }
+			.indexcontainer { /*float: left;*/ margin-left: 200px; }
+			.indexblock { float: left; min-width: 200px; width: 200px; border: 1px solid #C0C0C0; margin-left: 4px; margin-bottom: 4px; }
 			
 			.indexblock.active { border: 1px solid #FFDC87;}
-			.indexblock.active .row.header { background: #FFBD1F; }
+			.indexblock.active .row.header, .indexblock.active .row.header.odd { background: #FFBD1F; }
 			.indexblock.active .row.even { background: #FFECBF; }
 			
 			.buttons { padding-top: 20px; }
 			
 			.row ,.report_table tr{ line-height: 18px; padding: 0px 4px; } 
 			.row.small, .row.small a { font-size: 8pt; }
-			.row.header, .report_table th{ font-weight: bold; padding: 0px 10px; text-align: center; background: #C0C0C0; }
+			.row.header, .report_table th, .row.header.odd { font-weight: bold; padding: 0px 10px; text-align: center; background: #C0C0C0; }
 			.row.even, .report_table tr.even td { background: #EFEFEF; }
+			.row.odd { background: #FFFFFF; }
 			
 			.key { float: left; }
 			.value { float: right; margin-left: 4px; }
 			td.value { float:none; }
 			
 			.smallheader { font-weight: bold; }
-			.smallbox { margin-left: 4px; }
+			.smallbox {  margin-left: 4px; }
+			
+			.partsnjobs:hover { border-left: 1px solid #C0C0C0; border-right: 1px solid #C0C0C0; border-bottom: 1px solid #C0C0C0; margin: 0 -1px -1px -1px; }
+			.indexblock.active .partsnjobs:hover { border-left: 1px solid #FFDC87; border-right: 1px solid #FFDC87; border-bottom: 1px solid #FFDC87; margin: 0 -1px -1px -1px; }
+			.indexblock:hover { position: relative; z-index: 3; height: 23.2em; outline: 4px solid #FFFFFF; }
+			
+			.lastjobs, .currentjob, .parts .smallbox { height: 1.7em; overflow: hidden; }
+			.lastjobs:hover, .currentjob:hover, .parts .smallbox:hover { height: auto; min-height: 1.7em; }
+			
 			.oldjob { border: 1px solid #888888; background-color: #FEFEFE; margin-top: 0.3em; margin-bottom: 0.3em; padding: 2px; }
 			.oldjob.error { background-color: #F06969; }
 			
@@ -194,16 +203,8 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 						#end
 						<div class="clear"></div>
 					</div>
-					<div class="row #getnextrow() small">
-						<div class="smallheader">index parts</div>
-						<div class="smallbox">
-						#foreach($crc in $map.entrySet())
-							#set($crcName = $crc.getKey())
-							#set($crcCheckTime = $loc.getInterval($crcName))
-							<div class="key">$crcName#if($crcCheckTime != -1) (every #humanreadableTime($crcCheckTime "s"))#end</div>
-							<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=$crc.getKey()$nc">add</a></div>
-							<div class="clear"></div>
-						#end
+					<div class="partsnjobs">
+						<div class="row #getnextrow() small parts">
 							<div class="key">all Parts</div>
 							<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=all$nc">add</a></div>
 							<div class="clear"></div>
@@ -213,56 +214,67 @@ $numberString.replaceAll("[^0-9]([0-9]{$round})[0-9]*",".$1")##
 							<div class="key">optimize Index</div>
 							<div class="value right"><a class="optlink" href="?action=optimize&idx=$e.getKey()$nc">optimize</a></div>
 							<div class="clear"></div>
+							<div class="smallheader">index parts (#if($map.size()==0)-#{else}$map.size()#end)</div>
+							<div class="smallbox">
+								<div class="clear"></div>
+							#foreach($crc in $map.entrySet())
+								#set($crcName = $crc.getKey())
+								#set($crcCheckTime = $loc.getInterval($crcName))
+								<div class="key">$crcName#if($crcCheckTime != -1) (every #humanreadableTime($crcCheckTime "s"))#end</div>
+								<div class="value right"><a href="?action=addJob&idx=$e.getKey()&cr=$crc.getKey()$nc">add</a></div>
+								<div class="clear"></div>
+							#end
+							</div>
 						</div>
-					</div>
-					#if($extensions.size() > 0)
-					<div class="row #getnextrow() small">
-					#foreach($extensionEntries in $extensions.entrySet())
-						#set($extName = $extensionEntries.getKey())
-						#set($extension = $extensionEntries.getValue()) 
-						<div class="smallheader">extension: $extName</div>
-						<div class="smallbox">
-						#foreach($job in $extension.getJobs())
-						<div class="key">$job</div>
-						<div class="value right"><a href="?action=addExtensionJob&idx=$e.getKey()&ext=$extName&job=$job$nc">add</a></div>
-						<div class="clear"></div>
+						#if($extensions.size() > 0)
+						<div class="row #getnextrow() small">
+						#foreach($extensionEntries in $extensions.entrySet())
+							#set($extName = $extensionEntries.getKey())
+							#set($extension = $extensionEntries.getValue()) 
+							<div class="smallheader">extension: $extName</div>
+							<div class="smallbox">
+							#foreach($job in $extension.getJobs())
+							<div class="key">$job</div>
+							<div class="value right"><a href="?action=addExtensionJob&idx=$e.getKey()&ext=$extName&job=$job$nc">add</a></div>
+							<div class="clear"></div>
+							#end
+							</div>
 						#end
 						</div>
-					#end
-					</div>
-					#end
-					
-					#if ("$!j" != "")
-					<div class="row #getnextrow() small">
-						<div class="smallheader">current job</div>
-						<div class="smallbox">
-							<div>
-								$j.getIdentifyer()<br/>
-								status: $j.getStatusString()<br/>
-								&nbsp;&nbsp;&nbsp; started: $j.getStartDate()<br/>
-								&nbsp;&nbsp;&nbsp; $j.getObjectsToIndex() objects to index<br/>
-								&nbsp;&nbsp;&nbsp; $j.getObjectsDone() objects done<br/>
-								&nbsp;&nbsp;&nbsp; #humanreadableTime($j.getETA() "ms") ETA
-							</div>
+						#end
+						
+						
+						<div class="row #getnextrow() small currentjob">
+							<div class="smallheader">current job (#if("$!j" != "")running#{else}-#end)</div>
+							#if ("$!j" != "")
+								<div class="smallbox">
+									<div>
+										$j.getIdentifyer()<br/>
+										status: $j.getStatusString()<br/>
+										&nbsp;&nbsp;&nbsp; started: $j.getStartDate()<br/>
+										&nbsp;&nbsp;&nbsp; $j.getObjectsToIndex() objects to index<br/>
+										&nbsp;&nbsp;&nbsp; $j.getObjectsDone() objects done<br/>
+										&nbsp;&nbsp;&nbsp; #humanreadableTime($j.getETA() "ms") ETA
+									</div>
+								</div>
+							#end
 						</div>
-					</div>
-					#end
-					## We need to clone this list as there is a possibility of the list being modified (add/remove/...) by the IndexJobQueue (e.g. addToLastJobs)
-					## which would result in an java.util.ConcurrentModificationException
-					## This is caused by lastJobs (in IndexJobQueue) being an ArrayList and therefore not threadsafe.
-					## If more such errors occur we should think about making lastJobs a Vector.
-					#set($lastJobs = $queue.getLastJobs().clone())
-					#if($lastJobs)
-						<div class="row #getnextrow() small">
-							<div class="smallheader">last jobs</div>
-							<div>
-								#foreach($lj in $lastJobs)
-									<div#if($lj.hasError()) class="oldjob error" title="$lj.getErrorMessage()"#else class="oldjob"#end>#if($lj.hasError())ERROR:#end $lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getStartDate()<br />&nbsp;&nbsp;&nbsp; #humanreadableTime($lj.getDuration() "ms") for $lj.getObjectsDone() Objects</div>
-								#end
+						## We need to clone this list as there is a possibility of the list being modified (add/remove/...) by the IndexJobQueue (e.g. addToLastJobs)
+						## which would result in an java.util.ConcurrentModificationException
+						## This is caused by lastJobs (in IndexJobQueue) being an ArrayList and therefore not threadsafe.
+						## If more such errors occur we should think about making lastJobs a Vector.
+						#set($lastJobs = $queue.getLastJobs().clone())
+						#if($lastJobs)
+							<div class="row #getnextrow() small lastjobs">
+								<div class="smallheader">last jobs (#if($lastJobs.size()==0)-#{else}$lastJobs.size()#end)</div>
+								<div>
+									#foreach($lj in $lastJobs)
+										<div#if($lj.hasError()) class="oldjob error" title="$lj.getErrorMessage()"#else class="oldjob"#end>#if($lj.hasError())ERROR:#end $lj.getIdentifyer()<br/>&nbsp;&nbsp;&nbsp; $lj.getStartDate()<br />&nbsp;&nbsp;&nbsp; #humanreadableTime($lj.getDuration() "ms") for $lj.getObjectsDone() Objects</div>
+									#end
+								</div>
 							</div>
-						</div>
-					#end
-	
+						#end
+					</div>##partsnjobs
 				</div>
 			#end
 		
