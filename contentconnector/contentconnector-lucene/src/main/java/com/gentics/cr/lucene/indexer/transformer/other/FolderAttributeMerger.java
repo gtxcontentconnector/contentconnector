@@ -1,5 +1,6 @@
 package com.gentics.cr.lucene.indexer.transformer.other;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -11,9 +12,12 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
 /**
- * 
+ * Merge the contentattributes from the provided folder (folderattributes) to the targetattribute.
+ * Example:
+ * index.test.CR.FILES.transformer.10.contentattributes=metatags_seiten
+ * index.test.CR.FILES.transformer.10.folderattributes=metatags
+ * index.test.CR.FILES.transformer.10.targetattribute=search_keywords
  * @author Friedreich Bernhard
- *
  */
 public class FolderAttributeMerger extends ContentTransformer {
 
@@ -23,11 +27,14 @@ public class FolderAttributeMerger extends ContentTransformer {
 	private static final String FOLDERATTRIBUTES_KEY = "folderattributes";
 	private static final String TARGETATTRIBUTE_KEY = "targetattribute";
 
-	private ArrayList<String> folderAttributes = new ArrayList<String>();
-	private ArrayList<String> contentAttributes = new ArrayList<String>();
+	private List<String> folderAttributes = new ArrayList<String>();
+	private List<String> contentAttributes = new ArrayList<String>();
 
-	private String targetAttribute = new String();
+	private String targetAttribute = "";
 
+	/**
+	 * log4j logger.
+	 */
 	private static Logger logger = Logger.getLogger(FolderAttributeMerger.class);
 
 	/**
@@ -53,7 +60,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 	}
 
 	@Override
-	public void processBean(CRResolvableBean contentBean) {
+	public void processBean(final CRResolvableBean contentBean) {
 		String targetAttributeValues = "";
 
 		Resolvable contentResolvable = contentBean.getResolvable();
