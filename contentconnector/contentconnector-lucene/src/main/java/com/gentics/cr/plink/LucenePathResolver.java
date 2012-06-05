@@ -165,9 +165,7 @@ public class LucenePathResolver {
 	 * correctly when only one node is in the repository, otherwise there may
 	 * bee more object with the same URL in the repository.
 	 * @param request 
-	 * 
-	 * @param url
-	 * @return a Resolvalbe Object based on the passed URL.
+	 * @return a Resolvable Object based on the passed URL.
 	 */
 	public final CRResolvableBean getObject(final CRRequest request) {
 		CRResolvableBean contentObject = null;
@@ -200,11 +198,9 @@ public class LucenePathResolver {
 	}
 
 	/**
-	 * initializes a Resolvable Object an calls 
-	 * getPath(Resolvable linkedObject).
+	 * initializes a Resolvable Object and calls {@link com.gentics.cr.plink.LucenePathResolver#getPath(Resolvable)}.
 	 * 
 	 * @param contentid contentid
-	 * @see public String getPath(Resolvable linkedObject)
 	 * @return string
 	 */
 	public final String getPath(final String contentid) {

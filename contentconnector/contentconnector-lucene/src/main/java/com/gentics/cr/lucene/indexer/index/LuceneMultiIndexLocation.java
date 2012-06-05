@@ -218,10 +218,8 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 	}
 
 	/**
-	* TODO: first implementation of hashCode Method in the
-	* {@link LuceneMultiIndexLocation} - not tested yet!
-	* 
-	* @author Sebastian Vogel <s.vogel@gentics.com>
+	* TODO: first implementation of hashCode Method in the {@link com.gentics.cr.lucene.indexer.index.LuceneMultiIndexLocation} 
+	* - not tested yet!
 	*/
 	@Override
 	public int hashCode() {

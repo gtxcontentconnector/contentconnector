@@ -17,7 +17,7 @@ import com.gentics.cr.util.CRUtil;
 public class HTMLJTidyContentTransformer extends ContentTransformer {
 
 	/**
-	 * Get new instance of HTMLContentTransformer
+	 * Get new instance of HTMLContentTransformer.
 	 * @param config
 	 */
 	public HTMLJTidyContentTransformer(GenericConfiguration config) {
@@ -25,9 +25,8 @@ public class HTMLJTidyContentTransformer extends ContentTransformer {
 	}
 
 	/**
-	 * Converts a string containing html to a String that does not contain html tags can be indexed by lucene
+	 * Converts a string containing html to a String that does not contain html tags can be indexed by lucene.
 	 * @param obj
-	 * @return
 	 */
 	public String getStringContents(Object obj) {
 		String ret = null;
@@ -45,7 +44,7 @@ public class HTMLJTidyContentTransformer extends ContentTransformer {
 	}
 
 	/**
-	 * Converts a object containing html to a String that does not contain html tags can be indexed by lucene
+	 * Converts a object containing html to a String that does not contain html tags can be indexed by lucene.
 	 * @param obj
 	 * @return HTMLStripReader of contents
 	 */

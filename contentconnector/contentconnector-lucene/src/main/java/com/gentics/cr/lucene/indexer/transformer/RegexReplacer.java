@@ -30,7 +30,7 @@ public class RegexReplacer extends ContentTransformer {
 	/**
 	 * Create Instance of CommentSectionStripper
 	 * if the pattern is not configured in the config: the default pattern
-	 * {@value #pattern} will be used.
+	 * {@link com.gentics.cr.lucene.indexer.transformer.RegexReplacer#pattern} will be used.
 	 * @param config 
 	 */
 	public RegexReplacer(final GenericConfiguration config) {

@@ -18,9 +18,8 @@ import org.w3c.tidy.Tidy;
 public class TidyHelper {
 
 	/**
-	 * Tidy a HTML Stream
+	 * Tidy a HTML Stream.
 	 * @param is
-	 * @return
 	 */
 	public static Reader tidy(InputStream is) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -27,7 +27,7 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 public class HTMLEditorKitStripper extends ContentTransformer {
 
 	/**
-	 * Create new instance of HTMLEdirtorKitStripper
+	 * Create new instance of HTMLEdirtorKitStripper.
 	 * @param config
 	 */
 	public HTMLEditorKitStripper(GenericConfiguration config) {
@@ -75,8 +75,6 @@ public class HTMLEditorKitStripper extends ContentTransformer {
 
 	/**
 	 * @param obj 
-	 * @return 
-	 * 
 	 */
 	public Reader getContents(Object obj) {
 		String s = getStringContents(obj);
@@ -94,8 +92,6 @@ public class HTMLEditorKitStripper extends ContentTransformer {
 
 	/**
 	 * @param obj 
-	 * @return 
-	 * 
 	 */
 	public String getStringContents(Object obj) {
 

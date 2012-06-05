@@ -18,7 +18,6 @@ import org.apache.poi.util.LittleEndian;
  * Last changed: $Date: 2009-06-24 17:10:19 +0200 (Mi, 24 Jun 2009) $
  * @version $Revision: 99 $
  * @author $Author: supnig@constantinopel.at $
- *
  */
 public class MSPowerPointParser implements POIFSReaderListener {
 
@@ -26,17 +25,15 @@ public class MSPowerPointParser implements POIFSReaderListener {
 	private ByteArrayOutputStream writer;
 
 	/**
-	 * Create new Instance of MSPowerPointParser
+	 * Create new Instance of MSPowerPointParser.
 	 * @param is
 	 */
 	public MSPowerPointParser(InputStream is) {
 		this.is = is;
-
 	}
 
 	/**
-	 * Get contents of ppt document
-	 * @return
+	 * Get contents of ppt document.
 	 */
 	public String getContents() {
 		String contents = "";
@@ -60,8 +57,7 @@ public class MSPowerPointParser implements POIFSReaderListener {
 	}
 
 	/**
-	 * Hashmap containing the mapping between codepages (office documents)
-	 * and encodings (java streams)
+	 * Hashmap containing the mapping between codepages (office documents) and encodings (java streams).
 	 */
 	private final static HashMap<Integer, String> ENCODINGMAPPING = new HashMap<Integer, String>();
 	static {
@@ -85,7 +81,6 @@ public class MSPowerPointParser implements POIFSReaderListener {
 
 	/**
 	 * @param event 
-	 * 
 	 */
 	public void processPOIFSReaderEvent(POIFSReaderEvent event) {
 		try {

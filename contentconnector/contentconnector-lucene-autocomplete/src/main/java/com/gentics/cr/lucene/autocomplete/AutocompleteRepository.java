@@ -26,7 +26,7 @@ public class AutocompleteRepository extends ContentRepository {
 	private static final long serialVersionUID = -6929053170765114770L;
 
 	/**
-	 * Create new instance
+	 * Create new instance.
 	 * @param attr
 	 */
 	public AutocompleteRepository(String[] attr) {
@@ -53,19 +53,17 @@ public class AutocompleteRepository extends ContentRepository {
 	}
 
 	/**
-	 * returns text/xml
-	 * @return 
+	 * returns text/xml.
 	 */
 	public String getContentType() {
 		return "text/plain";
 	}
 
 	/**
-	 * Respond with Error
+	 * Respond with Error.
 	 * @param stream 
 	 * @param ex 
 	 * @param isDebug 
-	 * 
 	 */
 	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
 

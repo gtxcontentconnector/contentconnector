@@ -27,7 +27,7 @@ public class JQueryAutocompleteRepository extends ContentRepository {
 	private static final long serialVersionUID = 2985183238160980550L;
 
 	/**
-	 * Create new instance
+	 * Create new instance.
 	 * @param attr
 	 */
 	public JQueryAutocompleteRepository(String[] attr) {
@@ -60,19 +60,17 @@ public class JQueryAutocompleteRepository extends ContentRepository {
 	}
 
 	/**
-	 * returns text/xml
-	 * @return 
+	 * returns text/xml.
 	 */
 	public String getContentType() {
 		return "text/plain";
 	}
 
 	/**
-	 * Respond with Error
+	 * Respond with Error.
 	 * @param stream 
 	 * @param ex 
 	 * @param isDebug 
-	 * 
 	 */
 	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
 
@@ -92,11 +90,9 @@ public class JQueryAutocompleteRepository extends ContentRepository {
 	}
 
 	/**
-	 * 
-	 * Write XML Elements to the specified stream
+	 * Write XML Elements to the specified stream.
 	 * @param stream 
 	 * @throws CRException 
-	 * 
 	 */
 	public void toStream(OutputStream stream) throws CRException {
 

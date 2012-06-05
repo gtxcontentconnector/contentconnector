@@ -43,8 +43,7 @@ public abstract class ContentTransformer {
 	protected ConcurrentHashMap<String, Object> parameters = new ConcurrentHashMap<String, Object>();
 
 	/**
-	 * Gets the Transformerkey of current Transformer
-	 * @return
+	 * Gets the Transformerkey of current Transformer.
 	 */
 	public String getTransformerKey() {
 		return transformerkey;
@@ -56,8 +55,9 @@ public abstract class ContentTransformer {
 
 	protected ContentTransformer(GenericConfiguration config) {
 		rule = (String) config.get(TRANSFORMER_RULE_KEY);
-		if (rule == null || "".equals(rule))
+		if (rule == null || "".equals(rule)) {
 			rule = DEFAULT_TRANSFORMER_RULE;
+		}
 		try {
 			expr = ExpressionParser.getInstance().parse(rule);
 		} catch (ParserException e) {
@@ -71,7 +71,7 @@ public abstract class ContentTransformer {
 	public abstract void destroy();
 
 	/**
-	 * Process the specified bean with monitoring
+	 * Process the specified bean with monitoring.
 	 * @param bean
 	 * @throws CRException
 	 */
@@ -85,7 +85,7 @@ public abstract class ContentTransformer {
 	}
 
 	/**
-	 * Process the specified bean with monitoring
+	 * Process the specified bean with monitoring.
 	 * @param bean
 	 * @throws CRException
 	 */
@@ -93,24 +93,25 @@ public abstract class ContentTransformer {
 		UseCase pcase = MonitorFactory.startUseCase("Transformer:" + this.getClass());
 		try {
 
-			if (this instanceof LuceneContentTransformer)
+			if (this instanceof LuceneContentTransformer) {
 				((LuceneContentTransformer) this).processBean(bean, writer);
-			else
+			} else {
 				processBean(bean);
+			}
 		} finally {
 			pcase.stop();
 		}
 	}
 
 	/**
-	 * Processes the specified bean
+	 * Processes the specified bean.
 	 * @param bean
 	 * @throws CRException throws exception if bean could not be processed
 	 */
 	public abstract void processBean(CRResolvableBean bean) throws CRException;
 
 	/**
-	 * Tests if the specified CRResolvableBean should be processed by the transformer
+	 * Tests if the specified CRResolvableBean should be processed by the transformer.
 	 * @param object
 	 * @return true if rule matches
 	 */
@@ -129,9 +130,8 @@ public abstract class ContentTransformer {
 	private static final String TRANSFORMER_KEY = "transformer";
 
 	/**
-	 * Create List of ContentTransformers configured in config
+	 * Create List of ContentTransformers configured in config.
 	 * @param config
-	 * @return
 	 */
 	public static List<ContentTransformer> getTransformerList(GenericConfiguration config) {
 		GenericConfiguration tconf = (GenericConfiguration) config.get(TRANSFORMER_KEY);
@@ -182,7 +182,6 @@ public abstract class ContentTransformer {
 	}
 
 	/**
-	 * @see getParameter(String);
 	 * @param key Key used for retrieval.
 	 * @return Value stored as an object
 	 */

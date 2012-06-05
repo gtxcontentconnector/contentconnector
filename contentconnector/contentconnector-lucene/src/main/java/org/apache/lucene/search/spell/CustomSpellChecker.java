@@ -520,8 +520,6 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 * Indexes the data from the given {@link Dictionary}.
 	 * 
 	 * @param dict Dictionary to index
-	 * @param mergeFactor mergeFactor to use when indexing
-	 * @param ramMB the max amount or memory in MB to use
 	 * @throws IOException in case of error
 	 */
 	public final void indexDictionary(final Dictionary dict) throws IOException {

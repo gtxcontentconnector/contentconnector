@@ -14,11 +14,11 @@ import java.util.List;
 public class IndexerUtil {
 
 	/**
-	 * Returns a File to a given path and does nothing if path is null
+	 * Returns a File to a given path and does nothing if path is null.
 	 * @param path
 	 * @return null if path is null or file does not exist
 	 */
-	public static File getFileFromPath(String path) {
+	public static File getFileFromPath(final String path) {
 		if (path != null && !path.equals("")) {
 			File f = new File(path);
 
@@ -30,12 +30,11 @@ public class IndexerUtil {
 	}
 
 	/**
-	 * Splits a string according to the given delimeter and returns a List with the elements of the string
+	 * Splits a string according to the given delimeter and returns a List with the elements of the string.
 	 * @param str
 	 * @param delimeter
-	 * @return
 	 */
-	public static List<String> getListFromString(String str, String delimeter) {
+	public static List<String> getListFromString(final String str, final String delimeter) {
 		if (str != null && !str.equals("")) {
 			String[] arr = str.split(delimeter);
 			return (Arrays.asList(arr));

@@ -55,52 +55,52 @@ public class NGramProfile {
 	/** The maximum length allowed for a ngram. */
 	final static int ABSOLUTE_MAX_NGRAM_LENGTH = 4;
 
-	/** The default min length of ngram */
+	/** The default min length of ngram. */
 	final static int DEFAULT_MIN_NGRAM_LENGTH = 3;
 
-	/** The default max length of ngram */
+	/** The default max length of ngram. */
 	final static int DEFAULT_MAX_NGRAM_LENGTH = 3;
 
-	/** The ngram profile file extension */
+	/** The ngram profile file extension. */
 	static final String FILE_EXTENSION = "ngp";
 
-	/** The profile max size (number of ngrams of the same size) */
+	/** The profile max size (number of ngrams of the same size). */
 	static final int MAX_SIZE = 1000;
 
-	/** separator char */
+	/** separator char. */
 	static final char SEPARATOR = '_';
-	/** The String form of the separator char */
+	/** The String form of the separator char. */
 	private final static String SEP_CHARSEQ = new String(new char[] { SEPARATOR });
 
-	/** The profile's name */
+	/** The profile's name. */
 	private String name = null;
 
-	/** The NGrams of this profile sorted on the number of occurences */
+	/** The NGrams of this profile sorted on the number of occurences. */
 	private List<NGramEntry> sorted = null;
 
-	/** The min length of ngram */
+	/** The min length of ngram. */
 	private int minLength = DEFAULT_MIN_NGRAM_LENGTH;
 
-	/** The max length of ngram */
+	/** The max length of ngram. */
 	private int maxLength = DEFAULT_MAX_NGRAM_LENGTH;
 
-	/** The total number of ngrams occurences */
+	/** The total number of ngrams occurences. */
 	private int[] ngramcounts = null;
 
-	/** An index of the ngrams of the profile */
+	/** An index of the ngrams of the profile. */
 	private Map<CharSequence, NGramEntry> ngrams = null;
 
-	/** A StringBuffer used during analysis */
+	/** A StringBuffer used during analysis. */
 	private QuickStringBuffer word = new QuickStringBuffer();
 
 	/**
-	 * Construct a new ngram profile
+	 * Construct a new ngram profile.
 	 * 
 	 * @param name is the name of the profile
 	 * @param minlen is the min length of ngram sequences
 	 * @param maxlen is the max length of ngram sequences
 	 */
-	public NGramProfile(String name, int minlen, int maxlen) {
+	public NGramProfile(final String name, final int minlen, final int maxlen) {
 		// TODO: Compute the initial capacity using minlen and maxlen.
 		this.ngrams = new HashMap<CharSequence, NGramEntry>(4000);
 		this.minLength = minlen;
@@ -116,7 +116,7 @@ public class NGramProfile {
 	}
 
 	/**
-	 * Add ngrams from a token to this profile
+	 * Add ngrams from a token to this profile.
 	 * 
 	 * @param t is the Token to be added
 	 */
@@ -125,7 +125,7 @@ public class NGramProfile {
 	}
 
 	/**
-	 * Add ngrams from a single word to this profile
+	 * Add ngrams from a single word to this profile.
 	 * 
 	 * @param word is the word to add
 	 */
@@ -149,10 +149,8 @@ public class NGramProfile {
 	}
 
 	/**
-	 * Add ngrams from a single word in this profile
-	 *
-	 * @param word is the word to add
-	 * @param n is the ngram size
+	 * Add ngrams from a single word in this profile.
+	 * @param cs
 	 */
 	private void add(CharSequence cs) {
 
@@ -168,7 +166,7 @@ public class NGramProfile {
 	}
 
 	/**
-	 * Analyze a piece of text
+	 * Analyze a piece of text.
 	 * 
 	 * @param text the text to be analyzed
 	 */
@@ -214,7 +212,7 @@ public class NGramProfile {
 	}
 
 	/**
-	 * Normalize the profile (calculates the ngrams frequencies)
+	 * Normalize the profile (calculates the ngrams frequencies).
 	 */
 	protected void normalize() {
 
@@ -273,7 +271,7 @@ public class NGramProfile {
 	}
 
 	/**
-	 * Calculate a score how well NGramProfiles match each other
+	 * Calculate a score how well NGramProfiles match each other.
 	 * 
 	 * @param another
 	 *          ngram profile to compare against
@@ -345,7 +343,6 @@ public class NGramProfile {
 	 * @param name is thename of profile
 	 * @param is is the stream to read
 	 * @param encoding is the encoding of stream
-	 * @return 
 	 */
 	public static NGramProfile create(String name, InputStream is, String encoding) {
 

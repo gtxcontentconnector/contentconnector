@@ -60,7 +60,6 @@ public interface IndexAccessor {
 	 * honored by the caller to ensure defined behavior.
 	 * 
 	 * @param write
-	 * @return
 	 * @throws IOException
 	 */
 	IndexReader getReader(boolean write) throws IOException;
@@ -68,8 +67,6 @@ public interface IndexAccessor {
 	/**
 	 * Fetches a double checked Searcher that has been checked for the presence of a reopen file
 	 * Note that it may occure that a prioritized Searcher may be reopened twice.
-	 * @param indexLocation 
-	 * @return
 	 * @throws IOException
 	 */
 	Searcher getPrioritizedSearcher() throws IOException;
@@ -85,8 +82,7 @@ public interface IndexAccessor {
 	/**
 	 * Returns a Searcher that uses a supplied IndexReader.
 	 * 
-	 * @param indexReader
-	 *          to create Searcher with
+	 * @param indexReader to create Searcher with
 	 * @return new or cached Searcher
 	 * @throws IOException
 	 */
@@ -95,46 +91,29 @@ public interface IndexAccessor {
 	/**
 	 * Returns a Searcher that uses a supplied IndexReader and Similarity.
 	 * 
-	 * @param similarity
-	 *          to create Searcher with
-	 * @param indexReader
-	 *          to create Searcher with
+	 * @param similarity to create Searcher with
+	 * @param indexReader to create Searcher with
 	 * @return new or cached Searcher
 	 * @throws IOException
 	 */
 	Searcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException;
 
 	/**
-	 * @return
 	 * @throws IOException
 	 */
 	public IndexWriter getWriter() throws IOException;
 
-	/**
-	 * @return
-	 */
 	boolean isOpen();
 
-	/**
-	 * 
-	 * @return
-	 */
 	boolean isLocked();
 
-	/**
-	 * 
-	 */
 	void open();
 
 	/**
 	 * @throws IOException 
-	 * 
 	 */
 	void reopen() throws IOException;
 
-	/**
-	 * @return
-	 */
 	int readingReadersOut();
 
 	/**
@@ -153,14 +132,8 @@ public interface IndexAccessor {
 	 */
 	void release(Searcher searcher);
 
-	/**
-	 * @return
-	 */
 	int writerUseCount();
 
-	/**
-	 * @return
-	 */
 	int writingReadersUseCount();
 
 }

@@ -39,12 +39,12 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	/**
 	 * Initializes the Lucene Implementation of {@link IndexUpdateChecker}.
 	 * @param indexLocation
-	 * @param termKey - Key under wich the termValue is stored in the Index e.g.
-	 * CRID
+	 * @param termKey - Key under wich the termValue is stored in the Index e.g. CRID
 	 * @param termValue - Value wich to use for iteration e.g. CRID_1
 	 * @param idAttribute - ID-Attribute key that will be used for Identifyer
 	 * comparison. This has to represent the field where the identifyer in the
-	 * method {@link #checkUpToDate(String, int)} is present.
+	 * method {@link com.gentics.cr.lucene.indexer.index.LuceneIndexUpdateChecker#checkUpToDate(String, Object, String, Resolvable)} 
+	 * is present.
 	 * @throws IOException 
 	 */
 	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation, final String termKey, final String termValue,

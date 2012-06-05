@@ -49,13 +49,10 @@ public class HTMLStripReader extends Reader {
 	private static final int MATCH = -3;
 	// temporary buffer
 	private final StringBuilder sb = new StringBuilder();
-	/**
-	 * 
-	 */
+
 	public static final int DEFAULT_READ_AHEAD = 8192;
 
 	/**
-	 * 
 	 * @param args
 	 * @throws IOException
 	 */
@@ -68,7 +65,6 @@ public class HTMLStripReader extends Reader {
 	}
 
 	/**
-	 * 
 	 * @param source
 	 */
 	public HTMLStripReader(Reader source) {
@@ -77,7 +73,6 @@ public class HTMLStripReader extends Reader {
 	}
 
 	/**
-	 * 
 	 * @param source
 	 * @param escapedTags
 	 */
@@ -87,7 +82,6 @@ public class HTMLStripReader extends Reader {
 	}
 
 	/**
-	 * 
 	 * @param source
 	 * @param escapedTags
 	 * @param readAheadLimit
@@ -99,10 +93,6 @@ public class HTMLStripReader extends Reader {
 		readAheadLimitMinus1 = readAheadLimit - 1;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public int getReadAheadLimit() {
 		return readAheadLimit;
 	}
@@ -728,9 +718,7 @@ public class HTMLStripReader extends Reader {
 	}
 
 	/**
-	 * @return 
 	 * @throws IOException 
-	 * 
 	 */
 	public int read() throws IOException {
 		// TODO: Do we ever want to preserve CDATA sections?
@@ -804,9 +792,7 @@ public class HTMLStripReader extends Reader {
 	* @param cbuf 
 	* @param off 
 	* @param len 
-	* @return 
 	* @throws IOException 
-	 * 
 	 */
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		int i = 0;

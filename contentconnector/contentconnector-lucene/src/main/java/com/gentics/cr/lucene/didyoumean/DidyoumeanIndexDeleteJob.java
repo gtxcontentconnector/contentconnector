@@ -24,12 +24,9 @@ public class DidyoumeanIndexDeleteJob extends AbstractUpdateCheckerJob {
 	/**
 	 * Constructor.
 	 * 
-	 * @param config
-	 *            configuration
-	 * @param indexLoc
-	 *            indexLocation
-	 * @param autocompleter
-	 *            the {@link DidyoumeanIndexExtension} to clear
+	 * @param config configuration
+	 * @param indexLoc indexLocation
+	 * @param didyoumean the {@link com.gentics.cr.lucene.didyoumean.DidyoumeanIndexExtension} to clear
 	 */
 	public DidyoumeanIndexDeleteJob(final CRConfig config, final IndexLocation indexLoc,
 		DidyoumeanIndexExtension didyoumean) {
@@ -41,7 +38,7 @@ public class DidyoumeanIndexDeleteJob extends AbstractUpdateCheckerJob {
 	}
 
 	/**
-	 * starts the job - is called by the IndexJobQueue
+	 * starts the job - is called by the IndexJobQueue.
 	 */
 	@Override
 	protected final void indexCR(final IndexLocation indexLocation, final CRConfigUtil config) throws CRException {

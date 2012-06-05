@@ -207,9 +207,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	}
 
 	/**
-	 * Returns the hashCode of the LockID of the used Directory
-	 * 
-	 * @author Sebastian Vogel <s.vogel@gentics.com>
+	 * Returns the hashCode of the LockID of the used Directory.
 	 */
 	@Override
 	public int hashCode() {

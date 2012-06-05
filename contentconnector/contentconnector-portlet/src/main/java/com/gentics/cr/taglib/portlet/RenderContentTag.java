@@ -21,7 +21,7 @@ import com.gentics.cr.rendering.ContentRenderer;
 import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
 
 /**
- * Implementation of a tag that renders content with plink replacing and velocity
+ * Implementation of a tag that renders content with plink replacing and velocity.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 545 $
  * @author $Author: supnig@constantinopel.at $
@@ -29,33 +29,37 @@ import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
  */
 public class RenderContentTag extends TagSupport {
 	/**
-	 * 
+	 * unique serialization id.
 	 */
 	private static final long serialVersionUID = -5724484220477278975L;
+
+	/**
+	 * log4j logger.
+	 */
 	private Logger logger = Logger.getLogger("com.gentics.cr.rendering");
 
 	/**
-	 * Name of the render request attribute for the instance of {@link ContentRenderer}
+	 * Name of the render request attribute for the instance of {@link ContentRenderer}.
 	 */
 	public final static String RENDERER_PARAM = "rendercontenttag.renderer";
 
 	/**
-	 * Name of the config attribute for the instance of {@link GenericConfiguration}
+	 * Name of the config attribute for the instance of {@link GenericConfiguration}.
 	 */
 	public final static String CRCONF_PARAM = "rendercontenttag.crconf";
 
 	/**
-	 * Name of the request attribute for the instance of {@link RenderRequest}
+	 * Name of the request attribute for the instance of {@link RenderRequest}.
 	 */
 	public final static String REQUEST_PARAM = "rendercontenttag.request";
 
 	/**
-	 * Name of the render request attribute for the instance of {@link PLinkReplacer}
+	 * Name of the render request attribute for the instance of {@link PLinkReplacer}.
 	 */
 	public final static String PLINK_PARAM = "rendercontenttag.plinkreplacer";
 
 	/**
-	 * Rendered object
+	 * Rendered object.
 	 */
 	protected CRResolvableBean object;
 
@@ -66,14 +70,14 @@ public class RenderContentTag extends TagSupport {
 			+ "|ContentPostProcessor|confs";
 
 	/**
-	 * name of the rendered attribute
+	 * name of the rendered attribute.
 	 */
 	protected String contentAttribute = "content";
 
 	protected String var = null;
 
 	/**
-	 * flag if the output should be urlencoded
+	 * flag if the output should be urlencoded.
 	 */
 	protected boolean urlencode = false;
 
@@ -81,43 +85,40 @@ public class RenderContentTag extends TagSupport {
 	 * Set the object to be rendered. Must be an instance of {@link CRResolvableBean}.
 	 * @param object rendered object
 	 */
-	public void setObject(Object object) {
+	public void setObject(final Object object) {
 		if (object instanceof CRResolvableBean) {
 			this.object = (CRResolvableBean) object;
 		}
 	}
 
 	/**
-	 * Set the content attribute to be rendered
+	 * Set the content attribute to be rendered.
 	 * @param contentAttribute name of the rendered content attribute
 	 */
-	public void setContentAttribute(String contentAttribute) {
+	public void setContentAttribute(final String contentAttribute) {
 		this.contentAttribute = contentAttribute;
 	}
 
 	/**
-	 * Set the flag if the returned content should be url-encoded
+	 * Set the flag if the returned content should be url-encoded.
 	 * @param urlencode 
 	 * 
 	 */
-	public void setUrlencode(String urlencode) {
+	public void setUrlencode(final String urlencode) {
 		this.urlencode = "true".equals(urlencode);
 	}
 
 	/**
-	 * 
 	 * @param var
 	 */
-	public void setVar(String var) {
+	public void setVar(final String var) {
 		this.var = var;
 	}
 
 	/**
-	 * @return 
 	 * @throws JspException 
 	 * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
 	 */
-
 	public int doEndTag() throws JspException {
 		// get the ContentRenderer
 		RenderRequest renderRequest = getRenderRequest();
@@ -181,8 +182,7 @@ public class RenderContentTag extends TagSupport {
 	 * Get the render request
 	 * 
 	 * @return render request
-	 * @throws JspException
-	 *             when the render request could not be found
+	 * @throws JspException when the render request could not be found
 	 */
 	protected RenderRequest getRenderRequest() throws JspException {
 		Object renderRequestObject = pageContext.findAttribute("javax.portlet.request");

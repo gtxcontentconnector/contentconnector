@@ -78,9 +78,6 @@ public class IndexAccessorFactory {
 		}
 	}
 
-	/**
-	 * @return
-	 */
 	public static IndexAccessorFactory getInstance() {
 		return INDEXACCESSORFACTORY;
 	}
@@ -199,7 +196,6 @@ public class IndexAccessorFactory {
 
 	/**
 	 * @param dirs 
-	 * @return
 	 */
 	public IndexAccessor getMultiIndexAccessor(Directory[] dirs) {
 		IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);

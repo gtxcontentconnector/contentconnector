@@ -43,16 +43,14 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	}
 
 	/**
-	 * Get a List of configured Attributes to be reversed
-	 * 
-	 * @return
+	 * Get a List of configured Attributes to be reversed.
 	 */
 	public List<String> getReverseAttributes() {
 		return LuceneAnalyzerFactory.getReverseAttributes((GenericConfiguration) config);
 	}
 
 	/**
-	 * Requests an optimize command on the index
+	 * Requests an optimize command on the index.
 	 */
 	public void optimizeIndex() {
 		IndexAccessor indexAccessor = getAccessor();
@@ -161,7 +159,6 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	 * Create a Lucene directory from a config (index path must be configured)
 	 * 
 	 * @param config
-	 * @return
 	 */
 	public static Directory createDirectory(CRConfig config) {
 		String loc = getFirstIndexLocation(config);
@@ -268,8 +265,6 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 
 	/**
 	 * True when two LuceneIndexLocations have the same hashCode
-	 * 
-	 * @author Sebastian Vogel <s.vogel@gentics.com>
 	 */
 	@Override
 	public boolean equals(Object o) {
