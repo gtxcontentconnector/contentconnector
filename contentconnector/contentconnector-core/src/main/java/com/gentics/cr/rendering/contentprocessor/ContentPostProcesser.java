@@ -31,30 +31,27 @@ public abstract class ContentPostProcesser {
 
 	/**
 	 * Returns the processed String (implement the way, you want the string to
-	 * be processed and changed, replaced, modified, etc)
+	 * be processed and changed, replaced, modified, etc).
 	 * 
 	 * @param obj
-	 * @return
 	 */
 	public abstract String processString(String obj);
 
 	/**
 	 * Returns the processed String (implement the way, you want the string to
-	 * be processed and changed, replaced, modified, etc)
+	 * be processed and changed, replaced, modified, etc).
 	 * 
 	 * @param obj
 	 * @param request 
-	 * @return
 	 */
 	public abstract String processString(String obj, PortletRequest request);
 
 	/**
 	 * Returns the processed String (implement the way, you want the string to
-	 * be processed and changed, replaced, modified, etc)
+	 * be processed and changed, replaced, modified, etc).
 	 * 
 	 * @param obj
 	 * @param request 
-	 * @return
 	 */
 	public abstract String processString(String obj, ServletRequest request);
 
@@ -64,7 +61,6 @@ public abstract class ContentPostProcesser {
 	/**
 	 * Create table of ContentTransformers configured in config.
 	 * @param config
-	 * @return
 	 */
 	public static ConcurrentHashMap<String, ContentPostProcesser> getProcessorTable(GenericConfiguration config) {
 		GenericConfiguration tconf = null;

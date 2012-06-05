@@ -149,8 +149,7 @@ public class CRUtil {
 	}
 
 	/**
-	 * FIXME copied from {@link com.gentics.lib.etc.StringUtils}
-	 * - move it to API ?
+	 * FIXME copied from com.gentics.lib.etc.StringUtils - move it to API ?
 	 * Resolve system properties encoded in the string as ${property.name}
 	 * @param string string holding encoded system properties
 	 * @return string with the system properties resolved
@@ -187,7 +186,6 @@ public class CRUtil {
 	/**
 	 * Slurps a InputStream into a String.
 	 * @param in
-	 * @return
 	 * @throws IOException
 	 */
 	public static String inputStreamToString(final InputStream in) throws IOException {
@@ -202,7 +200,6 @@ public class CRUtil {
 	/**
 	 * Slurps a Reader into a String.
 	 * @param in
-	 * @return
 	 * @throws IOException
 	 */
 	public static String readerToString(final Reader in) throws IOException {
@@ -217,7 +214,6 @@ public class CRUtil {
 	/**
 	 * Slurps a Reader into a String and strips the character 0.
 	 * @param in
-	 * @return
 	 * @throws IOException
 	 */
 	public static String readerToPrintableCharString(final Reader in) throws IOException {

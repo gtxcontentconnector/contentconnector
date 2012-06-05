@@ -23,7 +23,7 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 	private HashMap<String, Object> contextObjects;
 
 	/**
-	 * Create Instance
+	 * Create Instance.
 	 * @param portlet
 	 */
 	public PortalNodeTemplateManager(GenticsPortlet portlet) {
@@ -34,15 +34,15 @@ public class PortalNodeTemplateManager implements ITemplateManager {
 	/**
 	 * @see com.gentics.cr.template.ITemplateManager#put(java.lang.String, java.lang.Object)
 	 */
-	public void put(String key, Object value) {
+	public void put(final String key, final Object value) {
 		this.contextObjects.put(key, value);
 
 	}
 
 	/**
-	 * @see {@link com.gentics.cr.template.ITemplateManager#render(String, String)}
+	 * implements {@link com.gentics.cr.template.ITemplateManager#render(String, String)}
 	 */
-	public String render(String templatename, String templatesource) throws CRException {
+	public String render(final String templatename, final String templatesource) throws CRException {
 		String renderedTemplate = null;
 
 		TemplateProcessor processor = PortalNodeInteractor.getPortletTemplateProcessor(this.portlet);

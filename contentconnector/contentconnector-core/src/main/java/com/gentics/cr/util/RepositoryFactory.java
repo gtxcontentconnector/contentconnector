@@ -29,8 +29,8 @@ public class RepositoryFactory {
 		 */
 		XML,
 		/**
-		 * RepositoryType for
-		 * {@link com.gentics.cr.rest.json.JSONContentRepository}.
+		 * TODO: to correctly link this javadoc contentconnector-core would need a dependency upon contentconnector-json
+		 * RepositoryType for com.gentics.cr.rest.json.JSONContentRepository
 		 */
 		JSON,
 		/**

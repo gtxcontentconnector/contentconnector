@@ -109,10 +109,7 @@ public class MnogosearchXmlContentRepository extends XmlContentRepository {
 	}
 
 	/**
-	 * 
-	 * returns test/xml
-	 * @return 
-	 * 
+	 * returns test/xml.
 	 */
 	public String getContentType() {
 		return "text/xml";
@@ -121,7 +118,6 @@ public class MnogosearchXmlContentRepository extends XmlContentRepository {
 	/**
 	 * @param stream 
 	 * @throws CRException 
-	 * 
 	 */
 	public void toStream(OutputStream stream) throws CRException {
 

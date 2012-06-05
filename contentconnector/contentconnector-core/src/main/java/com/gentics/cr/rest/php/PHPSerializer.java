@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * PHP data serializer and unserializer
+ * PHP data serializer and unserializer.
  * @author Ludovic Martin <ludovic.martin@laposte.net>
  * @author Haymo Meran <h.meran@gentics.com>
  *
@@ -30,21 +30,21 @@ import java.util.Map;
  */
 public class PHPSerializer {
 
-	/** Data charset */
+	/** Data charset. */
 	private String charset;
-	/** Private string pointer */
+	/** Private string pointer. */
 	private int position = 0;
 
-	/** Creates a new instance of PHPSerializer
-	 */
+	/** Creates a new instance of PHPSerializer. */
 	public PHPSerializer() {
 		this("utf-8");
 	}
 
-	/** Creates a new instance of PHPSerializer
+	/** 
+	 * Creates a new instance of PHPSerializer.
 	 * @param charset charset of target PHP page
 	 */
-	public PHPSerializer(String charset) {
+	public PHPSerializer(final String charset) {
 		this.charset = charset;
 	}
 
@@ -335,7 +335,6 @@ public class PHPSerializer {
 		}
 
 		/**
-		 * 
 		 * @param outputObject
 		 */
 		public StringBufferSDW(StringBuffer outputObject) {
@@ -349,7 +348,6 @@ public class PHPSerializer {
 
 		/**
 		 * @param data 
-		 * 
 		 */
 		public void put(Object data) {
 			outputObject.print(data);
@@ -357,14 +355,12 @@ public class PHPSerializer {
 
 		/**
 		 * @param data 
-		 * 
 		 */
 		public void put(int data) {
 			outputObject.append(new Integer(data).toString());
 		}
 
 		/**
-		 * 
 		 * @param outputObject
 		 */
 		public PrintStreamSDW(PrintStream outputObject) {
@@ -375,7 +371,6 @@ public class PHPSerializer {
 	/**
 	 * Get bytes
 	 * @param obj
-	 * @return
 	 * @throws java.io.IOException
 	 */
 	public byte[] getBytes(Object obj) throws java.io.IOException {

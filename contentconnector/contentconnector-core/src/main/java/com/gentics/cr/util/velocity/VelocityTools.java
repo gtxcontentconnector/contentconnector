@@ -14,8 +14,7 @@ import org.apache.velocity.tools.generic.SortTool;
 /**
  * Generic velocity tools in a bean that can be accessed by velocity.
  * @author bigbear3001
- * @see
- * {@link http://velocity.apache.org/tools/releases/1.3/generic/}
+ * @see <a href="http://velocity.apache.org/tools/releases/1.3/generic/">Velocity Tools 1.3 Documentation</a>
  */
 public class VelocityTools {
 	/**

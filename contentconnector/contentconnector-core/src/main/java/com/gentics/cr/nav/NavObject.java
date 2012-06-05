@@ -39,7 +39,6 @@ public class NavObject {
 	 * @param path
 	 * @param template
 	 * @param objects 
-	 * @param resolvables
 	 */
 	public NavObject(CRConfig conf, CRResolvableBean bean, int level, Vector<String> path, ITemplate template,
 		Map<String, Object> objects) {
@@ -74,7 +73,6 @@ public class NavObject {
 	/**
 	 * returns true if the given contentid is in the path (root object of this tree and current object).
 	 * @param contentid 
-	 * @param bean
 	 * @return true if in path
 	 */
 	public boolean isInPath(final String contentid) {

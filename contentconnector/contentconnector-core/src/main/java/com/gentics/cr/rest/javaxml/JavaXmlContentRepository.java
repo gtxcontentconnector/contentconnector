@@ -29,7 +29,7 @@ public class JavaXmlContentRepository extends ContentRepository {
 	private static final long serialVersionUID = 003433324L;
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * sets response encoding to UTF-8
 	 * @param attr
 	 */
@@ -42,7 +42,7 @@ public class JavaXmlContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * @param attr
 	 * @param encoding
 	 */
@@ -55,7 +55,7 @@ public class JavaXmlContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * @param attr
 	 * @param encoding
 	 * @param options
@@ -69,20 +69,18 @@ public class JavaXmlContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Returns "text/xml"
-	 * @return 
+	 * Returns "text/xml".
 	 */
 	public String getContentType() {
 		return "text/xml";
 	}
 
 	/**
-	 * Responds with Error
-	 * 		Serialized CRError Class
+	 * Responds with Error.
+	 * Serialized CRError Class
 	 * @param stream 
 	 * @param ex 
 	 * @param isDebug 
-	 * 
 	 */
 	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
 
@@ -117,7 +115,7 @@ public class JavaXmlContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Writes Data to the specified stream
+	 * Writes Data to the specified stream.
 	 * @param stream 
 	 * @throws CRException 
 	 * 

@@ -32,7 +32,6 @@ public class ConnectionProvider {
 	  * 
 	  * ATTENTION: The pool has to be released when the application shuts down using the releaseJDBCPool method
 	  * 
-	  * @return
 	  * @throws Exception
 	  */
 	public static synchronized Connection getPooledJDBCConnection(CRConfigUtil config) throws Exception {
@@ -54,8 +53,7 @@ public class ConnectionProvider {
 	}
 
 	/**
-	   * Releases the JDBC Connection pool that was used by any connection from
-	   * getPooledJDBCConnection
+	   * Releases the JDBC Connection pool that was used by any connection from getPooledJDBCConnection.
 	   * @throws Exception
 	   */
 	public static synchronized void releaseJDBCPool(CRConfigUtil config) throws Exception {

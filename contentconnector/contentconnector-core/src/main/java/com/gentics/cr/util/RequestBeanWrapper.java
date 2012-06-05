@@ -60,16 +60,15 @@ public class RequestBeanWrapper extends ResolvableWrapper {
 		 * constructor.
 		 * @param p
 		 */
-		public SmartRequestParameterWrapper(Map<String, String[]> p) {
+		public SmartRequestParameterWrapper(final Map<String, String[]> p) {
 			this.parameters = p;
 		}
 
 		/**
-		 * smartly get parameter
+		 * smartly get parameter.
 		 * @param key
-		 * @return
 		 */
-		public Object get(String key) {
+		public Object get(final String key) {
 			Object val = null;
 			if (this.parameters != null) {
 				String[] arr = this.parameters.get(key);

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.gentics.cr.CRResolvableBean;
 
 /**
- * This Class only exists until an outomatic mapping in the tagmap will be created
+ * This Class only exists until an automatic mapping in the tagmap will be created.
  * Last changed: $Date: 2009-07-10 17:56:53 +0200 (Fr, 10 Jul 2009) $
  * @version $Revision: 142 $
  * @author $Author: supnig@constantinopel.at $
@@ -16,9 +16,8 @@ public class MLMapper {
 	private static HashMap<Integer, String> ml_map;
 
 	/**
-	 * Get the Mimetype using an CRResolvableBean
+	 * Get the Mimetype using an CRResolvableBean.
 	 * @param bean 
-	 * @return
 	 */
 	public static String getMimetype(CRResolvableBean bean) {
 		String mimetype = null;
@@ -30,13 +29,13 @@ public class MLMapper {
 	}
 
 	/**
-	 * Get the Mimetype using an ml_id
+	 * Get the Mimetype using an ml_id.
 	 * @param ml_id
-	 * @return
 	 */
 	public static String getMimetype(Integer ml_id) {
-		if (ml_map == null)
+		if (ml_map == null) {
 			ml_map = createMLMap();
+		}
 
 		return ml_map.get(ml_id);
 	}

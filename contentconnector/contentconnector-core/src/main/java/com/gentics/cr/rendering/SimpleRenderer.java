@@ -23,36 +23,35 @@ public class SimpleRenderer {
 	private PLinkReplacer pr;
 
 	/**
-	 * Set the SimpleRenderer to enable or disable Velocity
+	 * Set the SimpleRenderer to enable or disable Velocity.
 	 * Default: Velocity enabled
 	 * @param dovtl
 	 */
-	public void setDoVelocity(boolean dovtl) {
+	public void setDoVelocity(final boolean dovtl) {
 		this.doVelocity = dovtl;
 	}
 
 	/**
-	 * Set the SimpleRenderer to enable or disable Plinks
+	 * Set the SimpleRenderer to enable or disable Plinks.
 	 * @param doplinks
 	 */
-	public void setDoPlinks(boolean doplinks) {
+	public void setDoPlinks(final boolean doplinks) {
 		this.doPlinks = doplinks;
 	}
 
 	/**
-	 * Create a new instance of SimpleRenderer
-	 * @param cr
+	 * Create a new instance of SimpleRenderer.
+	 * @param conf
 	 * @param pr
 	 */
-	public SimpleRenderer(CRConfig conf, PLinkReplacer pr) {
+	public SimpleRenderer(final CRConfig conf, final PLinkReplacer pr) {
 		this.conf = conf;
 		this.pr = pr;
 	}
 
 	/**
-	 * Performs velocity and plink rendering on a given string
+	 * Performs velocity and plink rendering on a given string.
 	 * @param source
-	 * @return
 	 */
 	public String render(String source) throws CRException {
 		// replace plinks (if configured to do so)

@@ -23,39 +23,31 @@ import com.gentics.cr.template.ITemplateManager;
  */
 public class ContentRenderer implements IContentRenderer {
 	/**
-	 * configuration
+	 * configuration.
 	 */
 	protected CRConfig config = null;
 
 	//private static Logger log = Logger.getLogger(ContentRenderer.class);
 
 	/**
-	 * Create an instance of the renderer with given configuration
+	 * Create an instance of the renderer with given configuration.
 	 * 
 	 * @param config
-	 *            configuration
 	 */
 	public ContentRenderer(CRConfig config) {
 		this.config = config;
 	}
 
 	/**
-	 * Render textual content from a bean into a writer
+	 * Render textual content from a bean into a writer.
 	 * 
-	 * @param writer
-	 *            writer that will get the rendered content
-	 * @param bean
-	 *            bean holding the content
-	 * @param contentAttribute
-	 *            name of the attribute holding the content
-	 * @param doReplacePLinks
-	 *            true when plinks shall be replaced in the content
-	 * @param plinkReplacer
-	 *            plink replacer to be used (when doReplacePLinks is true)
-	 * @param doRenderVelocity
-	 *            true when velocity shall be rendered in the content
-	 * @param resolvables
-	 *            Map of resolvables for the context of the velocity renderer
+	 * @param writer writer that will get the rendered content
+	 * @param bean bean holding the content
+	 * @param contentAttribute name of the attribute holding the content
+	 * @param doReplacePLinks true when plinks shall be replaced in the content
+	 * @param plinkReplacer plink replacer to be used (when doReplacePLinks is true)
+	 * @param doRenderVelocity true when velocity shall be rendered in the content
+	 * @param resolvables Map of resolvables for the context of the velocity renderer
 	 * @throws CRException
 	 * @throws IOException 
 	 */
@@ -77,14 +69,13 @@ public class ContentRenderer implements IContentRenderer {
 	}
 
 	/**
-	 * Render contentattribute attribute from a bean into a string
+	 * Render contentattribute attribute from a bean into a string.
 	 * @param bean
 	 * @param contentAttribute
 	 * @param doReplacePLinks
 	 * @param plinkReplacer
 	 * @param doRenderVelocity
 	 * @param resolvables
-	 * @return
 	 * @throws CRException
 	 * @throws IOException
 	 */

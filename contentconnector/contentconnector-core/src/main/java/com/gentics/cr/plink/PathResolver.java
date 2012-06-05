@@ -112,7 +112,7 @@ public class PathResolver {
 	 * @param cacheWarmRule - Rule that is used to fetch the objects
 	 */
 	@SuppressWarnings("unchecked")
-	public void warmCache(String cacheWarmRule) {
+	public void warmCache(final String cacheWarmRule) {
 
 		Datasource ds = null;
 		try {
@@ -123,10 +123,11 @@ public class PathResolver {
 
 			// use the filter to get matching objects
 			String[] atts = null;
-			if (fast)
+			if (fast) {
 				atts = fastprefillAttributes;
-			else
+			} else {
 				atts = prefillAttributes;
+			}
 			Collection<Resolvable> coll = (Collection<Resolvable>) ds.getResult(filter, atts);
 			for (Resolvable res : coll) {
 				CRRequest req = new CRRequest();
@@ -157,7 +158,7 @@ public class PathResolver {
 	 * @return a Resolvable Object based on the passed URL.
 	 */
 	@SuppressWarnings("unchecked")
-	public CRResolvableBean getObject(CRRequest request) {
+	public CRResolvableBean getObject(final CRRequest request) {
 		Resolvable contentObject = null;
 		String url = request.getUrl();
 		Datasource ds = null;
@@ -198,19 +199,19 @@ public class PathResolver {
 			}
 		}
 		CRResolvableBean ret = null;
-		if (contentObject != null)
+		if (contentObject != null) {
 			ret = new CRResolvableBean(contentObject, new String[] {});
+		}
 		return ret;
 	}
 
 	/**
-	 * initializes a Resolvable Object an calls getPath(Resolvable linkedObject)
+	 * initializes a Resolvable Object an calls getPath(Resolvable linkedObject).
+	 * {@link com.gentics.cr.plink.PathResolver#getPath(Resolvable)}
 	 * 
 	 * @param contentid
-	 * @return
-	 * @see public String getPath(Resolvable linkedObject)
 	 */
-	public String getPath(String contentid) {
+	public String getPath(final String contentid) {
 
 		Resolvable linkedObject = null;
 		Datasource ds = null;

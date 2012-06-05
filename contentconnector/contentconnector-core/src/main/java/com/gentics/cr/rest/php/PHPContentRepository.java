@@ -73,7 +73,6 @@ public class PHPContentRepository extends ContentRepository {
 
 	/**
 	 * returns "application/serialized_PHP_variable".
-	 * @return 
 	 */
 	public String getContentType() {
 		return "application/serialized_PHP_variable";

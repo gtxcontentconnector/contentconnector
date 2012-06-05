@@ -15,6 +15,9 @@ import com.gentics.api.lib.resolving.ResolvableBean;
  */
 public class PathBean extends ResolvableBean {
 
+	/**
+	 * unique serialization id.
+	 */
 	private static final long serialVersionUID = 5915197938161912714L;
 
 	protected String filename;
@@ -22,10 +25,10 @@ public class PathBean extends ResolvableBean {
 	protected String path;
 
 	/**
-	 * create new instance of pathbean
+	 * create new instance of pathbean.
 	 * @param url
 	 */
-	public PathBean(String url) {
+	public PathBean(final String url) {
 		if (url != null) {
 			int lastindex = url.lastIndexOf('/');
 			this.filename = url.substring(lastindex + 1);
@@ -36,16 +39,14 @@ public class PathBean extends ResolvableBean {
 	}
 
 	/**
-	 * Filename as string
-	 * @return
+	 * Filename as string.
 	 */
 	public String getFilename() {
 		return filename;
 	}
 
 	/**
-	 * path as string
-	 * @return
+	 * path as string.
 	 */
 	public String getPath() {
 		return path;

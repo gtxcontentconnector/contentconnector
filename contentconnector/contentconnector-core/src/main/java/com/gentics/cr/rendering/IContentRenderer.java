@@ -19,7 +19,7 @@ import com.gentics.cr.exceptions.CRException;
 public interface IContentRenderer {
 
 	/**
-	 * Render Contentattribute attribute from bean into a writer
+	 * Render Contentattribute attribute from bean into a writer.
 	 * @param writer
 	 * @param bean
 	 * @param contentAttribute
@@ -35,14 +35,13 @@ public interface IContentRenderer {
 			throws CRException, IOException;
 
 	/**
-	 * Render contentattribute attribute from a bean into a string
+	 * Render contentattribute attribute from a bean into a string.
 	 * @param bean
 	 * @param contentAttribute
 	 * @param doReplacePLinks
 	 * @param plinkReplacer
 	 * @param doRenderVelocity
 	 * @param resolvables
-	 * @return
 	 * @throws CRException
 	 * @throws IOException
 	 */

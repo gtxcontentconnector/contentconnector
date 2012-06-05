@@ -5,15 +5,13 @@ import java.util.Collection;
 import com.gentics.cr.CRResolvableBean;
 
 /**
- * Interface for write support in a Repository
+ * Interface for write support in a Repository.
  * @author bigbear3001
- *
  */
 public interface WriteableRepository {
 
 	/**
 	 * Create a new CRResolvableBean especially for this repository.
-	 * @return
 	 */
 	CRResolvableBean createNewResolvable();
 
@@ -26,7 +24,7 @@ public interface WriteableRepository {
 	boolean update(CRResolvableBean bean);
 
 	/**
-	 * Update a collection of beans in the repository
+	 * Update a collection of beans in the repository.
 	 * @param beans collection for beans to update
 	 * @return <code>true</code> if all beans where updated successfully,
 	 * otherwise <code>false</code>.

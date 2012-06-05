@@ -53,8 +53,7 @@ public class IndexerStatus {
 	}
 
 	/**
-	 * Get current Status String
-	 * @return
+	 * Get current Status String.
 	 */
 	public String getCurrentStatusString() {
 		String stat = "";
@@ -65,97 +64,92 @@ public class IndexerStatus {
 	}
 
 	/**
-	 * Set current Status string
+	 * Set current Status string.
 	 * @param statusstring
 	 */
-	public void setCurrentStatusString(String statusstring) {
+	public void setCurrentStatusString(final String statusstring) {
 		synchronized (this) {
 			this.currStatusString = statusstring;
 		}
 	}
 
 	/**
-	 * Duration of last run in ms
-	 * @return
+	 * Duration of last run in ms.
 	 */
 	public long getLastRunDuration() {
 		return lastRunDuration;
 	}
 
 	/**
-	 * Sets the duration of the last run in ms
+	 * Sets the duration of the last run in ms.
 	 * @param lastRunDuration
 	 */
-	public void setLastRunDuration(long lastRunDuration) {
+	public void setLastRunDuration(final long lastRunDuration) {
 		this.lastRunDuration = lastRunDuration;
 	}
 
 	/**
-	 * returns true if thread is running
-	 * @return
+	 * returns true if thread is running.
 	 */
 	public boolean isRunning() {
 		return running;
 	}
 
 	/**
-	 * set to true if thread is running
+	 * set to true if thread is running.
 	 * @param running
 	 */
-	public void setRunning(boolean running) {
+	public void setRunning(final boolean running) {
 		this.running = running;
 	}
 
 	/**
-	 * Count of objects
-	 * @return
+	 * Count of objects.
 	 */
 	public int getObjectCount() {
 		return objectCount;
 	}
 
 	/**
-	 * sets the count of objects
+	 * sets the count of objects.
 	 * @param objectCount
 	 */
-	public void setObjectCount(int objectCount) {
+	public void setObjectCount(final int objectCount) {
 		this.objectCount = objectCount;
 	}
 
 	/**
-	 * already indexed objects in this run
-	 * @return
+	 * already indexed objects in this run.
 	 */
 	public int getObjectsDone() {
 		return objectsDone;
 	}
 
 	/**
-	 * sets already indexed objects in this run
+	 * sets already indexed objects in this run.
 	 * @param objectsDone
 	 */
-	public void setObjectsDone(int objectsDone) {
+	public void setObjectsDone(final int objectsDone) {
 		this.objectsDone = objectsDone;
 	}
 
 	/**
-	 * gets the time of start of the last run
-	 * @return
+	 * gets the time of start of the last run.
 	 */
 	public Date getStartTime() {
 		return startTime;
 	}
 
 	/**
-	 * sets the time of the start of the last run
+	 * sets the time of the start of the last run.
 	 * @param startTime
 	 */
-	public void setStartTime(Date startTime) {
+	public void setStartTime(final Date startTime) {
 		this.startTime = startTime;
 	}
 
 	/**
-	 * resets the status object
+	 * resets the status object.
 	 */
 	public void reset() {
 		this.objectCount = 0;

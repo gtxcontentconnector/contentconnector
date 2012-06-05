@@ -20,30 +20,29 @@ public class PlinkReplacer implements PLinkReplacer {
 	protected CRRequest request;
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * @param proc {@link PlinkProcessor} to handle the PLinks
 	 * @param request {@link CRRequest} from the servlet to build an url back to the servlet
 	 */
-	public PlinkReplacer(PlinkProcessor proc, CRRequest request) {
+	public PlinkReplacer(final PlinkProcessor proc, final CRRequest request) {
 		this.plinkProc = proc;
 		this.plinkProc.deployObjects(request.getObjectsToDeploy());
 		this.request = request;
 	}
 
 	/**
-	 * Create an instance without a request
+	 * Create an instance without a request.
 	 * @param proc {@link PlinkProcessor} to handle the PLinks
 	 */
-	public PlinkReplacer(PlinkProcessor proc) {
+	public PlinkReplacer(final PlinkProcessor proc) {
 		this.plinkProc = proc;
 	}
 
 	/**
-	 * Replace plinks
+	 * Replace plinks.
 	 * @param plink 
-	 * @return 
 	 */
-	public String replacePLink(PLinkInformation plink) {
+	public String replacePLink(final PLinkInformation plink) {
 		return this.plinkProc.getLink(plink, request);
 	}
 }

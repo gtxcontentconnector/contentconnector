@@ -72,7 +72,6 @@ public class IndexController {
 
 	/**
 	 * Get table of configured indexes.
-	 * @return
 	 */
 	public ConcurrentHashMap<String, IndexLocation> getIndexes() {
 		return this.indextable;

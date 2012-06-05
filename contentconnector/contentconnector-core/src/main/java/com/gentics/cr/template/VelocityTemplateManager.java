@@ -24,6 +24,10 @@ import com.gentics.cr.exceptions.CRException;
  *
  */
 public class VelocityTemplateManager implements ITemplateManager {
+
+	/**
+	 * Log4j Logger.
+	 */
 	private static Logger log = Logger.getLogger(VelocityTemplateManager.class);
 	private String encoding;
 	private HashMap<String, Object> objectstoput;
@@ -44,7 +48,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 	}
 
 	/**
-	 * @see {@link com.gentics.cr.template.ITemplateManager#put(String, Object)}.
+	 * implements {@link com.gentics.cr.template.ITemplateManager#put(String, Object)}.
 	 */
 	public void put(final String key, final Object value) {
 		if (value != null) {
@@ -53,7 +57,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 	}
 
 	/**
-	 * @see com.gentics.cr.template.ITemplateManager#render(java.lang.String, java.lang.Object, java.lang.Object)
+	 * implements {@link com.gentics.cr.template.ITemplateManager#render(String, String)}
 	 */
 	public String render(String templateName, String templateSource) throws CRException {
 		String renderedTemplate = null;

@@ -204,8 +204,6 @@ public abstract class ContentRepository implements Serializable {
 
 	/**
 	 * Gets the contenttype as string "text/plain".
-	 * 
-	 * @return
 	 */
 	public String getContentType() {
 		return "text/plain";
@@ -250,7 +248,6 @@ public abstract class ContentRepository implements Serializable {
 	 * Apply Filters on the ContentRepository.
 	 * 
 	 * @param crConf
-	 * @return
 	 */
 	public boolean applyFilters(CRConfig crConf) {
 		return applyFilters(crConf, null);
@@ -261,7 +258,6 @@ public abstract class ContentRepository implements Serializable {
 	 * 
 	 * @param crConf
 	 * @param request
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean applyFilters(CRConfig crConf, Object request) {
@@ -310,8 +306,6 @@ public abstract class ContentRepository implements Serializable {
 
 	/**
 	 * Get attribute array.
-	 * 
-	 * @return
 	 */
 	public String[] getAttrArray() {
 		return attrArray;
@@ -321,7 +315,6 @@ public abstract class ContentRepository implements Serializable {
 	 * Serialize Object.
 	 * 
 	 * @param obj
-	 * @return
 	 * @throws java.io.IOException
 	 */
 	public byte[] getBytes(Object obj) throws java.io.IOException {

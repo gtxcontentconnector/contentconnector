@@ -278,8 +278,8 @@ public class ResolvableFileBean extends CRResolvableBean {
 
 	/**
 	 * get object type.
-	 * @return if file is a directory it returns {@value com.gentics.cr.file.ResolvableFileBean#DIROBJTYPE} else it returns
-	 * {@value com.gentics.cr.file.ResolvableFileBean#FILEOBJTYPE}.
+	 * @return if file is a directory it returns {@link com.gentics.cr.file.ResolvableFileBean#DIROBJTYPE} else it returns
+	 * {@link com.gentics.cr.file.ResolvableFileBean#FILEOBJTYPE}.
 	 */
 	public String getObjType() {
 		if (file.isDirectory()) {

@@ -16,9 +16,8 @@ import com.gentics.api.portalnode.connector.PLinkReplacer;
 public class PLinkStripper implements PLinkReplacer {
 
 	/**
-	 * Returns an empty String to remove PLinks in the Content
+	 * Returns an empty String to remove PLinks in the Content.
 	 * @param arg0 
-	 * @return 
 	 */
 	public String replacePLink(PLinkInformation arg0) {
 		return "";

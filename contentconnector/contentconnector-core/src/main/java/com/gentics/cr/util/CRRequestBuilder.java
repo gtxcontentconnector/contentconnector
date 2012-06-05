@@ -401,7 +401,6 @@ public class CRRequestBuilder {
 	 * 
 	 * @param objectFilter
 	 * @param userPermissions
-	 * @return
 	 */
 	protected final String createPermissionsRule(final String objectFilter, final String[] userPermissions) {
 		String ret = objectFilter;

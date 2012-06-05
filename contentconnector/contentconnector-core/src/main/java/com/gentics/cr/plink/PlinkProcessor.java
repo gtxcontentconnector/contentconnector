@@ -104,7 +104,6 @@ public class PlinkProcessor {
 	 * get a generated link according to the information in plinkinformation.
 	 * @param plink
 	 * @param request
-	 * @return
 	 */
 	public String getLink(final PLinkInformation plink, final CRRequest request) {
 

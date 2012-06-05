@@ -26,7 +26,7 @@ public class JavaBinContentRepository extends ContentRepository {
 	private static final long serialVersionUID = 713445758416480660L;
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * @param attr
 	 */
 	public JavaBinContentRepository(String[] attr) {
@@ -38,7 +38,7 @@ public class JavaBinContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * @param attr
 	 * @param encoding
 	 */
@@ -51,7 +51,7 @@ public class JavaBinContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Create instance
+	 * Create instance.
 	 * @param attr
 	 * @param encoding
 	 * @param options
@@ -65,8 +65,7 @@ public class JavaBinContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Returns contenttype "application/x-java-serialized-object"
-	 * @return 
+	 * Returns contenttype "application/x-java-serialized-object".
 	 */
 	public String getContentType() {
 		return "application/x-java-serialized-object";
@@ -84,12 +83,11 @@ public class JavaBinContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Respond with Error
-	 * 		Serialized CRError class
+	 * Respond with Error.
+	 * Serialized CRError class
 	 * @param stream 
 	 * @param ex 
 	 * @param isDebug 
-	 * 
 	 */
 	public void respondWithError(OutputStream stream, CRException ex, boolean isDebug) {
 
@@ -103,7 +101,7 @@ public class JavaBinContentRepository extends ContentRepository {
 	}
 
 	/**
-	 * Wrtites objects to stream
+	 * Wrtites objects to stream.
 	 * @param stream 
 	 * @throws CRException 
 	 */

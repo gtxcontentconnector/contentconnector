@@ -90,7 +90,6 @@ public class RequestProcessorMerger {
 	 * @param primaryRP
 	 * @param secondaryRP
 	 * @param request
-	 * @return
 	 * @throws CRException
 	 */
 	public static Collection<CRResolvableBean> merge(String uniquemergeattribute, RequestProcessor primaryRP,

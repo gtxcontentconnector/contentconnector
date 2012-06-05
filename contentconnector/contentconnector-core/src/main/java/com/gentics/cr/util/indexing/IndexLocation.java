@@ -140,7 +140,7 @@ public abstract class IndexLocation {
 	/**
 	 * Get the interval used to create new jobs for a specific part.
 	 * 
-	 * @param indexJobConfiguration configuration of the index Job
+	 * @param partName configuration of the index Job
 	 * @return interval as integer, -1 in case no special interval for this index part is defined
 	 */
 	public final int getInterval(final String partName) {
@@ -507,7 +507,6 @@ public abstract class IndexLocation {
 	 * 
 	 * @param config
 	 * @param configmap
-	 * @return
 	 */
 	public boolean createCRIndexJob(CRConfig config, ConcurrentHashMap<String, CRConfigUtil> configmap) {
 		Class<? extends AbstractUpdateCheckerJob> updatejobImplementationClass = getUpdateJobImplementationClass(config);
@@ -693,8 +692,6 @@ public abstract class IndexLocation {
 
 	/**
 	 * Returns the IndexJobQueue.
-	 * 
-	 * @return
 	 */
 	public IndexJobQueue getQueue() {
 		return this.queue;
@@ -702,8 +699,6 @@ public abstract class IndexLocation {
 
 	/**
 	 * Tests if this IndexLocation has turned on periodical indexing.
-	 * 
-	 * @return
 	 */
 	public boolean isPeriodical() {
 		return periodicalIndexConfig.isPeriodical();
