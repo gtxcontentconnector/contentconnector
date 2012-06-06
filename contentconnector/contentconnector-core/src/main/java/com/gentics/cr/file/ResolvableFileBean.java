@@ -220,9 +220,6 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 * @return name of the contained {@link File}
 	 */
 	public final String toString() {
-		if (file == null) {
-			return null;
-		}
 		return file.toString();
 	}
 
