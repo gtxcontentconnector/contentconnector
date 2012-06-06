@@ -8,7 +8,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.activation.MimetypesFileTypeMap;
+
 import org.apache.log4j.Logger;
+
+import org.apache.tika.Tika;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.util.StringUtils;
@@ -64,6 +68,11 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 * Object type for directory.
 	 */
 	private static final String DIROBJTYPE = CRResolvableBean.DEFAULT_DIR_TYPE;
+
+	/**
+	 * Unknown mimetype. Defined by RFC 2046 section 4.5.1.
+	 */
+	private static final String UNKNOWN_MIMETYPE = "application/octet-stream";
 
 	/**
 	 * Generate a new {@link ResolvableFileBean} for the specified {@link File}.
@@ -231,7 +240,7 @@ public class ResolvableFileBean extends CRResolvableBean {
 
 	@Override
 	/**
-	 * get the binary data from the file
+	 * get the binary data from the file.
 	 */
 	public byte[] getBinaryContent() {
 		if (FILEOBJTYPE.equals(getObjType())) {
@@ -250,6 +259,42 @@ public class ResolvableFileBean extends CRResolvableBean {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return underlying file contained within this bean.
+	 */
+	public File getFile() {
+		return file;
+	}
+
+	/**
+	 * @return the mimetype of the file. the mimetype is matched using the Tika framework (based on content and extension).
+	 * If file is null this method will return {@link com.gentics.cr.file.ResolvableFileBean#UNKOWN_MIMETYPE}
+	 * Warning: this call may be slow as it analyses the file.
+	 * If you need better performance just use {@link com.gentics.cr.file.ResolvableFileBean#getMimeType()}
+	 * @throws IOException in case Tika detection fails.
+	 */
+	public String getDetectedMimetype() throws IOException {
+		if (file != null) {
+			return new Tika().detect(file);
+		} else {
+			return UNKNOWN_MIMETYPE;
+		}
+	}
+
+	/**
+	 * @return mimetype of the file. the mimetype is matched using ONLY the extension.
+	 * If file is null this method will return {@link com.gentics.cr.file.ResolvableFileBean#UNKOWN_MIMETYPE}
+	 * for better mimetype detection use the slower {@link com.gentics.cr.file.ResolvableFileBean#getDetectedMimeType()}
+	 */
+	@Override
+	public String getMimetype() {
+		if (file != null) {
+			return new MimetypesFileTypeMap().getContentType(file);
+		} else {
+			return UNKNOWN_MIMETYPE;
+		}
 	}
 
 	/**
