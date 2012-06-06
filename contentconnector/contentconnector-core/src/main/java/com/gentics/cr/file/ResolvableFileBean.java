@@ -72,7 +72,7 @@ public class ResolvableFileBean extends CRResolvableBean {
 	/**
 	 * Unknown mimetype. Defined by RFC 2046 section 4.5.1.
 	 */
-	private static final String UNKNOWN_MIMETYPE = "application/octet-stream";
+	public static final String UNKNOWN_MIMETYPE = "application/octet-stream";
 
 	/**
 	 * Generate a new {@link ResolvableFileBean} for the specified {@link File}.
@@ -86,8 +86,7 @@ public class ResolvableFileBean extends CRResolvableBean {
 
 	/**
 	 * Generate a new {@link ResolvableFileBean} for the specified {@link File}.
-	 * @param fileForPath {@link File} to create the {@link ResolvableFileBean}
-	 * for
+	 * @param fileForPath {@link File} to create the {@link ResolvableFileBean} for
 	 * @param givenParent {@link ResolvableFileBean} creating the object.
 	 */
 	public ResolvableFileBean(final File fileForPath, final ResolvableFileBean givenParent) {
@@ -108,7 +107,7 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 * @return direct children of the {@link ResolvableFileBean}
 	 */
 	public final ResolvableFileBean[] getChildren() {
-		if (!file.isDirectory()) {
+		if (file == null || !file.isDirectory()) {
 			return new ResolvableFileBean[0];
 		} else {
 			if (!checkForUpdate() && children == null) {
@@ -209,6 +208,9 @@ public class ResolvableFileBean extends CRResolvableBean {
 
 	@Override
 	public final int hashCode() {
+		if (file == null) {
+			return 0;
+		}
 		return file.hashCode();
 	}
 
@@ -218,6 +220,9 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 * @return name of the contained {@link File}
 	 */
 	public final String toString() {
+		if (file == null) {
+			return null;
+		}
 		return file.toString();
 	}
 
@@ -302,6 +307,9 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 * @return name of the file as string, null in case the file is a directory.
 	 */
 	public String getFileName() {
+		if (file == null) {
+			return null;
+		}
 		if (FILEOBJTYPE.equals(getObjType())) {
 			return file.getName();
 		} else {
@@ -314,6 +322,9 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 * @return absolute name of the directory of the file or the directory itself.
 	 */
 	public String getPubDir() {
+		if (file == null) {
+			return null;
+		}
 		if (FILEOBJTYPE.equals(getObjType())) {
 			return file.getParentFile().getAbsolutePath();
 		} else {
@@ -324,14 +335,26 @@ public class ResolvableFileBean extends CRResolvableBean {
 	/**
 	 * get object type.
 	 * @return if file is a directory it returns {@link com.gentics.cr.file.ResolvableFileBean#DIROBJTYPE} else it returns
-	 * {@link com.gentics.cr.file.ResolvableFileBean#FILEOBJTYPE}.
+	 * {@link com.gentics.cr.file.ResolvableFileBean#FILEOBJTYPE}. if file is null this method returns null.
 	 */
 	public String getObjType() {
+		if (file == null) {
+			return null;
+		}
 		if (file.isDirectory()) {
 			return DIROBJTYPE;
 		} else {
 			return FILEOBJTYPE;
 		}
+	}
+	
+	/**
+	 * Override getObj_type from CRResolvableBean as in case of a ResolvableFileBean we want it to have the type of the file/dir.
+	 * @return {@link com.gentics.cr.file.ResolvableFileBean#getObjType()}
+	 */
+	@Override
+	public String getObj_type() {
+		return getObjType();
 	}
 
 	/**
@@ -339,6 +362,9 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 * @return md5sum for absolute path of file.
 	 */
 	public String getContentid() {
+		if (file == null) {
+			return null;
+		}
 		return StringUtils.md5sum(file.getAbsolutePath());
 	}
 
