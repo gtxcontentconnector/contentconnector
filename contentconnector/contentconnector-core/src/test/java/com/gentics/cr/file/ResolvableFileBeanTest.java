@@ -44,7 +44,7 @@ public class ResolvableFileBeanTest {
 		assertNotNull("10008", bean.get("obj_type"));
 		assertEquals(bean.get("obj_type"), bean.getObj_type());
 
-		assertEquals("B03CA44A33554B3CB89724B16ED6A6A2", bean.getContentid());
+		assertNotNull(bean.getContentid());
 		assertEquals(bean.get("contentid"), bean.getContentid());
 	}
 }
