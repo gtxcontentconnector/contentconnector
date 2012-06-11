@@ -14,31 +14,41 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 
 /**
- * 
+ * Transformer for all types of POI documents (Microsoft OLE2 documents) which automatically 
+ * figures out how to parse the document.
  * Last changed: $Date$
  * @version $Revision$
  * @author $Author$
  *
  */
 public class POIContentTransformer extends ContentTransformer {
+
+	/**
+	 * Config key to set the attribute to use for parsing.
+	 */
 	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
+
+	/**
+	 * Field to store the config value representing the attribute to use for parsing.
+	 */
 	private String attribute = "";
 
 	/**
-	 * Get new instance of DOCContentTransformer
-	 * @param config
+	 * Get new instance of POIContentTransformer.
+	 * @param config Configuration for the transformer.
 	 */
-	public POIContentTransformer(GenericConfiguration config) {
+	public POIContentTransformer(final GenericConfiguration config) {
 		super(config);
 		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
 
 	/**
-	 * Converts a byte array that contains a word file into a string with its contents
-	 * @param obj
-	 * @return
+	 * Converts a byte array that contains a word file into a string with its contents.
+	 * @param obj Object to retrieve the content from.
+	 * @return parsed text from the object
+	 * @throws CRException 
 	 */
-	private String getStringContents(Object obj) throws CRException {
+	private String getStringContents(final Object obj) throws CRException {
 		ByteArrayInputStream is;
 		if (obj instanceof byte[]) {
 			is = new ByteArrayInputStream((byte[]) obj);
@@ -69,7 +79,7 @@ public class POIContentTransformer extends ContentTransformer {
 	}
 
 	@Override
-	public void processBean(CRResolvableBean bean) throws CRException {
+	public void processBean(final CRResolvableBean bean) throws CRException {
 		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
 			if (obj != null) {

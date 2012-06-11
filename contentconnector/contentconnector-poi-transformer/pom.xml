@@ -9,6 +9,8 @@
 	<artifactId>contentconnector-poi-transformer</artifactId>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<org.apache.poi.version>3.8</org.apache.poi.version>
+		<org.apache.tika.version>1.1</org.apache.tika.version>
 	</properties>
 	<build>
 		<plugins>
@@ -57,56 +59,78 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 		</dependency>
+
+		<!-- POIFS (OLE2 Filesystem), HPSF (OLE2 Property Set), HSSF (Excel XLS)  -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.7</version>
+			<version>${org.apache.poi.version}</version>
 		</dependency>
+		<!-- HSLF Powerpoint (ppt), HWPF Word (doc), HDGF Visio (vsd), HPBF Publisher (pub), HSMF Outlook (msg)  -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-scratchpad</artifactId>
-			<version>3.7</version>
+			<version>${org.apache.poi.version}</version>
 		</dependency>
+		<!-- XSSF Excel (xlsx), XSLF Powerpoint (pptx), XWPF Word (docx) -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>3.7</version>
+			<version>${org.apache.poi.version}</version>
 		</dependency>
+		<!-- OpenXML4J OOXML  -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml-schemas</artifactId>
+			<version>${org.apache.poi.version}</version>
+		</dependency>
+
+		<!-- PDF Parsing -->
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
-			<version>1.2.1</version>
+			<version>1.7.0</version>
 		</dependency>
+
+		<!-- Mimetype detection -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>${org.apache.tika.version}</version>
+		</dependency>
+		<!-- Highlevel abstraction for text parsing (uses apache poi and many other dependencies for parsing) -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers</artifactId>
+			<version>${org.apache.tika.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk15</artifactId>
-			<version>1.44</version>
+			<version>1.46</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15</artifactId>
-			<version>1.44</version>
+			<version>1.46</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml-schemas</artifactId>
-			<version>3.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-contrib</artifactId>
-			<version>3.6</version>
-		</dependency>
+		
+		<!-- Needed for dependencies like CRResolvableBean -->
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-lucene</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<!-- XML parsing -->
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
 			<version>2.0.2</version>
 		</dependency>
+		
+		<!-- Unit tests -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
