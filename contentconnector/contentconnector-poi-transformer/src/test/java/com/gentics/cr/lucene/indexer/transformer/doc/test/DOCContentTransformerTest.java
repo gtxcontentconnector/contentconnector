@@ -35,7 +35,7 @@ public class DOCContentTransformerTest extends TestCase {
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
 
-		assertTrue("testtext\r\n".equals(s));
+		assertEquals("testtext\n\n", s);
 	}
 
 	@After
