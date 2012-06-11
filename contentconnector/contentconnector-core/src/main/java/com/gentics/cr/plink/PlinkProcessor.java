@@ -56,8 +56,8 @@ public class PlinkProcessor {
 		contextObjects = new HashMap<String, Resolvable>();
 		if (config != null && config.getPortalNodeCompMode()) {
 			//Servlet will run in portal.node compatibility mode => no velocity available
-			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n" +
-					"Therefore Velocity scripts will not work in the content.");
+			log.warn("CRPlinkProcessor is running in Portal.Node 3 compatibility mode \n"
+					+ "Therefore Velocity scripts will not work in the content.");
 		}
 		String plinkCacheEnabledString = null;
 		if (config != null) {
