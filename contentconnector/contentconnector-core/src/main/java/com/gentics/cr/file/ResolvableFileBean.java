@@ -246,18 +246,31 @@ public class ResolvableFileBean extends CRResolvableBean {
 	 */
 	public byte[] getBinaryContent() {
 		if (FILEOBJTYPE.equals(getObjType())) {
+			FileInputStream fileReader = null;
 			try {
-				FileInputStream fileReader = new FileInputStream(file);
-				byte[] buffer = new byte[(int) file.length()];
-				for (int i = 0; i < buffer.length; i++) {
-					buffer[i] = (byte) fileReader.read();
+				fileReader = new FileInputStream(file);
+				byte[] buffer = null;
+				if (file != null && file.length() > 0) {
+					buffer = new byte[(int) file.length()];
+					for (int i = 0; i < buffer.length; i++) {
+						buffer[i] = (byte) fileReader.read();
+					}
 				}
+				fileReader.close();
 				return buffer;
 			} catch (FileNotFoundException e) {
 				logger.error("File not found: " + file, e);
 				//TODO should we remove the file from the indexes?
 			} catch (IOException e) {
-				logger.error("Error reading file " + file + ".");
+				logger.error("Error reading file " + file + ".", e);
+			} finally {
+				if (fileReader != null) {
+					try {
+						fileReader.close();
+					} catch (IOException e) {
+						logger.error("Could not close file: " + file, e);
+					}
+				}
 			}
 		}
 		return null;
