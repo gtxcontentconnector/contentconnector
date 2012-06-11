@@ -30,7 +30,7 @@ public class XLSXContentTransformer extends ContentTransformer {
 	private String attribute = "";
 
 	/**
-	 * Get new instance of XLSXContentTransformer
+	 * Get new instance of XLSXContentTransformer.
 	 * @param config
 	 */
 	public XLSXContentTransformer(GenericConfiguration config) {
@@ -54,7 +54,7 @@ public class XLSXContentTransformer extends ContentTransformer {
 	}
 
 	/**
-	 * Converts a byte array that contains a excel file into a string with its contents
+	 * Converts a byte array that contains a excel file into a string with its contents.
 	 * @param obj
 	 * @return
 	 */
@@ -111,7 +111,7 @@ public class XLSXContentTransformer extends ContentTransformer {
 	}
 
 	/** 
-	 * See org.xml.sax.helpers.DefaultHandler javadocs 
+	 * See org.xml.sax.helpers.DefaultHandler javadocs.
 	 */
 	private static class SheetHandler extends DefaultHandler {
 		private SharedStringsTable sst;

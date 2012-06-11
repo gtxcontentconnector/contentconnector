@@ -24,7 +24,7 @@ public class DOCContentTransformer extends ContentTransformer {
 	private String attribute = "";
 
 	/**
-	 * Get new instance of DOCContentTransformer
+	 * Get new instance of DOCContentTransformer.
 	 * @param config
 	 */
 	public DOCContentTransformer(GenericConfiguration config) {
@@ -33,7 +33,7 @@ public class DOCContentTransformer extends ContentTransformer {
 	}
 
 	/**
-	 * Converts a byte array that contains a word file into a string with its contents
+	 * Converts a byte array that contains a word file into a string with its contents.
 	 * @param obj
 	 * @return
 	 */
