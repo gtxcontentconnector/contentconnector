@@ -637,6 +637,12 @@ class DefaultIndexAccessor implements IndexAccessor {
 			Thread.currentThread().interrupt();
 		}
 	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		close();
+		super.finalize();
+	}
 
 	/** This method assumes it is invoked in a synchronized context. */
 	private void waitForReadersAndReopenCached() {
