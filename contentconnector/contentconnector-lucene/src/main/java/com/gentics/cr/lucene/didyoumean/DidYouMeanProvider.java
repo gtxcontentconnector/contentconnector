@@ -109,7 +109,7 @@ public class DidYouMeanProvider implements IEventReceiver {
 		}
 
 		GenericConfiguration autoConf = (GenericConfiguration) config.get(DIDYOUMEAN_INDEX_KEY);
-		CRConfigUtil dymConfUtil = new CRConfigUtil(autoConf, DIDYOUMEAN_INDEX_KEY);
+		CRConfigUtil dymConfUtil = new CRConfigUtil(autoConf, config.getName() + "." + DIDYOUMEAN_INDEX_KEY);
 		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(dymConfUtil);
 		if (!useDidyomeanIndexExtension) {
 			didyoumeanLocation.registerDirectoriesSpecial();
