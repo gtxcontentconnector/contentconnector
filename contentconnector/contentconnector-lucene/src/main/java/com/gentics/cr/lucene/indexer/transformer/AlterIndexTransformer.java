@@ -15,7 +15,7 @@ import com.gentics.cr.exceptions.CRException;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class AlterIndexTransformer extends ContentTransformer implements LuceneContentTransformer {
+public class AlterIndexTransformer extends AbstractLuceneMonitoringTransformer {
 
 	/**
 	 * Create Instance of CommentSectionStripper

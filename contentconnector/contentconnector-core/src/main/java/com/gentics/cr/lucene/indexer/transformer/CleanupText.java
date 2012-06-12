@@ -180,7 +180,7 @@ public class CleanupText extends ContentTransformer {
 					}
 				}
 			} else {
-				log.error("Configured attribute is null. " + "Bean will not be processed");
+				LOGGER.error("Configured attribute is null. " + "Bean will not be processed");
 			}
 		} catch (IOException e) {
 			throw new CRException("Cannot read the attribute " + attribute + ".", e);

@@ -32,6 +32,7 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
+import com.gentics.cr.lucene.indexer.transformer.AbstractLuceneMonitoringTransformer;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
@@ -51,10 +52,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * static log4j {@link Logger} to log errors and debug.
 	 */
 	private static final Logger LOG = Logger.getLogger(CRLuceneIndexJob.class);
-	/**
-	 * static log4j {@link Logger} to log errors and debug.
-	 */
-	private static final Logger TR_LOG = Logger.getLogger(ContentTransformer.class);
 
 	/**
 	 * Name of class to use for IndexLocation, must extend
@@ -503,8 +500,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 									String msg = "TRANSFORMER: " + transformer.getTransformerKey() + "; BEAN: "
 											+ bean.get(idAttribute);
 									status.setCurrentStatusString(msg);
-									TR_LOG.debug(msg);
-									transformer.processBeanWithMonitoring(bean, indexWriter);
+									ContentTransformer.getLogger().debug(msg);
+									if(transformer instanceof AbstractLuceneMonitoringTransformer) {
+										((AbstractLuceneMonitoringTransformer) transformer).processBeanWithMonitoring(bean, indexWriter);
+									} else {
+										transformer.processBeanWithMonitoring(bean);
+									}
 								}
 							} catch (Exception e) {
 								//TODO Remember broken files

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
@@ -16,6 +17,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.DummyIndexLocation;
 import com.gentics.cr.util.indexing.IndexLocation;
@@ -96,6 +98,26 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 		}
 		status.setCurrentStatusString("Update the objects in the directory ...");
 		for (CRResolvableBean bean : objectsToIndex) {
+			List<ContentTransformer> transformerlist = ContentTransformer.getTransformerList(config);
+			if (transformerlist != null) {
+				for (ContentTransformer transformer : transformerlist) {
+					try {
+
+						if (transformer.match(bean)) {
+							String msg = "TRANSFORMER: " + transformer.getTransformerKey() + "; BEAN: "
+									+ bean.get(idAttribute);
+							status.setCurrentStatusString(msg);
+							ContentTransformer.getLogger().debug(msg);
+							transformer.processBeanWithMonitoring(bean);
+						}
+					} catch (Exception e) {
+						//TODO Remember broken files
+						log.error("Error while Transforming Contentbean" + "with id: " + bean.get(idAttribute)
+								+ " Transformer: " + transformer.getTransformerKey() + " "
+								+ transformer.getClass().getName(), e);
+					}
+				}
+			}
 			if (!"10002".equals(bean.getObj_type())) {
 				String publicationDirectory;
 				if (ignorePubDir) {

@@ -80,7 +80,7 @@ public class SubstringTransformer extends ContentTransformer {
 				}
 			}
 		} else {
-			log.error("Configured attribute is null. Bean will not be processed");
+			LOGGER.error("Configured attribute is null. Bean will not be processed");
 		}
 
 	}
@@ -105,13 +105,13 @@ public class SubstringTransformer extends ContentTransformer {
 		// Replace all occurrences of pattern in input
 		int startindex = str.indexOf(this.startindexpattern);
 		if (startindex < 0) {
-			log.debug("Pattern not found");
+			LOGGER.debug("Pattern not found");
 			return null;
 		}
-		log.debug("StartIndex of pattern '" + this.startindexpattern + "':" + startindex);
+		LOGGER.debug("StartIndex of pattern '" + this.startindexpattern + "':" + startindex);
 		String resultstring = str.substring(startindex);
-		log.debug("Original String:" + str.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
-		log.debug("New String:" + resultstring.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
+		LOGGER.debug("Original String:" + str.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
+		LOGGER.debug("New String:" + resultstring.substring(0, DEFAULT_PREVIEW_LENGTH) + "...");
 
 		return resultstring;
 	}

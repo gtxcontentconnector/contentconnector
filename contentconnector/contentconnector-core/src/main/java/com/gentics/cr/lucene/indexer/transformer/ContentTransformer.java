@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexWriter;
+//import org.apache.lucene.index.IndexWriter;
 
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
@@ -27,7 +27,7 @@ import com.gentics.cr.monitoring.UseCase;
  *
  */
 public abstract class ContentTransformer {
-	protected static Logger log = Logger.getLogger(ContentTransformer.class);
+	protected static final Logger LOGGER = Logger.getLogger(ContentTransformer.class);
 	private static ExpressionEvaluator evaluator = new ExpressionEvaluator();
 	private Expression expr;
 	private String rule;
@@ -61,8 +61,12 @@ public abstract class ContentTransformer {
 		try {
 			expr = ExpressionParser.getInstance().parse(rule);
 		} catch (ParserException e) {
-			log.error("Could not generate valid Expression from configured Rule: " + rule, e);
+			LOGGER.error("Could not generate valid Expression from configured Rule: " + rule, e);
 		}
+	}
+	
+	public static Logger getLogger() {
+		return LOGGER;
 	}
 
 	/**
@@ -85,25 +89,6 @@ public abstract class ContentTransformer {
 	}
 
 	/**
-	 * Process the specified bean with monitoring.
-	 * @param bean
-	 * @throws CRException
-	 */
-	public void processBeanWithMonitoring(CRResolvableBean bean, IndexWriter writer) throws CRException {
-		UseCase pcase = MonitorFactory.startUseCase("Transformer:" + this.getClass());
-		try {
-
-			if (this instanceof LuceneContentTransformer) {
-				((LuceneContentTransformer) this).processBean(bean, writer);
-			} else {
-				processBean(bean);
-			}
-		} finally {
-			pcase.stop();
-		}
-	}
-
-	/**
 	 * Processes the specified bean.
 	 * @param bean
 	 * @throws CRException throws exception if bean could not be processed
@@ -120,7 +105,7 @@ public abstract class ContentTransformer {
 			try {
 				return (evaluator.match(expr, object));
 			} catch (ExpressionParserException e) {
-				log.error("Could not evaluate Expression with gived object and rule: " + rule, e);
+				LOGGER.error("Could not evaluate Expression with gived object and rule: " + rule, e);
 			}
 		}
 		return (false);
@@ -151,7 +136,7 @@ public abstract class ContentTransformer {
 							ret.add(t);
 						}
 					} catch (Exception ex) {
-						log.error("Invalid configuration found. Could not instantiate " + transformerClass);
+						LOGGER.error("Invalid configuration found. Could not instantiate " + transformerClass);
 						ex.printStackTrace();
 					}
 

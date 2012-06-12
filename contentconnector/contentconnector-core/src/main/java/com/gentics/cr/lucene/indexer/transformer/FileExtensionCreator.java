@@ -60,7 +60,7 @@ public class FileExtensionCreator extends ContentTransformer {
 				}
 			}
 		} else {
-			log.error("Configured attribute is null. Bean will not be processed");
+			LOGGER.error("Configured attribute is null. Bean will not be processed");
 		}
 
 	}

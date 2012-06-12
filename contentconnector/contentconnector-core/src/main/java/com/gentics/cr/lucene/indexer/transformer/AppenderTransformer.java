@@ -3,8 +3,6 @@ package com.gentics.cr.lucene.indexer.transformer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -18,31 +16,38 @@ import com.gentics.cr.util.CRUtil;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public class RegexReplacer extends ContentTransformer {
+public class AppenderTransformer extends ContentTransformer {
 	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
-	private static final String STRIPPER_PATTERN_KEY = "pattern";
-	private static final String REPLACEMENT_PATTERN_KEY = "replacement";
+	private static final String APPEND_TEXT_KEY = "text";
+	private static final String POSITION_KEY = "position";
+
 	private String attribute = "";
-	private String pattern = "(?s)(<!--[ \t\n\r]*noindexstart[^>]*-->.*?<!--[ \t\n\r]*noindexend[^>]*-->)";
-	private String replacement = "";
-	private Pattern cPattern = null;
+	private String text = "";
+	private String position = "";
+
+	boolean after = true;
 
 	/**
 	 * Create Instance of CommentSectionStripper
-	 * if the pattern is not configured in the config: the default pattern
-	 * {@link com.gentics.cr.lucene.indexer.transformer.RegexReplacer#pattern} will be used.
-	 * @param config 
+	 *  @param config
 	 */
-	public RegexReplacer(final GenericConfiguration config) {
+	public AppenderTransformer(GenericConfiguration config) {
 		super(config);
-		attribute = config.getString(TRANSFORMER_ATTRIBUTE_KEY);
-		pattern = config.getString(STRIPPER_PATTERN_KEY, pattern);
-		cPattern = Pattern.compile(pattern);
-		replacement = config.getString(REPLACEMENT_PATTERN_KEY, replacement);
+		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
+		String atxt = (String) config.get(APPEND_TEXT_KEY);
+		if (atxt != null)
+			text = atxt;
+
+		String pos = (String) config.get(POSITION_KEY);
+		if (pos != null)
+			position = pos;
+
+		if ("before".equalsIgnoreCase(position))
+			after = false;
 	}
 
 	@Override
-	public void processBean(final CRResolvableBean bean) {
+	public void processBean(CRResolvableBean bean) {
 		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
 			if (obj != null) {
@@ -52,7 +57,7 @@ public class RegexReplacer extends ContentTransformer {
 				}
 			}
 		} else {
-			log.error("Configured attribute is null. Bean will not be processed");
+			LOGGER.error("Configured attribute is null. Bean will not be processed");
 		}
 
 	}
@@ -69,10 +74,15 @@ public class RegexReplacer extends ContentTransformer {
 			}
 		}
 
-		// Replace all occurrences of pattern in input
-		Matcher matcher = cPattern.matcher(str);
-		str = matcher.replaceAll(replacement);
-		return str;
+		String newString = null;
+
+		if (this.after) {
+			newString = str + this.text;
+		} else {
+			newString = this.text + str;
+		}
+
+		return newString;
 	}
 
 	@Override

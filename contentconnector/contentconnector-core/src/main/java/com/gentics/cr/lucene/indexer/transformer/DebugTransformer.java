@@ -29,9 +29,9 @@ public class DebugTransformer extends ContentTransformer {
 	public void processBean(CRResolvableBean bean) {
 		if (this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			log.error("Attribute " + this.attribute + ": " + obj);
+			LOGGER.error("Attribute " + this.attribute + ": " + obj);
 		} else {
-			log.error("Configured attribute is null. Bean will not be processed");
+			LOGGER.error("Configured attribute is null. Bean will not be processed");
 		}
 
 	}
