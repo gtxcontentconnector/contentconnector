@@ -46,7 +46,7 @@ public class IndexAccessorFactory {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static Logger logger = Logger.getLogger(IndexAccessorFactory.class);
+	private static final Logger LOGGER = Logger.getLogger(IndexAccessorFactory.class);
 
 	/**
 	 * Holds an single instance of {@link IndexAccessorFactory} to give it to
@@ -88,12 +88,14 @@ public class IndexAccessorFactory {
 
 	public synchronized IndexAccessorToken registerConsumer() {
 		IndexAccessorToken token = new IndexAccessorToken();
+		LOGGER.debug("Adding Consumer: " + token);
 		this.consumer.add(token);
 		return token;
 	}
 
 	public synchronized void releaseConsumer(IndexAccessorToken token) {
 		this.consumer.remove(token);
+		LOGGER.debug("Releasing Consumer: " + token + ", Size: " + consumer.size());
 		if (this.consumer.size() == 0) {
 			close();
 		}
@@ -111,11 +113,11 @@ public class IndexAccessorFactory {
 			}
 			indexAccessors.clear();
 			wasClosed = true;
-			if (logger.isDebugEnabled()) {
+			if (LOGGER.isDebugEnabled()) {
 				try {
 					throw new Exception("Closing index accessory factory lucene search is now disabled.");
 				} catch (Exception e) {
-					logger.debug("IndexAccessorFactory is now closed.", e);
+					LOGGER.debug("IndexAccessorFactory is now closed.", e);
 				}
 			}
 		}
@@ -158,6 +160,7 @@ public class IndexAccessorFactory {
 
 		IndexAccessor existingAccessor = indexAccessors.putIfAbsent(dir, accessor);
 		if (existingAccessor != null) {
+			accessor.close();
 			throw new IllegalStateException("IndexAccessor already exists: " + dir);
 		}
 
@@ -201,5 +204,9 @@ public class IndexAccessorFactory {
 		IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
 
 		return multiIndexAccessor;
+	}
+
+	public static void destroy() {
+		getInstance().close();
 	}
 }
