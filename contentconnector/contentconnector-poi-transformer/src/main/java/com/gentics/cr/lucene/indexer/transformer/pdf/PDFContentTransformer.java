@@ -108,11 +108,11 @@ public class PDFContentTransformer extends ContentTransformer {
 					bean.set(this.attribute, newString);
 				}
 				long e = new Date().getTime();
-				log.debug("transforming object " + bean.getContentid() + " (" + bean.getMimetype() + ") took "
+				LOGGER.debug("transforming object " + bean.getContentid() + " (" + bean.getMimetype() + ") took "
 						+ (e - s) + "ms");
 			}
 		} else {
-			log.error("Configured attribute is null. Bean will not be processed");
+			LOGGER.error("Configured attribute is null. Bean will not be processed");
 		}
 
 	}

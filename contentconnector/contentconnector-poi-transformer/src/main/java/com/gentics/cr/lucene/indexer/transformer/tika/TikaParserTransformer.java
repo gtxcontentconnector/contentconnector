@@ -66,11 +66,11 @@ public class TikaParserTransformer extends ContentTransformer {
 				try {
 					parser.parse(is, textHandler, metadata);
 				} catch (IOException e) {
-					log.error("ioexception", e);
+					LOGGER.error("ioexception", e);
 				} catch (SAXException e) {
-					log.error("saxexception", e);
+					LOGGER.error("saxexception", e);
 				} catch (TikaException e) {
-					log.error("tikaexception", e);
+					LOGGER.error("tikaexception", e);
 				}
 
 				bean.set("title", metadata.get(Metadata.TITLE));
@@ -78,7 +78,7 @@ public class TikaParserTransformer extends ContentTransformer {
 				bean.set(this.attribute, textHandler.toString());
 			}
 		} else {
-			log.error("Configured attribute is null. Bean will not be processed");
+			LOGGER.error("Configured attribute is null. Bean will not be processed");
 		}
 	}
 
