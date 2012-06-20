@@ -235,6 +235,11 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		}
 		return false;
 	}
+	
+	@Override
+	public int hashCode() {
+		return this.identifyer.hashCode();
+	}
 
 	/**
 	 * get the objects to update and update them in the index.
@@ -295,6 +300,8 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 						}
 						String crElementID = crElementIDObject.toString();
 						Object crElementTimestamp = crElement.get(timestampAttribute);
+						//TODO: if any transformers change an attribute that is used for the update check we have to run the transformers
+						//before
 						if (!indexUpdateChecker.isUpToDate(
 							crElementID,
 							crElementTimestamp,
