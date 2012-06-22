@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gentics</groupId>
 	<artifactId>contentconnector</artifactId>
-	<version>1.11.4</version>
+	<version>1.11.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>contentconnector</name>
 	<properties>
@@ -12,8 +12,8 @@
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 	</properties>
 	<scm>
-		<connection>scm:svn:https://gtxcontentconnector.googlecode.com/svn/tags/1.11.4</connection>
-		<url>https://gtxcontentconnector.googlecode.com/svn/tags/1.11.4</url>
+		<connection>scm:svn:https://gtxcontentconnector.googlecode.com/svn/trunk/contentconnector</connection>
+		<url>https://gtxcontentconnector.googlecode.com/svn/trunk/contentconnector</url>
 	</scm>
 	<build>
 		<plugins>
