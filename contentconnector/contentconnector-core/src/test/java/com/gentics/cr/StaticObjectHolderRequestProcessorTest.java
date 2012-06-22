@@ -10,7 +10,7 @@ import org.easymock.EasyMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.gentics.cr.configuration.EnvironmentConfiguration;
+import com.gentics.cr.conf.gentics.ConfigDirectory;
 import com.gentics.cr.configuration.SimpleCRConfig;
 import com.gentics.cr.exceptions.CRException;
 
@@ -25,16 +25,14 @@ public class StaticObjectHolderRequestProcessorTest {
 	
 	@BeforeClass
 	public static void init() throws CRException, URISyntaxException {
-		String configLocation = StaticObjectHolderRequestProcessorTest.class.getResource("/com/gentics/cr/conf/gentics").toURI().getPath();
-		EnvironmentConfiguration.setConfigPath(configLocation);
-		EnvironmentConfiguration.loadEnvironmentProperties();
+		ConfigDirectory.useThis();
 		objects = new ArrayList<CRResolvableBean>();
 		objects.add(createBean("a.txt", ""));
 		objects.add(createBean("b.txt", ""));
 		objects.add(createBean("c.txt", ""));
 		CRConfig config = new SimpleCRConfig();
 		processor = new StaticObjectHolderRequestProcessor(config);
-		processor.setObjects(objects);
+		StaticObjectHolderRequestProcessor.setObjects(objects);
 	}
 	
 	
