@@ -33,7 +33,7 @@ public class FileSystemUpdateCheckerTest {
 
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
-		directory = new File(FileSystemUpdateCheckerTest.class.getResource("outdated.file").toURI()).getParentFile();
+		directory = new File(FileSystemUpdateCheckerTest.class.getResource("flatdirectory" + File.separator + "outdated.file").toURI()).getParentFile();
 		newFile = new File(directory, "new.file");
 		outdatedFile = new File(directory, "outdated.file");
 		upToDateFile = new File(directory, "uptodate.file");
@@ -111,12 +111,12 @@ public class FileSystemUpdateCheckerTest {
 	}
 
 	/**
-	 * Check if the file is up to date with the {@link #checker}
+	 * Check if the file is up to date with the {@link #checker}.
 	 * @param file - file to check
 	 * @param timeDifference - difference in seconds to the files modify timestamp
 	 * @return <code>true</code> if the file is up to date. <code>false</code> otherwhise.
 	 */
-	private boolean checkUpToDate(File file, int timeDifference) {
+	private boolean checkUpToDate(final File file, final int timeDifference) {
 		Integer timestamp = ((int) (file.lastModified() / 1000)) + timeDifference;
 		resolvable.set("timestamp", timestamp);
 		resolvable.set("filename", file.getName());
