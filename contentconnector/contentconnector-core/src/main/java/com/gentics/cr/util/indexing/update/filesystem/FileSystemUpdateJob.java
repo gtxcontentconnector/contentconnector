@@ -98,26 +98,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 		}
 		status.setCurrentStatusString("Update the objects in the directory ...");
 		for (CRResolvableBean bean : objectsToIndex) {
-			List<ContentTransformer> transformerlist = ContentTransformer.getTransformerList(config);
-			if (transformerlist != null) {
-				for (ContentTransformer transformer : transformerlist) {
-					try {
-
-						if (transformer.match(bean)) {
-							String msg = "TRANSFORMER: " + transformer.getTransformerKey() + "; BEAN: "
-									+ bean.get(idAttribute);
-							status.setCurrentStatusString(msg);
-							ContentTransformer.getLogger().debug(msg);
-							transformer.processBeanWithMonitoring(bean);
-						}
-					} catch (Exception e) {
-						//TODO Remember broken files
-						log.error("Error while Transforming Contentbean" + "with id: " + bean.get(idAttribute)
-								+ " Transformer: " + transformer.getTransformerKey() + " "
-								+ transformer.getClass().getName(), e);
-					}
-				}
-			}
+			applyTransformers(bean, ContentTransformer.getTransformerList(config));
 			if (!"10002".equals(bean.getObj_type())) {
 				String publicationDirectory;
 				if (ignorePubDir) {
@@ -133,6 +114,9 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 					file.delete();
 				}
 				try {
+					if (!file.getParentFile().exists()) {
+						file.getParentFile().mkdirs();
+					}
 					if (!file.exists()) {
 						file.createNewFile();
 					}
@@ -158,6 +142,34 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 			}
 		}
 
+	}
+
+	/**
+	 * Apply the transformerlist to the bean.
+	 * @param bean - bean for that the transformer should be 
+	 * @param transformerlist - list of transformers to execute on the bean
+	 */
+	private void applyTransformers(final CRResolvableBean bean,
+			final List<ContentTransformer> transformerlist) {
+		if (transformerlist != null) {
+			for (ContentTransformer transformer : transformerlist) {
+				try {
+
+					if (transformer.match(bean)) {
+						String msg = "TRANSFORMER: " + transformer.getTransformerKey() + "; BEAN: "
+								+ bean.get(idAttribute);
+						status.setCurrentStatusString(msg);
+						ContentTransformer.getLogger().debug(msg);
+						transformer.processBeanWithMonitoring(bean);
+					}
+				} catch (Exception e) {
+					//TODO Remember broken files
+					log.error("Error while Transforming Contentbean" + "with id: " + bean.get(idAttribute)
+							+ " Transformer: " + transformer.getTransformerKey() + " "
+							+ transformer.getClass().getName(), e);
+				}
+			}
+		}
 	}
 
 }
