@@ -115,10 +115,10 @@ public abstract class ContentTransformer {
 	private static final String TRANSFORMER_KEY = "transformer";
 
 	/**
-	 * Create List of ContentTransformers configured in config.
-	 * @param config
+	 * @param config - configuration containing the definition of the transformers
+	 * @return List of ContentTransformer defined in the confguration.
 	 */
-	public static List<ContentTransformer> getTransformerList(GenericConfiguration config) {
+	public static List<ContentTransformer> getTransformerList(final GenericConfiguration config) {
 		GenericConfiguration tconf = (GenericConfiguration) config.get(TRANSFORMER_KEY);
 		if (tconf != null) {
 			Map<String, GenericConfiguration> confs = tconf.getSortedSubconfigs();
