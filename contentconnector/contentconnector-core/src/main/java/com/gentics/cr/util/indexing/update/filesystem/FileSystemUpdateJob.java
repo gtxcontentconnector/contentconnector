@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -29,6 +30,11 @@ import com.gentics.cr.util.indexing.IndexLocation;
  */
 public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 
+	/**
+	 * log4j logger for error and debug messages.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(FileSystemUpdateJob.class);
+	
 	/**
 	 * directory to put the files in.
 	 */
@@ -78,7 +84,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	RequestProcessor rp;
 
 	/**
-	 * the update checker that checks if the file has to be updated in the directory
+	 * the update checker that checks if the file has to be updated in the directory.
 	 */
 	FileSystemUpdateChecker indexUpdateChecker;
 
@@ -86,7 +92,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	 * get the objects to update and update them in the directory. deletion of old/stale objects is handled by the update checker
 	 */
 	@Override
-	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException {
+	protected void indexCR(final IndexLocation indexLocation, final CRConfigUtil config) throws CRException {
 		Collection<CRResolvableBean> objectsToIndex = null;
 		try {
 			CRRequest req = new CRRequest();
@@ -94,7 +100,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 			status.setCurrentStatusString("Get objects to update in the directory ...");
 			objectsToIndex = getObjectsToUpdate(req, rp, false, indexUpdateChecker);
 		} catch (Exception e) {
-			log.error("ERROR while cleaning index", e);
+			LOGGER.error("ERROR while cleaning index", e);
 		}
 		status.setCurrentStatusString("Update the objects in the directory ...");
 		for (CRResolvableBean bean : objectsToIndex) {
@@ -114,6 +120,9 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 					file.delete();
 				}
 				try {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Creating file " + file + ".");
+					}
 					if (!file.getParentFile().exists()) {
 						file.getParentFile().mkdirs();
 					}
@@ -138,6 +147,9 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 				//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
 				String publicationDirectory = bean.getString("pub_dir");
 				File file = new File(directory, publicationDirectory);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Creating directory " + file + ".");
+				}
 				file.mkdirs();
 			}
 		}

@@ -75,15 +75,19 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 			String filename = bean.getString("filename");
 			assertNotNull("Bean " + bean.getContentid() + " has no attribute pub_dir.", publicationDirectory);
 			assertNotNull("Bean " + bean.getContentid() + " has no attribute filename.", filename);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Checking " + publicationDirectory + filename + ".");
+			}
 			Integer updatetimestamp = null;
 			if (timestamp instanceof Integer) {
 				updatetimestamp = (Integer) timestamp;
 			} else if (timestamp instanceof Long) {
-				logger.warn("You are giving me a Long as updatetimestamp. The API at indexUpdateChecker#checkUpToDate says you shouldn't. This can lead to troubles. I'm assuming the timestamp is in milliseconds not in seconds.");
+				logger.warn("You are giving me a Long as updatetimestamp. The API at indexUpdateChecker#checkUpToDate says you shouldn't. "
+						+ "This can lead to troubles. I'm assuming the timestamp is in milliseconds not in seconds.");
 				updatetimestamp = (int) ((Long) timestamp / 1000L);
 			}
 			File file = new File(new File(directory, publicationDirectory), filename);
-			files.remove(publicationDirectory + filename);
+			removeFileFromDeletionList(publicationDirectory + filename);
 			if (file.exists() && file.isFile() && (file.lastModified() / 1000) >= updatetimestamp) {
 				return true;
 			}
@@ -91,7 +95,7 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 			//it would just make no sense to check for check for folders existence if the pub_dir attribute is ignored
 			String publicationDirectory = bean.getString("pub_dir");
 			File file = new File(directory, publicationDirectory);
-			files.remove(publicationDirectory);
+			removeFileFromDeletionList(publicationDirectory);
 			if (file.exists() && file.isDirectory()) {
 				return true;
 			}
@@ -101,24 +105,37 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 		return false;
 	}
 
+	private void removeFileFromDeletionList(String filename) {
+		StringBuilder cleanFilename = new StringBuilder(filename);
+		if (filename.charAt(0) == '/') {
+			cleanFilename.deleteCharAt(0);
+		}
+		files.remove(cleanFilename.toString());
+		
+	}
+
 	/**
 	 * throw a runtime exception if the given object is <code>null</code>.
 	 * @param message - message to put into the exception.
 	 * @param object - object to check for beeing not <code>null</code>
 	 */
-	protected static void assertNotNull(String message, Object object) {
+	protected static void assertNotNull(final String message, final Object object) {
 		if (object == null) {
 			throw new RuntimeException(new CRException(message));
 		}
 	}
 
 	/**
-	 * Delete the files in the {@link #directory} that were not checked if they are up to date since the initialization of the FileSystemUpdateChecker.
+	 * Delete the files in the {@link #directory} that were not checked if they are up to date since the initialization of the
+	 * FileSystemUpdateChecker.
 	 */
 	@Override
 	public void deleteStaleObjects() {
 		for (String filename : files) {
 			File file = new File(directory, filename);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Deleting " + file + ".");
+			}
 			file.delete();
 		}
 	}
