@@ -49,7 +49,7 @@ public class IndexJobServlet extends VelocityServlet {
 	 * @return indexController
 	 */
 	public IndexController initIndexController(final ServletConfig config) {
-		return new IndexController(config.getServletName());
+		return IndexController.get(config.getServletName());
 	}
 
 	@Override

@@ -31,6 +31,8 @@ public class IndexController {
 	 * Configuration key.
 	 */
 	private static final String INDEX_KEY = "index";
+	
+	private static final ConcurrentHashMap<String, IndexController> controllers = new ConcurrentHashMap<String, IndexController>(1);
 
 	/**
 	 * Configuration used internally.
@@ -47,7 +49,7 @@ public class IndexController {
 	 * This constructor will read the config file with this name
 	 * @param name of the config file
 	 */
-	public IndexController(final String name) {
+	private IndexController(final String name) {
 		crconfig = new CRConfigFileLoader(name, null);
 		MonitorFactory.init(crconfig);
 		this.indextable = buildIndexTable();
@@ -115,5 +117,12 @@ public class IndexController {
 			}
 		}
 		CRDatabaseFactory.destroy();
+	}
+
+	public static IndexController get(String name) {
+		if (!controllers.containsKey(name)) {
+			controllers.put(name, new IndexController(name));
+		}
+		return controllers.get(name);
 	}
 }

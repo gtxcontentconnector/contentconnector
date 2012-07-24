@@ -1,7 +1,9 @@
 package com.gentics.cr.lucene;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
 import com.gentics.cr.util.indexing.IndexJobQueue;
@@ -57,7 +60,7 @@ public class IndexJobNagiosServlet extends HttpServlet {
 	 * @return indexController
 	 */
 	public IndexController initIndexController(final ServletConfig config) {
-		return new IndexController("indexer");
+		return IndexController.get("indexer");
 	}
 
 	@Override
@@ -80,22 +83,27 @@ public class IndexJobNagiosServlet extends HttpServlet {
 		String nagString = request.getParameter(NAGIOS_PARAM);
 
 		String index = request.getParameter("idx");
+		boolean showAll = index.equals("*");
 		response.setContentType("text/plain");
 		ConcurrentHashMap<String, IndexLocation> indexTable = indexer.getIndexes();
+		indexTable = indexer.getIndexes();
+		ResponseWriter writer = new ResponseWriter(response.getWriter());
 		for (Entry<String, IndexLocation> e : indexTable.entrySet()) {
-			if (e.getKey().equalsIgnoreCase(index)) {
+			if (showAll || e.getKey().equalsIgnoreCase(index)) {
 				IndexLocation loc = e.getValue();
 				IndexJobQueue queue = loc.getQueue();
+				Map<String, CRConfigUtil> map = loc.getCRMap();
 				if (queue != null && queue.isRunning()) {
-					response.getWriter().write("WorkerThread:OK\n");
+					writer.write(e.getKey(), ".WorkerThread: OK\n");
 				} else {
-					response.getWriter().write("WorkerThread:NOK\n");
+					writer.write(e.getKey(), ".WorkerThread: NOK\n");
 				}
-				response.getWriter().write("ObjectsInIndex:" + loc.getDocCount() + "\n");
+				writer.write(e.getKey(), ".ObjectsInIndex: ", loc.getDocCount() + "", "\n");
 				if (queue != null) {
 					AbstractUpdateCheckerJob j = queue.getCurrentJob();
 					if (j != null) {
-						response.getWriter().write("CurrentJobObjectsToIndex:" + j.getObjectsToIndex() + "\n");
+						writer.write(e.getKey(), ".CurrentJobObjectsToIndex: ", j.getObjectsToIndex() + "", "\n");
+						writer.write(e.getKey(), ".CurrentJobStarted: ", j.getStart() + "", "\n");
 					}
 				}
 
@@ -110,6 +118,22 @@ public class IndexJobNagiosServlet extends HttpServlet {
 
 	protected String getAction(HttpServletRequest request) {
 		return request.getParameter("action");
+	}
+	
+	private class ResponseWriter {
+
+		PrintWriter writer;
+		
+		public ResponseWriter(PrintWriter writer) {
+			this.writer = writer;
+		}
+
+		public void write(String... data) {
+			for (String value : data) {
+				writer.write(value);
+			}
+		}
+		
 	}
 
 }
