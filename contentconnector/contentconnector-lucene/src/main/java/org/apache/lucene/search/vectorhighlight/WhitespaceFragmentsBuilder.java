@@ -148,7 +148,7 @@ public class WhitespaceFragmentsBuilder implements FragmentsBuilder {
 		if (maxNumFragments < 0) {
 			throw new IllegalArgumentException("maxNumFragments(" + maxNumFragments + ") must be positive number.");
 		}
-		List<WeightedFragInfo> fragInfos = getWeightedFragInfoList(fieldFragList.fragInfos);
+		List<WeightedFragInfo> fragInfos = getWeightedFragInfoList(fieldFragList.getFragInfos());
 
 		List<String> fragments = new ArrayList<String>(maxNumFragments);
 		Field[] values = getFields(reader, docId, fieldName);
