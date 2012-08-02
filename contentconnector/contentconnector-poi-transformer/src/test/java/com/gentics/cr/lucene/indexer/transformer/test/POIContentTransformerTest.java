@@ -1,5 +1,6 @@
 package com.gentics.cr.lucene.indexer.transformer.test;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
@@ -7,68 +8,142 @@ import junit.framework.TestCase;
 import org.apache.poi.util.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.lucene.indexer.transformer.POIContentTransformer;
 
 public class POIContentTransformerTest extends TestCase {
-	CRResolvableBean beanDOCX, beanPPTX, beanXLSX;
+	private static final String BINARY_ATTRIBUTE = "binarycontent";
 	GenericConfiguration config;
 
 	ContentTransformer t;
 
 	@Before
 	public void setUp() throws Exception {
-		beanDOCX = new CRResolvableBean();
-
-		InputStream stream1 = POIContentTransformerTest.class.getResourceAsStream("testdoc.docx");
-		byte[] arr1 = IOUtils.toByteArray(stream1);
-		beanDOCX.set("binarycontent", arr1);
-
-		beanPPTX = new CRResolvableBean();
-
-		InputStream stream2 = POIContentTransformerTest.class.getResourceAsStream("testdoc.pptx");
-		byte[] arr2 = IOUtils.toByteArray(stream2);
-		beanPPTX.set("binarycontent", arr2);
-
-		beanXLSX = new CRResolvableBean();
-
-		InputStream stream3 = POIContentTransformerTest.class.getResourceAsStream("testdoc.xlsx");
-		byte[] arr3 = IOUtils.toByteArray(stream3);
-		beanXLSX.set("binarycontent", arr3);
-
 		config = new GenericConfiguration();
-		config.set("attribute", "binarycontent");
+		config.set("attribute", BINARY_ATTRIBUTE);
 
 		t = new POIContentTransformer(config);
 	}
 
+	/**
+	 * Retrieve the contents of the given file.
+	 * @param filename - name of the fiel to get
+	 * @return contents of the file
+	 * @throws IOException in case the file cannot be opened
+	 */
+	private byte[] getContentFromFile(final String filename)
+			throws IOException {
+		InputStream stream1 = 
+			POIContentTransformerTest.class.getResourceAsStream(filename);
+		return IOUtils.toByteArray(stream1);
+	}
+
+	@Test
+	public void testTransformerDOCM() throws Exception {
+		testDocument("testdoc.docm");
+	}
+	
+	@Test
 	public void testTransformerDOCX() throws Exception {
-
-		t.processBean(beanDOCX);
-		String s = (String) beanDOCX.get("binarycontent");
-
-		assertTrue("testtext\n".equals(s));
+		testDocument("testdoc.docx");
 	}
-
+	
+	@Test
+	public void testTransformerDOTM() throws Exception {
+		testDocument("testdoc.dotm");
+	}
+	
+	@Test
+	public void testTransformerDOTX() throws Exception {
+		testDocument("testdoc.dotx");
+	}
+	
+	private void testDocument(String filename) throws IOException, CRException {
+		CRResolvableBean bean = new CRResolvableBean();
+		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
+		t.processBean(bean);
+		assertEquals("Testtext ÄÖÜäüöß€\n", bean.get(BINARY_ATTRIBUTE));
+	}
+	
+	@Test
+	public void testTransformerMSPPTX() throws Exception {
+		testPresentation("testdoc.mspowerpoint2010.pptx");
+	}
+	
+	@Test
+	public void testTransformerPOTM() throws Exception {
+		testPresentation("testdoc.potm");
+	}
+	
+	@Test
+	public void testTransformerPOTX() throws Exception {
+		testPresentation("testdoc.potx");
+	}
+	
+	@Test
+	public void testTransformerPPSM() throws Exception {
+		testPresentation("testdoc.ppsm");
+	}
+	
+	@Test
+	public void testTransformerPPSX() throws Exception {
+		testPresentation("testdoc.ppsx");
+	}
+	
+	@Test
+	public void testTransformerPPTM() throws Exception {
+		testPresentation("testdoc.pptm");
+	}
+	
+	@Test
 	public void testTransformerPPTX() throws Exception {
-		t.processBean(beanPPTX);
-		String s = (String) beanPPTX.get("binarycontent");
-
-		assertTrue("testtext\n\n".equals(s));
+		testPresentation("testdoc.pptx");
+	}
+	
+	
+	private void testPresentation(String filename) throws IOException, CRException {
+		CRResolvableBean bean = new CRResolvableBean();
+		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
+		t.processBean(bean);
+		assertEquals("Testtext ÄÖÜäüöß€\n\n", bean.get(BINARY_ATTRIBUTE));
 	}
 
+	@Test
+	public void testTransformerXLAM() throws Exception {
+		testSpreadsheet("testdoc.xlam");
+	}
+	
+	@Test
+	public void testTransformerXLSM() throws Exception {
+		testSpreadsheet("testdoc.xlsm");
+	}
+	
+	@Test
 	public void testTransformerXLSX() throws Exception {
-		t.processBean(beanXLSX);
-		String s = (String) beanXLSX.get("binarycontent");
-
-		assertTrue("Tabelle1\ntesttext\nTabelle2\nTabelle3\n".equals(s));
+		testSpreadsheet("testdoc.xlsx");
+	}
+	
+	@Test
+	public void testTransformerXLTM() throws Exception {
+		testSpreadsheet("testdoc.xltm");
+	}
+	
+	@Test
+	public void testTransformerXLTX() throws Exception {
+		testSpreadsheet("testdoc.xltx");
+	}
+	
+	private void testSpreadsheet(String filename) throws IOException, CRException {
+		CRResolvableBean bean = new CRResolvableBean();
+		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
+		t.processBean(bean);
+		assertEquals("Tabelle1\ntesttext ÄÖÜäüöß€\nTabelle2\nTabelle3\n",
+				bean.get(BINARY_ATTRIBUTE));
 	}
 
-	@After
-	public void tearDown() throws Exception {
-
-	}
 }
