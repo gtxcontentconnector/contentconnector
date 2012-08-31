@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.11.7-SNAPSHOT</version>
+		<version>1.11.7</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<build>
@@ -52,12 +52,12 @@
 		<dependency>
 			<groupId>gentics-portalnode</groupId>
 			<artifactId>gentics-portalnode</artifactId>
-			<version>4_build_12084-SNAPSHOT</version>
+			<version>4_build_12026</version>
 		</dependency>
 		<dependency>
 			<groupId>gentics-portalnode</groupId>
 			<artifactId>gentics-portalnode-api</artifactId>
-			<version>4_build_12084-SNAPSHOT</version>
+			<version>4_build_12026</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.portlet</groupId>
