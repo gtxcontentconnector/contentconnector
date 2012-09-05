@@ -151,9 +151,7 @@ public class CRSearcher {
 		if (didyoumeanenabled) {
 			didyoumeanprovider = new DidYouMeanProvider(config);
 			didyoumeanbestquery = config.getBoolean(DIDYOUMEAN_BESTQUERY_KEY, didyoumeanbestquery);
-			advanceddidyoumeanbestquery = config.getBoolean(
-				ADVANCED_DIDYOUMEAN_BESTQUERY_KEY,
-				advanceddidyoumeanbestquery);
+			advanceddidyoumeanbestquery = config.getBoolean(ADVANCED_DIDYOUMEAN_BESTQUERY_KEY, advanceddidyoumeanbestquery);
 			didyoumeanactivatelimit = config.getInteger(DIDYOUMEAN_ACTIVATE_KEY, didyoumeanactivatelimit);
 		}
 
@@ -167,16 +165,15 @@ public class CRSearcher {
 	 * @return
 	 * @throws IOException
 	 */
-	TopDocsCollector<?> createCollector(final Searcher searcher, final int hits, final String[] sorting,
-			final boolean computescores, final String[] userPermissions) throws IOException {
+	TopDocsCollector<?> createCollector(final Searcher searcher, final int hits, final String[] sorting, final boolean computescores,
+			final String[] userPermissions) throws IOException {
 		TopDocsCollector<?> coll = null;
 		String collectorClassName = (String) config.get(COLLECTOR_CLASS_KEY);
 		if (collectorClassName != null) {
 			Class<?> genericCollectorClass;
 			try {
 				genericCollectorClass = Class.forName(collectorClassName);
-				GenericConfiguration collectorConfiguration = config.getSubConfigs().get(
-					COLLECTOR_CONFIG_KEY.toUpperCase());
+				GenericConfiguration collectorConfiguration = config.getSubConfigs().get(COLLECTOR_CONFIG_KEY.toUpperCase());
 				Object[][] prioritizedParameters = new Object[3][];
 				prioritizedParameters[0] = new Object[] { searcher, hits, collectorConfiguration, userPermissions };
 				prioritizedParameters[1] = new Object[] { searcher, hits, collectorConfiguration };
@@ -186,21 +183,13 @@ public class CRSearcher {
 					coll = (TopDocsCollector<?>) collectorObject;
 				}
 			} catch (ClassNotFoundException e) {
-				log.error(
-					"Cannot find configured collector class: \"" + collectorClassName + "\" in " + config.getName(),
-					e);
+				log.error("Cannot find configured collector class: \"" + collectorClassName + "\" in " + config.getName(), e);
 			}
 
 		}
 		if (coll == null && sorting != null) {
 			// TODO make collector configurable
-			coll = TopFieldCollector.create(
-				createSort(sorting),
-				hits,
-				true,
-				computescores,
-				computescores,
-				computescores);
+			coll = TopFieldCollector.create(createSort(sorting), hits, true, computescores, computescores, computescores);
 		}
 		if (coll == null) {
 			coll = TopScoreDocCollector.create(hits, true);
@@ -257,8 +246,8 @@ public class CRSearcher {
 	 * @param start
 	 * @return ArrayList of results
 	 */
-	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final Searcher searcher,
-			final Query parsedQuery, final boolean explain, final int count, final int start) {
+	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final Searcher searcher, final Query parsedQuery,
+			final boolean explain, final int count, final int start) {
 		try {
 			searcher.search(parsedQuery, collector);
 
@@ -292,8 +281,7 @@ public class CRSearcher {
 					log.error("Loading search documents failed partly (document has MAX_INTEGER as document id");
 				}
 			}
-			log.debug("Fetched Document " + start + " to " + (start + num) + " of " + collector.getTotalHits()
-					+ " found Documents");
+			log.debug("Fetched Document " + start + " to " + (start + num) + " of " + collector.getTotalHits() + " found Documents");
 
 			HashMap<String, Object> ret = new HashMap<String, Object>(2);
 			ret.put(RESULT_RESULT_KEY, result);
@@ -306,13 +294,14 @@ public class CRSearcher {
 		return null;
 	}
 
-	public HashMap<String, Object> search(String query, String[] searchedAttributes, int count, int start,
-			boolean explain) throws IOException, CRException {
+	public HashMap<String, Object> search(String query, String[] searchedAttributes, int count, int start, boolean explain)
+			throws IOException, CRException {
 		return search(query, searchedAttributes, count, start, explain, null);
 	}
 
-	public HashMap<String, Object> search(String query, String[] searchedAttributes, int count, int start,
-			boolean explain, String[] sorting) throws IOException, CRException {
+	public HashMap<String, Object>
+			search(String query, String[] searchedAttributes, int count, int start, boolean explain, String[] sorting) throws IOException,
+					CRException {
 		return search(query, searchedAttributes, count, start, explain, sorting, new CRRequest());
 	}
 
@@ -333,9 +322,8 @@ public class CRSearcher {
 	 * @throws CRException in case maxclausecount is reached and failOnMaxClauses is enabled in the config object
 	 */
 	@SuppressWarnings("unchecked")
-	public final HashMap<String, Object> search(final String query, final String[] searchedAttributes, final int count,
-			final int start, final boolean explain, final String[] sorting, final CRRequest request)
-			throws IOException, CRException {
+	public final HashMap<String, Object> search(final String query, final String[] searchedAttributes, final int count, final int start,
+			final boolean explain, final String[] sorting, final CRRequest request) throws IOException, CRException {
 
 		Searcher searcher;
 		Analyzer analyzer;
@@ -357,11 +345,7 @@ public class CRSearcher {
 			analyzer = LuceneAnalyzerFactory.createAnalyzer(this.config);
 
 			if (searchedAttributes != null && searchedAttributes.length > 0 && query != null && !query.equals("")) {
-				QueryParser parser = CRQueryParserFactory.getConfiguredParser(
-					searchedAttributes,
-					analyzer,
-					request,
-					config);
+				QueryParser parser = CRQueryParserFactory.getConfiguredParser(searchedAttributes, analyzer, request, config);
 
 				Query parsedQuery = parser.parse(query);
 				// GENERATE A NATIVE QUERY
@@ -395,9 +379,7 @@ public class CRSearcher {
 					result.put(RESULT_MAXSCORE_KEY, maxScore);
 
 					// PLUG IN DIDYOUMEAN
-					boolean didyoumeanEnabledForRequest = StringUtils.getBoolean(
-						request.get(DIDYOUMEAN_ENABLED_KEY),
-						true);
+					boolean didyoumeanEnabledForRequest = StringUtils.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY), true);
 					if (start == 0
 							&& didyoumeanenabled
 							&& didyoumeanEnabledForRequest
@@ -451,23 +433,20 @@ public class CRSearcher {
 	 * @param userPermissions - user permission used to get the original result
 	 * @return Map containing the replacement for the searchterm and the result for the resulting query.
 	 */
-	private HashMap<String, Object> didyoumean(final String originalQuery, final Query parsedQuery,
-			final IndexAccessor indexAccessor, final QueryParser parser, final Searcher searcher,
-			final String[] sorting, final String[] userPermissions) {
+	private HashMap<String, Object> didyoumean(final String originalQuery, final Query parsedQuery, final IndexAccessor indexAccessor,
+			final QueryParser parser, final Searcher searcher, final String[] sorting, final String[] userPermissions) {
 		long dymStart = System.currentTimeMillis();
 		HashMap<String, Object> result = new HashMap<String, Object>(3);
 
+		IndexReader reader = null;
 		try {
-			IndexReader reader = indexAccessor.getReader(false);
+			reader = indexAccessor.getReader(false);
 			Query rwQuery = parsedQuery;
 			Set<Term> termset = new HashSet<Term>();
 			rwQuery.extractTerms(termset);
 
-			Map<Term, Term[]> suggestions = this.didyoumeanprovider.getSuggestionTerms(
-				termset,
-				this.didyoumeansuggestcount,
-				reader);
-			boolean containswildcards = (originalQuery.indexOf('*') != -1);
+			Map<Term, Term[]> suggestions = this.didyoumeanprovider.getSuggestionTerms(termset, this.didyoumeansuggestcount, reader);
+			boolean containswildcards = originalQuery.indexOf('*') != -1;
 			if (suggestions.size() == 0 && containswildcards) {
 				String newSuggestionQuery = originalQuery.replaceAll(":\\*?([^*]*)\\*?", ":$1");
 				try {
@@ -476,10 +455,7 @@ public class CRSearcher {
 					// REWRITE NEWLY PARSED QUERY
 					rwQuery = rwQuery.rewrite(reader);
 					rwQuery.extractTerms(termset);
-					suggestions = this.didyoumeanprovider.getSuggestionTerms(
-						termset,
-						this.didyoumeansuggestcount,
-						reader);
+					suggestions = this.didyoumeanprovider.getSuggestionTerms(termset, this.didyoumeansuggestcount, reader);
 
 				} catch (ParseException e) {
 					log.error("Cannot Parse Suggestion Query.", e);
@@ -490,7 +466,6 @@ public class CRSearcher {
 			result.put(RESULT_SUGGESTIONS_KEY, this.didyoumeanprovider.getSuggestionsStringFromMap(suggestions));
 
 			log.debug("DYM Suggestions took " + (System.currentTimeMillis() - dymStart) + "ms");
-			indexAccessor.release(reader, false);
 
 			if (didyoumeanbestquery || advanceddidyoumeanbestquery) {
 				// SPECIAL SUGGESTION
@@ -506,11 +481,7 @@ public class CRSearcher {
 						for (Term suggestedTerm : suggestionsForTerm) {
 							Query newquery = BooleanQueryRewriter.replaceTerm(rwQuery, term, suggestedTerm);
 
-							HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
-								newquery,
-								searcher,
-								sorting,
-								userPermissions);
+							HashMap<String, Object> resultOfNewQuery = getResultsForQuery(newquery, searcher, sorting, userPermissions);
 							if (resultOfNewQuery != null) {
 								resultOfNewQuery.put(RESULT_SUGGESTEDTERM_KEY, suggestedTerm.text());
 								resultOfNewQuery.put(RESULT_ORIGTERM_KEY, term.text());
@@ -524,11 +495,7 @@ public class CRSearcher {
 						result.put(RESULT_BESTQUERY_KEY, suggestionsResults);
 					} else {
 						Query newquery = BooleanQueryRewriter.replaceTerm(rwQuery, term, suggestionsForTerm[0]);
-						HashMap<String, Object> resultOfNewQuery = getResultsForQuery(
-							newquery,
-							searcher,
-							sorting,
-							userPermissions);
+						HashMap<String, Object> resultOfNewQuery = getResultsForQuery(newquery, searcher, sorting, userPermissions);
 						result.putAll(resultOfNewQuery);
 					}
 				}
@@ -537,12 +504,16 @@ public class CRSearcher {
 			return result;
 		} catch (IOException e) {
 			log.error("Cannot access index for didyoumean functionality.", e);
+		} finally {
+			if (indexAccessor != null && reader != null) {
+				indexAccessor.release(reader, false);
+			}
 		}
 		return null;
 	}
 
-	private HashMap<String, Object> getResultsForQuery(final String query, final QueryParser parser,
-			final Searcher searcher, final String[] sorting, final String[] userPermissions) {
+	private HashMap<String, Object> getResultsForQuery(final String query, final QueryParser parser, final Searcher searcher,
+			final String[] sorting, final String[] userPermissions) {
 		try {
 			return getResultsForQuery(parser.parse(query), searcher, sorting, userPermissions);
 		} catch (ParseException e) {
@@ -551,8 +522,8 @@ public class CRSearcher {
 		return null;
 	}
 
-	private HashMap<String, Object> getResultsForQuery(final Query query, final Searcher searcher,
-			final String[] sorting, final String[] userPermissions) {
+	private HashMap<String, Object> getResultsForQuery(final Query query, final Searcher searcher, final String[] sorting,
+			final String[] userPermissions) {
 		HashMap<String, Object> result = new HashMap<String, Object>(3);
 		try {
 			TopDocsCollector<?> bestcollector = createCollector(searcher, 1, sorting, computescores, userPermissions);
