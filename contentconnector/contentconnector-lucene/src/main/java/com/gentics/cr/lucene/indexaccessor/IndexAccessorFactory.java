@@ -173,8 +173,7 @@ public class IndexAccessorFactory {
 	 */
 	public IndexAccessor getAccessor(final Directory indexDir) {
 		if (wasClosed) {
-			throw new AlreadyClosedException("IndexAccessorFactory was already closed"
-					+ ". Maybe there is a shutdown in progress.");
+			throw new AlreadyClosedException("IndexAccessorFactory was already closed" + ". Maybe there is a shutdown in progress.");
 		}
 		IndexAccessor indexAccessor = indexAccessors.get(indexDir);
 		if (indexAccessor == null) {
@@ -185,7 +184,7 @@ public class IndexAccessorFactory {
 	}
 
 	/**
-	 * Check if an Accessor is already created for that directory
+	 * Check if an Accessor is already created for that directory.
 	 * @param indexDir directory in which contains the index file
 	 * @return boolean true if present, false if not
 	 */
