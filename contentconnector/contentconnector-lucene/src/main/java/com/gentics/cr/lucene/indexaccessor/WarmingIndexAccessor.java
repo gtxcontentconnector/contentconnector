@@ -28,7 +28,7 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 	private static final Logger LOGGER = Logger.getLogger(WarmingIndexAccessor.class);
 
 	/**
-	 * Create new instance
+	 * Create new instance.
 	 * @param dir
 	 * @param analyzer
 	 * @param warmQuery
@@ -50,8 +50,7 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 			return;
 		}
 		closed = true;
-		while ((readingReaderUseCount > 0) || (searcherUseCount > 0) || (writingReaderUseCount > 0)
-				|| (writerUseCount > 0) || (numReopening > 0)) {
+		while (readingReaderUseCount > 0 || searcherUseCount > 0 || writingReaderUseCount > 0 || writerUseCount > 0 || numReopening > 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -150,7 +149,7 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 		private IndexSearcher oldSearcher;
 
 		/**
-		 * Create new instance
+		 * Create new instance.
 		 * @param oldSearcher
 		 * @param searcher
 		 */
