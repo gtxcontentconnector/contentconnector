@@ -18,9 +18,7 @@ import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
 
 /**
- * This job is used to re-index (or newly index) the didyoumean-index 
- * 
- *
+ * This job is used to re-index (or newly index) the didyoumean-index.
  */
 public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 
@@ -35,7 +33,7 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 	}
 
 	/**
-	 * starts the job - is called by the IndexJobQueue
+	 * starts the job - is called by the IndexJobQueue.
 	 */
 	@Override
 	protected void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException {
