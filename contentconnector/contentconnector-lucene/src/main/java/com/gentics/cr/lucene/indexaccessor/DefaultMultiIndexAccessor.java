@@ -52,7 +52,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	private Directory[] dirs;
 
 	/**
-	 * Create new Instance
+	 * Create new Instance.
 	* @param dirs 
 	 */
 	public DefaultMultiIndexAccessor(Directory[] dirs) {
@@ -61,7 +61,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	}
 
 	/**
-	 * Create new instance
+	 * Create new instance.
 	* @param dirs 
 	 * @param similarity
 	 */
@@ -82,18 +82,20 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	}
 
 	/**
-	 * Closes all index accessors contained in the multi accessor
+	 * Closes all index accessors contained in the multi accessor.
 	 */
 	public void close() {
 		for (Entry<Searcher, IndexAccessor> iae : this.multiSearcherAccessors.entrySet()) {
 			IndexAccessor ia = iae.getValue();
-			if (ia.isOpen())
+			if (ia.isOpen()) {
 				ia.close();
+			}
 		}
 		for (Entry<IndexReader, IndexAccessor> iae : this.multiReaderAccessors.entrySet()) {
 			IndexAccessor ia = iae.getValue();
-			if (ia.isOpen())
+			if (ia.isOpen()) {
 				ia.close();
+			}
 		}
 	}
 
@@ -116,8 +118,9 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	}
 
 	public IndexReader getReader(boolean write) throws IOException {
-		if (write)
+		if (write) {
 			throw new UnsupportedOperationException();
+		}
 
 		IndexReader[] readers = new IndexReader[this.dirs.length];
 
