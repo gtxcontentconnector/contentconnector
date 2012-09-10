@@ -83,8 +83,9 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		if (docs.containsKey(identifyer)) {
 
 			Integer documentId = docs.get(identifyer);
+			IndexReader reader = null;
 			try {
-				IndexReader reader = indexAccessor.getReader(readerWithWritePermissions);
+				reader = indexAccessor.getReader(readerWithWritePermissions);
 				Document document = reader.document(documentId);
 				checkedDocuments.add(identifyer);
 				Object documentUpdateTimestamp = null;
@@ -113,6 +114,12 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				}
 				log.error("Cannot open index for reading. (Directory: " + directories + ")", e);
 				return true;
+			} finally {
+				if (indexAccessor != null) {
+					indexAccessor.release(reader, readerWithWritePermissions);
+					log.debug("Released reader with write permission: " + readerWithWritePermissions + " at thread: "
+							+ Thread.currentThread().getName() + " - threadid: " + Thread.currentThread().getId());
+				}
 			}
 		} else {
 			//object is not yet in the index => it is not up to date
