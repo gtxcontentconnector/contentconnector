@@ -315,7 +315,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 			createdSearchers.add(searcher);
 			searcher.setSimilarity(similarity);
 			cachedSearchers.put(similarity, searcher);
-
 		}
 		searcherUseCount++;
 		notifyAll();
@@ -579,7 +578,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 					searcher.setSimilarity(oldSearcher.getSimilarity());
 					oldSearcher.getIndexReader().close();
 					cachedSearchers.put(key, searcher);
-
 				}
 
 			} catch (IOException e) {
@@ -637,7 +635,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 			Thread.currentThread().interrupt();
 		}
 	}
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		close();
