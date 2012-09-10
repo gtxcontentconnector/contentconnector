@@ -135,7 +135,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				LOGGER.debug("Interrupted waiting for writer in close", e);
 			}
 		}
 
@@ -253,6 +252,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	/**
 	 * Fetches a double checked Searcher that has been checked for the presence of a reopen file
 	 * Note that it may occure that a prioritized Searcher may be reopened twice.
+	 * @param indexLocation 
 	 * @return
 	 * @throws IOException
 	 */
@@ -334,29 +334,25 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * (non-Javadoc)
 	 * @see com.mhs.indexaccessor.IndexAccessor#getWriter(boolean, boolean)
 	 */
-	private synchronized IndexWriter getWriter(final boolean autoCommit) throws IOException {
+	private synchronized IndexWriter getWriter(boolean autoCommit) throws IOException {
 
 		checkClosed();
-		if (LOGGER.isDebugEnabled() && writerUseCount > 0) {
-			LOGGER.debug("writer already used (" + writerUseCount + "), waiting for job to release it.");
+		if (LOGGER.isDebugEnabled() && writingReaderUseCount > 0) {
+			LOGGER.debug("writer already used (" + writingReaderUseCount + "), waiting for job to release it.");
 		}
-		LOGGER.debug("getWriter#writerUseCount: " + writerUseCount);
-		while (writerUseCount > 0) {
+		while (writingReaderUseCount > 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				LOGGER.debug("Interrupted waiting for releasing writer", e);
 			}
 		}
 
 		if (cachedWriter != null) {
-			LOGGER.debug("returning cached writer. (Thread: " + Thread.currentThread().getName() + " - " + Thread.currentThread().getId()
-					+ ")");
+			LOGGER.debug("returning cached writer:" + Thread.currentThread().getId());
 
 			writerUseCount++;
 		} else {
-			LOGGER.debug("opening new writer and caching it. (Thread: " + Thread.currentThread().getName() + " - "
-					+ Thread.currentThread().getId() + ")");
+			LOGGER.debug("opening new writer and caching it:" + Thread.currentThread().getId());
 
 			cachedWriter = new IndexWriter(directory, analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
 			writerUseCount = 1;
@@ -373,8 +369,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	private synchronized IndexReader getWritingReader() throws CorruptIndexException, IOException {
 		checkClosed();
 
-		LOGGER.debug("getWritingReader#writingReaderUseCount: " + writingReaderUseCount);
-		while (writingReaderUseCount > 0) {
+		while (writerUseCount > 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -382,10 +377,10 @@ class DefaultIndexAccessor implements IndexAccessor {
 		}
 
 		if (cachedWritingReader != null) {
-			LOGGER.debug("returning cached writing reader, incrementing writingReaderUseCount");
+			LOGGER.debug("returning cached writing reader");
 			writingReaderUseCount++;
 		} else {
-			LOGGER.debug("opening new writing reader, increasing writingReaderUserCount");
+			LOGGER.debug("opening new writing reader");
 			cachedWritingReader = IndexReader.open(directory, false);
 			writingReaderUseCount = 1;
 		}
@@ -455,14 +450,12 @@ class DefaultIndexAccessor implements IndexAccessor {
 			writerUseCount--;
 
 			if (writerUseCount == 0) {
-				LOGGER.debug("closing cached writer. (Thread: " + Thread.currentThread().getName() + " - " + Thread.currentThread().getId()
-						+ ")");
+				LOGGER.debug("closing cached writer:" + Thread.currentThread().getId());
 
 				try {
 					cachedWriter.close();
 				} catch (IOException e) {
-					LOGGER.error("error closing cached Writer (Thread: " + Thread.currentThread().getName() + " - "
-							+ Thread.currentThread().getId() + ")", e);
+					LOGGER.error("error closing cached Writer:" + Thread.currentThread().getId(), e);
 				} finally {
 					cachedWriter = null;
 				}
@@ -532,7 +525,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 				throw new IllegalArgumentException("writing Reader not opened by this index accessor");
 			}
 
-			LOGGER.debug("Decreasing writingReaderUseCount: " + writingReaderUseCount);
 			writingReaderUseCount--;
 
 			if (writingReaderUseCount == 0) {
@@ -645,7 +637,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 			Thread.currentThread().interrupt();
 		}
 	}
-
+	
 	@Override
 	protected void finalize() throws Throwable {
 		close();
