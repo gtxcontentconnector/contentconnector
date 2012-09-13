@@ -48,22 +48,30 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	 * @throws IOException 
 	 */
 	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation, final String termKey, final String termValue,
-		final String idAttribute) throws IOException {
+		final String idAttribute) {
 		this.indexLocation = indexLocation;
 		indexAccessor = indexLocation.getAccessor();
-		IndexReader reader = indexAccessor.getReader(true);
+		IndexReader reader = null;
+		try {
+			reader = indexAccessor.getReader(true);
 
-		TermDocs termDocs = reader.termDocs(new Term(termKey, termValue));
-		log.debug("Fetching sorted documents from index...");
-		docs = fetchSortedDocs(termDocs, reader, idAttribute);
-		log.debug("Fetched sorted docs from index");
-		docIT = docs.keySet().iterator();
+			TermDocs termDocs = reader.termDocs(new Term(termKey, termValue));
+			log.debug("Fetching sorted documents from index...");
+			docs = fetchSortedDocs(termDocs, reader, idAttribute);
+			log.debug("Fetched sorted docs from index");
+			docIT = docs.keySet().iterator();
 
-		checkedDocuments = new Vector<String>(100);
+			checkedDocuments = new Vector<String>(100);
 
-		//TODO CONTINUE HERE PREPARE TO USE ITERATOR IN CHECK METHOD
-
-		indexAccessor.release(reader, true);
+			//TODO CONTINUE HERE PREPARE TO USE ITERATOR IN CHECK METHOD
+		} catch (Throwable e) {
+			log.debug("Error while retrieving termdocs", e);
+		} finally {
+			if (indexAccessor != null && reader != null) {
+				log.error("Closing down indexreader with write permissions (LuceneIndexUpdateChecker instantiation failed)");
+				indexAccessor.release(reader, true);
+			}
+		}
 	}
 
 	@Override
