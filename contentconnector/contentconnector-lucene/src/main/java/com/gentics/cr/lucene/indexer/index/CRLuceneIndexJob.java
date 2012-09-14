@@ -103,6 +103,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		if (timestampattributeString != null && !"".equals(timestampattributeString)) {
 			this.timestampattribute = timestampattributeString;
 		}
+		
+		boostingAttribute = config.getString(BOOST_ATTRIBUTE_KEY, null);
 	}
 
 	/**
@@ -123,6 +125,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * Configuration key for the attributes stored in the index.
 	 */
 	private static final String BOOSTED_ATTRIBUTES_KEY = "BOOSTEDATTRIBUTES";
+	
+	/**
+	 * The field that contains the boostvalue for the current object.
+	 * 1.0 is default if this attribute is not set or not present.
+	 */
+	private static final String BOOST_ATTRIBUTE_KEY = "BOOSTATTRIBUTE";
 
 	/**
 	 * Configuration key for the attributes stored in the index.
@@ -175,6 +183,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * Default batch size is set to 1000 elements.
 	 */
 	private int batchSize = ONE_THOUSAND;
+	
+	/**
+	 * Boosting attribute name.
+	 */
+	private String boostingAttribute;
 
 	/**
 	 * Attribute to check if the element is newer than the one in the index.
@@ -607,6 +620,16 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					newDoc.add(new Field(timestampattribute, updateTimestamp.toString(), Field.Store.YES,
 							Field.Index.NOT_ANALYZED));
 				}
+			}
+		}
+		// Set document boosting if present
+		String boostingValue = (String) resolvable.get(boostingAttribute);
+		if (boostingValue != null && !"".equals(boostingValue)) {
+			try {
+				newDoc.setBoost(Float.parseFloat(boostingValue));
+			} catch (Exception e) {
+				LOG.error("Could not pars boosting information "
+						+ "from resolvable.", e);
 			}
 		}
 		for (Entry<String, Boolean> entry : attributes.entrySet()) {
