@@ -65,10 +65,10 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 
 			//TODO CONTINUE HERE PREPARE TO USE ITERATOR IN CHECK METHOD
 		} catch (Throwable e) {
-			log.debug("Error while retrieving termdocs", e);
+			log.error("Error while retrieving termdocs. Next step: close down connection in finally block", e);
 		} finally {
 			if (indexAccessor != null && reader != null) {
-				log.error("Closing down indexreader with write permissions (LuceneIndexUpdateChecker instantiation failed)");
+				log.debug("Closing down indexreader with write permissions (LuceneIndexUpdateChecker instantiation failed)");
 				indexAccessor.release(reader, true);
 			}
 		}
