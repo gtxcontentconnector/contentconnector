@@ -91,7 +91,7 @@ public class DidYouMeanProvider implements IEventReceiver {
 	/**
 	 * flag to indicate if the new DidyoumeanIndexExtension should be used <br>
 	 * new implementations must set the config key "useDidyomeanIndexExtension"
-	 * to true to use the extension
+	 * to true to use the extension.
 	 */
 	@Deprecated
 	private boolean useDidyomeanIndexExtension = false;
@@ -137,6 +137,9 @@ public class DidYouMeanProvider implements IEventReceiver {
 			spellchecker = new CustomSpellChecker(didyoumeanLocation, minDScore, minDFreq);
 		} catch (IOException e1) {
 			log.error("Could not create didyoumean index.", e1);
+			if (spellchecker != null) {
+				spellchecker.close();
+			}
 		}
 
 		if (!useDidyomeanIndexExtension) {
@@ -197,24 +200,26 @@ public class DidYouMeanProvider implements IEventReceiver {
 				log.debug("Could not reIndex autocomplete index.", e);
 			}
 		}
-
 	}
 
 	/**
-	 * TODO javadoc.
 	 * 
 	 * @param termlist
-	 *            TODO javadoc
 	 * @param count
-	 *            TODO javadoc
 	 * @param reader
-	 *            TODO javadoc
-	 * @return TODO javadoc
+	 * @return
 	 */
 	public Map<String, String[]> getSuggestions(Set<Term> termlist, int count, IndexReader reader) {
 		return getSuggestionsStringFromMap(getSuggestionTerms(termlist, count, reader));
 	}
 
+	/**
+	 * 
+	 * @param termlist
+	 * @param count
+	 * @param reader
+	 * @return
+	 */
 	public Map<Term, Term[]> getSuggestionTerms(Set<Term> termlist, int count, IndexReader reader) {
 
 		if (dymreopenupdate) {
@@ -278,11 +283,21 @@ public class DidYouMeanProvider implements IEventReceiver {
 		ucReIndex.stop();
 	}
 
+	/**
+	 * Called as soon as the garbage collection detects there is no referencing object left.
+	 */
 	public void finalize() {
+		spellchecker.close();
+		// stopping the didyoumeanLocation separately should not be needed. just in case.
 		didyoumeanLocation.stop();
 		EventManager.getInstance().unregister(this);
 	}
 
+	/**
+	 * 
+	 * @param suggestions
+	 * @return
+	 */
 	public Map<String, String[]> getSuggestionsStringFromMap(Map<Term, Term[]> suggestions) {
 		Map<String, String[]> result = new LinkedHashMap<String, String[]>();
 		for (Term key : suggestions.keySet()) {
