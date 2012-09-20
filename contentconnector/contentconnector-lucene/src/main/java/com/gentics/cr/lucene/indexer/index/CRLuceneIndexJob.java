@@ -131,6 +131,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * 1.0 is default if this attribute is not set or not present.
 	 */
 	private static final String BOOST_ATTRIBUTE_KEY = "BOOSTATTRIBUTE";
+	
+	/**
+	 * Defaultattributename for boosting elements.
+	 */
+	private static final String DEFAULT_BOOST_ATTRIBUTE = "searchBoost";
 
 	/**
 	 * Configuration key for the attributes stored in the index.
@@ -187,7 +192,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	/**
 	 * Boosting attribute name.
 	 */
-	private String boostingAttribute;
+	private String boostingAttribute = DEFAULT_BOOST_ATTRIBUTE;
 
 	/**
 	 * Attribute to check if the element is newer than the one in the index.
