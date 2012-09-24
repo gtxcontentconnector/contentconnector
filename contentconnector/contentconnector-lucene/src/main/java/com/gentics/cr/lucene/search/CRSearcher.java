@@ -363,7 +363,12 @@ public class CRSearcher {
 							if (documents != null) {
 								for (Entry doc : documents.entrySet()) {
 									Document doCument = (Document) doc.getKey();
-									log.debug("CRSearcher.search: " + doCument.getField("contentid").toString());
+									String contentid 
+										= doCument.get("contentid");
+									log.debug("CRSearcher.search: " 
+											+ doCument.toString() 
+											+ " Contentid: " 
+											+ contentid);
 								}
 							}
 						}
