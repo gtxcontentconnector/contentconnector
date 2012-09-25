@@ -125,7 +125,7 @@ public class CRSearcher {
 	protected CRConfig config;
 	private boolean computescores = true;
 	private boolean didyoumeanenabled = false;
-	private boolean didyoumeanbestquery = true;
+	private boolean didyoumeanbestquery = false;
 	private boolean advanceddidyoumeanbestquery = false;
 	private int didyoumeansuggestcount = 5;
 	private float didyoumeanminscore = 0.5f;
