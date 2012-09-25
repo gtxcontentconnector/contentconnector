@@ -96,6 +96,17 @@
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>com.gentics.public</id>
+			<name>Gentics Public Maven Repository (releases)</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
