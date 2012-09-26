@@ -1,6 +1,7 @@
 package com.gentics.cr.rendering;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.util.HashMap;
 
@@ -10,7 +11,8 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 
 /**
- * 
+ * Renders content.
+ * Replaces PLinks and evaluates velocity.
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
  * @version $Revision: 545 $
  * @author $Author: supnig@constantinopel.at $
@@ -18,6 +20,22 @@ import com.gentics.cr.exceptions.CRException;
  */
 public interface IContentRenderer {
 
+	/**
+	 * Render Contentattribute attribute from bean into a writer.
+	 * @param writer
+	 * @param bean
+	 * @param contentAttribute
+	 * @param doReplacePLinks
+	 * @param plinkReplacer
+	 * @param doRenderVelocity
+	 * @param resolvables
+	 * @throws CRException
+	 * @throws IOException
+	 */
+	public void renderContent(OutputStream stream, CRResolvableBean bean, String contentAttribute, boolean doReplacePLinks,
+			PLinkReplacer plinkReplacer, boolean doRenderVelocity, HashMap<String, Resolvable> resolvables)
+			throws CRException, IOException;
+	
 	/**
 	 * Render Contentattribute attribute from bean into a writer.
 	 * @param writer

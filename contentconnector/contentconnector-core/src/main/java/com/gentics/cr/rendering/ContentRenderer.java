@@ -1,6 +1,8 @@
 package com.gentics.cr.rendering;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -110,5 +112,34 @@ public class ContentRenderer implements IContentRenderer {
 			return content;
 		}
 		return null;
+	}
+	/**
+	 * Render contentattribute attribute from a bean into a string.
+	 * @param stream outputStream
+	 * @param contentAttribute
+	 * @param doReplacePLinks
+	 * @param plinkReplacer
+	 * @param doRenderVelocity
+	 * @param resolvables
+	 * @throws CRException
+	 * @throws IOException
+	 */
+	public void renderContent(OutputStream stream, CRResolvableBean bean,
+			String contentAttribute, boolean doReplacePLinks,
+			PLinkReplacer plinkReplacer, boolean doRenderVelocity,
+			HashMap<String, Resolvable> resolvables) throws CRException,
+			IOException {
+		// get the content (raw)
+				String rendered = this.renderContent(
+					bean,
+					contentAttribute,
+					doReplacePLinks,
+					plinkReplacer,
+					doRenderVelocity,
+					resolvables);
+				if (rendered != null) {
+					OutputStreamWriter osw = new OutputStreamWriter(stream);
+					osw.write(rendered);
+				}
 	}
 }
