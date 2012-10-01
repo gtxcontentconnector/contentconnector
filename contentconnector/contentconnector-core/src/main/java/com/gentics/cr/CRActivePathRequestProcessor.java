@@ -64,10 +64,10 @@ public class CRActivePathRequestProcessor extends RequestProcessor {
 		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Collection<CRResolvableBean> collection = null;
-		RequestWrapper rW = request.getRequestWrapper();
-		String rootId = rW.getParameter(ROOT_ID);
+		
 		if (request != null) {
-
+			RequestWrapper rW = request.getRequestWrapper();
+			String rootId = rW.getParameter(ROOT_ID);
 			// Parse the given expression and create a datasource filter
 			try {
 				ds = this.config.getDatasource();
