@@ -155,8 +155,9 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 			Query query = new TermQuery(new Term(GRAMMED_WORDS_FIELD, term));
 			Sort sort = new Sort(new SortField(COUNT_FIELD, SortField.LONG, true));
 			TopDocs docs = autoCompleteSearcher.search(query, null, 5, sort);
+			int id = 1;
 			for (ScoreDoc doc : docs.scoreDocs) {
-				CRResolvableBean bean = new CRResolvableBean();
+				CRResolvableBean bean = new CRResolvableBean(id++);
 				Document d = autoCompleteReader.document(doc.doc);
 				bean.set(SOURCE_WORD_FIELD, d.get(SOURCE_WORD_FIELD));
 				bean.set(COUNT_FIELD, d.get(COUNT_FIELD));
