@@ -100,7 +100,7 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>com.gentics.public</id>
+			<id>com.gentics.public_snapshot</id>
 			<name>Gentics Public Maven Repository (releases)</name>
 			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
 			<releases>
