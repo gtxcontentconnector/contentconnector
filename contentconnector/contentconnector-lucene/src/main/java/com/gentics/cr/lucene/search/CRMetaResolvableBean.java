@@ -6,6 +6,7 @@ import org.apache.lucene.search.Query;
 
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.cr.lucene.facets.search.FacetsSearchConfigKeys;
 
 /**
  * {@link CRResolvableBean} for the Metaresolvable passed to the search result
@@ -47,6 +48,13 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 		set(CRSearcher.RESULT_MAXSCORE_KEY, searchResult.get(CRSearcher.RESULT_MAXSCORE_KEY));
 		set(CRSearcher.RESULT_BESTQUERY_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERY_KEY));
 		set(CRSearcher.RESULT_BESTQUERYHITS_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERYHITS_KEY));
+		
+		if (searchResult
+				.containsKey(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY)) {
+			set(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY,
+					searchResult
+							.get(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY));
+		}
 	}
 
 	/**

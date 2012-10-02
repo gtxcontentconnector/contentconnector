@@ -17,11 +17,14 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.facet.search.FacetsCollector;
+import org.apache.lucene.facet.taxonomy.TaxonomyReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Explanation;
+import org.apache.lucene.search.MultiCollector;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searcher;
@@ -37,6 +40,9 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.didyoumean.DidYouMeanProvider;
+import com.gentics.cr.lucene.facets.search.FacetsSearch;
+import com.gentics.cr.lucene.facets.search.FacetsSearchConfigKeys;
+import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
@@ -129,6 +135,8 @@ public class CRSearcher {
 	private boolean advanceddidyoumeanbestquery = false;
 	private int didyoumeansuggestcount = 5;
 	private float didyoumeanminscore = 0.5f;
+	
+	private FacetsSearch facetsSearch;
 
 	/**
 	 * resultsizelimit to activate the didyoumeanfunctionality.
@@ -154,6 +162,8 @@ public class CRSearcher {
 			advanceddidyoumeanbestquery = config.getBoolean(ADVANCED_DIDYOUMEAN_BESTQUERY_KEY, advanceddidyoumeanbestquery);
 			didyoumeanactivatelimit = config.getInteger(DIDYOUMEAN_ACTIVATE_KEY, didyoumeanactivatelimit);
 		}
+		
+		facetsSearch = new FacetsSearch(config);
 
 	}
 
@@ -234,7 +244,7 @@ public class CRSearcher {
 
 		return ret;
 	}
-
+	
 	/**
 	 * Run a Search against the lucene index.
 	 * 
@@ -248,9 +258,30 @@ public class CRSearcher {
 	 */
 	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final Searcher searcher, final Query parsedQuery,
 			final boolean explain, final int count, final int start) {
-		try {
-			searcher.search(parsedQuery, collector);
+		return executeSearcher(collector, searcher, parsedQuery,
+				explain, count, start, null);
+	}
 
+	/**
+	 * Run a Search against the lucene index.
+	 * 
+	 * @param searcher
+	 * @param parsedQuery
+	 * @param count
+	 * @param collector
+	 * @param explain
+	 * @param start
+	 * @param facetsCollector a {@link FacetsCollector} 
+	 * @return ArrayList of results
+	 */
+	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final Searcher searcher, final Query parsedQuery,
+			final boolean explain, final int count, final int start,  final FacetsCollector facetsCollector) {
+		try {
+			// wrap the TopDocsCollector and the FacetsCollector to one
+			// MultiCollector and perform the search
+			searcher.search(parsedQuery,
+					MultiCollector.wrap(collector, facetsCollector));
+			
 			TopDocs tdocs = collector.topDocs(start, count);
 
 			float maxScoreReturn = tdocs.getMaxScore();
@@ -333,6 +364,19 @@ public class CRSearcher {
 		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
 
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
+		
+		// Resources needed for faceted search
+		TaxonomyAccessor taAccessor = null;
+		TaxonomyReader taReader = null;
+		IndexReader facetsIndexReader = null;
+		
+		// get accessors and reader only if facets are activated 
+		if (facetsSearch.useFacets()) {
+			facetsIndexReader = indexAccessor.getReader(false);
+			taAccessor = idsLocation.getTaxonomyAccessor();
+			taReader = taAccessor.getTaxonomyReader();
+		}
+		
 		searcher = indexAccessor.getPrioritizedSearcher();
 		Object userPermissionsObject = request.get(CRRequest.PERMISSIONS_KEY);
 		String[] userPermissions = new String[0];
@@ -354,8 +398,15 @@ public class CRSearcher {
 
 				result = new HashMap<String, Object>(3);
 				result.put(RESULT_QUERY_KEY, parsedQuery);
+				
+				// when facets are active create a FacetsCollector
+				FacetsCollector facetsCollector = null;
+				if (facetsSearch.useFacets()) {
+					facetsCollector = facetsSearch.createFacetsCollector(
+							facetsIndexReader, taAccessor, taReader);
+				}
 
-				Map<String, Object> ret = executeSearcher(collector, searcher, parsedQuery, explain, count, start);
+				Map<String, Object> ret = executeSearcher(collector, searcher, parsedQuery, explain, count, start, facetsCollector);
 				if (log.isDebugEnabled()) {
 					for (Object res : ret.values()) {
 						if (res instanceof LinkedHashMap) {
@@ -402,6 +453,15 @@ public class CRSearcher {
 					}
 
 					// PLUG IN DIDYOUMEAN END
+					
+					// if a facetsCollector was created, store the faceted search results in the meta resolveable
+					if (facetsCollector != null) {
+						result.put(
+								FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY,
+								facetsSearch.getFacetsResults(facetsCollector));
+					}
+					
+					
 					int size = 0;
 					if (coll != null) {
 						size = coll.size();
@@ -421,6 +481,19 @@ public class CRSearcher {
 			}
 
 		} finally {
+			 /*
+			  * if facets are activated cleanup the resources
+			  * needed for faceted search
+			  * 
+			  * Always cleanup/release the taxonomy Reader/Writer 
+			  * before the Reader/Writers of the main index!
+			  */
+			if (taAccessor != null && taReader != null) {
+				taAccessor.release(taReader);
+			}
+			if (facetsIndexReader != null) {
+				indexAccessor.release(facetsIndexReader, false);
+			}
 			indexAccessor.release(searcher);
 		}
 		return result;

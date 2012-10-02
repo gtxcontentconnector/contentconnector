@@ -9,6 +9,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.lucene.facets.taxonomy.TaxonomyConfigKeys;
+import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
+import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessorFactory;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 
@@ -16,7 +19,7 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
  * @author Christopher
  *
  */
-public class LuceneSingleIndexLocation extends LuceneIndexLocation {
+public class LuceneSingleIndexLocation extends LuceneIndexLocation implements TaxonomyConfigKeys {
 	//Instance Members
 	/**
 	 * Directory.
@@ -31,6 +34,10 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	 * Timestamp to store the lastmodified value of the reopen file.
 	 */
 	private long lastmodifiedStored = 0;
+	
+	
+	private String taxonomyLocation;
+	private Directory taxonomyDir = null;
 
 	/**
 	 * Create a new Instance of LuceneSingleIndexLocation. 
@@ -51,6 +58,26 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 			}
 		} else {
 			log.debug("Accessor already present.");
+		}
+				
+		// check if facets are activated and create a TaxonomyAccessor if necessary
+		useFacets = config.getBoolean(FACET_FLAG_KEY, useFacets);
+		if(useFacets) {
+			log.debug("Facets are active");
+			taxonomyLocation = retrieveTaxonomyLocation(config);
+			taxonomyDir = createDirectory(taxonomyLocation);
+			TaxonomyAccessorFactory taFactory = TaxonomyAccessorFactory.getInstance();
+			if(!taFactory.hasAccessor(taxonomyDir)) {
+				try {
+					taFactory.createAccessor(config, taxonomyDir);
+				} catch (IOException e) {
+					log.fatal("COULD NOT CREATE TAXONOMY ACCESSOR" + e.getMessage());
+				}
+			} else {
+				log.debug("TaxonomyAccessor already present.");
+			}			
+		} else {
+			log.debug("Facets are not active");
 		}
 	}
 
@@ -121,7 +148,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final boolean reopenCheck(final IndexAccessor indexAccessor) {
+	public final boolean reopenCheck(final IndexAccessor indexAccessor, final TaxonomyAccessor taxonomyAccessor) {
 		boolean reopened = false;
 		if (reopencheck) {
 			try {
@@ -133,6 +160,9 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 						if (lastmodified != lastmodifiedStored) {
 							lastmodifiedStored = lastmodified;
 							indexAccessor.reopen();
+							if(taxonomyAccessor != null) {
+								taxonomyAccessor.refresh();
+							}
 							reopened = true;
 							log.debug("Reopened index because reopen file has " + "changed");
 						} else {
@@ -142,6 +172,9 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 					} else {
 						reopenFile.delete();
 						indexAccessor.reopen();
+						if(taxonomyAccessor != null) {
+							taxonomyAccessor.refresh();
+						}
 						reopened = true;
 						log.debug("Reopened index because of simple " + "reopencheck.");
 					}
@@ -212,5 +245,50 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation {
 	@Override
 	public int hashCode() {
 		return dir.getLockID().hashCode();
+	}
+	
+	
+	/**
+	 * creates the location for the taxonomy from the config
+	 *  
+	 * @param config
+	 * @return
+	 */
+	public static Directory createTaxonomyDirectory(final CRConfig config) {
+		String path = getFirstIndexLocation(config);
+		return createDirectory(path);
+	}
+		
+	/**
+	 * retrieves the Taxonomy location from the config
+	 * 
+	 * @param config
+	 * @return
+	 */
+	protected static String retrieveTaxonomyLocation(CRConfig config) {
+		String path = config.getString(FACET_CONFIG_KEY.concat(".").concat(
+				FACET_CONFIG_PATH_KEY));
+		return path;
+	}
+	
+	/**
+	 * checks if facets are activated
+	 * 
+	 * @return
+	 */
+	public boolean useFacets() {
+		return useFacets;
+	}
+	
+	private Directory getTaxonomyDirectory() {
+		return taxonomyDir;
+	}
+	
+	@Override
+	protected TaxonomyAccessor getTaxonomyAccessorInstance() {
+		Directory directory = this.getTaxonomyDirectory();
+		TaxonomyAccessor accessor = TaxonomyAccessorFactory.getInstance()
+						.getAccessor(directory);
+		return accessor;
 	}
 }

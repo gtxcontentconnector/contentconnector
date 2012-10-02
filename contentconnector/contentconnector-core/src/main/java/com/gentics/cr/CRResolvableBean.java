@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
@@ -524,7 +525,9 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * @return value of attribute or null if value is not set
 	 */
 	public Object get(final String attribute) {
-		if ("contentid".equalsIgnoreCase(attribute)) {
+		if(attribute == null) {
+			return null;
+		} else if ("contentid".equalsIgnoreCase(attribute)) {
 			return this.getContentid();
 		} else if ("obj_type".equals(attribute) && !attrMap.containsKey("obj_type") && resolvable == null) {
 			return this.getObj_type();
@@ -540,6 +543,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 		} else {
 			return null;
 		}
+		
 	}
 
 	/**

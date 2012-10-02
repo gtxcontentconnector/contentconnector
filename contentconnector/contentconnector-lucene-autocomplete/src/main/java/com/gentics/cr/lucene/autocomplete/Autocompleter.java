@@ -204,7 +204,7 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 			// the new checkForUpdate Logic only calls reopenCheck on the
 			// IndexLocation
 			IndexAccessor ia = autocompleteLocation.getAccessor();
-			autocompleteLocation.reopenCheck(ia);
+			autocompleteLocation.reopenCheck(ia, null);
 		}
 	}
 

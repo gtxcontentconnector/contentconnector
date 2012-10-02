@@ -12,6 +12,7 @@ import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorToken;
@@ -37,6 +38,8 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	private boolean registered = false;
 
 	private IndexAccessorToken accessorToken = null;
+	
+	protected boolean useFacets = false;
 
 	protected Analyzer getConfiguredAnalyzer() {
 		return LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) config);
@@ -207,7 +210,7 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	 */
 	public final IndexAccessor getAccessor() {
 		IndexAccessor indexAccessor = getAccessorInstance();
-		reopenCheck(indexAccessor);
+		reopenCheck(indexAccessor, getTaxonomyAccessor());
 		return indexAccessor;
 	}
 
@@ -218,7 +221,7 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	 *            indexAccessor for the index
 	 * @return true if indexAccessor has been reopened
 	 */
-	public abstract boolean reopenCheck(IndexAccessor indexAccessor);
+	public abstract boolean reopenCheck(IndexAccessor indexAccessor, TaxonomyAccessor taxonomyAccessor);
 
 	/**
 	 * get the date when the index was modified.
@@ -290,5 +293,28 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 
 	@Override
 	public abstract int hashCode();
+	
+	protected abstract TaxonomyAccessor getTaxonomyAccessorInstance();
+
+	/**
+	 * Returns a {@link TaxonomyAccessor}, which can be used to share access to
+	 * a taxonomy over multiple threads.
+	 * 
+	 * @return taxonomy accessor for this index
+	 */
+	public final TaxonomyAccessor getTaxonomyAccessor() {
+		TaxonomyAccessor accessor = getTaxonomyAccessorInstance();
+		return accessor;
+	}
+
+	/**
+	 * indicates if facets are used for this index location and a taxonomy has
+	 * to be maintained
+	 * 
+	 * @return true if facets are used
+	 */
+	public boolean useFacets() {
+		return useFacets;
+	}
 
 }

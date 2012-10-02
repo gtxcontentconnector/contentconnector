@@ -13,6 +13,7 @@ import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessorFactory;
 
@@ -123,7 +124,7 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 	}
 
 	@Override
-	public boolean reopenCheck(IndexAccessor indexAccessor) {
+	public boolean reopenCheck(IndexAccessor indexAccessor, TaxonomyAccessor taxonomyAccessor) {
 		boolean reopened = false;
 		if (reopencheck) {
 			try {
@@ -228,5 +229,9 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 			hash = 31 * hash + entry.getValue().getLockID().hashCode();
 		}
 		return hash;
+	}
+	@Override
+	protected TaxonomyAccessor getTaxonomyAccessorInstance() {
+		throw new UnsupportedOperationException("Method not implemented yet");
 	}
 }

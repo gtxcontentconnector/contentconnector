@@ -1,6 +1,7 @@
 package com.gentics.cr.lucene.indexer.index;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +16,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.facet.index.CategoryDocumentBuilder;
+import org.apache.lucene.facet.taxonomy.CategoryPath;
+import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -30,6 +34,8 @@ import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.events.EventManager;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
+import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
+import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.AbstractLuceneMonitoringTransformer;
@@ -74,6 +80,10 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * indicates the maximum amount of segments (files) used storing the index.
 	 */
 	private String maxSegmentsString = null;
+	/**
+	 * indicates if facets are activated
+	 */
+	private boolean useFacets = false;
 
 	/**
 	 * Create new instance of IndexJob.
@@ -246,6 +256,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		IndexAccessor indexAccessor = null;
 		IndexWriter indexWriter = null;
 		IndexReader indexReader = null;
+		TaxonomyAccessor taxonomyAccessor = null;
+		TaxonomyWriter taxonomyWriter = null;
 		LuceneIndexUpdateChecker luceneIndexUpdateChecker = null;
 		boolean finishedIndexJobSuccessfull = false;
 		boolean finishedIndexJobWithError = false;
@@ -322,6 +334,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					indexAccessor = ((LuceneIndexLocation) indexLocation).getAccessor();
 					indexWriter = indexAccessor.getWriter();
 					indexReader = indexAccessor.getReader(false);
+					useFacets = ((LuceneIndexLocation) indexLocation)
+							.useFacets();
+					if (useFacets) {
+						taxonomyAccessor = ((LuceneIndexLocation) indexLocation)
+								.getTaxonomyAccessor();
+						taxonomyWriter = taxonomyAccessor.getTaxonomyWriter();
+					}
 				} else {
 					log.error("IndexLocation is not created for Lucene. " + "Using the "
 							+ CRLuceneIndexJob.class.getName() + " requires that you use the "
@@ -387,7 +406,9 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 							create,
 							config,
 							transformerlist,
-							reverseAttributes);
+							reverseAttributes,
+							taxonomyWriter, 
+							taxonomyAccessor);
 						// clear the slice and reset the counter
 						slice.clear();
 						sliceCounter = 0;
@@ -406,7 +427,9 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						create,
 						config,
 						transformerlist,
-						reverseAttributes);
+						reverseAttributes,
+						taxonomyWriter, 
+						taxonomyAccessor);
 				}
 				if (!interrupted) {
 					// Only Optimize the Index if the thread 
@@ -449,6 +472,10 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				status.setCurrentStatusString("Finished job.");
 				int objectCount = status.getObjectsDone();
 				log.debug("Indexed " + objectCount + " objects...");
+				
+				if (taxonomyAccessor != null && taxonomyWriter != null) {
+					taxonomyAccessor.release(taxonomyWriter);
+				}
 
 				if (indexAccessor != null && indexWriter != null) {
 					indexAccessor.release(indexWriter);
@@ -487,13 +514,19 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @param config TODO javadoc
 	 * @param transformerlist TODO javadoc
 	 * @param reverseattributes TODO javadoc
+	 * @param taxonomyWriter
+ *            the {@link TaxonomyWriter} used to write into the taxonomy
+	 * @param taxonomyAccessor
+ *            the {@link DefaultTaxonomyAccessor} used to manage access to the
+ *            taxonomy
 	 * @throws CRException TODO javadoc
 	 * @throws IOException TODO javadoc
 	 */
 	private void indexSlice(final String crid, final IndexWriter indexWriter, final IndexReader indexReader,
 			final Collection<CRResolvableBean> slice, final Map<String, Boolean> attributes, final RequestProcessor rp,
 			final boolean create, final CRConfigUtil config, final List<ContentTransformer> transformerlist,
-			final List<String> reverseattributes) throws CRException, IOException {
+			final List<String> reverseattributes, final TaxonomyWriter taxonomyWriter,
+			final TaxonomyAccessor taxonomyAccessor) throws CRException, IOException {
 		// prefill all needed attributes
 		UseCase uc = MonitorFactory.startUseCase("indexSlice(" + crid + ")");
 		try {
@@ -535,12 +568,34 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					}
 					Term idTerm = new Term(idAttribute, bean.getString(idAttribute));
 					Document docToUpdate = getUniqueDocument(indexReader, idTerm, crid);
+					
+					// get the category paths for the facets
+					CategoryDocumentBuilder categoryDocBuilder = null;
+					if (useFacets && taxonomyAccessor != null && taxonomyWriter != null) {
+						List<CategoryPath> categories = getCategoryAttributeMapping(
+								bean, taxonomyAccessor.getTaxonomyMappings());
+						if (categories.size() > 0) {
+							categoryDocBuilder = new CategoryDocumentBuilder(
+									taxonomyWriter)
+									.setCategoryPaths(categories);
+						}
+					}
 					if (!create && docToUpdate != null) {
+						Document doc = getDocument(docToUpdate, bean, attributes, config, reverseattributes);
+						// add facets to document
+						if (categoryDocBuilder != null) {
+							categoryDocBuilder.build(doc);
+						}
 						indexWriter.updateDocument(
 							idTerm,
-							getDocument(docToUpdate, bean, attributes, config, reverseattributes));
+							doc);
 					} else {
-						indexWriter.addDocument(getDocument(null, bean, attributes, config, reverseattributes));
+						Document doc = getDocument(null, bean, attributes, config, reverseattributes);
+						// add facets to document
+						if (categoryDocBuilder != null) {
+							categoryDocBuilder.build(doc);
+						}
+						indexWriter.addDocument(doc);
 					}
 				} finally {
 					bcase.stop();
@@ -685,5 +740,65 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			}
 		}
 		return newDoc;
+	}
+	/**
+	 * Maps the attributes of a {@link CRResolvableBean} to a List of
+	 * {@link CategoryPath} for the taxonomy
+	 * 
+	 * @param bean
+	 *            contains the resolvable bean which is to be mapped
+	 * @param taxoMaps
+	 *            contains a collection of {@link TaxonomyMapping} which define
+	 *            the attribute to categories mappings
+	 * @return a list of {@link CategoryPath} which are used to build the
+	 *         document and to update the taxonomy
+	 * @author Sebastian Vogel <s.vogel@gentics.com>
+	 */
+	private List<CategoryPath> getCategoryAttributeMapping(
+			final CRResolvableBean bean, Collection<TaxonomyMapping> taxoMaps) {
+		List<CategoryPath> categories = new ArrayList<CategoryPath>();
+		for (TaxonomyMapping map : taxoMaps) {
+			ArrayList<String> components = new ArrayList<String>();
+			Object attribute = bean.get(map.getAttribute());
+			
+			// if bean does not have the attribute don't create a category path
+			if (attribute != null) {
+				Class<?> type = attribute.getClass();
+				if (type.isArray()) {
+					Class<?> dataType = type.getComponentType();
+					if (dataType.equals((new String()).getClass())) {
+						components.add(map.getCategory());
+						for (String str : (String[]) attribute) {
+							components.add(str);
+						}
+					}
+				} else {
+					String str = bean.getString(map.getAttribute(), "");
+					if (!str.isEmpty()) {
+						components.add(map.getCategory());
+						components.add(str);
+					}
+				}
+
+				if (components.size() > 0) {
+					String[] strarr = (String[]) components
+							.toArray(new String[components.size()]);
+					categories.add(new CategoryPath(strarr));
+
+					if (log.isDebugEnabled()) {
+						StringBuilder path = new StringBuilder();
+						for (int i = 0; i < strarr.length; i++) {
+							path = path.append(strarr[i]);
+							path = path.append("/");
+						}
+						log.debug("Added CategoryPath for the category: "
+								+ components.get(0) + " and the path: "
+								+ path.toString());
+
+					}
+				}
+			}
+		}
+		return categories;
 	}
 }
