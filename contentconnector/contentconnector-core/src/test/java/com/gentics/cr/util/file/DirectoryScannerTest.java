@@ -37,7 +37,7 @@ public class DirectoryScannerTest {
 		assertEquals("Directory did contain more/less files than expected.", 3, files.size());
 		assertTrue("Directory did not contain a folder \"folderA\"", files.contains("folderA"));
 		assertTrue("Directory did not contain a file \"folderA" + File.separator + "a.file\"",
-				files.contains("folderA/a.file"));
+				files.contains("folderA" + File.separator + "a.file"));
 		assertTrue("Directory did not contain a file \"b.file\"", files.contains("b.file"));
 	}
 	
