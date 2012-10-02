@@ -114,7 +114,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			this.timestampattribute = timestampattributeString;
 		}
 		
-		boostingAttribute = config.getString(BOOST_ATTRIBUTE_KEY, null);
+		boostingAttribute = config.getString(BOOST_ATTRIBUTE_KEY,
+				DEFAULT_BOOST_ATTRIBUTE);
 	}
 
 	/**
@@ -774,7 +775,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					}
 				} else {
 					String str = bean.getString(map.getAttribute(), "");
-					if (!str.isEmpty()) {
+					if (str != null && !"".equals(str)) {
 						components.add(map.getCategory());
 						components.add(str);
 					}
