@@ -298,13 +298,17 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 
 	/**
 	 * Returns a {@link TaxonomyAccessor}, which can be used to share access to
-	 * a taxonomy over multiple threads.
+	 * a taxonomy over multiple threads. Returns null when facets are not activated
 	 * 
-	 * @return taxonomy accessor for this index
+	 * @return taxonomy accessor for this index, null when facets are not activated
 	 */
 	public final TaxonomyAccessor getTaxonomyAccessor() {
-		TaxonomyAccessor accessor = getTaxonomyAccessorInstance();
-		return accessor;
+		if (useFacets()) {
+			TaxonomyAccessor accessor = getTaxonomyAccessorInstance();
+			return accessor;
+		} else {
+			return null;
+		}
 	}
 
 	/**
