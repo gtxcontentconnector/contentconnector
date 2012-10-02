@@ -56,7 +56,7 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 						facetdisplaypath);
 				String delimiter = subconf.getString(FACETS_PATH_DELIMITER_KEY,
 						"");
-				facetpathdelimiter = !delimiter.isEmpty() ? delimiter.charAt(0)
+				facetpathdelimiter = (delimiter != null && !"".equals(delimiter)) ? delimiter.charAt(0)
 						: DEFAULT_FACET_PATH_DELIMITER;
 				facetnumbercategories = subconf.getInteger(
 						FACET_NUMBER_OF_CATEGORIES_KEY,

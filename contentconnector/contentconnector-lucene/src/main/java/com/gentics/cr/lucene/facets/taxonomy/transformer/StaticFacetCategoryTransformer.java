@@ -29,7 +29,7 @@ public class StaticFacetCategoryTransformer extends ContentTransformer {
 
 	@Override
 	public void processBean(CRResolvableBean bean) throws CRException {
-		if (!this.staticValue.isEmpty() && !this.targetAttribute.isEmpty()) {
+		if ( (this.staticValue != null && !"".equals(this.staticValue)) && (this.targetAttribute != null && !"".equals(this.targetAttribute)) ) {
 			bean.set(targetAttribute, staticValue);
 		}
 	}

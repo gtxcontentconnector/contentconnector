@@ -46,7 +46,7 @@ public class FacetCategoryTransformer extends ContentTransformer {
 	@Override
 	public void processBean(CRResolvableBean bean) throws CRException {
 
-		if (!this.sourceAttribute.isEmpty() && !this.targetAttribute.isEmpty()
+		if ((this.sourceAttribute != null && !"".equals(this.sourceAttribute)) && (this.targetAttribute != null && !"".equals(this.targetAttribute))
 				&& this.valueMap != null) {
 			Object obj = bean.get(this.sourceAttribute);
 			LOGGER.debug("FacetCategoryTransformer - Indexing Contentid:"
@@ -86,7 +86,7 @@ public class FacetCategoryTransformer extends ContentTransformer {
 							TRANSFORMER_VALUE_MAPPING_SOURCE_KEY, "");
 					String target = mapConf.getString(
 							TRANSFORMER_VALUE_MAPPING_TARGET_KEY, "");
-					if (!source.isEmpty() && !target.isEmpty()) {
+					if ((source != null && !"".equals(source)) && (target != null && !"".equals(target))) {
 						valueMap.put(source, target);
 						LOGGER.debug("FacetCategoryTransformer: Added new Source - Target Value pair: "
 								+ source + " and the attribute: " + target);

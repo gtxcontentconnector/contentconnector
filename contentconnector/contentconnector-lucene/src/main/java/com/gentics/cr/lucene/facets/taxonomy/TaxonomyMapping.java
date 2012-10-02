@@ -83,7 +83,7 @@ public class TaxonomyMapping implements TaxonomyConfigKeys {
 							FACET_CONFIG_MAPPINGS_CATEGORY_KEY, "");
 					String attribute = mapConf.getString(
 							FACET_CONFIG_MAPPINGS_ATTRIBUTE_KEY, "");
-					if (!category.isEmpty() && !attribute.isEmpty()) {
+					if ((category != null && !"".equals(category)) && (attribute != null && !"".equals(attribute))) {
 						mappings.add(new TaxonomyMapping(category, attribute));
 						LOGGER.debug("Added new Taxnonomy Mapping for the category: "
 								+ category + " and the attribute: " + attribute);
