@@ -34,8 +34,8 @@ public class DOCContentTransformerTest extends TestCase {
 		ContentTransformer t = new DOCContentTransformer(config);
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
-
-		assertEquals("testtext\n\n", s);
+		String ls = System.getProperty("line.separator");
+		assertEquals("testtext" + ls + ls, s);
 	}
 
 	@After
