@@ -322,7 +322,7 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 			if (this.subconfigs.get(confKey) == null) {
 				GenericConfiguration subconf = new GenericConfiguration();
 				subconf.setKeyConversion(this.keyHandling);
-				this.subconfigs.put(confKey, subconf);
+				this.subconfigs.putIfAbsent(confKey, subconf);
 			}
 			this.subconfigs.get(confKey).set(getSubKey(key), value);
 		} else {

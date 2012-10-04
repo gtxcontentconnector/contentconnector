@@ -54,9 +54,13 @@ public final class StaticConfigurationContainer {
 		CRConfigFileLoader config = configmap.get(key);
 		if (config == null) {
 			log.debug("Config not found, will create new config instance.");
-			config = new CRConfigFileLoader(key, webapproot, subdir);
-			if (config != null) {
-				configmap.put(key, config);
+			CRConfigFileLoader newConfig 
+				= new CRConfigFileLoader(key, webapproot, subdir);
+			if (newConfig != null) {
+				config = configmap.putIfAbsent(key, newConfig);
+				if (config == null) {
+					config = newConfig;
+				}
 			}
 		}
 
@@ -77,10 +81,19 @@ public final class StaticConfigurationContainer {
 	 */
 	private static void assertStaticAttributesInitialized() {
 		if (configmap == null) {
-			configmap = new ConcurrentHashMap<String, CRConfigFileLoader>(2);
+			createConfMap();
 		}
 		if (log == null) {
 			log = Logger.getLogger(StaticConfigurationContainer.class);
+		}
+	}
+	
+	/**
+	 * Create the configuration map.
+	 */
+	private static synchronized void createConfMap() {
+		if (configmap == null) {
+			configmap = new ConcurrentHashMap<String, CRConfigFileLoader>(2);
 		}
 	}
 }

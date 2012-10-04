@@ -58,9 +58,12 @@ public final class StaticRPContainer {
 		RequestProcessor rp = rpmap.get(key);
 		if (rp == null) {
 			LOGGER.debug("RP not found. Creating new instance");
-			rp = config.getNewRequestProcessorInstance(requestProcessorName);
-			if (rp != null) {
-				rpmap.put(key, rp);
+			RequestProcessor newRP = config.getNewRequestProcessorInstance(requestProcessorName);
+			if (newRP != null) {
+				rp = rpmap.putIfAbsent(key, newRP);
+				if (rp == null) {
+					rp = newRP;
+				}
 			}
 		}
 		return rp;

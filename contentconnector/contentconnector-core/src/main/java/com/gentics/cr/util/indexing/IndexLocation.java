@@ -299,12 +299,17 @@ public abstract class IndexLocation {
 		} else {
 			dir = indexmap.get(key);
 			if (dir == null) {
-				dir = createNewIndexLocation(config);
-				indexmap.put(key, dir);
+				IndexLocation newDir = createNewIndexLocation(config);
+				dir = indexmap.putIfAbsent(key, newDir);
+				if (dir == null) {
+					dir = newDir;
+				}
 			}
 		}
 		return dir;
 	}
+	
+	
 
 	/**
 	 * Create new IndexLocation for the configured Implementation of

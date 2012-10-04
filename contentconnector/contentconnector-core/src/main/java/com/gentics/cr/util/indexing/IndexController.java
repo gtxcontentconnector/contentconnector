@@ -119,10 +119,34 @@ public class IndexController {
 		CRDatabaseFactory.destroy();
 	}
 
-	public static IndexController get(String name) {
-		if (!controllers.containsKey(name)) {
-			controllers.put(name, new IndexController(name));
+	/**
+	 * Fetch the indexcontroller with the given name.
+	 * @param name name of the indexcontroller to fetch.
+	 * @return index controller instance.
+	 */
+	public static IndexController get(final String name) {
+		IndexController ic = controllers.get(name);
+		if (ic == null) {
+			return createNewIndexController(name);
 		}
-		return controllers.get(name);
+		return ic;
+	}
+	
+	/**
+	 * Creates a new instance of indexController.
+	 * @param name name of the indexController
+	 * @return index controller.
+	 */
+	private static synchronized IndexController
+		createNewIndexController(final String name) {
+		IndexController ic = controllers.get(name);
+		if (ic == null) {
+			IndexController newIC = new IndexController(name); 
+			ic = controllers.putIfAbsent(name, newIC);
+			if (ic == null) {
+				ic = newIC;
+			}
+		}
+		return ic;
 	}
 }

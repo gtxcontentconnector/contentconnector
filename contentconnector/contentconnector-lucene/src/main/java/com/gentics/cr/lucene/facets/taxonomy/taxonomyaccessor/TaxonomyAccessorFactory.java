@@ -95,12 +95,10 @@ public class TaxonomyAccessorFactory {
 	 */
 	private synchronized void close() {
 		if (!wasClosed) {
-			synchronized (taxonomyAccessors) {
-				for (TaxonomyAccessor accessor : taxonomyAccessors.values()) {
-					accessor.close();
-				}
-				taxonomyAccessors.clear();
+			for (TaxonomyAccessor accessor : taxonomyAccessors.values()) {
+				accessor.close();
 			}
+			taxonomyAccessors.clear();
 			wasClosed = true;
 			if (logger.isDebugEnabled()) {
 				try {

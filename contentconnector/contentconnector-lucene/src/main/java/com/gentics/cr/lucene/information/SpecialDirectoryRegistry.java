@@ -33,6 +33,17 @@ public final class SpecialDirectoryRegistry {
 	 */
 	public static SpecialDirectoryRegistry getInstance() {
 		if (instance == null) {
+			return createNewInstance();
+		}
+		return instance;
+	}
+	
+	/**
+	 * Create a new instance.
+	 * @return new instance of SpecialDirectoryRegistry
+	 */
+	private static synchronized SpecialDirectoryRegistry createNewInstance() {
+		if (instance == null) {
 			instance = new SpecialDirectoryRegistry();
 		}
 		return instance;

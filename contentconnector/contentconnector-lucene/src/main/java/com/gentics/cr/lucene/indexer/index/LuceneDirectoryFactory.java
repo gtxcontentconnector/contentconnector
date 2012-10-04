@@ -47,8 +47,25 @@ public final class LuceneDirectoryFactory {
 	public static Directory getDirectory(final String directoyLocation) {
 		Directory dir = cachedDirectories.get(directoyLocation);
 		if (dir == null) {
-			dir = createDirectory(directoyLocation);
-			cachedDirectories.put(directoyLocation, dir);
+			dir = createNewDirectory(directoyLocation);
+		}
+		return dir;
+	}
+	
+	/**
+	 * Create a new directory.
+	 * @param directoyLocation directoryLocation.
+	 * @return new directory
+	 */
+	private static synchronized Directory createNewDirectory(
+			final String directoyLocation) {
+		Directory dir = cachedDirectories.get(directoyLocation);
+		if (dir == null) {
+			Directory newDir = createDirectory(directoyLocation);
+			dir = cachedDirectories.putIfAbsent(directoyLocation, newDir);
+			if (dir == null) {
+				dir = newDir;
+			}
 		}
 		return dir;
 	}
@@ -60,7 +77,8 @@ public final class LuceneDirectoryFactory {
 	 */
 	private static Directory createDirectory(final String directoryLocation) {
 		Directory dir;
-		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(directoryLocation) || directoryLocation == null
+		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(directoryLocation) 
+				|| directoryLocation == null
 				|| directoryLocation.startsWith(RAM_IDENTIFICATION_KEY)) {
 			dir = createRAMDirectory(directoryLocation);
 
@@ -85,7 +103,8 @@ public final class LuceneDirectoryFactory {
 	 * @return FSDirectory
 	 * @throws IOException on error.
 	 */
-	protected static Directory createFSDirectory(final File indexLoc, final String name) throws IOException {
+	protected static Directory createFSDirectory(final File indexLoc,
+			final String name) throws IOException {
 		if (!indexLoc.exists()) {
 			LOG.debug("Indexlocation did not exist. Creating directories...");
 			indexLoc.mkdirs();
