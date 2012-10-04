@@ -138,11 +138,19 @@ public abstract class AccessibleBean {
 	 * value is returned.
 	 */
 	public final int getInteger(final String key, final int defaultValue) {
-		String stringValue = getString(key);
-		if (stringValue != null) {
-			return Integer.parseInt(stringValue);
-		} else {
+		Object o = this.get(key);
+		if (o == null) {
 			return defaultValue;
+		} else {
+			if (o instanceof Number) {
+				return ((Number) o).intValue();
+			}
+			String stringValue = getString(key);
+			if (stringValue != null) {
+				return Integer.parseInt(stringValue);
+			} else {
+				return defaultValue;
+			}
 		}
 	}
 
@@ -155,11 +163,19 @@ public abstract class AccessibleBean {
 	 * value is returned.
 	 */
 	public final long getLong(final String key, final long defaultValue) {
-		String stringValue = getString(key);
-		if (stringValue != null) {
-			return Long.parseLong(stringValue);
-		} else {
+		Object o = this.get(key);
+		if (o == null) {
 			return defaultValue;
+		} else {
+			if (o instanceof Number) {
+				return ((Number) o).longValue();
+			}
+			String stringValue = getString(key);
+			if (stringValue != null) {
+				return Long.parseLong(stringValue);
+			} else {
+				return defaultValue;
+			}
 		}
 	}
 
@@ -171,11 +187,19 @@ public abstract class AccessibleBean {
 	 * default value is returned.
 	 */
 	public final float getFloat(final String key, final float defaultValue) {
-		String stringValue = getString(key);
-		if (stringValue != null) {
-			return Float.parseFloat(stringValue);
-		} else {
+		Object o = this.get(key);
+		if (o == null) {
 			return defaultValue;
+		} else {
+			if (o instanceof Number) {
+				return ((Number) o).floatValue();
+			}
+			String stringValue = getString(key);
+			if (stringValue != null) {
+				return Float.parseFloat(stringValue);
+			} else {
+				return defaultValue;
+			}
 		}
 	}
 
