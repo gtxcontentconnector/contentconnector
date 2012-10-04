@@ -22,7 +22,7 @@ public class MLMapper {
 	public static String getMimetype(CRResolvableBean bean) {
 		String mimetype = null;
 		if (bean != null) {
-			Integer ml_id = (Integer) bean.get("ml_id");
+			Integer ml_id = bean.getInteger("ml_id", 0);
 			mimetype = getMimetype(ml_id);
 		}
 		return mimetype;
