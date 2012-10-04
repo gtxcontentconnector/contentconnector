@@ -3,6 +3,7 @@ package com.gentics.cr.template;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.jcs.JCS;
@@ -161,20 +162,33 @@ public class VelocityTemplateManagerFactory {
 					"file.resource.loader.class",
 					"org.apache.velocity.runtime.resource.loader.FileResourceLoader");
 			}
-			if (!props.containsKey("file.resource.loader.path")) {
-				props.setProperty("file.resource.loader.path", macropath);
-			}
+			
 			if (!props.containsKey("resource.loader")) {
 				props.setProperty("resource.loader", "string,file");
 			}
 
+			if (!props.containsKey("file.resource.loader.path")) {
+				props.setProperty("file.resource.loader.path", macropath);
+			}
+			
 			if (!props.containsKey("velocimacro.library")) {
-				//CHECK IF VELICITYMACROS EXISTS AND CREATE EMPTY FILE IF IT DOES NOT
-				File macro_file = new File(macropath + VELOCITYMACRO_FILENAME);
-				macro_file.createNewFile();
-
-				//TODO: autodetect velocimacro library using *.vm files in confpath
-				props.setProperty("velocimacro.library", VELOCITYMACRO_FILENAME);
+				try {
+					
+					File macroFile = new File(macropath 
+							+ VELOCITYMACRO_FILENAME);
+					log.debug("Trying to create a macrofile for velocity in " 
+							+ macropath + VELOCITYMACRO_FILENAME);
+					macroFile.createNewFile();
+	
+					
+					//TODO: autodetect velocimacro library
+					// using *.vm files in confpath
+					props.setProperty("velocimacro.library",
+							VELOCITYMACRO_FILENAME);
+				} catch (IOException e) {
+					log.error("Could not find or create macro file "
+							+ "for velocity template manager.", e);
+				}
 			}
 		}
 
