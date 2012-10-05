@@ -79,7 +79,7 @@ public class CRQueryParser extends QueryParser {
 	 * @return parsed lucene query
 	 * @throws ParseException when the query cannot be successfully parsed
 	 */
-	public final Query parse(final String query) throws ParseException {
+	public Query parse(final String query) throws ParseException {
 		String crQuery = query;
 		LOGGER.debug("parsing query: " + crQuery);
 		crQuery = replaceBooleanMnoGoSearchQuery(crQuery);
@@ -98,7 +98,7 @@ public class CRQueryParser extends QueryParser {
 	 * @param crQuery - query to search for special characters
 	 * @return query with replaced special characters
 	 */
-	private String replaceSpecialCharactersFromQuery(String crQuery) {
+	protected String replaceSpecialCharactersFromQuery(String crQuery) {
 		final String specialCharacters = "-\\/";
 		StringBuffer newQuery = new StringBuffer();
 		Matcher valueMatcher = getValueMatcher(crQuery);
@@ -131,7 +131,7 @@ public class CRQueryParser extends QueryParser {
 	 * @return parsed query, in case no searchedAttributes are given the original
 	 * query is given back.
 	 */
-	private String addMultipleSearchedAttributes(final String query) {
+	protected String addMultipleSearchedAttributes(final String query) {
 		StringBuffer newQuery = new StringBuffer();
 		String replacement = "";
 		for (String attribute : attributesToSearchIn) {
@@ -163,7 +163,7 @@ public class CRQueryParser extends QueryParser {
 	 * @param crQuery query to replace the words in it
 	 * @return query with wildcards in it
 	 */
-	private String addWildcardsForWordmatchParameter(final String crQuery) {
+	protected String addWildcardsForWordmatchParameter(final String crQuery) {
 		String wordmatch = null;
 		if (request != null) {
 			wordmatch = (String) request.get(CRRequest.WORDMATCH_KEY);
@@ -209,7 +209,7 @@ public class CRQueryParser extends QueryParser {
 	 * @param query query.
 	 * @return matcher.
 	 */
-	private Matcher getValueMatcher(final String query) {
+	protected Matcher getValueMatcher(final String query) {
 		String seperatorCharacterClass = " \\(\\)";
 		Pattern valuePattern = Pattern.compile("([" + seperatorCharacterClass + "]*)"
 				+ "([^:]+:(?:\\([^\\)]+\\)|\\[[^\\]]+\\]|\"[^\"]+\")|\"[^\"]+\"|[^" + seperatorCharacterClass + "]+)"
@@ -224,10 +224,22 @@ public class CRQueryParser extends QueryParser {
 	 * @param mnoGoSearchQuery query with mnoGoSearch Syntax in it.
 	 * @return query with mnoGoSearch syntax replaced for lucene
 	 */
-	private String replaceBooleanMnoGoSearchQuery(final String mnoGoSearchQuery) {
+	protected String replaceBooleanMnoGoSearchQuery(final String mnoGoSearchQuery) {
 		String luceneQuery = mnoGoSearchQuery.replaceAll(" ?\\| ?", " OR ").replaceAll(" ?& ?", " AND ")
 				.replace('\'', '"');
 		luceneQuery = luceneQuery.replaceAll(" ~([a-zA-Z0-9üöäÜÖÄß]+)", " NOT $1");
 		return luceneQuery;
+	}
+	
+	protected static Logger getLogger() {
+		return LOGGER;
+	}
+
+	protected Collection<String> getAttributesToSearchIn() {
+		return attributesToSearchIn;
+	}
+
+	protected static int getOne() {
+		return ONE;
 	}
 }

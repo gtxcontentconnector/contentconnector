@@ -69,8 +69,12 @@ public final class CRQueryParserFactory {
 
 			String parserClass = pconfig.getString(QUERY_PARSER_CLASS);
 			if (parserClass != null) {
-				parser = (QueryParser) Instanciator.getInstance(parserClass, new Object[][] { new Object[] {
+				parser = (QueryParser) Instanciator.getInstance(parserClass, new Object[][] {
+						new Object[] {
+						pconfig, LuceneVersion.getVersion(), searchedAttributes, analyzer, request },
+						new Object[] {
 						LuceneVersion.getVersion(), searchedAttributes, analyzer, request } });
+				
 				if (parser == null) {
 					logger.warn(String.format(
 						"Configured %s '%s' of CRConfig %s was not initialized",
