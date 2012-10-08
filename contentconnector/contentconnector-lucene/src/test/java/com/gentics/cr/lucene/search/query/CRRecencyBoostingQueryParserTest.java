@@ -28,6 +28,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 	private CRRequest crRequest;
 	private SimpleLucene lucene;
 	private ArrayList<ComparableDocument> documents;
+	private long today = System.currentTimeMillis() / 1000;
 	
 	public CRRecencyBoostingQueryParserTest(String name) throws CorruptIndexException, IOException {
 		super(name);
@@ -50,12 +51,15 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		lucene = new SimpleLucene();
 		parser = new CRRecencyBoostingQueryParser(config,
 					LuceneVersion.getVersion(), SEARCHED_ATTRIBUTES, STANDARD_ANALYZER, crRequest);
-
-
+		
+		long daysAgo10 = today - 3600*24*10;
+		long daysAgo20 = today - 3600*24*20;
+		long daysAgo30 = today - 3600*24*30;
+		
 		documents = new ArrayList<ComparableDocument>();
 		/* 0 */documents.add(new ComparableDocument(lucene.add(
-			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 1.10.",
-			"updatetimestamp:1349042400",
+			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 today",
+			"updatetimestamp:"+today,
 			"node_id:2"))); // 01.10.2012 00:00:00
 		/* 1 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word2 word9",
@@ -67,28 +71,28 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 			"binarycontent:word9",
 			"node_id:8"))); // 10.09.2012 00:00:00
 		/* 3 */documents.add(new ComparableDocument(lucene.add(
-			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 1.9.",
-			"updatetimestamp:1346450400",
+			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 daysAgo30",
+			"updatetimestamp:"+daysAgo30,
 			"node_id:7"))); // 01.09.2012 00:00:00
 		/* 4 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word5",
 			"updatetimestamp:1346450400",
 			"node_id:8"))); // 01.09.2012 00:00:00
 		/* 5 */documents.add(new ComparableDocument(lucene.add(
-			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 1.10.",
-			"updatetimestamp:1349042400",
+			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 today",
+			"updatetimestamp:"+today,
 			"node_id:1"))); // 01.10.2012 00:00:00
 		/* 6 */documents.add(new ComparableDocument(lucene.add(
-			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 20.9.",
-			"updatetimestamp:1348092000",
+			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 daysAgo20",
+			"updatetimestamp:"+daysAgo20,
 			"node_id:6"))); // 20.09.2012 00:00:00
 		/* 7 */documents.add(new ComparableDocument(lucene.add(
-			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 28.9.",
-			"updatetimestamp:1348783200",
+			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 daysAgo10",
+			"updatetimestamp:"+daysAgo10,
 			"node_id:4"))); // 28.09.2012 00:00:00
 		/* 8 */documents.add(new ComparableDocument(lucene.add(
-				SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 word1 word1 word1 word1 word1 1.9.",
-				"updatetimestamp:1346450400",
+				SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 word1 word1 word1 word1 word1 daysAgo30",
+				"updatetimestamp:"+daysAgo30,
 				"node_id:5"))); // 01.09.2012 00:00:00
 	}
 
@@ -120,7 +124,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		long currentTime = System.currentTimeMillis() / 1000;
 
 		float testingResult = 0;
-		long publishedTime = 1349042400;
+		long publishedTime = today;
 
 		long timeAgo = currentTime - publishedTime;
 		float boost = (float) (4) * (1296000 - timeAgo) / 1296000;
