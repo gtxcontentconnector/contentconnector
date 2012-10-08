@@ -230,31 +230,6 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		}
 		ucSearch.stop();
 		LOGGER.debug("Search in Index took " + (System.currentTimeMillis() - indexSearchStartTime) + "ms");
-		/** * Get results */
-
-		if (LOGGER.isDebugEnabled()) {
-			if (searchResult != null) {
-				for (Object res : searchResult.values()) {
-					if (res instanceof LinkedHashMap) {
-						LinkedHashMap<?, ?> documents = (LinkedHashMap<?, ?>) res;
-						if (documents != null) {
-							for (Entry<?, ?> entry : documents.entrySet()) {
-								Object object = entry.getKey();
-								if (object instanceof Document) {
-									Document doc = (Document) object;
-									if (doc != null) {
-										LOGGER.debug("LuceneRequestProcessor.getObjects: "
-												+ doc.get("contentid"));
-									}
-								}
-							}
-						}
-					}
-				}
-			} else {
-				LOGGER.debug("No results found.");
-			}
-		}
 		/**
 		 * process search
 		 */
