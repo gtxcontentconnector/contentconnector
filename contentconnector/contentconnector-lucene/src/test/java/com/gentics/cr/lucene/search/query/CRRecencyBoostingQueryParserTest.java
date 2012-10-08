@@ -6,7 +6,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
@@ -54,49 +56,49 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		/* 0 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 1.10.",
 			"updatetimestamp:1349042400",
-			"node_id:1"))); // 01.10.2012 00:00:00
+			"node_id:2"))); // 01.10.2012 00:00:00
 		/* 1 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word2 word9",
 			"updatetimestamp:1349042400",
-			"node_id:1"))); // 01.10.2012 00:00:00
+			"node_id:8"))); // 01.10.2012 00:00:00
 		/* 2 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word3",
 			"updatetimestamp:1347228000",
 			"binarycontent:word9",
-			"node_id:2"))); // 10.09.2012 00:00:00
+			"node_id:8"))); // 10.09.2012 00:00:00
 		/* 3 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 1.9.",
 			"updatetimestamp:1346450400",
-			"node_id:2"))); // 01.09.2012 00:00:00
+			"node_id:7"))); // 01.09.2012 00:00:00
 		/* 4 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word5",
 			"updatetimestamp:1346450400",
-			"node_id:3"))); // 01.09.2012 00:00:00
+			"node_id:8"))); // 01.09.2012 00:00:00
 		/* 5 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 1.10.",
 			"updatetimestamp:1349042400",
-			"node_id:3"))); // 01.10.2012 00:00:00
+			"node_id:1"))); // 01.10.2012 00:00:00
 		/* 6 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 20.9.",
 			"updatetimestamp:1348092000",
-			"node_id:3"))); // 20.09.2012 00:00:00
+			"node_id:6"))); // 20.09.2012 00:00:00
 		/* 7 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 28.9.",
 			"updatetimestamp:1348783200",
-			"node_id:3"))); // 28.09.2012 00:00:00
+			"node_id:4"))); // 28.09.2012 00:00:00
 		/* 8 */documents.add(new ComparableDocument(lucene.add(
-			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 word1 word1 word1 word1 word1 1.9.",
-			"updatetimestamp:1346450400",
-			"node_id:11"))); // 01.09.2012 00:00:00
+				SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 word1 word1 word1 word1 word1 1.9.",
+				"updatetimestamp:1346450400",
+				"node_id:5"))); // 01.09.2012 00:00:00
 	}
 
 	public void testBoostingWithCRRecencyBoostingQueryParser() throws ParseException, CorruptIndexException, IOException {
 		Query orginalQuery = parser.parse("word1");
-		
+
 		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(orginalQuery));
 		assertEquals(6, matchedDocuments.size());
 		Iterator<ComparableDocument> i = matchedDocuments.iterator();
-		
+
 		assertEquals("Ordering of the matching collection not expected! First entry must be the 6th document.",
 					i.next(), documents.get(5));
 		assertEquals("Ordering of the matching collection not expected! Second entry must be the 1th document.",
@@ -106,9 +108,9 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		assertEquals("Ordering of the matching collection not expected! Fourth entry must be the 9th document.",
 					i.next(), documents.get(8));
 		assertEquals("Ordering of the matching collection not expected! Fifth entry must be the 7th document.",
-					i.next(), documents.get(6));
-		assertEquals("Ordering of the matching collection not expected! Sixth entry must be the 4th document.",
 					i.next(), documents.get(3));
+		assertEquals("Ordering of the matching collection not expected! Sixth entry must be the 4th document.",
+					i.next(), documents.get(6));
 	}
 	
 	public void testCRRecencyBoostingQueryCalculation() throws ParseException, CorruptIndexException, IOException {
