@@ -60,7 +60,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		/* 0 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 today",
 			"updatetimestamp:"+today,
-			"node_id:2"))); // 01.10.2012 00:00:00
+			"node_id:2")));
 		/* 1 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word2 word9",
 			"updatetimestamp:1349042400",
@@ -73,7 +73,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		/* 3 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 daysAgo30",
 			"updatetimestamp:"+daysAgo30,
-			"node_id:7"))); // 01.09.2012 00:00:00
+			"node_id:7")));
 		/* 4 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word5",
 			"updatetimestamp:1346450400",
@@ -81,19 +81,19 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		/* 5 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 today",
 			"updatetimestamp:"+today,
-			"node_id:1"))); // 01.10.2012 00:00:00
+			"node_id:1")));
 		/* 6 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 daysAgo20",
 			"updatetimestamp:"+daysAgo20,
-			"node_id:6"))); // 20.09.2012 00:00:00
+			"node_id:6")));
 		/* 7 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word1 daysAgo10",
 			"updatetimestamp:"+daysAgo10,
-			"node_id:4"))); // 28.09.2012 00:00:00
+			"node_id:4")));
 		/* 8 */documents.add(new ComparableDocument(lucene.add(
 				SimpleLucene.CONTENT_ATTRIBUTE + ":word1 word1 word1 word1 word1 word1 word1 daysAgo30",
 				"updatetimestamp:"+daysAgo30,
-				"node_id:5"))); // 01.09.2012 00:00:00
+				"node_id:5")));
 	}
 
 	public void testBoostingWithCRRecencyBoostingQueryParser() throws ParseException, CorruptIndexException, IOException {
