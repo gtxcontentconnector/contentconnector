@@ -107,9 +107,9 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 					i.next(), documents.get(7));
 		assertEquals("Ordering of the matching collection not expected! Fourth entry must be the 9th document.",
 					i.next(), documents.get(8));
-		assertEquals("Ordering of the matching collection not expected! Fifth entry must be the 7th document.",
+		assertEquals("Ordering of the matching collection not expected! Fifth entry must be the 4th document.",
 					i.next(), documents.get(3));
-		assertEquals("Ordering of the matching collection not expected! Sixth entry must be the 4th document.",
+		assertEquals("Ordering of the matching collection not expected! Sixth entry must be the 7th document.",
 					i.next(), documents.get(6));
 	}
 	
