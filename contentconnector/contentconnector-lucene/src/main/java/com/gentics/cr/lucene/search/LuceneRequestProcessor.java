@@ -244,7 +244,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 									Document doc = (Document) object;
 									if (doc != null) {
 										LOGGER.debug("LuceneRequestProcessor.getObjects: "
-												+ doc.getField("contentid").toString());
+												+ doc.get("contentid"));
 									}
 								}
 							}
