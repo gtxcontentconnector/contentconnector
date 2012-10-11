@@ -65,8 +65,8 @@ public final class Instanciator {
 					constructor = getMatchingConstructor(clazz, parameterClasses);
 					if (constructor != null) {
 						object = constructor.newInstance(parameters);
+						break;
 					}
-					break;
 				}
 			} catch (SecurityException e) {
 				logger.debug("Cannot instanciate object for class " + clazz + " with parameters ("
