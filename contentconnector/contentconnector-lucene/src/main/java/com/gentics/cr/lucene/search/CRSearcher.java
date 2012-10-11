@@ -149,7 +149,7 @@ public class CRSearcher {
 	 * Create new instance of CRSearcher.
 	 * @param config
 	 */
-	public CRSearcher(CRConfig config) {
+	public CRSearcher(final CRConfig config) {
 		this.config = config;
 		computescores = config.getBoolean(COMPUTE_SCORES_KEY, computescores);
 		didyoumeanenabled = config.getBoolean(DIDYOUMEAN_ENABLED_KEY, didyoumeanenabled);
@@ -217,7 +217,7 @@ public class CRSearcher {
 	 * @param sorting
 	 * @return
 	 */
-	private Sort createSort(String[] sorting) {
+	private Sort createSort(final String[] sorting) {
 		Sort ret = null;
 		ArrayList<SortField> sortFields = new ArrayList<SortField>();
 		for (String s : sorting) {
@@ -361,7 +361,7 @@ public class CRSearcher {
 		// Collect count + start hits
 		int hits = count + start;	// we want to retreive the startcount (start) to endcount (hits)
 
-		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(this.config);
+		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(config);
 
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
 		
@@ -386,7 +386,7 @@ public class CRSearcher {
 		TopDocsCollector<?> collector = createCollector(searcher, hits, sorting, computescores, userPermissions);
 		HashMap<String, Object> result = null;
 		try {
-			analyzer = LuceneAnalyzerFactory.createAnalyzer(this.config);
+			analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
 
 			if (searchedAttributes != null && searchedAttributes.length > 0 && query != null && !query.equals("")) {
 				QueryParser parser = CRQueryParserFactory.getConfiguredParser(searchedAttributes, analyzer, request, config);
@@ -439,7 +439,7 @@ public class CRSearcher {
 					if (start == 0
 							&& didyoumeanenabled
 							&& didyoumeanEnabledForRequest
-							&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1 || maxScore < this.didyoumeanminscore)) {
+							&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1 || maxScore < didyoumeanminscore)) {
 
 						HashMap<String, Object> didyoumeanResult = didyoumean(
 							query,
@@ -541,7 +541,7 @@ public class CRSearcher {
 
 			}
 			result.put(RESULT_SUGGESTIONTERMS_KEY, suggestions);
-			result.put(RESULT_SUGGESTIONS_KEY, this.didyoumeanprovider.getSuggestionsStringFromMap(suggestions));
+			result.put(RESULT_SUGGESTIONS_KEY, didyoumeanprovider.getSuggestionsStringFromMap(suggestions));
 
 			log.debug("DYM Suggestions took " + (System.currentTimeMillis() - dymStart) + "ms");
 
@@ -613,5 +613,12 @@ public class CRSearcher {
 			log.error("Cannot create collector to get results for query.", e);
 		}
 		return null;
+	}
+
+	@Override
+	public void finalize() {
+		if(didyoumeanprovider != null) {
+			didyoumeanprovider.finalize();
+		}
 	}
 }
