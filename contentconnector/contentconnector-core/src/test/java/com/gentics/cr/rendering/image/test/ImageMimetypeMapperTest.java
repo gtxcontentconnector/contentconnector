@@ -42,6 +42,19 @@ public class ImageMimetypeMapperTest {
 		String shouldbe = "jpeg";
 		assertEquals("The type (" + type + ") should be (" + shouldbe + ")", type, shouldbe);
 	}
+	
+	/**
+	 * Test for mimetype.
+	 * @throws Exception
+	 */
+	@Test
+	public void testTypePerStrangeIEMimetype() throws Exception {
+		CRResolvableBean bean = new CRResolvableBean();
+		bean.set("mimetype", "image/pjpeg");
+		String type = ImageMimetypeMapper.getTypeFromBean(bean);
+		String shouldbe = "jpeg";
+		assertEquals("The type (" + type + ") should be (" + shouldbe + ")", type, shouldbe);
+	}
 
 	/**
 	 * Test for default.
