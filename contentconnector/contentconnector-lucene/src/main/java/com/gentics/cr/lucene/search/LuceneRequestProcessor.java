@@ -155,7 +155,12 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * Key to configure if CRMetaResolvableBean should contain parsed_query.
 	 */
 	private static final String SHOW_PARSED_QUERY_KEY = "showparsedquery";
-
+	
+	/**
+	 * query highlight parser key.
+	 */
+	private static final String QUERY_HIGHTLIGHT_PARSER_CONFIG = "highlightqueryparser";
+	
 	/**
 	 * Create new instance of LuceneRequestProcessor.
 	 * @param config CRConfig to use for initializing the searcher, highlighters and configuring this class.
@@ -353,7 +358,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		try {
 			reader = indexAccessor.getReader(false);
 
-			parseHighlightQuery(request, reader, parsedQuery);
+			parsedQuery = parseHighlightQuery(request, reader, parsedQuery);
 
 			processDocuments(docs, result, reader, parsedQuery);
 
@@ -379,6 +384,20 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			throws IOException {
 		//PARSE HIGHLIGHT QUERY
 		Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
+		Object subconfig = config.get(QUERY_HIGHTLIGHT_PARSER_CONFIG);
+		
+		if (subconfig != null && highlightQuery == null) {
+			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) this.config);
+			QueryParser highlightParser = CRQueryParserFactory.getConfiguredHighlightParser(
+					getSearchedAttributes(), analyzer, request, config, subconfig);
+			try {
+				parsedQuery = highlightParser.parse((String) request.getRequestFilter());
+				parsedQuery = parsedQuery.rewrite(reader);
+			} catch (ParseException e) {
+				LOGGER.error("Error while parsing hightlight query", e);
+			}
+		}
+
 		if (highlightQuery != null) {
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer((GenericConfiguration) this.config);
 			QueryParser parser = CRQueryParserFactory.getConfiguredParser(

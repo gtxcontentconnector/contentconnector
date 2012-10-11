@@ -417,7 +417,7 @@ public class CRSearcher {
 									String contentid 
 										= doCument.get("contentid");
 									log.debug("CRSearcher.search: " 
-											+ doCument.toString() 
+										 /* + doCument.toString() */
 											+ " Contentid: " 
 											+ contentid);
 								}

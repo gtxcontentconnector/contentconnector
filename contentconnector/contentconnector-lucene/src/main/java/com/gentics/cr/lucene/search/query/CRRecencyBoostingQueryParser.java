@@ -92,6 +92,7 @@ public class CRRecencyBoostingQueryParser extends CRQueryParser {
 				this.multiplicatorBoost, this.timerange, this.boostAttribute);
 
 		return resultQuery;
+		
 	}
 
 }

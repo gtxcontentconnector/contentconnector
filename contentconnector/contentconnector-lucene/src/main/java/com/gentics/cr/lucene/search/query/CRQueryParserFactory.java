@@ -50,7 +50,7 @@ public final class CRQueryParserFactory {
 	 * queryparser key.
 	 */
 	private static final String QUERY_PARSER_CONFIG = "queryparser";
-
+	
 	/***
 	 * Generates a prepared and configured QueryParser.
 	 * @param searchedAttributes attributes-
@@ -61,9 +61,24 @@ public final class CRQueryParserFactory {
 	 */
 	public static QueryParser getConfiguredParser(final String[] searchedAttributes, final Analyzer analyzer,
 			final CRRequest request, final CRConfig config) {
-		QueryParser parser = null;
+		
 
 		Object subconfig = config.get(QUERY_PARSER_CONFIG);
+		
+		return getParser(searchedAttributes, analyzer, request, config, subconfig);
+	}
+
+	public static QueryParser getConfiguredHighlightParser(final String[] searchedAttributes, final Analyzer analyzer,
+			final CRRequest request, final CRConfig config, final Object subconfig) {
+		//QueryParser parser = null;
+
+		return getParser(searchedAttributes, analyzer, request, config, subconfig);
+	}
+	
+	private static QueryParser getParser(final String[] searchedAttributes, final Analyzer analyzer,
+			final CRRequest request, final CRConfig config, final Object subconfig) {
+		QueryParser parser = null;
+		
 		if (subconfig != null && subconfig instanceof GenericConfiguration) {
 			GenericConfiguration pconfig = (GenericConfiguration) subconfig;
 
@@ -73,7 +88,9 @@ public final class CRQueryParserFactory {
 						new Object[] {
 						pconfig, LuceneVersion.getVersion(), searchedAttributes, analyzer, request },
 						new Object[] {
-						LuceneVersion.getVersion(), searchedAttributes, analyzer, request } });
+						LuceneVersion.getVersion(), searchedAttributes, analyzer, request },
+						new Object[] {
+								LuceneVersion.getVersion(), searchedAttributes[0], analyzer }});
 				
 				if (parser == null) {
 					logger.warn(String.format(
@@ -105,7 +122,6 @@ public final class CRQueryParserFactory {
 		//ADD SUPPORT FOR LEADING WILDCARDS
 		parser.setAllowLeadingWildcard(true);
 		parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
-
 		return parser;
 	}
 }

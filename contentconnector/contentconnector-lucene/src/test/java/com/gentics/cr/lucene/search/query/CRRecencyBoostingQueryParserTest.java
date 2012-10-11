@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
 
@@ -17,6 +18,8 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.AbstractLuceneTest;
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.cr.lucene.search.highlight.AdvancedContentHighlighter;
+import com.gentics.cr.lucene.search.highlight.WhitespaceVectorBolder;
 import com.gentics.cr.lucene.search.query.mocks.ComparableDocument;
 import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
 
@@ -96,6 +99,25 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 				"node_id:5")));
 	}
 
+	public void testHighlighting() throws ParseException, CorruptIndexException, IOException {
+		GenericConfiguration hConfig = new GenericConfiguration();
+		hConfig.set("rule", "1==1");
+		hConfig.set("attribute", "content");
+		hConfig.set("fragments", "5");
+		hConfig.set("fragmentsize", "100");
+		hConfig.set("highlightprefix", "<b>");
+		hConfig.set("highlightpostfix", "</b>");
+		hConfig.set("fragmentseperator", "...");
+
+
+		AdvancedContentHighlighter advancedHighlighter = new WhitespaceVectorBolder(hConfig);
+		int documentId = 0;
+		Query pQuery = parser.parse("word1");
+		IndexReader reader = lucene.getReader();
+		Query rQuery = pQuery.rewrite(reader);
+		String highlighted = advancedHighlighter.highlight(rQuery, reader, documentId, "content");
+	 }
+	
 	public void testBoostingWithCRRecencyBoostingQueryParser() throws ParseException, CorruptIndexException, IOException {
 		Query orginalQuery = parser.parse("word1");
 
