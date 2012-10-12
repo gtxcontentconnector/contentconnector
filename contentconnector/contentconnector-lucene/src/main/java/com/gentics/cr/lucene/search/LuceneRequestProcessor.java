@@ -387,18 +387,22 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
 		Object subconfig = config.get(QUERY_HIGHTLIGHT_PARSER_CONFIG);
 
+		String logging = "LRP parseHighlightQuery ";
 		if (subconfig != null && highlightQuery == null) {
+			logging += "subconfig is not null! ";
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
 			QueryParser highlightParser = CRQueryParserFactory.getConfiguredHighlightParser(
 				getSearchedAttributes(), analyzer, request, config, subconfig);
 			try {
 				parsedQuery = highlightParser.parse(request.getRequestFilter());
 				parsedQuery = parsedQuery.rewrite(reader);
+				logging += "Has parsed the query";
 			} catch (ParseException e) {
 				LOGGER.error("Error while parsing hightlight query", e);
 			}
 		}
-
+		LOGGER.debug(logging);
+		
 		if (highlightQuery != null) {
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
 			QueryParser parser = CRQueryParserFactory.getConfiguredParser(
