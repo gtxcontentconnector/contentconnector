@@ -396,25 +396,29 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			try {
 				parsedQuery = highlightParser.parse(request.getRequestFilter());
 				parsedQuery = parsedQuery.rewrite(reader);
-				logging += "Has parsed the query";
+				logging += "Has parsed the query.";
 			} catch (ParseException e) {
 				LOGGER.error("Error while parsing hightlight query", e);
 			}
 		}
-		LOGGER.debug(logging);
-		
+		/*
 		if (highlightQuery != null) {
+			logging += " HighlightQuery is set and overwrite parsedQuery";
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
 			QueryParser parser = CRQueryParserFactory.getConfiguredParser(
 				getSearchedAttributes(), analyzer, request, config);
 			try {
+				
 				parsedQuery = parser.parse((String) highlightQuery);
 				parsedQuery = parsedQuery.rewrite(reader);
-
+				
 			} catch (ParseException e) {
 				LOGGER.error("Error while parsing hightlight query", e);
 			}
 		}
+		*/
+		LOGGER.debug(logging);
+		
 		return parsedQuery;
 	}
 
