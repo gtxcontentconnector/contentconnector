@@ -388,7 +388,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		Object subconfig = config.get(QUERY_HIGHTLIGHT_PARSER_CONFIG);
 
 		String logging = "LRP parseHighlightQuery ";
-		if (subconfig != null && highlightQuery == null) {
+		if (subconfig != null) {
 			logging += "subconfig is not null! ";
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
 			QueryParser highlightParser = CRQueryParserFactory.getConfiguredHighlightParser(
