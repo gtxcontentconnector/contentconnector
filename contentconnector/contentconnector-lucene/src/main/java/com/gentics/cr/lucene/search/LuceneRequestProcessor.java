@@ -32,6 +32,7 @@ import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.search.highlight.AdvancedContentHighlighter;
 import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
+import com.gentics.cr.lucene.search.highlight.WhitespaceVectorBolder;
 import com.gentics.cr.lucene.search.query.CRQueryParserFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
@@ -385,9 +386,33 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			throws IOException {
 		//PARSE HIGHLIGHT QUERY
 		Object highlightQuery = request.get(HIGHLIGHT_QUERY_KEY);
+		
+		/*
+		 * testing with a whitespace-vector 
+		 */
+		 
+		
 		Object subconfig = config.get(QUERY_HIGHTLIGHT_PARSER_CONFIG);
 
 		String logging = "LRP parseHighlightQuery ";
+		
+		if (highlightQuery != null) {
+			logging += " HighlightQuery is set and overwrite parsedQuery ";
+			logging += "toString: " + highlightQuery.toString();
+
+			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
+			QueryParser parser = CRQueryParserFactory.getConfiguredParser(
+				getSearchedAttributes(), analyzer, request, config);
+			try {
+				
+				parsedQuery = parser.parse((String) highlightQuery);
+				parsedQuery = parsedQuery.rewrite(reader);
+				
+			} catch (ParseException e) {
+				LOGGER.error("Error while parsing hightlight query", e);
+			}
+		}
+
 		if (subconfig != null) {
 			logging += "subconfig is not null! ";
 			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
@@ -401,22 +426,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				LOGGER.error("Error while parsing hightlight query", e);
 			}
 		}
-		/*
-		if (highlightQuery != null) {
-			logging += " HighlightQuery is set and overwrite parsedQuery";
-			Analyzer analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
-			QueryParser parser = CRQueryParserFactory.getConfiguredParser(
-				getSearchedAttributes(), analyzer, request, config);
-			try {
-				
-				parsedQuery = parser.parse((String) highlightQuery);
-				parsedQuery = parsedQuery.rewrite(reader);
-				
-			} catch (ParseException e) {
-				LOGGER.error("Error while parsing hightlight query", e);
-			}
-		}
-		*/
+		
 		LOGGER.debug(logging);
 		
 		return parsedQuery;
