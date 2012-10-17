@@ -683,8 +683,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				}
 			}
 		}
-		// Set document boosting if present
-		String boostingValue = (String) resolvable.get(boostingAttribute);
+
+		String boostingValue = null;
+		if (boostingAttribute != null) {
+			// Set document boosting if present
+			boostingValue = (String) resolvable.get(boostingAttribute);
+		}
+
 		if (boostingValue != null && !"".equals(boostingValue)) {
 			try {
 				newDoc.setBoost(Float.parseFloat(boostingValue));
