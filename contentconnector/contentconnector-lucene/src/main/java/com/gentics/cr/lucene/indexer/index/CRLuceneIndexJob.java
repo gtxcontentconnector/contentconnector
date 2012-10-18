@@ -662,19 +662,21 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			}
 		}
 
-		String boostingValue = null;
 		if (boostingAttribute != null) {
+			String boostingValue = null;
 			// Set document boosting if present
 			boostingValue = (String) resolvable.get(boostingAttribute);
-		}
-
-		if (boostingValue != null && !"".equals(boostingValue)) {
-			try {
-				newDoc.setBoost(Float.parseFloat(boostingValue));
-			} catch (Exception e) {
-				LOG.error("Could not pars boosting information " + "from resolvable.", e);
+			if (boostingValue != null && !"".equals(boostingValue)) {
+				try {
+					newDoc.setBoost(Float.parseFloat(boostingValue));
+				} catch (Exception e) {
+					LOG.error("Could not pars boosting information "
+							+ "from resolvable.", e);
+				}
 			}
 		}
+
+		
 		for (Entry<String, Boolean> entry : attributes.entrySet()) {
 			String attributeName = (String) entry.getKey();
 			boolean filled = (newDoc.get(attributeName) != null);
