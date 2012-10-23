@@ -6,6 +6,8 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,6 +21,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 import com.gentics.cr.CRResolvableBean;
@@ -254,26 +257,8 @@ public class XmlContentRepository extends ContentRepository {
 							Element attrElement = doc.createElement(entry);
 							attrContainer.appendChild(attrElement);
 
-							if (entry.equals("binarycontent")) {
-								try {
-									value = new String((byte[]) bValue);
-								} catch (ClassCastException x) {
-									try {
-										value = new String(getBytes(bValue));
-									} catch (IOException e) {
-										value = bValue.toString();
-										e.printStackTrace();
-									}
-								}
-							} else {
-								if (bValue.getClass() == String.class) {
-									value = (String) bValue;
-								} else {
-									value = bValue.toString();
-								}
-							}
-							Text text = doc.createCDATASection(value);
-							attrElement.appendChild(text);
+							valueToNode(doc, attrElement, entry, bValue);
+							
 						}
 
 					} else {
@@ -302,5 +287,58 @@ public class XmlContentRepository extends ContentRepository {
 			objElement.appendChild(childContainer);
 		}
 		return objElement;
+	}
+
+	/**
+	 * Convert the value to a XML Node.
+	 * @param d the current xml document.
+	 * @param attrElement attribute.
+	 * @param entry attribute name
+	 * @param bValue value.
+	 */
+	private void valueToNode(final Document d, final Element attrElement, final String entry, final Object bValue) {
+		String value = "";
+		if (entry.equals("binarycontent")) {
+			try {
+				value = new String((byte[]) bValue);
+			} catch (ClassCastException x) {
+				try {
+					value = new String(getBytes(bValue));
+				} catch (IOException e) {
+					value = bValue.toString();
+					e.printStackTrace();
+				}
+			}
+		} else {
+			if (bValue instanceof String) {
+				value = (String) bValue;
+			} else if (bValue instanceof Map<?, ?>) {
+				Map<?, ?> map = (Map<?, ?>) bValue;
+				for (Entry<?, ?> e : map.entrySet()) {
+					String key = e.getKey().toString();
+					Object mValue = e.getValue();
+					if (mValue instanceof String[]) {
+						String[] arr = (String[]) mValue;
+						for (String s : arr) {
+							Element elem = doc.createElement(key);
+							Text text = doc.createCDATASection(s);
+							elem.appendChild(text);
+							attrElement.appendChild(elem);
+						}
+						return;
+					} else {
+						Element elem = doc.createElement(key);
+						Text text = doc.createCDATASection(mValue.toString());
+						elem.appendChild(text);
+						attrElement.appendChild(elem);
+						return;
+					}
+				}
+			} else {
+				value = bValue.toString();
+			}
+		}
+		Text text = doc.createCDATASection(value);
+		attrElement.appendChild(text);
 	}
 }

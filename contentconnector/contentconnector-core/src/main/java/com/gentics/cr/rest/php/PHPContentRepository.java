@@ -165,7 +165,7 @@ public class PHPContentRepository extends ContentRepository {
 
 						attribContainer.put(entry, value);
 					} else {
-						String value = "";
+						Object value = "";
 						if (entry.equals("binarycontent")) {
 							try {
 								value = new String((byte[]) bValue);
@@ -178,9 +178,10 @@ public class PHPContentRepository extends ContentRepository {
 								}
 							}
 						} else {
-							if (bValue.getClass() == String.class) {
-
+							if (bValue instanceof String) {
 								value = (String) bValue;
+							} else if (bValue instanceof Map<?, ?>) {
+								value = bValue;
 							} else {
 								value = bValue.toString();
 							}
