@@ -277,8 +277,8 @@ public class SQLRequestProcessor extends RequestProcessor {
 				CRResolvableBean bean = new CRResolvableBean();
 				for (int i = 1; i <= colnames.length; i++) {
 					String colname = colnames[i - 1];
-					if(colname != null && colname.equalsIgnoreCase(idcolumn)) {
-						bean.setContentid((String)rset.getObject(i));
+					if (colname != null && colname.equalsIgnoreCase(idcolumn)) {
+						bean.setContentid((String) rset.getObject(i));
 					}
 					if (rset.getObject(i) != null) {
 						bean.set(colname, rset.getObject(i));
