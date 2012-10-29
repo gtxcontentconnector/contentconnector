@@ -126,10 +126,14 @@ public final class LuceneDirectoryFactory {
 						new Object[] {}, 
 						new Object[] {config}
 				});
-				try {
-					dir.setLockFactory(lockFactory);
-				} catch (IOException e) {
-					LOG.error("Error while setting lock factory.", e);
+				if (lockFactory != null) {
+					try {
+						dir.setLockFactory(lockFactory);
+					} catch (IOException e) {
+						LOG.error("Error while setting lock factory.", e);
+					}
+				} else {
+					LOG.error("Could not set lock factory because it could not be created. Check debug output.");
 				}
 			}
 		}
