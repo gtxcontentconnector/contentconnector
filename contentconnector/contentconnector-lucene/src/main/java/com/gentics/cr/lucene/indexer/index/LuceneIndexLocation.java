@@ -165,17 +165,18 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	 */
 	public static Directory createDirectory(CRConfig config) {
 		String loc = getFirstIndexLocation(config);
-		return createDirectory(loc);
+		return createDirectory(loc, config);
 	}
 
 	/**
 	 * Create a Lucene directory from a path.
 	 * 
 	 * @param indexLocation location
+	 * @param config configuration.
 	 * @return directory
 	 */
-	public static Directory createDirectory(final String indexLocation) {
-		return LuceneDirectoryFactory.getDirectory(indexLocation);
+	public static Directory createDirectory(final String indexLocation, final CRConfig config) {
+		return LuceneDirectoryFactory.getDirectory(indexLocation, config);
 	}
 
 	/**

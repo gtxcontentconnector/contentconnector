@@ -47,7 +47,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	public LuceneSingleIndexLocation(final CRConfig config) {
 		super(config);
 		indexLocation = getFirstIndexLocation(config);
-		dir = createDirectory(indexLocation);
+		dir = createDirectory(indexLocation, config);
 		//Create index accessor
 		IndexAccessorFactory iAFactory = IndexAccessorFactory.getInstance();
 		if (!iAFactory.hasAccessor(dir)) {
@@ -65,7 +65,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 		if(useFacets) {
 			log.debug("Facets are active");
 			taxonomyLocation = retrieveTaxonomyLocation(config);
-			taxonomyDir = createDirectory(taxonomyLocation);
+			taxonomyDir = createDirectory(taxonomyLocation, config);
 			TaxonomyAccessorFactory taFactory = TaxonomyAccessorFactory.getInstance();
 			if(!taFactory.hasAccessor(taxonomyDir)) {
 				try {
@@ -256,7 +256,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	 */
 	public static Directory createTaxonomyDirectory(final CRConfig config) {
 		String path = getFirstIndexLocation(config);
-		return createDirectory(path);
+		return createDirectory(path, config);
 	}
 		
 	/**

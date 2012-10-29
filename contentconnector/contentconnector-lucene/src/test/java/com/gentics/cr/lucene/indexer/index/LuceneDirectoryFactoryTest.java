@@ -5,12 +5,18 @@ import java.io.IOException;
 
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.LockFactory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.SimpleFSLockFactory;
 
+import com.gentics.cr.CRConfig;
+import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.lucene.AbstractLuceneTest;
 import com.gentics.cr.util.CRUtil;
 
 public class LuceneDirectoryFactoryTest extends AbstractLuceneTest {
+	
+	
 
 	public LuceneDirectoryFactoryTest(String name) {
 		super(name);
@@ -40,6 +46,27 @@ public class LuceneDirectoryFactoryTest extends AbstractLuceneTest {
 		assertEquals("Directory should be a FSDirectory", fs instanceof FSDirectory, true);
 
 		tmp = ((FSDirectory) fs).getDirectory();
+		fs.close();
+		tmp.delete();
+	}
+	
+	public void testFSDirectoryWithLockFactory() throws IOException {
+		
+		CRConfig config = new CRConfigUtil();
+		config.set("lockFactoryClass", "org.apache.lucene.store.SimpleFSLockFactory");
+		
+		File tmp = CRUtil.createTempDir();
+
+		Directory fs = LuceneDirectoryFactory.getDirectory(tmp.getAbsolutePath(), config);
+
+		assertEquals("Directory should be a FSDirectory", fs instanceof FSDirectory, true);
+
+		tmp = ((FSDirectory) fs).getDirectory();
+		
+		LockFactory lf = fs.getLockFactory();
+		
+		assertEquals("LockFactory should be a SimpleFSLockFactory", lf instanceof SimpleFSLockFactory, true);
+		
 		fs.close();
 		tmp.delete();
 	}

@@ -7,7 +7,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.LockFactory;
 import org.apache.lucene.store.RAMDirectory;
+
+import com.gentics.cr.CRConfig;
+import com.gentics.cr.util.generics.Instanciator;
 
 /**
  * Creates and caches directories.
@@ -23,6 +27,10 @@ public final class LuceneDirectoryFactory {
 	 * Key that determines if a directory should be created in memory.
 	 */
 	protected static final String RAM_IDENTIFICATION_KEY = "RAM";
+	/**
+	 * Key to fetch the configured lock factory class.
+	 */
+	protected static final String LOCK_FACTORY_CLASS_KEY = "lockFactoryClass";
 
 	/**
 	 * ConcurrentHashMap to cache directories.
@@ -42,26 +50,42 @@ public final class LuceneDirectoryFactory {
 	 * @param directoyLocation String pointing to the location. 
 	 * 			If the string starts with RAM,
 	 * 			the directory will be created in memory.
+	 * @param config Configuration that may contain a configured lock factory.
 	 * @return directory.
 	 */
-	public static Directory getDirectory(final String directoyLocation) {
+	public static Directory getDirectory(final String directoyLocation, final CRConfig config) {
 		Directory dir = cachedDirectories.get(directoyLocation);
 		if (dir == null) {
-			dir = createNewDirectory(directoyLocation);
+			dir = createNewDirectory(directoyLocation, config);
 		}
 		return dir;
 	}
 	
 	/**
+	 * Fetches a directory for the given location. 
+	 * If there is none it creates a directory 
+	 * on the given location. Directories will be cached by its location.
+	 * @param directoyLocation String pointing to the location. 
+	 * 			If the string starts with RAM,
+	 * 			the directory will be created in memory.
+	 * @return directory.
+	 */
+	public static Directory getDirectory(final String directoyLocation) {
+		return getDirectory(directoyLocation, null);
+	}
+	
+	/**
 	 * Create a new directory.
 	 * @param directoyLocation directoryLocation.
+	 * @param config configuration that may contain the configured lock factory.
 	 * @return new directory
 	 */
 	private static synchronized Directory createNewDirectory(
-			final String directoyLocation) {
+			final String directoyLocation,
+			final CRConfig config) {
 		Directory dir = cachedDirectories.get(directoyLocation);
 		if (dir == null) {
-			Directory newDir = createDirectory(directoyLocation);
+			Directory newDir = createDirectory(directoyLocation, config);
 			dir = cachedDirectories.putIfAbsent(directoyLocation, newDir);
 			if (dir == null) {
 				dir = newDir;
@@ -73,9 +97,10 @@ public final class LuceneDirectoryFactory {
 	/**
 	 * Creates a new directory.
 	 * @param directoryLocation location
+	 * @param config configuration that may contain a configured lock factory.
 	 * @return directory
 	 */
-	private static Directory createDirectory(final String directoryLocation) {
+	private static Directory createDirectory(final String directoryLocation, final CRConfig config) {
 		Directory dir;
 		if (RAM_IDENTIFICATION_KEY.equalsIgnoreCase(directoryLocation) 
 				|| directoryLocation == null
@@ -91,6 +116,21 @@ public final class LuceneDirectoryFactory {
 				}
 			} catch (IOException ioe) {
 				dir = createRAMDirectory(directoryLocation);
+			}
+		}
+		if (config != null) {
+			String lockFactoryClass = config.getString(LOCK_FACTORY_CLASS_KEY);
+			if (lockFactoryClass != null && !"".equals(lockFactoryClass)) {
+				
+				LockFactory lockFactory = (LockFactory) Instanciator.getInstance(lockFactoryClass, new Object[][] {
+						new Object[] {}, 
+						new Object[] {config}
+				});
+				try {
+					dir.setLockFactory(lockFactory);
+				} catch (IOException e) {
+					LOG.error("Error while setting lock factory.", e);
+				}
 			}
 		}
 		return dir;

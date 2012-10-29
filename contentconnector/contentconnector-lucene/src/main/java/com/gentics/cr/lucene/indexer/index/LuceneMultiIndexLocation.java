@@ -48,7 +48,7 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 				for (GenericConfiguration locconf : locationmap.values()) {
 					String path = locconf.getString(INDEX_PATH_KEY);
 					if (path != null && !"".equals(path)) {
-						dirs.put(path, loadDirectory(path));
+						dirs.put(path, loadDirectory(path, config));
 					}
 				}
 			}
@@ -56,8 +56,8 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 
 	}
 
-	private Directory loadDirectory(String indexLocation) {
-		Directory dir = createDirectory(indexLocation);
+	private Directory loadDirectory(final String indexLocation, final CRConfig config) {
+		Directory dir = createDirectory(indexLocation, config);
 
 		//Create index accessor
 		IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
