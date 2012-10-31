@@ -90,11 +90,8 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	/**
 	 * Pool size for handling threads
-	 * 
-	 * TODO: we could reduce the number of threads (to 1 or 2) if the WarmingIndexAccessor does use his own pool.
-	 * Because the DefaultIndexAccessor only runs jobs that imediatly synchronizes. 
 	 */
-	private static final int POOL_SIZE = 10;
+	private static final int POOL_SIZE = 2;
 
 	private Analyzer analyzer;
 
@@ -115,7 +112,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	protected int readingReaderUseCount = 0;
 
-	protected static ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE, new NamedThreadFactory(DefaultIndexAccessor.class.getSimpleName()));
+	protected ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE, new NamedThreadFactory(DefaultIndexAccessor.class.getSimpleName()));
 
 	protected int numReopening = 0;
 
