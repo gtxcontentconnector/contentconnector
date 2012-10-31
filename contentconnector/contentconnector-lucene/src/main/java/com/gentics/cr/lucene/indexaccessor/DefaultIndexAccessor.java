@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -44,10 +45,55 @@ import org.apache.lucene.store.Directory;
 class DefaultIndexAccessor implements IndexAccessor {
 
 	/**
+	 * Creates Threads starting with a certain name
+	 * @author bigbear3001
+	 *
+	 */
+	private static final class NamedThreadFactory implements ThreadFactory {
+		/**
+		 * Counter for naming the threads
+		 */
+		private int i = 0;
+		
+		/**
+		 * Base pool name
+		 */
+		private String poolName;
+
+		/**
+		 * Created a new thread factory that creates a named thread pool
+		 * @param name
+		 */
+		public NamedThreadFactory(String name) {
+			poolName = name + ".pool-";
+		}
+
+		/**
+		 * @return next number for naming the threads
+		 */
+		private synchronized int getNextNumber() {
+			return i++;
+		}
+
+		/**
+		 * Constructs a new thread named by the {@link NamedThreadFactory} ".pool-" and the next available number.
+		 */
+		public Thread newThread(Runnable r) {
+			return new Thread(r, poolName + getNextNumber());
+		}
+	}
+
+	/**
 	 * Log4j logger for error and debug messages.
 	 */
 	private static final Logger LOGGER = Logger.getLogger(DefaultIndexAccessor.class);
 
+	/**
+	 * Pool size for handling threads
+	 * 
+	 * TODO: we could reduce the number of threads (to 1 or 2) if the WarmingIndexAccessor does use his own pool.
+	 * Because the DefaultIndexAccessor only runs jobs that imediatly synchronizes. 
+	 */
 	private static final int POOL_SIZE = 10;
 
 	private Analyzer analyzer;
@@ -69,7 +115,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	protected int readingReaderUseCount = 0;
 
-	protected final ExecutorService pool;
+	protected static ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE, new NamedThreadFactory(DefaultIndexAccessor.class.getSimpleName()));
 
 	protected int numReopening = 0;
 
@@ -107,7 +153,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 	public DefaultIndexAccessor(final Directory dir, final Analyzer indexAnalyzer) {
 		directory = dir;
 		analyzer = indexAnalyzer;
-		pool = Executors.newFixedThreadPool(POOL_SIZE);
 		cachedSearchers = new HashMap<Similarity, IndexSearcher>();
 	}
 
