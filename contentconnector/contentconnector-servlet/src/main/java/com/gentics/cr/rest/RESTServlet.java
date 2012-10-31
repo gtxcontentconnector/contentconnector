@@ -56,50 +56,58 @@ public class RESTServlet extends HttpServlet {
 	}
 
 	/**
-	 * Wrapper Method for the doGet and doPost Methods.
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
+	 * Wrapper Method for the doGet and doPost Methods. Creates a CRRequest and lets the rest container handle the request.
+	 * @param request - servlet request
+	 * @param response - servlet responce to write back to
+	 * @throws IOException in case the container cannot process the request successfully
 	 */
-	public void doService(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException {
-		UseCase uc = MonitorFactory.startUseCase("RESTServlet(" + request.getServletPath() + ")");
-		log.debug("Request:" + request.getQueryString());
-
-		// starttime
-		long s = new Date().getTime();
-		// get the objects
-
+	public void doService(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HashMap<String, Resolvable> objects = new HashMap<String, Resolvable>();
 		objects.put("request", new RequestBeanWrapper(request));
 		objects.put("session", new HttpSessionWrapper(request.getSession()));
 		CRRequestBuilder rB = new CRRequestBuilder(request, crConf);
 		//response.setContentType(rB.getContentRepository(this.crConf.getEncoding()).getContentType()+"; charset="+this.crConf.getEncoding());
 		container.processService(rB, objects, response.getOutputStream(), new ServletResponseTypeSetter(response));
-		response.getOutputStream().flush();
-		response.getOutputStream().close();
-		// endtime
-		long e = new Date().getTime();
-		if (log.isInfoEnabled()) {
-			StringBuilder requestID = new StringBuilder();
-			requestID.append(request.getRequestURI());
-			if (request.getQueryString() != null) {
-				requestID.append('?');
-				requestID.append(request.getQueryString());
+	}
+	
+	
+	/**
+	 * Wrapper Method for the doService that measures the time and closes the output stream.
+	 * @param request - servlet request
+	 * @param response - servlet responce to write back to
+	 * @throws IOException in case the container cannot process the request
+	 * @see #doService(HttpServletRequest, HttpServletResponse)
+	 */
+	public void doServiceSafe(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UseCase uc = MonitorFactory.startUseCase("RESTServlet(" + request.getServletPath() + ")");
+		log.debug("Request:" + request.getQueryString());
+		long starttime = new Date().getTime();
+		try {
+			doService(request, response);
+		} finally {
+			response.getOutputStream().flush();
+			response.getOutputStream().close();
+			
+			long endtime = new Date().getTime();
+			if (log.isInfoEnabled()) {
+				StringBuilder requestID = new StringBuilder();
+				requestID.append(request.getRequestURI());
+				if (request.getQueryString() != null) {
+					requestID.append('?');
+					requestID.append(request.getQueryString());
+				}
+				log.info("Executiontime for " + requestID + ":" + (endtime - starttime));
 			}
-			log.info("Executiontime for " + requestID + ":" + (e - s));
+			uc.stop();
 		}
-		uc.stop();
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doService(request, response);
+		doServiceSafe(request, response);
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doService(request, response);
+		doServiceSafe(request, response);
 	}
 
 }
