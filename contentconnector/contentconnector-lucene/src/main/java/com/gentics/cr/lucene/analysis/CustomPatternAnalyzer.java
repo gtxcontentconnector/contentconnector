@@ -74,6 +74,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 
 	/** <code>"\\s+"</code>; Divides text at whitespaces (Character.isWhitespace(c)) */
 	public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+	
+	private static final String LOWERCASE_KEY = "lowercase";
 
 	private static final CharArraySet EXTENDED_ENGLISH_STOP_WORDS = CharArraySet.unmodifiableSet(new CharArraySet(
 			LuceneVersion.getVersion(), Arrays.asList(
@@ -378,7 +380,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	private final static String PATTERN_CONFIG_KEY = "pattern";
 
 	public CustomPatternAnalyzer(GenericConfiguration config) {
-		this(Version.LUCENE_31, getPattern(config), false, EXTENDED_ENGLISH_STOP_WORDS);
+		this(Version.LUCENE_31, getPattern(config), config.getBoolean(LOWERCASE_KEY, true), EXTENDED_ENGLISH_STOP_WORDS);
 	}
 
 	private static Pattern getPattern(GenericConfiguration config) {

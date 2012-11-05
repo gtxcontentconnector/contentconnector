@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -21,6 +22,14 @@ public class PHPContentRepositoryTest {
 
 	@Before
 	public void setUp() throws CRException {
+		
+		CRResolvableBean mr = new CRResolvableBean("10001.1");
+		mr.set(PHPContentRepositoryTest.UPDATE_TIMESTAMP_KEY, new Long(111111111L));
+		Map<String, String[]> suggestions = new HashMap<String, String[]>();
+		suggestions.put("tst", new String[]{"test", "tess"});
+		mr.set("suggestions", suggestions);
+		beanCollection.add(mr);
+		
 		CRResolvableBean b1 = new CRResolvableBean("10002.1");
 		b1.set(PHPContentRepositoryTest.UPDATE_TIMESTAMP_KEY, new Long(111111111L));
 		beanCollection.add(b1);
@@ -59,6 +68,8 @@ public class PHPContentRepositoryTest {
 		PHPSerializer serializer = new PHPSerializer("utf-8");
 		Map<Object, Object> map = (Map<Object, Object>) serializer.unserialize(s);
 		assertEquals(resolvePath(map, "status"), "ok");
+		
+		assertEquals(2, ((Map<Object, Object>) resolvePath(map, "'10001.1'.attributes.suggestions.tst")).size());
 		
 		assertEquals("10002.1", resolvePath(map, "'10002.1'.contentid"));
 		assertEquals("null", resolvePath(map, "'10002.1'.obj_id"));
@@ -119,7 +130,7 @@ public class PHPContentRepositoryTest {
 		assertEquals(1, ((Map<Object, Object>) resolvePath(map, "'10002.4'.attributes")).size());
 		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.4'")).size());
 		
-		assertEquals(map.size(), 5);
+		assertEquals(map.size(), 6);
 	}
 	private Object resolvePath(Map<Object, Object> map, String path) {
 		int pos = -1;
