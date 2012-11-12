@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.log4j.Logger;
 
@@ -568,9 +569,8 @@ public abstract class IndexLocation {
 	 * Creates jobs for all configured CRs.
 	 */
 	public final void createAllCRIndexJobs() {
-
-		ConcurrentHashMap<String, CRConfigUtil> configs = getCRMap();
-
+		//use ConcurrentSkipListMap for alphabetical ordered IndexJob Creation
+		ConcurrentSkipListMap<String, CRConfigUtil> configs = new ConcurrentSkipListMap<String, CRConfigUtil>(getCRMap());
 		for (Entry<String, CRConfigUtil> e : configs.entrySet()) {
 
 			CRConfigUtil indexJobConfiguration = e.getValue();
@@ -592,7 +592,7 @@ public abstract class IndexLocation {
 				}
 			}
 			if (createJob) {
-				createCRIndexJob(new CRConfigUtil(indexJobConfiguration, partName), configs);
+				createCRIndexJob(new CRConfigUtil(indexJobConfiguration, partName), new ConcurrentHashMap<String, CRConfigUtil>(configs));
 			}
 
 		}
