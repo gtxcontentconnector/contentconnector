@@ -318,7 +318,10 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 			}
 			//Finally delete all Objects from Index that are not checked for an
 			//Update
-			indexUpdateChecker.deleteStaleObjects();
+			//fixing possible npe
+			if (indexUpdateChecker != null) {
+				indexUpdateChecker.deleteStaleObjects();
+			}
 		} finally {
 			objectsToUpdateCase.stop();
 		}

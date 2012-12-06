@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -702,7 +703,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				} else {
 					storeTermVector = TermVector.NO;
 				}
-				if (value instanceof String || value instanceof Number) {
+				if (value instanceof String || value instanceof Number || value instanceof Date) {
 					Field f = new Field(attributeName, value.toString(), storeFieldStore, Field.Index.ANALYZED, storeTermVector);
 					Float boostValue = boostvalue.get(attributeName);
 					if (boostValue != null) {
