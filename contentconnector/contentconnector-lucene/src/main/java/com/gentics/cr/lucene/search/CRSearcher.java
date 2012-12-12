@@ -620,5 +620,8 @@ public class CRSearcher {
 		if(didyoumeanprovider != null) {
 			didyoumeanprovider.finalize();
 		}
+		if (config != null) {
+			LuceneIndexLocation.stopIndexLocation(config);
+		}
 	}
 }

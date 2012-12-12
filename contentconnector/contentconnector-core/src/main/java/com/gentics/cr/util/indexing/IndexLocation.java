@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -279,7 +278,10 @@ public abstract class IndexLocation {
 	}
 
 	/**
-	 * Gets the index location configured in config.
+	 * Gets the index location configured in config. Since the IndexLocation might start a 
+	 * worker thread, the caller has to ensure that {@link #stopIndexLocation(CRConfig)} is called
+	 * once it is no longer needed! (the returned IndexLocation is reused, so the caller must not
+	 * use {@link IndexLocation#stop()} directly.)
 	 * 
 	 * @param config if the config does not hold the param indexLocation or if
 	 *            indexLocation = "RAM", an RAM Directory will be created and
@@ -310,7 +312,28 @@ public abstract class IndexLocation {
 		return dir;
 	}
 	
-	
+
+	/**
+	 * Removes index location from local cache and stops all threads associated with it.
+	 * @param config the CRConfig for the index location which should be stopped.
+	 */
+	public static synchronized void stopIndexLocation(final CRConfig config) {
+		if (config == null) {
+			log.error("Can't stop index location for null.");
+			return;
+		}
+		if (indexmap == null) {
+			log.debug("indexmap is undefined, so nothing to stop.");
+			return;
+		}
+		IndexLocation dir = indexmap.remove(config);
+		if (dir != null) {
+			if (log.isDebugEnabled()) {
+				log.debug("Stopping index location " + dir.toString());
+			}
+			dir.stop();
+		}
+	}
 
 	/**
 	 * Create new IndexLocation for the configured Implementation of
