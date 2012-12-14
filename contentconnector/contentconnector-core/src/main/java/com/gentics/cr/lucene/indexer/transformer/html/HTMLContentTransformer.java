@@ -3,8 +3,7 @@ package com.gentics.cr.lucene.indexer.transformer.html;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-import antlr.StringUtils;
+import org.jsoup.select.Elements;
 
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.CRResolvableBean;
@@ -58,23 +57,26 @@ public class HTMLContentTransformer extends ContentTransformer {
 	 * @return
 	 */
 	private String getStringContents(final Object contentObject) throws CRException {
-		StringBuilder plainTextStringBuilder = new StringBuilder();
-		String htmlcontent = getContents(contentObject);
-		String plainTextString = "";
+		String htmlString = getContents(contentObject);
+		String result = "";
 		try {
-			if (htmlcontent != null) {
-				Document d = Jsoup.parseBodyFragment(htmlcontent);
-
-				for (Element n : d.body().children()) {
-					plainTextStringBuilder.append(n.text());
-					plainTextStringBuilder.append(" ");
+			if (htmlString != null) {
+				StringBuilder strippedString = new StringBuilder();
+				Document documentFragment = Jsoup.parseBodyFragment(htmlString);
+				Elements children = documentFragment.body().children();
+				for (int pos = 0; pos < children.size(); pos++) {
+					Element element = children.get(pos);
+					strippedString.append(element.text());
+					if (pos < children.size() - 1) {
+						strippedString.append(" ");
+					}
 				}
-				plainTextString = StringUtils.stripBack(plainTextStringBuilder.toString(), " ");
+				result = strippedString.toString();
 			}
 		} catch (Exception ex) {
 			throw new CRException(ex);
 		}
-		return plainTextString;
+		return result;
 	}
 
 	/**
