@@ -4,6 +4,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import antlr.StringUtils;
+
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -12,9 +14,10 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.plink.PLinkStripper;
 
 /**
- * HTMLContentTransformer transformers a part/or a full html structure into plain text.
- * Plinks get stripped (replaced with empty strings).
- * For html -> plain text conversion it uses Jsoup.
+ * HTMLContentTransformer transformers a part/or a full html structure into
+ * plain text. Plinks get stripped (replaced with empty strings). For html ->
+ * plain text conversion it uses Jsoup. It tries as good as it can but it will only strip
+ * valid html.
  * 
  * Last changed: $Date: 2009-06-24 17:10:19 +0200 (Mi, 24 Jun 2009) $
  * @version $Revision: 99 $
@@ -23,17 +26,18 @@ import com.gentics.cr.plink.PLinkStripper;
 public class HTMLContentTransformer extends ContentTransformer {
 
 	/**
-	 * Replace all plinks with empty strings (strip them out) as they are not useful in plain text and we don't want to index plinks.
+	 * Replace all plinks with empty strings (strip them out) as they are not
+	 * useful in plain text and we don't want to index plinks.
 	 */
-	private static final PLinkStripper stripper = new PLinkStripper();;
+	private static final PLinkStripper stripper = new PLinkStripper();
 
 	/**
-	 * Attribute specifying through the config which field to process. In most cases content.   
+	 * Attribute specifying through the config which field to process. In most cases content.
 	 */
 	public static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
 
 	/**
-	 * Field to process set through the config. 
+	 * Field to process set through the config.
 	 */
 	private String attribute = "";
 
@@ -47,30 +51,35 @@ public class HTMLContentTransformer extends ContentTransformer {
 	}
 
 	/**
-	 * Converts a string containing html to a String that does not contain html tags can be indexed by lucene.
+	 * Converts a string containing html to a String that does not contain html
+	 * tags can be indexed by lucene.
+	 * 
 	 * @param contentObject
 	 * @return
 	 */
 	private String getStringContents(final Object contentObject) throws CRException {
-		StringBuilder plainTextString = new StringBuilder();
+		StringBuilder plainTextStringBuilder = new StringBuilder();
 		String htmlcontent = getContents(contentObject);
+		String plainTextString = "";
 		try {
 			if (htmlcontent != null) {
 				Document d = Jsoup.parseBodyFragment(htmlcontent);
 
 				for (Element n : d.body().children()) {
-					plainTextString.append(n.text());
-					plainTextString.append(" ");
+					plainTextStringBuilder.append(n.text());
+					plainTextStringBuilder.append(" ");
 				}
+				plainTextString = StringUtils.stripBack(plainTextStringBuilder.toString(), " ");
 			}
 		} catch (Exception ex) {
 			throw new CRException(ex);
 		}
-		return plainTextString.toString();
+		return plainTextString;
 	}
 
 	/**
-	 * Converts a object containing html to a String that does not contain html tags can be indexed by lucene.
+	 * Converts a object containing html to a String that does not contain html
+	 * tags can be indexed by lucene.
 	 * @param contentObject
 	 * @return HTMLStripReader of contents
 	 */
@@ -90,7 +99,7 @@ public class HTMLContentTransformer extends ContentTransformer {
 			Object obj = bean.get(this.attribute);
 			if (obj != null) {
 				String newString = getStringContents(obj);
-				if (newString != null) {
+				if (newString != null && !newString.equals("")) {
 					bean.set(this.attribute, newString);
 				}
 			}
