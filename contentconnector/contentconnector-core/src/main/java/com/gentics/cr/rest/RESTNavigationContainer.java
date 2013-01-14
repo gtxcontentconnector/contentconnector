@@ -13,6 +13,7 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
+import com.gentics.cr.util.ContentRepositoryConfig;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 
 /**
@@ -85,14 +86,14 @@ public class RESTNavigationContainer {
 	 * @param stream TODO javadoc
 	 * @param responsetypesetter TODO javadoc
 	 */
-	public final void processService(final CRNavigationRequestBuilder reqBuilder,
-			final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
-			final IResponseTypeSetter responsetypesetter) {
+	public final void processService(final CRNavigationRequestBuilder reqBuilder, final Map<String, Resolvable> wrappedObjectsToDeploy,
+			final OutputStream stream, final IResponseTypeSetter responsetypesetter) {
 		Collection<CRResolvableBean> coll;
 		CRNavigationRequestBuilder myReqBuilder = reqBuilder;
 		ContentRepository cr = null;
+		ContentRepositoryConfig contentRepository = new ContentRepositoryConfig(conf);
 		try {
-			cr = myReqBuilder.getContentRepository(responseEncoding, conf);
+			cr = contentRepository.getContentRepository(responseEncoding, conf);
 			contenttype = cr.getContentType();
 			responsetypesetter.setContentType(getContentType());
 			CRRequest req = myReqBuilder.getNavigationRequest();

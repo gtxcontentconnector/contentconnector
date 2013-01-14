@@ -16,6 +16,7 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRRequestBuilder;
+import com.gentics.cr.util.ContentRepositoryConfig;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 
 /**
@@ -86,21 +87,31 @@ public class RESTSimpleContainer {
 	 * @param stream stream
 	 * @param responsetypesetter responsetypesetter.
 	 */
-	public final void processService(final CRRequestBuilder reqBuilder,
-			final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
-			final IResponseTypeSetter responsetypesetter) {
-		Collection<CRResolvableBean> coll;
+	public final void processService(final CRRequestBuilder reqBuilder, final Map<String, Resolvable> wrappedObjectsToDeploy,
+			final OutputStream stream, final IResponseTypeSetter responsetypesetter) {
 		CRRequestBuilder myReqBuilder = reqBuilder;
+		CRRequest req = myReqBuilder.getCRRequest();
+		processService(req, wrappedObjectsToDeploy, stream, responsetypesetter, myReqBuilder.isDebug());
+	}
+
+	public final void processService(final CRRequest req, final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
+			final IResponseTypeSetter responsetypesetter) {
+		processService(req, wrappedObjectsToDeploy, stream, responsetypesetter, false);
+	}
+
+	public final void processService(final CRRequest req, final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
+			final IResponseTypeSetter responsetypesetter, final boolean debug) {
+
+		Collection<CRResolvableBean> coll;
 		ContentRepository cr = null;
+		ContentRepositoryConfig contentRepository = new ContentRepositoryConfig(config);
 		try {
-			cr = myReqBuilder.getContentRepository(this.responseEncoding, this.config);
+			cr = contentRepository.getContentRepository(this.responseEncoding, this.config);
 			this.contenttype = cr.getContentType();
 			if (responsetypesetter != null) {
 				responsetypesetter.setContentType(this.getContentType());
 			}
-			CRRequest req = myReqBuilder.getCRRequest();
-			boolean deployMetaresolvable = Boolean.parseBoolean((String) config
-					.get(ContentRepository.DEPLOYMETARESOLVABLE_KEY));
+			boolean deployMetaresolvable = Boolean.parseBoolean((String) config.get(ContentRepository.DEPLOYMETARESOLVABLE_KEY));
 			if (deployMetaresolvable) {
 				req.set(RequestProcessor.META_RESOLVABLE_KEY, true);
 			}
@@ -111,7 +122,7 @@ public class RESTSimpleContainer {
 			}
 			// Query the Objects from RequestProcessor
 			coll = rp.getObjects(req);
-			// add the objects to repository as serializeable beans
+			// add the objects to repository as serializable beans
 			if (coll != null) {
 				for (Iterator<CRResolvableBean> it = coll.iterator(); it.hasNext();) {
 					cr.addObject(it.next());
@@ -122,12 +133,12 @@ public class RESTSimpleContainer {
 			//CR Error Handling
 			//CRException is passed down from methods that want to post
 			//the occured error to the client
-			cr.respondWithError((OutputStream) stream, ex, myReqBuilder.isDebug());
+			cr.respondWithError((OutputStream) stream, ex, debug);
 			LOG.error(ex.getMessage(), ex);
 		} catch (Exception ex) {
 			CRException crex = new CRException(ex);
-			LOG.error("" + myReqBuilder + stream, crex);
-			cr.respondWithError((OutputStream) stream, crex, myReqBuilder.isDebug());
+			LOG.error("Exception occured", crex);
+			cr.respondWithError((OutputStream) stream, crex, debug);
 			LOG.error(ex.getMessage(), crex);
 		} finally {
 			try {

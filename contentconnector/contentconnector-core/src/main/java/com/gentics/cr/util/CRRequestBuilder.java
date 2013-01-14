@@ -1,9 +1,6 @@
 package com.gentics.cr.util;
 
 import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
@@ -11,24 +8,23 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.rest.ContentRepository;
 
 /**
+ * Creates an expressionparser query from the provided query attributes.
+ * 
+ * This class is mostly used for querying a contentrepository.
  * 
  * Last changed: $Date: 2010-04-01 15:24:41 +0200 (Do, 01 Apr 2010) $
  * 
  * @version $Revision: 543 $
  * @author $Author: supnig@constantinopel.at $
- * 
  */
 public class CRRequestBuilder {
 
 	private boolean addPermissionsToRule = true;
-	protected String repotype;
 	protected boolean isDebug = false;
 	protected boolean metaresolvable = false;
 	protected String highlightquery;
@@ -39,19 +35,16 @@ public class CRRequestBuilder {
 	protected String query_group;
 	protected String start;
 	protected String count;
-	protected String type;
 	protected String contentid;
 	protected String wordmatch;
 	protected String[] node_id;
-	protected String[] attributes;
 	protected String[] sorting;
 	protected String[] plinkattributes;
 	protected String[] permissions;
 	protected String[] options;
 	protected RequestWrapper request;
 	protected Object response;
-
-	private static final String REPOSITORIES_KEY = "cr";
+	private ContentRepositoryConfig contentRepository = null;
 
 	protected GenericConfiguration config;
 
@@ -61,7 +54,7 @@ public class CRRequestBuilder {
 	 * name of the configuration attribute where the defaultparameters are
 	 * stored in.
 	 */
-	private static final String DEFAULPARAMETERS_KEY = "defaultparameters";
+	public static final String DEFAULPARAMETERS_KEY = "defaultparameters";
 
 	/**
 	 * Configuration key for setting if the permissions should be added to the
@@ -117,19 +110,20 @@ public class CRRequestBuilder {
 	public CRRequestBuilder(final RequestWrapper requestWrapper, final GenericConfiguration requestBuilderConfiguration) {
 
 		this.config = requestBuilderConfiguration;
+		this.contentRepository = new ContentRepositoryConfig(config);
+
 		this.request = requestWrapper;
 		this.filter = (String) requestWrapper.getParameter("filter");
 		this.contentid = (String) requestWrapper.getParameter("contentid");
 		this.count = requestWrapper.getParameter("count");
 		this.start = (String) requestWrapper.getParameter("start");
 		this.sorting = requestWrapper.getParameterValues("sorting");
-		this.attributes = prepareAttributesArray(requestWrapper.getParameterValues("attributes"));
+		this.contentRepository.setAttributeArray(prepareAttributesArray(requestWrapper.getParameterValues("attributes")));
 		this.plinkattributes = requestWrapper.getParameterValues("plinkattributes");
 		this.permissions = requestWrapper.getParameterValues("permissions");
 		this.options = requestWrapper.getParameterValues("options");
-		this.type = requestWrapper.getParameter("type");
-		this.isDebug = (requestWrapper.getParameter("debug") != null && requestWrapper.getParameter("debug").equals(
-			"true"));
+		this.contentRepository.setRepositoryType(requestWrapper.getParameter("type"));
+		this.isDebug = (requestWrapper.getParameter("debug") != null && requestWrapper.getParameter("debug").equals("true"));
 		this.metaresolvable = Boolean.parseBoolean(requestWrapper.getParameter(RequestProcessor.META_RESOLVABLE_KEY));
 		this.highlightquery = requestWrapper.getParameter(RequestProcessor.HIGHLIGHT_QUERY_KEY);
 		this.node_id = requestWrapper.getParameterValues("node");
@@ -173,8 +167,8 @@ public class CRRequestBuilder {
 			filter = this.createPermissionsRule(filter, permissions);
 		}
 
-		setRepositoryType(this.type);
-
+		contentRepository.getDefaultParameters();
+		
 		getDefaultParameters();
 	}
 
@@ -194,7 +188,6 @@ public class CRRequestBuilder {
 	}
 
 	/**
-	 * try to get the default parameters from the config. TODO: this should be
 	 * done in the same way as the parameter initialisation in the constructor
 	 * to avoid repeated code.
 	 */
@@ -204,10 +197,6 @@ public class CRRequestBuilder {
 			defaultparameters = (GenericConfiguration) this.config.get(DEFAULPARAMETERS_KEY);
 		}
 		if (defaultparameters != null) {
-			if (this.type == null) {
-				this.type = defaultparameters.getString("type");
-				setRepositoryType(this.type);
-			}
 			if (this.node_id == null) {
 				String defaultNode = defaultparameters.getString("node");
 				if (defaultNode != null) {
@@ -230,25 +219,11 @@ public class CRRequestBuilder {
 				String numberOfPageStr = defaultparameters.getString("np");
 				calcStartFromCount(numberOfPageStr);
 			}
-			if (this.attributes == null || this.attributes.length == 0) {
-				String defaultAttributes = (String) defaultparameters.get("attributes");
-				if (defaultAttributes != null) {
-					this.attributes = defaultAttributes.split(",[ ]*");
-				}
-			}
 			addAdvancedSearchParameters();
 		}
 	}
 
-	/**
-	 * Returns String Array of Attributes to request.
-	 * 
-	 * @return string array with the attributes
-	 */
-	public final String[] getAttributeArray() {
-		return this.attributes;
-	}
-
+	
 	/**
 	 * Get array of options.
 	 * 
@@ -256,28 +231,6 @@ public class CRRequestBuilder {
 	 */
 	public final String[] getOptionArray() {
 		return this.options;
-	}
-
-	/**
-	 * Get Type of ContentRepository.
-	 * 
-	 * @return type of the contentrepository
-	 */
-	public final String getRepositoryType() {
-		if (this.repotype == null) {
-			Properties props = this.getConfiguredContentRepositories();
-			if (props != null) {
-				String v = props.getProperty("DEFAULT");
-				if (v != null) {
-					this.repotype = v;
-				}
-			}
-			if (this.repotype == null) {
-				this.repotype = "XML";
-			}
-
-		}
-		return this.repotype;
 	}
 
 	/**
@@ -363,18 +316,13 @@ public class CRRequestBuilder {
 		}
 	}
 
-	private void setRepositoryType(String type) {
-		// Initialize RepositoryType
-		this.repotype = type;
-	}
-
 	/**
 	 * Creates a CRRequest from the configuration.
 	 * 
 	 * @return created CRRequest
 	 */
 	public final CRRequest getCRRequest() {
-		CRRequest req = new CRRequest(filter, start, count, sorting, attributes, plinkattributes);
+		CRRequest req = new CRRequest(filter, start, count, sorting, contentRepository.getAttributeArray(), plinkattributes);
 		req.setContentid(this.contentid);
 		req.setRequest(this.request);
 		req.setResponse(this.response);
@@ -406,8 +354,7 @@ public class CRRequestBuilder {
 		String ret = objectFilter;
 		if ((userPermissions != null) && (userPermissions.length > 0)) {
 			if ((objectFilter != null) && (!objectFilter.equals(""))) {
-				ret = "(" + objectFilter + ") AND object.permissions CONTAINSONEOF "
-						+ CRUtil.prepareParameterArrayForRule(userPermissions);
+				ret = "(" + objectFilter + ") AND object.permissions CONTAINSONEOF " + CRUtil.prepareParameterArrayForRule(userPermissions);
 			} else {
 				ret = "object.permissions CONTAINSONEOF " + CRUtil.prepareParameterArrayForRule(userPermissions);
 			}
@@ -432,88 +379,4 @@ public class CRRequestBuilder {
 		return ret.toArray(new String[ret.size()]);
 	}
 
-	private final Properties getConfiguredContentRepositories() {
-		if (config != null) {
-			Object crs = this.config.get(REPOSITORIES_KEY);
-			if (crs != null && crs instanceof GenericConfiguration) {
-				GenericConfiguration crConf = (GenericConfiguration) crs;
-				Properties crProperties = crConf.getProperties();
-				return crProperties;
-			}
-		} else {
-			logger.debug("Cannot find my config.");
-		}
-		return null;
-	}
-
-	/**
-	 * gets a class map containing the names of.
-	 * 
-	 * @return
-	 */
-	private ConcurrentHashMap<String, String> getRepositoryClassMap() {
-
-		ConcurrentHashMap<String, String> classmap = RepositoryFactory.getStringClassMap();
-
-		// values from other projects
-		// TODO this should be moved to the packages adding additional
-		// ContentRepositories
-		classmap.put("JSON", "com.gentics.cr.rest.json.JSONContentRepository");
-
-		Properties confs = getConfiguredContentRepositories();
-		if (confs != null) {
-			for (Entry<Object, Object> e : confs.entrySet()) {
-				String key = (String) e.getKey();
-				if (!"default".equalsIgnoreCase(key)) {
-					classmap.put(key.toUpperCase(), (String) e.getValue());
-				}
-			}
-		}
-
-		return classmap;
-	}
-
-	/**
-	 * Create the ContentRepository for this request and give it the
-	 * configuration. This is needed for the VelocityContentRepository
-	 * 
-	 * @param encoding Output encoding should be used
-	 * @param configUtil Config to get the Velocity Engine from
-	 * @return ContentRepository with the given settings.
-	 */
-
-	public ContentRepository getContentRepository(final String encoding, final CRConfigUtil configUtil) {
-		ContentRepository cr = null;
-
-		ConcurrentHashMap<String, String> classmap = getRepositoryClassMap();
-
-		String cls = classmap.get(this.getRepositoryType().toUpperCase());
-		if (cls != null) {
-			// XmlContentRepository(String[] attr, String encoding)
-			try {
-				cr = (ContentRepository) Class.forName(cls)
-						.getConstructor(new Class[] { String[].class, String.class })
-						.newInstance(this.getAttributeArray(), encoding);
-			} catch (Exception e) {
-				try {
-					cr = (ContentRepository) Class.forName(cls)
-							.getConstructor(new Class[] { String[].class, String.class, CRConfigUtil.class })
-							.newInstance(this.getAttributeArray(), encoding, configUtil);
-				} catch (Exception ex) {
-					try {
-						cr = (ContentRepository) Class
-								.forName(cls)
-								.getConstructor(
-									new Class[] { String[].class, String.class, String[].class, CRConfigUtil.class })
-								.newInstance(this.getAttributeArray(), encoding, null, configUtil);
-					} catch (Exception exc) {
-						logger.error("Could not create ContentRepository instance from class: " + cls, exc);
-					}
-				}
-			}
-		} else {
-			logger.error("Could not create ContentRepository instance. No Type is set to the RequestBuilder");
-		}
-		return cr;
-	}
 }
