@@ -1,8 +1,8 @@
 package com.gentics.cr.lucene.indexer.transformer.other;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -62,16 +62,21 @@ public class FolderAttributeMerger extends ContentTransformer {
 	@Override
 	public void processBean(final CRResolvableBean contentBean) {
 		String targetAttributeValues = "";
+		CRResolvableBean folderBean = null;
 
 		Resolvable contentResolvable = contentBean.getResolvable();
-		CRResolvableBean folderBean = (CRResolvableBean) contentResolvable.get(FOLDERATTRIBUTE);
-		Resolvable folderResolvable = folderBean.getResolvable();
-		if (folderResolvable != null) {
-			for (String attribute : folderAttributes) {
-				Object attributeObject = folderResolvable.getProperty(attribute);
-				if (attributeObject != null) {
-					String folderAttributesString = attributeObject.toString();
-					targetAttributeValues += folderAttributesString;
+		if (contentResolvable != null) {
+			folderBean = (CRResolvableBean) contentResolvable.get(FOLDERATTRIBUTE);
+			if (folderBean != null) {
+				Resolvable folderResolvable = folderBean.getResolvable();
+				if (folderResolvable != null) {
+					for (String attribute : folderAttributes) {
+						Object attributeObject = folderResolvable.getProperty(attribute);
+						if (attributeObject != null) {
+							String folderAttributesString = attributeObject.toString();
+							targetAttributeValues += folderAttributesString;
+						}
+					}
 				}
 			}
 		}
@@ -84,14 +89,11 @@ public class FolderAttributeMerger extends ContentTransformer {
 			}
 		}
 
-		if (!targetAttributeValues.equals("")) {
-			String contentid = contentBean.getContentid();
-			String folderid = "";
-			folderid = folderBean.getContentid();
-			logger.debug("contentid: " + contentid + " " + " - folder: " + folderid + " - targetattribute: "
-					+ targetAttributeValues);
-			contentBean.set(targetAttribute, targetAttributeValues);
+		if (logger.isDebugEnabled() && !targetAttributeValues.equals("") && folderBean != null) {
+			logger.debug("contentid: " + contentBean.getContentid() + " " + " - folder: " + folderBean.getContentid()
+					+ " - targetattribute: " + targetAttributeValues);
 		}
+		contentBean.set(targetAttribute, targetAttributeValues);
 	}
 
 	@Override
