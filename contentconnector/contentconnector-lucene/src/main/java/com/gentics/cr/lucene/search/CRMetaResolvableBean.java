@@ -28,6 +28,11 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 	public static final String QUERY_PARAMETER_KEY = "queryParameter";
 
 	/**
+	 * Parameter in the request used for retrieving the query.
+	 */
+	public static final String REQUEST_QUERY_PARAMETER = "q";
+
+	/**
 	 * initialize the MetaResolvable for the search result.
 	 * @param searchResult search result to get the hit count and suggestions from
 	 * @param request Search request to get the initial query from
@@ -42,7 +47,7 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 		set(LuceneRequestProcessor.META_COUNT_KEY, count);
 		set(LuceneRequestProcessor.META_QUERY_KEY, request.getRequestFilter());
 		if (request.getRequestWrapper() != null) {
-			set(QUERY_PARAMETER_KEY, request.getRequestWrapper().getParameter("q"));
+			set(QUERY_PARAMETER_KEY, request.getRequestWrapper().getParameter(REQUEST_QUERY_PARAMETER));
 		}
 		set(CRSearcher.RESULT_SUGGESTIONS_KEY, searchResult.get(CRSearcher.RESULT_SUGGESTIONS_KEY));
 		set(CRSearcher.RESULT_MAXSCORE_KEY, searchResult.get(CRSearcher.RESULT_MAXSCORE_KEY));
