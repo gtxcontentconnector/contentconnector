@@ -135,7 +135,7 @@ public class CRSearcher {
 	private boolean advanceddidyoumeanbestquery = false;
 	private int didyoumeansuggestcount = 5;
 	private float didyoumeanminscore = 0.5f;
-	
+
 	private FacetsSearch facetsSearch;
 
 	/**
@@ -162,7 +162,7 @@ public class CRSearcher {
 			advanceddidyoumeanbestquery = config.getBoolean(ADVANCED_DIDYOUMEAN_BESTQUERY_KEY, advanceddidyoumeanbestquery);
 			didyoumeanactivatelimit = config.getInteger(DIDYOUMEAN_ACTIVATE_KEY, didyoumeanactivatelimit);
 		}
-		
+
 		facetsSearch = new FacetsSearch(config);
 
 	}
@@ -244,7 +244,7 @@ public class CRSearcher {
 
 		return ret;
 	}
-	
+
 	/**
 	 * Run a Search against the lucene index.
 	 * 
@@ -258,8 +258,7 @@ public class CRSearcher {
 	 */
 	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final Searcher searcher, final Query parsedQuery,
 			final boolean explain, final int count, final int start) {
-		return executeSearcher(collector, searcher, parsedQuery,
-				explain, count, start, null);
+		return executeSearcher(collector, searcher, parsedQuery, explain, count, start, null);
 	}
 
 	/**
@@ -275,13 +274,12 @@ public class CRSearcher {
 	 * @return ArrayList of results
 	 */
 	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final Searcher searcher, final Query parsedQuery,
-			final boolean explain, final int count, final int start,  final FacetsCollector facetsCollector) {
+			final boolean explain, final int count, final int start, final FacetsCollector facetsCollector) {
 		try {
 			// wrap the TopDocsCollector and the FacetsCollector to one
 			// MultiCollector and perform the search
-			searcher.search(parsedQuery,
-					MultiCollector.wrap(collector, facetsCollector));
-			
+			searcher.search(parsedQuery, MultiCollector.wrap(collector, facetsCollector));
+
 			TopDocs tdocs = collector.topDocs(start, count);
 
 			float maxScoreReturn = tdocs.getMaxScore();
@@ -359,24 +357,24 @@ public class CRSearcher {
 		Searcher searcher;
 		Analyzer analyzer;
 		// Collect count + start hits
-		int hits = count + start;	// we want to retreive the startcount (start) to endcount (hits)
+		int hits = count + start;	// we want to retrieve the startcount (start) to endcount (hits)
 
 		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(config);
 
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
-		
+
 		// Resources needed for faceted search
 		TaxonomyAccessor taAccessor = null;
 		TaxonomyReader taReader = null;
 		IndexReader facetsIndexReader = null;
-		
+
 		// get accessors and reader only if facets are activated 
 		if (facetsSearch.useFacets()) {
 			facetsIndexReader = indexAccessor.getReader(false);
 			taAccessor = idsLocation.getTaxonomyAccessor();
 			taReader = taAccessor.getTaxonomyReader();
 		}
-		
+
 		searcher = indexAccessor.getPrioritizedSearcher();
 		Object userPermissionsObject = request.get(CRRequest.PERMISSIONS_KEY);
 		String[] userPermissions = new String[0];
@@ -398,12 +396,11 @@ public class CRSearcher {
 
 				result = new HashMap<String, Object>(3);
 				result.put(RESULT_QUERY_KEY, parsedQuery);
-				
+
 				// when facets are active create a FacetsCollector
 				FacetsCollector facetsCollector = null;
 				if (facetsSearch.useFacets()) {
-					facetsCollector = facetsSearch.createFacetsCollector(
-							facetsIndexReader, taAccessor, taReader);
+					facetsCollector = facetsSearch.createFacetsCollector(facetsIndexReader, taAccessor, taReader);
 				}
 
 				Map<String, Object> ret = executeSearcher(collector, searcher, parsedQuery, explain, count, start, facetsCollector);
@@ -414,12 +411,9 @@ public class CRSearcher {
 							if (documents != null) {
 								for (Entry doc : documents.entrySet()) {
 									Document doCument = (Document) doc.getKey();
-									String contentid 
-										= doCument.get("contentid");
-									log.debug("CRSearcher.search: " 
-										 /* + doCument.toString() */
-											+ " Contentid: " 
-											+ contentid);
+									log.debug("CRSearcher.search: "
+									/* + doCument.toString() */
+									+ " Contentid: " + doCument.get("contentid"));
 								}
 							}
 						}
@@ -436,9 +430,7 @@ public class CRSearcher {
 
 					// PLUG IN DIDYOUMEAN
 					boolean didyoumeanEnabledForRequest = StringUtils.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY), true);
-					if (start == 0
-							&& didyoumeanenabled
-							&& didyoumeanEnabledForRequest
+					if (start == 0 && didyoumeanenabled && didyoumeanEnabledForRequest
 							&& (totalhits <= didyoumeanactivatelimit || didyoumeanactivatelimit == -1 || maxScore < didyoumeanminscore)) {
 
 						HashMap<String, Object> didyoumeanResult = didyoumean(
@@ -453,15 +445,12 @@ public class CRSearcher {
 					}
 
 					// PLUG IN DIDYOUMEAN END
-					
+
 					// if a facetsCollector was created, store the faceted search results in the meta resolveable
 					if (facetsCollector != null) {
-						result.put(
-								FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY,
-								facetsSearch.getFacetsResults(facetsCollector));
+						result.put(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY, facetsSearch.getFacetsResults(facetsCollector));
 					}
-					
-					
+
 					int size = 0;
 					if (coll != null) {
 						size = coll.size();
@@ -617,7 +606,7 @@ public class CRSearcher {
 
 	@Override
 	public void finalize() {
-		if(didyoumeanprovider != null) {
+		if (didyoumeanprovider != null) {
 			didyoumeanprovider.finalize();
 		}
 		if (config != null) {
