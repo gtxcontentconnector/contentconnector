@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.11.18-SNAPSHOT</version>
+		<version>1.11.18</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>contentconnector-jtidy</artifactId>
