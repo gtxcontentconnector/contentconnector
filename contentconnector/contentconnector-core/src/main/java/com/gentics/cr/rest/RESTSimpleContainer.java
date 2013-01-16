@@ -91,20 +91,25 @@ public class RESTSimpleContainer {
 			final OutputStream stream, final IResponseTypeSetter responsetypesetter) {
 		CRRequestBuilder myReqBuilder = reqBuilder;
 		CRRequest req = myReqBuilder.getCRRequest();
-		processService(req, wrappedObjectsToDeploy, stream, responsetypesetter, myReqBuilder.isDebug());
+		ContentRepositoryConfig contentRepositoryConfig = myReqBuilder.getContentRepositoryConfig();
+		processService(req, contentRepositoryConfig, wrappedObjectsToDeploy, stream, responsetypesetter, myReqBuilder.isDebug());
 	}
 
-	public final void processService(final CRRequest req, final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
-			final IResponseTypeSetter responsetypesetter) {
-		processService(req, wrappedObjectsToDeploy, stream, responsetypesetter, false);
+	public final void processService(final CRRequest req, final ContentRepositoryConfig contentRepository,
+			final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream, final IResponseTypeSetter responsetypesetter) {
+		processService(req, contentRepository, wrappedObjectsToDeploy, stream, responsetypesetter, false);
 	}
 
-	public final void processService(final CRRequest req, final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream,
-			final IResponseTypeSetter responsetypesetter, final boolean debug) {
+	public final void processService(final CRRequest req, final ContentRepositoryConfig cRepository,
+			final Map<String, Resolvable> wrappedObjectsToDeploy, final OutputStream stream, final IResponseTypeSetter responsetypesetter,
+			final boolean debug) {
 
 		Collection<CRResolvableBean> coll;
 		ContentRepository cr = null;
-		ContentRepositoryConfig contentRepository = new ContentRepositoryConfig(config);
+		ContentRepositoryConfig contentRepository = cRepository;
+		if (contentRepository == null) {
+			contentRepository = new ContentRepositoryConfig(config);
+		}
 		try {
 			cr = contentRepository.getContentRepository(this.responseEncoding, this.config);
 			this.contenttype = cr.getContentType();

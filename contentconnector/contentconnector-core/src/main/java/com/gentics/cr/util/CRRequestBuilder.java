@@ -168,7 +168,7 @@ public class CRRequestBuilder {
 		}
 
 		contentRepository.getDefaultParameters();
-		
+
 		getDefaultParameters();
 	}
 
@@ -223,7 +223,6 @@ public class CRRequestBuilder {
 		}
 	}
 
-	
 	/**
 	 * Get array of options.
 	 * 
@@ -342,6 +341,10 @@ public class CRRequestBuilder {
 	 */
 	public final Object getRequest() {
 		return this.request;
+	}
+
+	public final ContentRepositoryConfig getContentRepositoryConfig() {
+		return this.contentRepository;
 	}
 
 	/**
