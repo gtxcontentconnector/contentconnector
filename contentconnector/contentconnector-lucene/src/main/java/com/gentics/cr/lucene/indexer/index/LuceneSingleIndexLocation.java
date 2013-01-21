@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
@@ -92,7 +93,16 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	protected final IndexAccessor getAccessorInstance(final boolean reopenClosedFactory) {
 		Directory directory = this.getDirectory();
 
-		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory, reopenClosedFactory);
+		IndexAccessor indexAccessor = null;
+		try {
+			indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory);
+		} catch (AlreadyClosedException e) {
+			if (reopenClosedFactory) {
+				IndexAccessorFactory.getInstance().reopen();
+			} else {
+				throw e;
+			}
+		}
 		return indexAccessor;
 	}
 
