@@ -122,6 +122,14 @@ public class IndexAccessorFactory {
 		}
 	}
 
+	/**
+	 * Allows further index access if new accessors are created.
+	 * IndexAccessorFactory would only be useful once but after closing it becomes useless. 
+	 */
+	public synchronized void reopen() {
+		wasClosed = false;
+	}
+
 	public void createAccessor(final Directory dir, final Analyzer analyzer) throws IOException {
 		createAccessor(dir, analyzer, null, null);
 	}
@@ -158,12 +166,8 @@ public class IndexAccessorFactory {
 	 * @param indexDir {@link Directory} to get the {@link IndexAccessor} for.
 	 * @return {@link IndexAccessor} for the {@link Directory}.
 	 */
-	public IndexAccessor getAccessor(final Directory indexDir) {
-		return getAccessor(indexDir, false);
-	}
-
-	public IndexAccessor getAccessor(final Directory indexDir, final boolean reopenClosedFactory) {
-		if (wasClosed && !reopenClosedFactory) {
+	public IndexAccessor getAccessor(final Directory indexDir) throws AlreadyClosedException {
+		if (wasClosed) {
 			throw new AlreadyClosedException("IndexAccessorFactory was already closed" + ". Maybe there is a shutdown in progress.");
 		}
 		IndexAccessor indexAccessor = indexAccessors.get(indexDir);
@@ -171,7 +175,6 @@ public class IndexAccessorFactory {
 			throw new IllegalStateException("Requested Accessor does not exist");
 		}
 		return indexAccessor;
-
 	}
 
 	/**
