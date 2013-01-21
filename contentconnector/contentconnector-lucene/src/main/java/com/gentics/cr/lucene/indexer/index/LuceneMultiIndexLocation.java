@@ -3,9 +3,9 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.IndexReader;
@@ -39,7 +39,7 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 	 * It is not able to write to the index.
 	 * @param config
 	 */
-	public LuceneMultiIndexLocation(CRConfig config) {
+	public LuceneMultiIndexLocation(final CRConfig config) {
 		super(config);
 		GenericConfiguration locs = (GenericConfiguration) config.get(INDEX_LOCATIONS_KEY);
 		if (locs != null) {
@@ -60,10 +60,10 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 		Directory dir = createDirectory(indexLocation, config);
 
 		//Create index accessor
-		IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
-		if (!IAFactory.hasAccessor(dir)) {
+		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
+		if (!factory.hasAccessor(dir)) {
 			try {
-				IAFactory.createAccessor(dir, getConfiguredAnalyzer());
+				factory.createAccessor(dir, getConfiguredAnalyzer());
 			} catch (IOException ex) {
 				log.fatal("COULD NOT CREATE INDEX ACCESSOR" + ex.getMessage());
 			}
@@ -75,8 +75,13 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 
 	@Override
 	protected IndexAccessor getAccessorInstance() {
-		IndexAccessorFactory IAFactory = IndexAccessorFactory.getInstance();
-		return IAFactory.getMultiIndexAccessor(this.dirs.values().toArray(new Directory[] {}));
+		IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
+		return factory.getMultiIndexAccessor(this.dirs.values().toArray(new Directory[] {}));
+	}
+
+	@Override
+	protected IndexAccessor getAccessorInstance(final boolean reopenClosedFactory) {
+		return getAccessorInstance();
 	}
 
 	@Override
@@ -101,7 +106,7 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 		return count;
 	}
 
-	private String getReopenFilename(String dir) {
+	private String getReopenFilename(final String dir) {
 		return dir + "/" + REOPEN_FILENAME;
 	}
 
@@ -230,8 +235,10 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 		}
 		return hash;
 	}
+
 	@Override
 	protected TaxonomyAccessor getTaxonomyAccessorInstance() {
 		throw new UnsupportedOperationException("Method not implemented yet");
 	}
+
 }

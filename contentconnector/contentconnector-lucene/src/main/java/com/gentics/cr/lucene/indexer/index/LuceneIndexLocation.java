@@ -38,7 +38,7 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	private boolean registered = false;
 
 	private IndexAccessorToken accessorToken = null;
-	
+
 	protected boolean useFacets = false;
 
 	protected Analyzer getConfiguredAnalyzer() {
@@ -134,8 +134,7 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 		} else {
 			log.error("IndexLocation is not created for Lucene. Using the " + CRLuceneIndexJob.class.getName()
 					+ " requires that you use the " + LuceneIndexLocation.class.getName()
-					+ ". You can configure another Job by setting the " + IndexLocation.UPDATEJOBCLASS_KEY
-					+ " key in your config.");
+					+ ". You can configure another Job by setting the " + IndexLocation.UPDATEJOBCLASS_KEY + " key in your config.");
 			return null;
 		}
 	}
@@ -203,6 +202,8 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 
 	protected abstract IndexAccessor getAccessorInstance();
 
+	protected abstract IndexAccessor getAccessorInstance(boolean reopenClosedFactory);
+
 	/**
 	 * Returns an index Accessor, which can be used to share access to an index
 	 * over multiple threads.
@@ -210,7 +211,11 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	 * @return IndexAccessor for this index
 	 */
 	public final IndexAccessor getAccessor() {
-		IndexAccessor indexAccessor = getAccessorInstance();
+		return getAccessor(false);
+	}
+
+	public final IndexAccessor getAccessor(final boolean reopenClosedFactory) {
+		IndexAccessor indexAccessor = getAccessorInstance(reopenClosedFactory);
 		reopenCheck(indexAccessor, getTaxonomyAccessor());
 		return indexAccessor;
 	}
@@ -294,7 +299,7 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 
 	@Override
 	public abstract int hashCode();
-	
+
 	protected abstract TaxonomyAccessor getTaxonomyAccessorInstance();
 
 	/**

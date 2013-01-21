@@ -34,8 +34,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	 * Timestamp to store the lastmodified value of the reopen file.
 	 */
 	private long lastmodifiedStored = 0;
-	
-	
+
 	private String taxonomyLocation;
 	private Directory taxonomyDir = null;
 
@@ -59,15 +58,15 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 		} else {
 			log.debug("Accessor already present.");
 		}
-				
+
 		// check if facets are activated and create a TaxonomyAccessor if necessary
 		useFacets = config.getBoolean(FACET_FLAG_KEY, useFacets);
-		if(useFacets) {
+		if (useFacets) {
 			log.debug("Facets are active");
 			taxonomyLocation = retrieveTaxonomyLocation(config);
 			taxonomyDir = createDirectory(taxonomyLocation, config);
 			TaxonomyAccessorFactory taFactory = TaxonomyAccessorFactory.getInstance();
-			if(!taFactory.hasAccessor(taxonomyDir)) {
+			if (!taFactory.hasAccessor(taxonomyDir)) {
 				try {
 					taFactory.createAccessor(config, taxonomyDir);
 				} catch (IOException e) {
@@ -75,17 +74,25 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 				}
 			} else {
 				log.debug("TaxonomyAccessor already present.");
-			}			
+			}
 		} else {
 			log.debug("Facets are not active");
 		}
 	}
 
+	/**
+	 * Does not reopen the IndexAccessorFactory if already closed.
+	 */
 	@Override
 	protected final IndexAccessor getAccessorInstance() {
+		return getAccessorInstance(false);
+	}
+
+	@Override
+	protected final IndexAccessor getAccessorInstance(final boolean reopenClosedFactory) {
 		Directory directory = this.getDirectory();
 
-		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory);
+		IndexAccessor indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory, reopenClosedFactory);
 		return indexAccessor;
 	}
 
@@ -160,19 +167,19 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 						if (lastmodified != lastmodifiedStored) {
 							lastmodifiedStored = lastmodified;
 							indexAccessor.reopen();
-							if(taxonomyAccessor != null) {
+							if (taxonomyAccessor != null) {
 								taxonomyAccessor.refresh();
 							}
 							reopened = true;
 							log.debug("Reopened index because reopen file has " + "changed");
 						} else {
-							log.debug("Do not reopen index because reopen file " + "hasn't changed.\n" + lastmodified
-									+ " == " + lastmodifiedStored);
+							log.debug("Do not reopen index because reopen file " + "hasn't changed.\n" + lastmodified + " == "
+									+ lastmodifiedStored);
 						}
 					} else {
 						reopenFile.delete();
 						indexAccessor.reopen();
-						if(taxonomyAccessor != null) {
+						if (taxonomyAccessor != null) {
 							taxonomyAccessor.refresh();
 						}
 						reopened = true;
@@ -246,8 +253,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	public int hashCode() {
 		return dir.getLockID().hashCode();
 	}
-	
-	
+
 	/**
 	 * creates the location for the taxonomy from the config
 	 *  
@@ -258,7 +264,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 		String path = getFirstIndexLocation(config);
 		return createDirectory(path, config);
 	}
-		
+
 	/**
 	 * retrieves the Taxonomy location from the config
 	 * 
@@ -266,11 +272,10 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	 * @return
 	 */
 	protected static String retrieveTaxonomyLocation(CRConfig config) {
-		String path = config.getString(FACET_CONFIG_KEY.concat(".").concat(
-				FACET_CONFIG_PATH_KEY));
+		String path = config.getString(FACET_CONFIG_KEY.concat(".").concat(FACET_CONFIG_PATH_KEY));
 		return path;
 	}
-	
+
 	/**
 	 * checks if facets are activated
 	 * 
@@ -279,16 +284,15 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	public boolean useFacets() {
 		return useFacets;
 	}
-	
+
 	private Directory getTaxonomyDirectory() {
 		return taxonomyDir;
 	}
-	
+
 	@Override
 	protected TaxonomyAccessor getTaxonomyAccessorInstance() {
 		Directory directory = this.getTaxonomyDirectory();
-		TaxonomyAccessor accessor = TaxonomyAccessorFactory.getInstance()
-						.getAccessor(directory);
+		TaxonomyAccessor accessor = TaxonomyAccessorFactory.getInstance().getAccessor(directory);
 		return accessor;
 	}
 }
