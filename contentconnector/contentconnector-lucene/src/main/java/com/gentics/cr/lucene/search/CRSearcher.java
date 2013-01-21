@@ -361,7 +361,10 @@ public class CRSearcher {
 
 		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(config);
 
-		IndexAccessor indexAccessor = idsLocation.getAccessor();
+		// TODO: maybe we should make this configurable. Imho this should not be a problem if enabled by default as once a search
+		// has been executed the Factory is opened and we only need to make sure that on shutdown it is released.
+		boolean reopenIndexFactory = true;
+		IndexAccessor indexAccessor = idsLocation.getAccessor(reopenIndexFactory);
 
 		// Resources needed for faceted search
 		TaxonomyAccessor taAccessor = null;
