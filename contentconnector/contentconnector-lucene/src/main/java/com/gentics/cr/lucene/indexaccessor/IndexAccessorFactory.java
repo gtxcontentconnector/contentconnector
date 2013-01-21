@@ -39,7 +39,6 @@ import org.apache.lucene.store.Directory;
  * Last changed: $Date: 2009-09-02 17:57:48 +0200 (Mi, 02 Sep 2009) $
  * @version $Revision: 180 $
  * @author $Author: supnig@constantinopel.at $
- *
  */
 public class IndexAccessorFactory {
 
@@ -93,7 +92,7 @@ public class IndexAccessorFactory {
 		return token;
 	}
 
-	public synchronized void releaseConsumer(IndexAccessorToken token) {
+	public synchronized void releaseConsumer(final IndexAccessorToken token) {
 		this.consumer.remove(token);
 		LOGGER.debug("Releasing Consumer: " + token + ", Size: " + consumer.size());
 		if (this.consumer.size() == 0) {
@@ -123,28 +122,16 @@ public class IndexAccessorFactory {
 		}
 	}
 
-	/**
-	 * 
-	 * @param dir
-	 * @param analyzer
-	 * @throws IOException
-	 */
-	public void createAccessor(Directory dir, Analyzer analyzer) throws IOException {
+	public void createAccessor(final Directory dir, final Analyzer analyzer) throws IOException {
 		createAccessor(dir, analyzer, null, null);
 	}
 
-	/**
-	 * 
-	 * @param dir
-	 * @param analyzer
-	 * @param query
-	 * @throws IOException
-	 */
-	public void createAccessor(Directory dir, Analyzer analyzer, Query query) throws IOException {
+	public void createAccessor(final Directory dir, final Analyzer analyzer, final Query query) throws IOException {
 		createAccessor(dir, analyzer, query, null);
 	};
 
-	private void createAccessor(Directory dir, Analyzer analyzer, Query query, Set<Sort> sortFields) throws IOException {
+	private void createAccessor(final Directory dir, final Analyzer analyzer, final Query query, final Set<Sort> sortFields)
+			throws IOException {
 		IndexAccessor accessor = null;
 		if (query != null) {
 			accessor = new WarmingIndexAccessor(dir, analyzer, query);
@@ -172,7 +159,11 @@ public class IndexAccessorFactory {
 	 * @return {@link IndexAccessor} for the {@link Directory}.
 	 */
 	public IndexAccessor getAccessor(final Directory indexDir) {
-		if (wasClosed) {
+		return getAccessor(indexDir, false);
+	}
+
+	public IndexAccessor getAccessor(final Directory indexDir, final boolean reopenClosedFactory) {
+		if (wasClosed && !reopenClosedFactory) {
 			throw new AlreadyClosedException("IndexAccessorFactory was already closed" + ". Maybe there is a shutdown in progress.");
 		}
 		IndexAccessor indexAccessor = indexAccessors.get(indexDir);
@@ -188,7 +179,7 @@ public class IndexAccessorFactory {
 	 * @param indexDir directory in which contains the index file
 	 * @return boolean true if present, false if not
 	 */
-	public boolean hasAccessor(Directory indexDir) {
+	public boolean hasAccessor(final Directory indexDir) {
 		IndexAccessor indexAccessor = indexAccessors.get(indexDir);
 		if (indexAccessor == null) {
 			return false;
@@ -199,7 +190,7 @@ public class IndexAccessorFactory {
 	/**
 	 * @param dirs 
 	 */
-	public IndexAccessor getMultiIndexAccessor(Directory[] dirs) {
+	public IndexAccessor getMultiIndexAccessor(final Directory[] dirs) {
 		IndexAccessor multiIndexAccessor = new DefaultMultiIndexAccessor(dirs);
 
 		return multiIndexAccessor;
