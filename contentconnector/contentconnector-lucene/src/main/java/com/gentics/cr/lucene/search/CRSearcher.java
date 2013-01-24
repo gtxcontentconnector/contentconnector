@@ -365,6 +365,9 @@ public class CRSearcher {
 		// has been executed the Factory is opened and we only need to make sure that on shutdown it is released.
 		boolean reopenIndexFactory = true;
 		IndexAccessor indexAccessor = idsLocation.getAccessor(reopenIndexFactory);
+		if (indexAccessor == null) {
+			log.error("IndexAccessor is null. Search will not work.");
+		}
 
 		// Resources needed for faceted search
 		TaxonomyAccessor taAccessor = null;

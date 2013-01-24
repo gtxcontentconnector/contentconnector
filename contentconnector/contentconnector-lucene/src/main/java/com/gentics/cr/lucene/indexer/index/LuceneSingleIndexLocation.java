@@ -99,6 +99,7 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 		} catch (AlreadyClosedException e) {
 			if (reopenClosedFactory) {
 				IndexAccessorFactory.getInstance().reopen();
+				indexAccessor = IndexAccessorFactory.getInstance().getAccessor(directory);
 			} else {
 				throw e;
 			}
