@@ -1,10 +1,10 @@
 package com.gentics.cr.lucene.indexer.transformer.html;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,25 +20,16 @@ public class HTMLContentTransformerTest {
 	@Test
 	public void testContentAttribute() throws URISyntaxException, IOException, CRException {
 		CRConfigUtil config = new CRConfigUtil();
-		File file = new File(this.getClass().getResource("test.html").toURI());
-		BufferedReader br = new BufferedReader(new FileReader(file));
-
-		StringBuilder fileContent = new StringBuilder();
-		String sCurrentLine;
-		while ((sCurrentLine = br.readLine()) != null) {
-			fileContent.append(sCurrentLine);
-		}
-		br.close();
+		config.set(HTMLContentTransformer.TRANSFORMER_ATTRIBUTE_KEY, "content");
 
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set("contentid", "10007.1");
-		bean.set("content", fileContent.toString());
-
-		config.set(HTMLContentTransformer.TRANSFORMER_ATTRIBUTE_KEY, "content");
+		bean.set("content", readFile("test.html").toString());
 
 		HTMLContentTransformer transformer = new HTMLContentTransformer(config);
 		transformer.processBean(bean);
-		assertNotNull("The result should never be null", bean.get("content"));
+
+		assertEquals(readFile("testresult.html").toString(), bean.get("content"));
 	}
 
 	@Test
@@ -74,5 +65,29 @@ public class HTMLContentTransformerTest {
 		bean.set("name", "ASDF-lexikon\n\t\n\t\t\t<br class=\"aloha-end-br\"/>");
 		transformer.processBean(bean);
 		assertEquals("ASDF-lexikon", bean.get("name"));
+
+		CRResolvableBean bean2 = new CRResolvableBean();
+		bean2.set("name", "<abbr title=\"Informations- und Kommunikationstechnologie\">IKT</abbr>-Sicherheitslexikon	");
+		transformer.processBean(bean2);
+		assertEquals("IKT-Sicherheitslexikon", bean2.get("name"));
+
+		CRResolvableBean bean3 = new CRResolvableBean();
+		bean3.set("name", "<abbr title=\"Informations- und Kommunikationstechnologie\">IKT</abbr>- Sicherheitslexikon	");
+		transformer.processBean(bean3);
+		assertEquals("IKT- Sicherheitslexikon", bean3.get("name"));
 	}
+
+	private StringBuilder readFile(final String fileName) throws URISyntaxException, FileNotFoundException, IOException {
+		File file = new File(this.getClass().getResource(fileName).toURI());
+		BufferedReader br = new BufferedReader(new FileReader(file));
+
+		StringBuilder fileContent = new StringBuilder();
+		String sCurrentLine;
+		while ((sCurrentLine = br.readLine()) != null) {
+			fileContent.append(sCurrentLine);
+		}
+		br.close();
+		return fileContent;
+	}
+
 }

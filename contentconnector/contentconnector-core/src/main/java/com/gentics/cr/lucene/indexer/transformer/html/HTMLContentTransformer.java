@@ -1,9 +1,12 @@
 package com.gentics.cr.lucene.indexer.transformer.html;
 
+import java.util.List;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.CRResolvableBean;
@@ -52,36 +55,66 @@ public class HTMLContentTransformer extends ContentTransformer {
 	/**
 	 * Converts a string containing html to a String that does not contain html
 	 * tags can be indexed by lucene.
-	 * 
-	 * @param contentObject
-	 * @return
 	 */
 	private String getStringContents(final Object contentObject) throws CRException {
 		String htmlString = getContents(contentObject);
 		String result = "";
 		try {
 			if (htmlString != null) {
-				StringBuilder strippedString = new StringBuilder();
 				Document documentFragment = Jsoup.parseBodyFragment(htmlString);
-				Elements children = documentFragment.body().children();
-				for (int pos = 0; pos < children.size(); pos++) {
-					Element element = children.get(pos);
-					strippedString.append(element.text());
-					if (pos < children.size() - 1) {
-						strippedString.append(" ");
-					}
-				}
-				result = strippedString.toString();
+				result = retrieveContent(documentFragment);
 
-				String fragmentText = documentFragment.text();
-				if (result.equals("") && fragmentText != null) {
-					result = fragmentText;
+				if (result.equals("")) {
+					String fragmentText = documentFragment.text();
+					if (fragmentText != null) {
+						result = fragmentText;
+					}
 				}
 			}
 		} catch (Exception ex) {
 			throw new CRException(ex);
 		}
 		return result;
+	}
+
+	private String retrieveContent(final Document documentFragment) {
+		String strippedString = "";
+		List<Node> children = documentFragment.body().childNodes();
+		for (int pos = 0; pos < children.size(); pos++) {
+			Node node = children.get(pos);
+			String text = getTextFromNode(node);
+			if (!text.equals("")) {
+				if (strippedString.equals("") || strippedString.endsWith(" ") || strippedString.endsWith("/")
+						|| strippedString.endsWith(".") || strippedString.endsWith(":")) {
+					// directly add the text if the string is empty or ends with a space, slash, dot, doublepoint
+					strippedString += text;
+				} else {
+					// check next element if a space shall be added
+					if (checkNextElement(children, pos)) {
+						strippedString += " ";
+					}
+					strippedString += text;
+				}
+			}
+		}
+		return strippedString.trim();
+	}
+
+	private boolean checkNextElement(List<Node> children, int pos) {
+		if (pos + 1 < children.size()) {
+			return true;
+		}
+		return false;
+	}
+
+	private String getTextFromNode(Node node) {
+		String text = "";
+		if (node instanceof Element) {
+			text = ((Element) node).text();
+		} else if (node instanceof TextNode) {
+			text = ((TextNode) node).text();
+		}
+		return text;
 	}
 
 	/**
