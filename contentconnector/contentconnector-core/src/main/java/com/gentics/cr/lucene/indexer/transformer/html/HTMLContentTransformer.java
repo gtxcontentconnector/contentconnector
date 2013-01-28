@@ -139,9 +139,10 @@ public class HTMLContentTransformer extends ContentTransformer {
 			Object obj = bean.get(this.attribute);
 			if (obj != null) {
 				String newString = getStringContents(obj);
-				if (newString != null && !newString.equals("")) {
-					bean.set(this.attribute, newString);
+				if (newString == null || newString.equals("")) {
+					LOGGER.debug("Original String was: \"" + obj.toString() + "\" - Stripped everything and returning an empty string");
 				}
+				bean.set(this.attribute, newString);
 			}
 		} else {
 			LOGGER.error("Configured attribute is null. Bean will not be processed");

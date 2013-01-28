@@ -75,6 +75,11 @@ public class HTMLContentTransformerTest {
 		bean3.set("name", "<abbr title=\"Informations- und Kommunikationstechnologie\">IKT</abbr>- Sicherheitslexikon	");
 		transformer.processBean(bean3);
 		assertEquals("IKT- Sicherheitslexikon", bean3.get("name"));
+
+		CRResolvableBean bean4 = new CRResolvableBean();
+		bean4.set("name", "<br class=\"aloha-end-br\"/>");
+		transformer.processBean(bean4);
+		assertEquals("", bean4.get("name"));
 	}
 
 	private StringBuilder readFile(final String fileName) throws URISyntaxException, FileNotFoundException, IOException {
