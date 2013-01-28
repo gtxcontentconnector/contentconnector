@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.11.22</version>
+		<version>1.11.23-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>contentconnector-language</artifactId>
