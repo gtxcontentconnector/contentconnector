@@ -63,4 +63,16 @@ public class HTMLContentTransformerTest {
 		transformer.processBean(bean3);
 		assertEquals("das ist eine test überschrift", bean3.get("name"));
 	}
+
+	@Test
+	public void testStrings() throws CRException {
+		CRConfigUtil config = new CRConfigUtil();
+		config.set(HTMLContentTransformer.TRANSFORMER_ATTRIBUTE_KEY, "name");
+		HTMLContentTransformer transformer = new HTMLContentTransformer(config);
+
+		CRResolvableBean bean = new CRResolvableBean();
+		bean.set("name", "ASDF-lexikon\n\t\n\t\t\t<br class=\"aloha-end-br\"/>");
+		transformer.processBean(bean);
+		assertEquals("ASDF-lexikon", bean.get("name"));
+	}
 }

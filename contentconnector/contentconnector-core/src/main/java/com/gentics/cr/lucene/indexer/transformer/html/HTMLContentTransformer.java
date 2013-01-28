@@ -72,6 +72,11 @@ public class HTMLContentTransformer extends ContentTransformer {
 					}
 				}
 				result = strippedString.toString();
+
+				String fragmentText = documentFragment.text();
+				if (result.equals("") && fragmentText != null) {
+					result = fragmentText;
+				}
 			}
 		} catch (Exception ex) {
 			throw new CRException(ex);
@@ -113,6 +118,5 @@ public class HTMLContentTransformer extends ContentTransformer {
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-
 	}
 }
