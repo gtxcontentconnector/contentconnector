@@ -1,10 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.11.23-SNAPSHOT</version>
-		<relativePath>..</relativePath>
+		<version>1.11.24-SNAPSHOT</version>
 	</parent>
 	<build>
 		<plugins>
@@ -50,14 +50,22 @@
 	<artifactId>contentconnector-apihelper</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>gentics-portalnode</groupId>
-			<artifactId>gentics-portalnode</artifactId>
-			<version>4_build_12026</version>
+			<artifactId>portalnode-lib</artifactId>
+			<groupId>com.gentics</groupId>
+			<version>4.1.0</version>
 		</dependency>
+		<!-- The node lib must be added since the maven resolvement of portalnode-lib 
+		    transitive dependencies does not work due to the portalnode/pom.xml node-lib property.-->
 		<dependency>
-			<groupId>gentics-portalnode</groupId>
-			<artifactId>gentics-portalnode-api</artifactId>
-			<version>4_build_12026</version>
+			<artifactId>node-lib</artifactId>
+			<groupId>com.gentics</groupId>
+			<version>1.12.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>hsqldb</artifactId>
+					<groupId>hsqldb</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>javax.portlet</groupId>
@@ -89,22 +97,11 @@
 	</dependencies>
 	<repositories>
 		<repository>
-			<id>com.gentics.public</id>
-			<name>Gentics Public Maven Repository (releases)</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public/</url>
+			<id>maven.gentics.com</id>
+			<name>Gentics Maven Repository</name>
+			<url>https://maven.gentics.com/maven2/</url>
 			<releases>
 				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>com.gentics.public_snapshot</id>
-			<name>Gentics Public Maven Repository (releases)</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>

@@ -1,8 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gentics</groupId>
 	<artifactId>contentconnector</artifactId>
-	<version>1.11.23-SNAPSHOT</version>
+	<version>1.11.24-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>contentconnector</name>
 	<properties>
@@ -64,33 +65,15 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>com.gentics.public</id>
-			<name>Gentics Public Maven Repository (releases)</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public/</url>
+			<id>maven.gentics.com</id>
+			<name>Gentics Maven Repository</name>
+			<url>https://maven.gentics.com/maven2/</url>
 			<releases>
 				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>com.gentics.public_snapshot</id>
-			<name>Gentics Public Maven Repository (releases)</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
-	<distributionManagement>
-		<repository>
-			<id>at.gv.brz.portalnode.igor.snapshots</id>
-			<name>igor-snapshots</name>
-			<url>http://igor:8080/archiva/repository/at.gv.brz.portalnode.igor.snapshots/</url>
-		</repository>
-	</distributionManagement>
 </project>
