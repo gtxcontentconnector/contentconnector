@@ -15,17 +15,12 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.exception.UnknownPropertyException;
-import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.PropertyResolver;
 import com.gentics.api.lib.resolving.Resolvable;
-import com.gentics.cr.portalnode.expressions.ExpressionParserHelper;
 import com.gentics.cr.util.AccessibleBean;
-import com.gentics.lib.content.GenticsContentObjectImpl;
 
 /**
  * Rosolveable Proxy Class. As Resolvsables are not serializable this class gets
