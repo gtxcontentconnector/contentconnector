@@ -20,7 +20,7 @@ import com.gentics.cr.exceptions.CRException;
  * @author $Author: bigbear3001 $
  *
  */
-public class CleanupText extends ContentTransformer {
+public class CleanupTextTransformer extends ContentTransformer {
 
 	/**
 	 * int value of the unicode en whitespace character.
@@ -120,10 +120,14 @@ public class CleanupText extends ContentTransformer {
 	 */
 	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
 
+	private static final String TRANSFORMER_TRIM_CONTENT_KEY = "trimContent";
+
 	/**
 	 * attribute to cleanup in all beans.
 	 */
 	private String attribute = "";
+
+	private boolean trimContent = false;
 
 	/**
 	 * Create Instance of the transformer.
@@ -131,9 +135,12 @@ public class CleanupText extends ContentTransformer {
 	 *  options:
 	 *  - attribute @see {@link #attribute}
 	 */
-	public CleanupText(final GenericConfiguration config) {
+	public CleanupTextTransformer(final GenericConfiguration config) {
 		super(config);
 		attribute = config.getString(TRANSFORMER_ATTRIBUTE_KEY);
+		if (config.getString(TRANSFORMER_TRIM_CONTENT_KEY) != null) {
+			trimContent = config.getBoolean(TRANSFORMER_TRIM_CONTENT_KEY);
+		}
 	}
 
 	@Override
@@ -176,7 +183,12 @@ public class CleanupText extends ContentTransformer {
 					}
 					state.setReplacing(Replacing.NONE);
 					if (changed) {
-						bean.set(attribute, state.result.toString());
+						String content = state.result.toString();
+						if (trimContent) {
+							bean.set(attribute, content.trim());
+						} else {
+							bean.set(attribute, content);
+						}
 					}
 				}
 			} else {
@@ -194,8 +206,8 @@ public class CleanupText extends ContentTransformer {
 	 * @return <code>true</code> if the character is a whitespace character
 	 */
 	private boolean checkWhitespaceCharacter(final char character, final int cInt) {
-		return character == '\r' || character == '\n' || character == '\t' || character == ' '
-				|| cInt == NON_BREAKING_WHITESPACE || cInt == EM_WHITESPACE || cInt == EN_WHITESPACE;
+		return character == '\r' || character == '\n' || character == '\t' || character == ' ' || cInt == NON_BREAKING_WHITESPACE
+				|| cInt == EM_WHITESPACE || cInt == EN_WHITESPACE;
 	}
 
 	/**

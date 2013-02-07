@@ -21,10 +21,11 @@ public class TikaParserTransformerTest extends TestCase {
 
 	ContentTransformer t;
 
+	@Override
 	@Before
 	public void setUp() throws Exception {
 		config = new GenericConfiguration();
-		config.set("attribute", BINARY_ATTRIBUTE);
+		config.set("contentattribute", BINARY_ATTRIBUTE);
 
 		t = new TikaParserTransformer(config);
 	}
@@ -35,10 +36,8 @@ public class TikaParserTransformerTest extends TestCase {
 	 * @return contents of the file
 	 * @throws IOException in case the file cannot be opened
 	 */
-	private byte[] getContentFromFile(final String filename)
-			throws IOException {
-		InputStream stream1 = 
-				TUtil.class.getResourceAsStream(filename);
+	private byte[] getContentFromFile(final String filename) throws IOException {
+		InputStream stream1 = TUtil.class.getResourceAsStream(filename);
 		return IOUtils.toByteArray(stream1);
 	}
 
@@ -46,65 +45,64 @@ public class TikaParserTransformerTest extends TestCase {
 	public void testTransformerDOCM() throws Exception {
 		testDocument("testdoc.docm");
 	}
-	
+
 	@Test
 	public void testTransformerDOCX() throws Exception {
 		testDocument("testdoc.docx");
 	}
-	
+
 	@Test
 	public void testTransformerDOTM() throws Exception {
 		testDocument("testdoc.dotm");
 	}
-	
+
 	@Test
 	public void testTransformerDOTX() throws Exception {
 		testDocument("testdoc.dotx");
 	}
-	
+
 	private void testDocument(String filename) throws IOException, CRException {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
 		t.processBean(bean);
 		assertEquals("Testtext ÄÖÜäüöß€\n", bean.get(BINARY_ATTRIBUTE));
 	}
-	
+
 	@Test
 	public void testTransformerMSPPTX() throws Exception {
 		testPresentation("testdoc.mspowerpoint2010.pptx");
 	}
-	
+
 	@Test
 	public void testTransformerPOTM() throws Exception {
 		testPresentation("testdoc.potm");
 	}
-	
+
 	@Test
 	public void testTransformerPOTX() throws Exception {
 		testPresentation("testdoc.potx");
 	}
-	
+
 	@Test
 	public void testTransformerPPSM() throws Exception {
 		testPresentation("testdoc.ppsm");
 	}
-	
+
 	@Test
 	public void testTransformerPPSX() throws Exception {
 		testPresentation("testdoc.ppsx");
 	}
-	
+
 	@Test
 	public void testTransformerPPTM() throws Exception {
 		testPresentation("testdoc.pptm");
 	}
-	
+
 	@Test
 	public void testTransformerPPTX() throws Exception {
 		testPresentation("testdoc.pptx");
 	}
-	
-	
+
 	private void testPresentation(String filename) throws IOException, CRException {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
@@ -116,33 +114,32 @@ public class TikaParserTransformerTest extends TestCase {
 	public void testTransformerXLAM() throws Exception {
 		testSpreadsheet("testdoc.xlam");
 	}
-	
+
 	@Test
 	public void testTransformerXLSM() throws Exception {
 		testSpreadsheet("testdoc.xlsm");
 	}
-	
+
 	@Test
 	public void testTransformerXLSX() throws Exception {
 		testSpreadsheet("testdoc.xlsx");
 	}
-	
+
 	@Test
 	public void testTransformerXLTM() throws Exception {
 		testSpreadsheet("testdoc.xltm");
 	}
-	
+
 	@Test
 	public void testTransformerXLTX() throws Exception {
 		testSpreadsheet("testdoc.xltx");
 	}
-	
+
 	private void testSpreadsheet(String filename) throws IOException, CRException {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
 		t.processBean(bean);
-		assertEquals("Tabelle1\n\ttesttext ÄÖÜäüöß€\n\n\nTabelle2\n\n\nTabelle3\n\n\n",
-				bean.get(BINARY_ATTRIBUTE));
+		assertEquals("Tabelle1\n\ttesttext ÄÖÜäüöß€\n\n\nTabelle2\n\n\nTabelle3\n\n\n", bean.get(BINARY_ATTRIBUTE));
 	}
 
 }

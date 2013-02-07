@@ -4,8 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,22 +19,36 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRUtil;
 
-public class CleanupTextTest {
+public class CleanupTextTransformerTest {
 
 	private static final String CONTENT_ATTRIBUTE = "content";
 
 	private static final String UMLAUTS = "öäüÄÜÖß€";
 
-	private ContentTransformer transformer;
+	CRConfigUtil config = null;
 
 	@Before
 	public void setUp() throws Exception {
-		URL confPath = new File(this.getClass().getResource("/config/nodelog.properties").toURI()).getParentFile()
-				.toURI().toURL();
+		URL confPath = new File(this.getClass().getResource("/config/nodelog.properties").toURI()).getParentFile().toURI().toURL();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath.getPath());
-		CRConfigUtil config = new CRConfigUtil();
+		config = new CRConfigUtil();
 		config.set("attribute", CONTENT_ATTRIBUTE);
-		transformer = new CleanupText(config);
+	}
+
+	@Test
+	public void testStripWhitespace() throws IOException, CRException, URISyntaxException {
+		config.set("trimContent", "true");
+		String testContent = readFile("whitespacefile.txt");
+		assertEquals(readFile("cleanedwhitespacefile.txt"), transform(testContent));
+	}
+
+	private String readFile(final String fileName) throws URISyntaxException, FileNotFoundException, IOException {
+		FileInputStream inputStream = new FileInputStream(new File(this.getClass().getResource(fileName).toURI()));
+		try {
+			return IOUtils.toString(inputStream);
+		} finally {
+			inputStream.close();
+		}
 	}
 
 	@Test
@@ -44,10 +63,7 @@ public class CleanupTextTest {
 			result);
 
 		result = transform("First chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 33 Second chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 66");
-		assertEquals(
-			"Index points are not reduced correctly.",
-			"First chapter ... Page 33 Second chapter ... Page 66",
-			result);
+		assertEquals("Index points are not reduced correctly.", "First chapter ... Page 33 Second chapter ... Page 66", result);
 	}
 
 	@Test
@@ -59,17 +75,11 @@ public class CleanupTextTest {
 	public void testNotPrintableCharacters() throws CRException {
 		String stringWithNonPrintableCharacters = "Drittstaaten:  HYPERLINK \"http://www.help.gv.at/Content.Node/12/Seite.120000.html\" \\o \"Öffnet in neuem Fenster\" \\t \"_blank\" Aufenthaltsberechtigung";
 		String expectedResult = "Drittstaaten: HYPERLINK \"http://www.help.gv.at/Content.Node/12/Seite.120000.html\" \\o \"Öffnet in neuem Fenster\" \\t \"_blank\" Aufenthaltsberechtigung";
-		assertEquals(
-			"Special characters are not elminiated correctly.",
-			expectedResult,
-			transform(stringWithNonPrintableCharacters + ""));
+		assertEquals("Special characters are not elminiated correctly.", expectedResult, transform(stringWithNonPrintableCharacters + ""));
 
 		stringWithNonPrintableCharacters = "Person Familienname:  FORMTEXT       Vorname:  FORMTEXT       Standort:  FORMTEXT       Stock:  FORMTEXT ";
 		expectedResult = "Person Familienname: FORMTEXT Vorname: FORMTEXT Standort: FORMTEXT Stock: FORMTEXT ";
-		assertEquals(
-			"Special characters are not elminiated correctly.",
-			expectedResult,
-			transform(stringWithNonPrintableCharacters + ""));
+		assertEquals("Special characters are not elminiated correctly.", expectedResult, transform(stringWithNonPrintableCharacters + ""));
 	}
 
 	@Test
@@ -89,6 +99,7 @@ public class CleanupTextTest {
 	public void testByteArray() throws CRException {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(CONTENT_ATTRIBUTE, UMLAUTS.getBytes());
+		ContentTransformer transformer = new CleanupTextTransformer(config);
 		transformer.processBean(bean);
 		String result = bean.getString(CONTENT_ATTRIBUTE);
 		assertEquals("Cannot handle the byte array correctly.", UMLAUTS, result);
@@ -104,6 +115,7 @@ public class CleanupTextTest {
 	private String transform(String string) throws CRException {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(CONTENT_ATTRIBUTE, string);
+		ContentTransformer transformer = new CleanupTextTransformer(config);
 		transformer.processBean(bean);
 		return bean.getString(CONTENT_ATTRIBUTE);
 	}
