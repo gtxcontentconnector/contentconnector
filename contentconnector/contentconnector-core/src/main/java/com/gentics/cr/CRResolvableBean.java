@@ -336,27 +336,6 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	}
 
 	/**
-	 * Get the parent folder of the current bean.
-	 * This method uses non api objects and should not be used!
-	 * @return GenticsContentObjectImpl representing the parent folder.
-	 */
-	@Deprecated
-	public GenticsContentObjectImpl getMother() {
-		try {
-			GenticsContentObjectImpl r = (GenticsContentObjectImpl) resolvable;
-			Datasource datasource = r.getDatasource();
-			DatasourceFilter filter = ExpressionParserHelper.createDatasourceFilter("object.contentid == \"10002."
-					+ mother_id + "\"" + " && object.obj_type == 10002", datasource);
-			Collection<?> parentFolder = datasource.getResult(filter, new String[] { "contentid" });
-			return (GenticsContentObjectImpl) (parentFolder.iterator().next());
-		} catch (Exception e) {
-			LOGGER.error("Could not retreive mother folder (" + mother_type + "." + mother_id + ") of current bean: "
-					+ contentid);
-			return null;
-		}
-	}
-
-	/**
 	 * Gets the mother contentid of the CRResolvableBean.
 	 * @return motherid
 	 */
