@@ -1,9 +1,9 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 //import org.apache.lucene.index.IndexWriter;
@@ -64,7 +64,7 @@ public abstract class ContentTransformer {
 			LOGGER.error("Could not generate valid Expression from configured Rule: " + rule, e);
 		}
 	}
-	
+
 	public static Logger getLogger() {
 		return LOGGER;
 	}
@@ -129,15 +129,14 @@ public abstract class ContentTransformer {
 					String transformerClass = (String) c.get(TRANSFORMER_CLASS_KEY);
 					try {
 						ContentTransformer t = null;
-						t = (ContentTransformer) Class.forName(transformerClass)
-								.getConstructor(new Class[] { GenericConfiguration.class }).newInstance(c);
+						t = (ContentTransformer) Class.forName(transformerClass).getConstructor(new Class[] { GenericConfiguration.class })
+								.newInstance(c);
 						if (t != null) {
 							t.setTransformerkey(e.getKey());
 							ret.add(t);
 						}
 					} catch (Exception ex) {
-						LOGGER.error("Invalid configuration found. Could not instantiate " + transformerClass);
-						ex.printStackTrace();
+						LOGGER.error("Invalid configuration found. Could not instantiate " + transformerClass, ex);
 					}
 
 				}
