@@ -29,6 +29,9 @@ public final class StringUtils {
 	 * StringBuilder based on how many items we have.
 	 */
 	public static final int AVERAGE_WORD_LENGTH = 7;
+
+	private static final int WORD_ABBREVIATION_MARGIN = 7;
+
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
@@ -78,7 +81,7 @@ public final class StringUtils {
 		//all values below 0 have to be corrected by +256
 		final int signedIntFromByteToUnsignedIntCorrection = 256;
 		for (byte b : bytes) {
-			int i = (int) b;
+			int i = b;
 			if (i < 0) {
 				i += signedIntFromByteToUnsignedIntCorrection;
 			}
@@ -234,8 +237,8 @@ public final class StringUtils {
 			} catch (IOException e) {
 				logger.error("Error while deserializing object.", e);
 			} catch (ClassNotFoundException e) {
-				logger.error("Cannot deserialize object because the class of "
-						+ "the object or one of its dependencies is not known " + "on this system.", e);
+				logger.error("Cannot deserialize object because the class of " + "the object or one of its dependencies is not known "
+						+ "on this system.", e);
 			}
 		}
 		return null;
@@ -312,6 +315,93 @@ public final class StringUtils {
 		}
 		is.mark(0);
 		return result.toString();
+	}
+
+	/**
+	 * If there are &gt; or &lt; characters in the search result wicket throws a malformed markup exception, 
+	 * so we have to convert them into html entities.
+	 * 
+	 * @param input input to escape
+	 * @return escaped input
+	 */
+	public static String escapeSearchContent(final String input) {
+		String output = input;
+		output = org.apache.commons.lang.StringUtils.replace(output, "<", "&lt;");
+		output = org.apache.commons.lang.StringUtils.replace(output, ">", "&gt;");
+		return output;
+	}
+
+	/**
+	 * @param input input string to abbreviate
+	 * @param cutPosition length at which to start searching for the first whitespace character to abbreviate
+	 * @param separator seperator string to use at the end
+	 * @return the abbreviated string at the first whitespace character found after length.
+	 * if nothing is found after length + margin than just cut it at that length
+	 */
+	public static String abbreviate(final String input, final int cutPosition, final String separator) {
+		if (input.length() > cutPosition) {
+
+			StringBuilder output = new StringBuilder(cutPosition * 2);
+			int index = input.indexOf(' ', cutPosition);
+			int computedCutPosition = cutPosition;
+
+			// no whitespace after length in input
+			/// so just cut it
+			if (index == -1 && input.length() < (cutPosition + WORD_ABBREVIATION_MARGIN)) {
+
+				return input;
+
+			} else if (index == -1 || index >= (cutPosition + WORD_ABBREVIATION_MARGIN)) {
+
+				computedCutPosition = cutPosition;
+
+			} else {
+
+				computedCutPosition = index;
+
+			}
+
+			output.append(input.substring(0, computedCutPosition));
+
+			if (!input.substring(0, computedCutPosition).endsWith(" ")) {
+
+				output.append(" ");
+
+			}
+
+			output.append(separator);
+
+			return output.toString();
+
+		} else {
+
+			return (input);
+
+		}
+	}
+
+	/**
+	 * @param input input string
+	 * @param wordcount wordcount to cut off
+	 * @param separator separator to use (e.g. "...")
+	 * @return abbreviated string after number of wordcount
+	 */
+	public static String abbreviateWordCount(final String input, final int wordcount, final String separator) {
+		int words = 0;
+		int currentIndex = 0;
+
+		while (words < wordcount) {
+
+			words++;
+			currentIndex = input.indexOf(' ', currentIndex) + 1;
+
+			if (currentIndex == -1) {
+				return input;
+			}
+
+		}
+
+		return input.substring(0, currentIndex) + separator;
 	}
 
 }
