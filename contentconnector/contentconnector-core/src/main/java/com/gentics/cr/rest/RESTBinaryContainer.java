@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.httpclient.HttpConstants;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
@@ -19,8 +21,11 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
+import com.gentics.lib.http.HTTPRequest;
+import com.sun.jersey.api.core.HttpResponseContext;
 
 /**
  * Container for Binary responses.
@@ -96,6 +101,11 @@ public class RESTBinaryContainer {
 			final IResponseTypeSetter responseTypeSetter) {
 		responseTypeSetter.setContentType(
 				"text/html; charset=" + this.responseEncoding);
+		if (ex.getErrorType() == ERRORTYPE.NO_DATA_FOUND) {
+			responseTypeSetter.setResponseCode(HttpStatus.SC_NOT_FOUND);
+		} else {
+			responseTypeSetter.setResponseCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		}
 		String ret = "" + ex.getMessage();
 		if (debug) {
 			ret += " - " + ex.getStringStackTrace();
@@ -111,23 +121,16 @@ public class RESTBinaryContainer {
 		}
 	}
 
-	/**
-	 * Process the whole Service.
-	 * 
-	 * @param reqBuilder Request Builder
-	 * @param wrappedObjectsToDeploy Objects to deploy
-	 * @param stream output stream
-	 * @param responsetypesetter responsetypesetter
-	 */
-	public final void processService(final CRBinaryRequestBuilder reqBuilder,
+	public final void processService(CRRequest request, 
 			final Map<String, Resolvable> wrappedObjectsToDeploy,
 			final OutputStream stream,
-			final IResponseTypeSetter responsetypesetter) {
-		CRBinaryRequestBuilder myReqBuilder = reqBuilder;
+			final IResponseTypeSetter responsetypesetter,
+			final Object requestObject,
+			boolean debug) {
 		CRResolvableBean crBean = null;
 		CRRequest req;
 		try {
-			req = myReqBuilder.getBinaryRequest();
+			req = request;
 			// DEPLOY OBJECTS TO REQUEST
 			for (Iterator<Map.Entry<String, Resolvable>> 
 					i = wrappedObjectsToDeploy.entrySet()
@@ -139,8 +142,8 @@ public class RESTBinaryContainer {
 			}
 			if (this.crConf.usesContentidUrl()) {
 				if (req.getContentid() == null) {
-					Object obj = reqBuilder.getRequest();
-					if (obj instanceof HttpServletRequest) {
+					Object obj = requestObject;
+					if (obj != null && obj instanceof HttpServletRequest) {
 						String[] reqURI = ((HttpServletRequest) obj)
 								.getRequestURI().split("/");
 						ArrayList<String> reqList 
@@ -183,6 +186,7 @@ public class RESTBinaryContainer {
 				}
 
 				responsetypesetter.setContentType(mimetype);
+				responsetypesetter.setResponseCode(HTTPRequest.HTTP_OK);
 				// output data.
 				if (crBean.isBinary()) {
 					log.debug("Size of content: " + crBean.getBinaryContent().length);
@@ -204,19 +208,35 @@ public class RESTBinaryContainer {
 					wr.close();
 				}
 			} else {
-				CRException crex = new CRException("NoDataFound", "Data could not be found.");
-				this.respondWithError(stream, crex, myReqBuilder.isDebug(), responsetypesetter);
+				CRException crex = new CRException("NoDataFound", "Data could not be found.", ERRORTYPE.NO_DATA_FOUND);
+				this.respondWithError(stream, crex, debug, responsetypesetter);
 			}
 			stream.flush();
 			stream.close();
 		} catch (CRException e1) {
-			respondWithError((OutputStream) stream, e1, myReqBuilder.isDebug(), responsetypesetter);
+			respondWithError((OutputStream) stream, e1, debug, responsetypesetter);
 			e1.printStackTrace();
 		} catch (Exception e) {
 			log.error("Error while processing service " + "(RESTBinaryContainer)", e);
 			CRException crex = new CRException(e);
-			respondWithError(stream, crex, myReqBuilder.isDebug(), responsetypesetter);
+			respondWithError(stream, crex, debug, responsetypesetter);
 		}
-
+	}
+	
+	/**
+	 * Process the whole Service.
+	 * 
+	 * @param reqBuilder Request Builder
+	 * @param wrappedObjectsToDeploy Objects to deploy
+	 * @param stream output stream
+	 * @param responsetypesetter responsetypesetter
+	 */
+	public final void processService(final CRBinaryRequestBuilder reqBuilder,
+			final Map<String, Resolvable> wrappedObjectsToDeploy,
+			final OutputStream stream,
+			final IResponseTypeSetter responsetypesetter) {
+		
+		processService(reqBuilder.getBinaryRequest(), wrappedObjectsToDeploy, stream, responsetypesetter, reqBuilder.getRequest(), reqBuilder.isDebug());
+		
 	}
 }

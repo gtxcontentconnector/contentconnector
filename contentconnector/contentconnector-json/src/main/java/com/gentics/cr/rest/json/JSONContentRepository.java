@@ -14,6 +14,7 @@ import net.sf.json.JSONObject;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.rest.ContentRepository;
 
 /**
@@ -120,7 +121,7 @@ public class JSONContentRepository extends ContentRepository {
 	public void toStream(OutputStream stream) throws CRException {
 		if (this.resolvableColl.isEmpty()) {
 			// No Data Found
-			throw new CRException("NoDataFound", "Data could not be found.");
+			throw new CRException("NoDataFound", "Data could not be found.", ERRORTYPE.NO_DATA_FOUND);
 		} else {
 			this.rootObject.element("status", "ok");
 

@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.util.Constants;
 
 /**
@@ -101,7 +102,7 @@ public class CSSitemapContentRepository extends XmlContentRepository {
 	@Override
 	public final void toStream(final OutputStream stream) throws CRException {
 		if (this.resolvableColl.isEmpty()) {
-			throw new CRException("NoDataFound", "Data could not be found.");
+			throw new CRException("NoDataFound", "Data could not be found.", ERRORTYPE.NO_DATA_FOUND);
 		} else {
 			rootElement = processElement(resolvableColl.get(0));
 			doc.appendChild(rootElement);

@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.rest.ContentRepository;
 
 /** 
@@ -115,7 +116,7 @@ public class PHPContentRepository extends ContentRepository {
 		if (this.resolvableColl.isEmpty()) {
 			//No Data Found
 
-			throw new CRException("NoDataFound", "Data could not be found.");
+			throw new CRException("NoDataFound", "Data could not be found.", ERRORTYPE.NO_DATA_FOUND);
 		} else {
 			this.cr.put("status", "ok");
 			for (Iterator<CRResolvableBean> it = this.resolvableColl.iterator(); it.hasNext();) {

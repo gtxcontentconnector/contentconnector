@@ -33,7 +33,7 @@ public abstract class RequestProcessor {
 	/**
 	 * configuration key for enabling (default) or disabling the JCS content cache in a RequestProcessor.
 	 */
-	protected static final String CONTENTCACHE_KEY = "crcontentcache";
+	public static final String CONTENTCACHE_KEY = "crcontentcache";
 
 	protected HashMap<String, Resolvable> resolvables = null;
 

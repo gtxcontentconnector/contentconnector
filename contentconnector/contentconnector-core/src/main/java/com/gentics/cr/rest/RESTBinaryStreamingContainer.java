@@ -19,6 +19,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.plink.PLinkOutputStream;
 import com.gentics.cr.plink.PlinkProcessor;
 import com.gentics.cr.plink.PlinkReplacer;
@@ -212,7 +213,7 @@ public class RESTBinaryStreamingContainer {
 					wr.close();
 				}
 			} else {
-				CRException crex = new CRException("NoDataFound", "Data could not be found.");
+				CRException crex = new CRException("NoDataFound", "Data could not be found.", ERRORTYPE.NO_DATA_FOUND);
 				this.respondWithError(stream, crex, myReqBuilder.isDebug());
 			}
 			stream.flush();

@@ -26,6 +26,7 @@ import org.w3c.dom.Text;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.rest.ContentRepository;
 
 /**
@@ -176,7 +177,7 @@ public class XmlContentRepository extends ContentRepository {
 
 		if (this.resolvableColl.isEmpty()) {
 			//No Data Found
-			throw new CRException("NoDataFound", "Data could not be found.");
+			throw new CRException("NoDataFound", "Data could not be found.", ERRORTYPE.NO_DATA_FOUND);
 		} else {
 			//Elements found/status ok
 			this.rootElement.setAttribute("status", "ok");

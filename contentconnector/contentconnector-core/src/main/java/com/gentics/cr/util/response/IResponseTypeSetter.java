@@ -14,4 +14,10 @@ public interface IResponseTypeSetter {
 	 * @param type
 	 */
 	public void setContentType(String type);
+	
+	/**
+	 * Sets the HTTP response code.
+	 * @param responsteCode response code
+	 */
+	public void setResponseCode(int responsteCode);
 }
