@@ -1,6 +1,10 @@
 package com.gentics.cr.util.response;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.httpclient.HttpStatus;
 
 /**
  * 
@@ -27,6 +31,19 @@ public class ServletResponseTypeSetter implements IResponseTypeSetter {
 	 */
 	public void setContentType(String type) {
 		this.response.setContentType(type);
+	}
+
+	@Override
+	public void setResponseCode(int responsteCode) {
+		if (responsteCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+			try {
+				this.response.sendError(responsteCode);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			this.response.setStatus(responsteCode);
+		}
 	}
 
 }
