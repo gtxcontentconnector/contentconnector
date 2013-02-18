@@ -70,10 +70,10 @@ public class PlinkProcessor {
 		if (plinkcache) {
 			try {
 				String configName = "shared";
-				if (config != null) {
+				if (config != null && config.getName() != null) {
 					configName = config.getName();
 				} else {
-					log.error("Attention i'm using a shared plinkcache because i'm missing my config.");
+					log.error("Attention i'm using a shared plinkcache because i'm missing my config or the config name.");
 				}
 				plinkCache = JCS.getInstance("gentics-cr-" + configName + "-plinks");
 				log.debug("Initialized cache zone for \"" + configName + "-plinks\".");
