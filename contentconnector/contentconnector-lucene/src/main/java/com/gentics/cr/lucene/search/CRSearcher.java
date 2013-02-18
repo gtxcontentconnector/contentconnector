@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +22,7 @@ import org.apache.lucene.facet.search.FacetsCollector;
 import org.apache.lucene.facet.taxonomy.TaxonomyReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Explanation;
@@ -66,8 +68,16 @@ public class CRSearcher {
 	protected static final String COMPUTE_SCORES_KEY = "computescores";
 	protected static final String STEMMING_KEY = "STEMMING";
 	protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
-	private static final String COLLECTOR_CLASS_KEY = "collectorClass";
+	protected static final String COLLECTOR_CLASS_KEY = "collectorClass";
 	private static final String COLLECTOR_CONFIG_KEY = "collector";
+
+	public static final String RETRIEVE_COLLECTOR_KEY = "collectorInResult";
+	public static final String RESULT_COLLECTOR_KEY = "collector";
+	
+	public static final String RETRIEVE_UNIQUE_MIMETYPES_KEY = "retrieveUniqueMimetypes";
+	public static final String RESULT_UNIQUE_MIMETYPES_KEY = "unique_mimetypes";
+	
+	private static final String LUCENE_INDEX_MIMETYPE = "mimetype";
 
 	/**
 	 * Key to store the searchquery in the result.
@@ -137,6 +147,16 @@ public class CRSearcher {
 	private float didyoumeanminscore = 0.5f;
 
 	private FacetsSearch facetsSearch;
+	
+	/**
+	 * retrieve unique mimetypes and put it in result.
+	 */
+	private boolean retrieveUniqueMimeTypes = false;
+	
+	/**
+	 * put used collector in metadata.
+	 */
+	private boolean retrieveCollector = false;
 
 	/**
 	 * resultsizelimit to activate the didyoumeanfunctionality.
@@ -164,6 +184,9 @@ public class CRSearcher {
 		}
 
 		facetsSearch = new FacetsSearch(config);
+		
+		retrieveUniqueMimeTypes = config.getBoolean(RETRIEVE_UNIQUE_MIMETYPES_KEY);
+		retrieveCollector = config.getBoolean(RETRIEVE_COLLECTOR_KEY);
 
 	}
 
@@ -312,7 +335,11 @@ public class CRSearcher {
 			}
 			log.debug("Fetched Document " + start + " to " + (start + num) + " of " + collector.getTotalHits() + " found Documents");
 
-			HashMap<String, Object> ret = new HashMap<String, Object>(2);
+			HashMap<String, Object> ret = new HashMap<String, Object>(3);
+			
+			if (retrieveCollector) {
+				ret.put(RESULT_COLLECTOR_KEY, collector);
+			}
 			ret.put(RESULT_RESULT_KEY, result);
 			ret.put(RESULT_MAXSCORE_KEY, maxScoreReturn);
 			return ret;
@@ -323,14 +350,13 @@ public class CRSearcher {
 		return null;
 	}
 
-	public HashMap<String, Object> search(String query, String[] searchedAttributes, int count, int start, boolean explain)
-			throws IOException, CRException {
+	public HashMap<String, Object> search(final String query, final String[] searchedAttributes, final int count, final int start,
+			final boolean explain) throws IOException, CRException {
 		return search(query, searchedAttributes, count, start, explain, null);
 	}
 
-	public HashMap<String, Object>
-			search(String query, String[] searchedAttributes, int count, int start, boolean explain, String[] sorting) throws IOException,
-					CRException {
+	public HashMap<String, Object> search(final String query, final String[] searchedAttributes, final int count, final int start,
+			final boolean explain, final String[] sorting) throws IOException, CRException {
 		return search(query, searchedAttributes, count, start, explain, sorting, new CRRequest());
 	}
 
@@ -357,7 +383,7 @@ public class CRSearcher {
 		Searcher searcher;
 		Analyzer analyzer;
 		// Collect count + start hits
-		int hits = count + start;	// we want to retrieve the startcount (start) to endcount (hits)
+		int hits = count + start;	// we want to retreive the startcount (start) to endcount (hits)
 
 		LuceneIndexLocation idsLocation = LuceneIndexLocation.getIndexLocation(config);
 
@@ -373,6 +399,18 @@ public class CRSearcher {
 		TaxonomyAccessor taAccessor = null;
 		TaxonomyReader taReader = null;
 		IndexReader facetsIndexReader = null;
+		IndexReader uniqueMimeTypesIndexReader = null;
+		
+		List<String> uniqueMimeTypes = null;
+		if (retrieveUniqueMimeTypes) {
+			// retrieve all possible file types
+			uniqueMimeTypesIndexReader = indexAccessor.getReader(false);
+			final TermEnum termEnum = uniqueMimeTypesIndexReader.terms(new Term(LUCENE_INDEX_MIMETYPE, ""));
+			uniqueMimeTypes = new ArrayList<String>();
+			while (termEnum.next() && termEnum.term().field().equals(LUCENE_INDEX_MIMETYPE)) {
+				uniqueMimeTypes.add(termEnum.term().text());
+			}
+		}
 
 		// get accessors and reader only if facets are activated 
 		if (facetsSearch.useFacets()) {
@@ -434,6 +472,14 @@ public class CRSearcher {
 					result.put(RESULT_HITS_KEY, totalhits);
 					result.put(RESULT_MAXSCORE_KEY, maxScore);
 
+					if (retrieveUniqueMimeTypes) {
+						// add unique extensions
+						result.put(RESULT_UNIQUE_MIMETYPES_KEY, uniqueMimeTypes);
+					}
+					if (retrieveCollector) {
+						result.put(RESULT_COLLECTOR_KEY, ret.get(RESULT_COLLECTOR_KEY));
+					}
+
 					// PLUG IN DIDYOUMEAN
 					boolean didyoumeanEnabledForRequest = StringUtils.getBoolean(request.get(DIDYOUMEAN_ENABLED_KEY), true);
 					if (start == 0 && didyoumeanenabled && didyoumeanEnabledForRequest
@@ -488,6 +534,9 @@ public class CRSearcher {
 			}
 			if (facetsIndexReader != null) {
 				indexAccessor.release(facetsIndexReader, false);
+			}
+			if (uniqueMimeTypesIndexReader != null) {
+				indexAccessor.release(uniqueMimeTypesIndexReader, false);
 			}
 			indexAccessor.release(searcher);
 		}

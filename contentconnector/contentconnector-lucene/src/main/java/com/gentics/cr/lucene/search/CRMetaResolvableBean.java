@@ -39,8 +39,7 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 	 * @param start index of first result to return in the result
 	 * @param count number of items to return in the result
 	 */
-	public CRMetaResolvableBean(final HashMap<String, Object> searchResult, final CRRequest request, final int start,
-		final int count) {
+	public CRMetaResolvableBean(final HashMap<String, Object> searchResult, final CRRequest request, final int start, final int count) {
 		set(LuceneRequestProcessor.META_HITS_KEY, searchResult.get(CRSearcher.RESULT_HITS_KEY));
 		set(CRSearcher.RESULT_HITS_KEY, searchResult.get(CRSearcher.RESULT_HITS_KEY));
 		set(LuceneRequestProcessor.META_START_KEY, start);
@@ -53,12 +52,10 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 		set(CRSearcher.RESULT_MAXSCORE_KEY, searchResult.get(CRSearcher.RESULT_MAXSCORE_KEY));
 		set(CRSearcher.RESULT_BESTQUERY_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERY_KEY));
 		set(CRSearcher.RESULT_BESTQUERYHITS_KEY, searchResult.get(CRSearcher.RESULT_BESTQUERYHITS_KEY));
-		
-		if (searchResult
-				.containsKey(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY)) {
-			set(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY,
-					searchResult
-							.get(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY));
+		set(CRSearcher.RESULT_COLLECTOR_KEY, searchResult.get(CRSearcher.RESULT_COLLECTOR_KEY));
+
+		if (searchResult.containsKey(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY)) {
+			set(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY, searchResult.get(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY));
 		}
 	}
 
@@ -70,8 +67,8 @@ public class CRMetaResolvableBean extends CRResolvableBean {
 	 * @param start index of first result to return in the result
 	 * @param count number of items to return in the result
 	 */
-	public CRMetaResolvableBean(final HashMap<String, Object> searchResult, final CRRequest request,
-		final Query parsedQuery, final int start, final int count) {
+	public CRMetaResolvableBean(final HashMap<String, Object> searchResult, final CRRequest request, final Query parsedQuery,
+		final int start, final int count) {
 		this(searchResult, request, start, count);
 		set(LuceneRequestProcessor.PARSED_QUERY_KEY, parsedQuery);
 	}
