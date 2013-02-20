@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -96,9 +97,9 @@ public class CleanupTextTransformerTest {
 	}
 
 	@Test
-	public void testByteArray() throws CRException {
+	public void testByteArray() throws CRException, UnsupportedEncodingException {
 		CRResolvableBean bean = new CRResolvableBean();
-		bean.set(CONTENT_ATTRIBUTE, UMLAUTS.getBytes());
+		bean.set(CONTENT_ATTRIBUTE, UMLAUTS.getBytes("UTF-8"));
 		ContentTransformer transformer = new CleanupTextTransformer(config);
 		transformer.processBean(bean);
 		String result = bean.getString(CONTENT_ATTRIBUTE);
