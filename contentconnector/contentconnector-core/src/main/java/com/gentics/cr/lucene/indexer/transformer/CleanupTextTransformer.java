@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -221,7 +223,11 @@ public class CleanupTextTransformer extends ContentTransformer {
 			if (obj instanceof String) {
 				return new StringReader((String) obj);
 			} else if (obj instanceof byte[]) {
-				return new InputStreamReader(new ByteArrayInputStream((byte[]) obj));
+				try {
+					return new InputStreamReader(new ByteArrayInputStream((byte[]) obj), "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					LOGGER.fatal("UTF-8 has to be supported.", e);
+				}
 			}
 		}
 		return null;
