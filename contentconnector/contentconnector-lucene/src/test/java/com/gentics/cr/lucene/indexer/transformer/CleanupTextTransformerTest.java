@@ -24,7 +24,10 @@ public class CleanupTextTransformerTest {
 
 	private static final String CONTENT_ATTRIBUTE = "content";
 
-	private static final String UMLAUTS = "öäüÄÜÖß€";
+	/**
+	 * öäüÄÜÖß€
+	 */
+	private static final String UMLAUTS = "\u00F6\u00E4\u00FC\u00C4\u00DC\u00D6\u00DF\u20AC";
 
 	CRConfigUtil config = null;
 
@@ -99,7 +102,7 @@ public class CleanupTextTransformerTest {
 	@Test
 	public void testByteArray() throws CRException, UnsupportedEncodingException {
 		CRResolvableBean bean = new CRResolvableBean();
-		bean.set(CONTENT_ATTRIBUTE, UMLAUTS.getBytes("UTF-8"));
+		bean.set(CONTENT_ATTRIBUTE, UMLAUTS.getBytes());
 		ContentTransformer transformer = new CleanupTextTransformer(config);
 		transformer.processBean(bean);
 		String result = bean.getString(CONTENT_ATTRIBUTE);
