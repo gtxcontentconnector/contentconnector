@@ -64,6 +64,10 @@
 					<artifactId>hsqldb</artifactId>
 					<groupId>hsqldb</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>org.eclipse.core.runtime</artifactId>
+					<groupId>org.eclipse.core</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
