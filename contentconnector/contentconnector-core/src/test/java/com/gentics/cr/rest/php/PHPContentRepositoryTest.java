@@ -72,8 +72,8 @@ public class PHPContentRepositoryTest {
 		assertEquals(2, ((Map<Object, Object>) resolvePath(map, "'10001.1'.attributes.suggestions.tst")).size());
 		
 		assertEquals("10002.1", resolvePath(map, "'10002.1'.contentid"));
-		assertEquals("null", resolvePath(map, "'10002.1'.obj_id"));
-		assertEquals("null", resolvePath(map, "'10002.1'.obj_type"));
+		assertEquals("1", resolvePath(map, "'10002.1'.obj_id"));
+		assertEquals("10002", resolvePath(map, "'10002.1'.obj_type"));
 		assertEquals("", resolvePath(map, "'10002.1'.mother_id"));
 		assertEquals("", resolvePath(map, "'10002.1'.mother_type"));
 		assertEquals( "111111111", resolvePath(map, "'10002.1'.attributes.updatetimestamp"));
@@ -81,8 +81,8 @@ public class PHPContentRepositoryTest {
 		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.1'")).size());
 		
 		assertEquals("10002.2", resolvePath(map, "'10002.2'.contentid"));
-		assertEquals("null", resolvePath(map, "'10002.2'.obj_id"));
-		assertEquals("null", resolvePath(map, "'10002.2'.obj_type"));
+		assertEquals("2", resolvePath(map, "'10002.2'.obj_id"));
+		assertEquals("10002", resolvePath(map, "'10002.2'.obj_type"));
 		assertEquals("", resolvePath(map, "'10002.2'.mother_id"));
 		assertEquals("", resolvePath(map, "'10002.2'.mother_type"));
 		assertEquals( "111211111", resolvePath(map, "'10002.2'.attributes.updatetimestamp"));
@@ -90,8 +90,8 @@ public class PHPContentRepositoryTest {
 		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.2'")).size());
 		
 		assertEquals("10002.3", resolvePath(map, "'10002.3'.contentid"));
-		assertEquals("null", resolvePath(map, "'10002.3'.obj_id"));
-		assertEquals("null", resolvePath(map, "'10002.3'.obj_type"));
+		assertEquals("3", resolvePath(map, "'10002.3'.obj_id"));
+		assertEquals("10002", resolvePath(map, "'10002.3'.obj_type"));
 		assertEquals("", resolvePath(map, "'10002.3'.mother_id"));
 		assertEquals("", resolvePath(map, "'10002.3'.mother_type"));
 		assertEquals("131111011", resolvePath(map, "'10002.3'.attributes.updatetimestamp"));
@@ -100,8 +100,8 @@ public class PHPContentRepositoryTest {
 		
 		
 		assertEquals("10002.5", resolvePath(map, "'10002.3'.children.'10002.5'.contentid"));
-		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.5'.obj_id"));
-		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.5'.obj_type"));
+		assertEquals("5", resolvePath(map, "'10002.3'.children.'10002.5'.obj_id"));
+		assertEquals("10002", resolvePath(map, "'10002.3'.children.'10002.5'.obj_type"));
 		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.5'.mother_id"));
 		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.5'.mother_type"));
 		assertEquals("141111011", resolvePath(map, "'10002.3'.children.'10002.5'.attributes.updatetimestamp"));
@@ -109,8 +109,8 @@ public class PHPContentRepositoryTest {
 		assertEquals(6, ((Map<Object, Object>) resolvePath(map, "'10002.3'.children.'10002.5'")).size());
 
 		assertEquals("10002.6", resolvePath(map, "'10002.3'.children.'10002.6'.contentid"));
-		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.6'.obj_id"));
-		assertEquals("null", resolvePath(map, "'10002.3'.children.'10002.6'.obj_type"));
+		assertEquals("6", resolvePath(map, "'10002.3'.children.'10002.6'.obj_id"));
+		assertEquals("10002", resolvePath(map, "'10002.3'.children.'10002.6'.obj_type"));
 		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.6'.mother_id"));
 		assertEquals("", resolvePath(map, "'10002.3'.children.'10002.6'.mother_type"));
 		assertEquals("151111011", resolvePath(map, "'10002.3'.children.'10002.6'.attributes.updatetimestamp"));
@@ -122,8 +122,8 @@ public class PHPContentRepositoryTest {
 		assertEquals(7, ((Map<Object, Object>) resolvePath(map, "'10002.3'")).size());
 		
 		assertEquals(resolvePath(map, "'10002.4'.contentid"), "10002.4");
-		assertEquals("null", resolvePath(map, "'10002.4'.obj_id"));
-		assertEquals("null", resolvePath(map, "'10002.4'.obj_type"));
+		assertEquals("4", resolvePath(map, "'10002.4'.obj_id"));
+		assertEquals("10002", resolvePath(map, "'10002.4'.obj_type"));
 		assertEquals("", resolvePath(map, "'10002.4'.mother_id"));
 		assertEquals("", resolvePath(map, "'10002.4'.mother_type"));
 		assertEquals("111111011", resolvePath(map, "'10002.4'.attributes.updatetimestamp"));

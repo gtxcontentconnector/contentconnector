@@ -146,6 +146,11 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 */
 	public CRResolvableBean(final String id) {
 		this.contentid = id;
+		int pos = contentid.indexOf('.');
+		if(pos != -1) {
+			obj_id = contentid.substring(pos + 1);
+			obj_type = contentid.substring(0, pos);
+		}
 	}
 
 	/**
