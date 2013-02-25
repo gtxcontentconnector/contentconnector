@@ -91,7 +91,7 @@ public class RESTNavigationContainer {
 		Collection<CRResolvableBean> coll;
 		CRNavigationRequestBuilder myReqBuilder = reqBuilder;
 		ContentRepository cr = null;
-		ContentRepositoryConfig contentRepository = new ContentRepositoryConfig(conf);
+		ContentRepositoryConfig contentRepository = myReqBuilder.getContentRepositoryConfig();
 		try {
 			cr = contentRepository.getContentRepository(responseEncoding, conf);
 			contenttype = cr.getContentType();
