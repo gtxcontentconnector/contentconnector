@@ -8,9 +8,6 @@ import org.junit.Test;
 
 public class CRRequestBuilderTest {
 	
-	
-	
-	
 	@Test
 	public void testContentRepositoryTypePHP() {
 		testContentRepositoryType("PHP");
@@ -29,6 +26,14 @@ public class CRRequestBuilderTest {
 	@Test
 	public void testContentRepositoryTypeJAVABIN() {
 		testContentRepositoryType("JAVABIN");
+	}
+	
+	@Test
+	public void testContentRepositoryTypeDEFAULT() {
+		HashMap<String, String> parameters = new HashMap<String, String>();
+		CRRequestBuilder builder = new CRRequestBuilder(new MockHttpServletRequest(parameters));
+		String actType = builder.getContentRepositoryConfig().getRepositoryType();
+		assertEquals("Repository type is not correct.", "XML", actType);
 	}
 	
 	private void testContentRepositoryType(String type) {
