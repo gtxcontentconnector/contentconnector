@@ -11,11 +11,13 @@ import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.log4j.Logger;
 
+import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceNotAvailableException;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PLinkInformation;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.CRConfig;
+import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.ITemplateManager;
@@ -143,9 +145,11 @@ public class PlinkProcessor {
 
 			// Render Content with contentid as template name
 			Resolvable plinkObject;
-
+			Datasource ds = null;
 			try {
-				plinkObject = PortalConnectorFactory.getContentObject(contentid, this.config.getDatasource());
+				ds = this.config.getDatasource();
+				plinkObject = PortalConnectorFactory.getContentObject(contentid, ds);
+				
 
 				ITemplateManager myTemplateEngine = this.config.getTemplateManager();
 				// Put objects in the plink template
@@ -171,6 +175,8 @@ public class PlinkProcessor {
 				log.error(ex.getMessage() + ex.getStringStackTrace());
 			} catch (CRException ex) {
 				log.error(ex.getMessage() + ex.getStringStackTrace());
+			} finally {
+				CRDatabaseFactory.releaseDatasource(ds);
 			}
 			// endtime
 			long end = new Date().getTime();
