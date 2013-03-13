@@ -13,9 +13,9 @@
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 	</properties>
 	<scm>
-		<connection>scm:git:ssh://github.com:gtxcontentconnector/contentconnector.git</connection>
-		<developerConnection>scm:git:ssh://github.com:gtxcontentconnector/contentconnector.git</developerConnection>
-		<url>scm:git:ssh://github.com:gtxcontentconnector/contentconnector.git</url>
+		<connection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</connection>
+		<developerConnection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</developerConnection>
+		<url>https://github.com/gtxcontentconnector/contentconnector</url>
 	</scm>
 	<build>
 		<plugins>
