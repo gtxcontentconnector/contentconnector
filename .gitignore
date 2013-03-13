@@ -1,0 +1,7 @@
+.classpath
+.project
+.settings/
+.metadata/
+target/
+Servers/
+contentconnector/contentconnector-config-sample/src/main/config/index/
