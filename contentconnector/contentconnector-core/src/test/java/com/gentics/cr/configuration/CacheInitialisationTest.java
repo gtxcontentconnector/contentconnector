@@ -29,6 +29,10 @@ public class CacheInitialisationTest {
 		EnvironmentConfiguration.loadCacheProperties();
 		
 		assertNotNull("Cannot load object from cache after cache re-init.", instance.get("testobject"));
+		
+		JCS instance2 = JCS.getInstance("test");
+		
+		assertNotNull("Cannot load object from new cache instance cache after cache re-init.", instance2.get("testobject"));
 	}
 
 }
