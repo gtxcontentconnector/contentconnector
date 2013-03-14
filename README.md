@@ -1,1 +1,1 @@
-Have a Look at our Wiki page {{Home}}
+Have a Look at our Wiki page [https://github.com/gtxcontentconnector/contentconnector/wiki]
