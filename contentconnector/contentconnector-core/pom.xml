@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>contentconnector</artifactId>
@@ -106,10 +107,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.easymock</groupId>
-		    <artifactId>easymock</artifactId>
-		    <version>3.1</version>
-		    <scope>test</scope>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>3.1</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -143,7 +144,7 @@
 			<version>2.0.1</version>
 		</dependency>
 
-		<!-- needed for mimetype detection  -->
+		<!-- needed for mimetype detection -->
 		<dependency>
 			<groupId>javax.activation</groupId>
 			<artifactId>activation</artifactId>
@@ -166,6 +167,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.12</version>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>14.0.1</version>
 		</dependency>
 	</dependencies>
 </project>

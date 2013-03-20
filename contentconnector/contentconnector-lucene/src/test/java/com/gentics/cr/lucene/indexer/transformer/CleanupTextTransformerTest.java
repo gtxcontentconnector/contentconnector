@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,14 +23,19 @@ import com.gentics.cr.util.CRUtil;
 
 public class CleanupTextTransformerTest {
 
+	CRConfigUtil config = null;
+
+	/**
+	 * Log4j logger for debug and error messages.
+	 */
+	private static Logger logger = Logger.getLogger(CleanupTextTransformerTest.class);
+
 	private static final String CONTENT_ATTRIBUTE = "content";
 
 	/**
 	 * öäüÄÜÖß€
 	 */
 	private static final String UMLAUTS = "\u00F6\u00E4\u00FC\u00C4\u00DC\u00D6\u00DF\u20AC";
-
-	CRConfigUtil config = null;
 
 	@Before
 	public void setUp() throws Exception {
@@ -41,49 +47,24 @@ public class CleanupTextTransformerTest {
 
 	@Test
 	public void testStripWhitespace() throws IOException, CRException, URISyntaxException {
-		config.set("trimContent", "true");
 		String testContent = readFile("whitespacefile.txt");
-		assertEquals(readFile("cleanedwhitespacefile.txt"), transform(testContent));
-	}
 
-	private String readFile(final String fileName) throws URISyntaxException, FileNotFoundException, IOException {
-		FileInputStream inputStream = new FileInputStream(new File(this.getClass().getResource(fileName).toURI()));
-		try {
-			return IOUtils.toString(inputStream);
-		} finally {
-			inputStream.close();
-		}
-	}
-
-	@Test
-	public void testIndexPoints() throws CRException {
-		String result = transform("1. Index\n"
-				+ "Title ....................................................................................................................... 1\n"
-				+ "1. First chapter ...................................................................................................................... 2\n"
-				+ "2. Second chapter .................................................................................................................................... 7");
-		assertEquals(
-			"Index points are not reduced correctly.",
-			"1. Index Title ... 1 1. First chapter ... 2 2. Second chapter ... 7",
-			result);
-
-		result = transform("First chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 33 Second chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 66");
-		assertEquals("Index points are not reduced correctly.", "First chapter ... Page 33 Second chapter ... Page 66", result);
-	}
-
-	@Test
-	public void testUmlauts() throws CRException {
-		assertEquals("Umlauts cannot be processed correctly.", UMLAUTS, transform(UMLAUTS + ""));
+		testContent = transform(testContent);
+		assertEquals(readFile("cleanedwhitespacefile.txt"), testContent);
 	}
 
 	@Test
 	public void testNotPrintableCharacters() throws CRException {
 		String stringWithNonPrintableCharacters = "Drittstaaten:  HYPERLINK \"http://www.help.gv.at/Content.Node/12/Seite.120000.html\" \\o \"Öffnet in neuem Fenster\" \\t \"_blank\" Aufenthaltsberechtigung";
 		String expectedResult = "Drittstaaten: HYPERLINK \"http://www.help.gv.at/Content.Node/12/Seite.120000.html\" \\o \"Öffnet in neuem Fenster\" \\t \"_blank\" Aufenthaltsberechtigung";
-		assertEquals("Special characters are not elminiated correctly.", expectedResult, transform(stringWithNonPrintableCharacters + ""));
+		assertEquals("Special characters are not elminiated correctly.", expectedResult, transform(stringWithNonPrintableCharacters));
+	}
 
-		stringWithNonPrintableCharacters = "Person Familienname:  FORMTEXT       Vorname:  FORMTEXT       Standort:  FORMTEXT       Stock:  FORMTEXT ";
-		expectedResult = "Person Familienname: FORMTEXT Vorname: FORMTEXT Standort: FORMTEXT Stock: FORMTEXT ";
-		assertEquals("Special characters are not elminiated correctly.", expectedResult, transform(stringWithNonPrintableCharacters + ""));
+	@Test
+	public void testNotPrintableCharactersWithNewLines() throws CRException {
+		String stringWithNonPrintableCharacters = "Person Familienname:  FORMTEXT   \n    Vorname:  FORMTEXT   \t    Standort:  FORMTEXT       Stock:  FORMTEXT ";
+		String expectedResult = "Person Familienname: FORMTEXT\nVorname: FORMTEXT Standort: FORMTEXT Stock: FORMTEXT ";
+		assertEquals("Special characters are not elminiated correctly.", expectedResult, transform(stringWithNonPrintableCharacters));
 	}
 
 	@Test
@@ -102,7 +83,7 @@ public class CleanupTextTransformerTest {
 	@Test
 	public void testByteArray() throws CRException, UnsupportedEncodingException {
 		CRResolvableBean bean = new CRResolvableBean();
-		bean.set(CONTENT_ATTRIBUTE, UMLAUTS.getBytes());
+		bean.set(CONTENT_ATTRIBUTE, UMLAUTS.getBytes("UTF-8"));
 		ContentTransformer transformer = new CleanupTextTransformer(config);
 		transformer.processBean(bean);
 		String result = bean.getString(CONTENT_ATTRIBUTE);
@@ -110,10 +91,45 @@ public class CleanupTextTransformerTest {
 	}
 
 	@Test
+	public void testUmlauts() throws CRException {
+		assertEquals("Umlauts cannot be processed correctly.", UMLAUTS, transform(UMLAUTS + ""));
+	}
+
+	@Test
+	public void testIndexPoints() throws CRException {
+		String result = transform("1. Index\n"
+				+ "Title ....................................................................................................................... 1\n"
+				+ "1. First chapter ...................................................................................................................... 2\n"
+				+ "2. Second chapter .................................................................................................................................... 7");
+		assertEquals(
+			"Index points are not reduced correctly.",
+			"1. Index\nTitle ... 1\n1. First chapter ... 2\n2. Second chapter ... 7",
+			result);
+	}
+
+	@Test
+	public void testIndexPoints2() throws CRException {
+		String result = transform("First chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+				+ "Page 33 Second chapter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Page 66");
+		assertEquals(
+			"Index points with spaces between are not reduced correctly.",
+			"First chapter ... Page 33 Second chapter ... Page 66",
+			result);
+	}
+
+	@Test
 	public void testUnchanged() throws CRException {
 		String testStringNotToChange = "test";
 		assertSame("String had not to be changed.", testStringNotToChange, transform(testStringNotToChange));
+	}
 
+	private String readFile(final String fileName) throws URISyntaxException, FileNotFoundException, IOException {
+		FileInputStream inputStream = new FileInputStream(new File(this.getClass().getResource(fileName).toURI()));
+		try {
+			return IOUtils.toString(inputStream);
+		} finally {
+			inputStream.close();
+		}
 	}
 
 	private String transform(String string) throws CRException {
