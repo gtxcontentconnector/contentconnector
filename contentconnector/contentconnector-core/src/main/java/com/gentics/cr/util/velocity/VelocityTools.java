@@ -60,70 +60,70 @@ public class VelocityTools {
 
 	//getters for the tools
 	/**
-	 * @return the date tool
+	 * @return the date tool.
 	 */
 	public DateTool getDate() {
 		return date;
 	}
 
 	/**
-	 * @return the math tool
+	 * @return the math tool.
 	 */
 	public MathTool getMath() {
 		return math;
 	}
 
 	/**
-	 * @return the number tool
+	 * @return the number tool.
 	 */
 	public NumberTool getNumber() {
 		return number;
 	}
 
 	/**
-	 * @return the render tool
+	 * @return the render tool.
 	 */
 	public RenderTool getRender() {
 		return render;
 	}
 
 	/**
-	 * @return the escape tool
+	 * @return the escape tool.
 	 */
 	public EscapeTool getEsc() {
 		return esc;
 	}
 
 	/**
-	 * @return the resource tool
+	 * @return the resource tool.
 	 */
 	public ResourceTool getResource() {
 		return resource;
 	}
 
 	/**
-	 * @return the alternator tool
+	 * @return the alternator tool.
 	 */
 	public AlternatorTool getAlternator() {
 		return alternator;
 	}
 
 	/**
-	 * @return the list tool
+	 * @return the list tool.
 	 */
 	public ListTool getList() {
 		return list;
 	}
 
 	/**
-	 * @return the sort tool
+	 * @return the sort tool.
 	 */
 	public SortTool getSort() {
 		return sort;
 	}
 
 	/**
-	 * @return the iterator tool
+	 * @return the iterator tool.
 	 */
 	public IteratorTool getIterator() {
 		return iterator;

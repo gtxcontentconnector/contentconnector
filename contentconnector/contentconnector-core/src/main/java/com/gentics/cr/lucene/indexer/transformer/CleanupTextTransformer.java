@@ -2,235 +2,146 @@ package com.gentics.cr.lucene.indexer.transformer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.google.common.base.CharMatcher;
 
 /**
  * Cleanup an attribute from not readable characters and not well readable
  * characters such es endless lines of point in the index pages of word
- * documents.
- * 
- * Last changed: $Date: 2009-06-24 17:10:19 +0200 (Mi, 24 Jun 2009) $
- * @version $Revision: 99 $
- * @author $Author: bigbear3001 $
- *
+ * documents. Replace multiple occurances of newlines, tabs, spaces with only one.
  */
 public class CleanupTextTransformer extends ContentTransformer {
-
-	/**
-	 * int value of the unicode en whitespace character.
-	 */
-	private static final int EN_WHITESPACE = 8194;
-
-	/**
-	 * int value of the unicode em whitespace character.
-	 */
-	private static final int EM_WHITESPACE = 8195;
-
-	/**
-	 * int value of the non breaking whitesapce character.
-	 */
-	private static final int NON_BREAKING_WHITESPACE = 160;
-
-	/**
-	 * at the beginning of the ASCII character map there are the control
-	 * characters. 31 is the last control character of this section.
-	 * 
-	 */
-	private static final int LAST_ASCII_CONTROL_CHARACTER = 31;
-
-	/**
-	 * number of index point to keep for readability.
-	 */
-	private static final int INDEX_POINTS_TO_KEEP = 3;
-
-	/**
-	 * Replacing defines if we are in a multicharacter replacing mode.
-	 */
-	private static enum Replacing {
-		/**
-		 * no replacing mode active.
-		 */
-		NONE,
-		/**
-		 * index point replacing mode active.
-		 */
-		INDEX_POINT,
-		/**
-		 * multiple spaces replacing mode active.
-		 */
-		SPACES
-	}
-
-	/**
-	 * State holds the current state of the replacer like buffers and the
-	 * replacing state.
-	 */
-	private final class State {
-		/**
-		 * private constructor (checkstyle is so picky).
-		 */
-		private State() {
-		}
-
-		/**
-		 * Result buffer.
-		 */
-		private StringBuilder result = new StringBuilder();
-		/**
-		 * Buffer for multicharacter replacings.
-		 */
-		private StringBuilder buffer = new StringBuilder();
-		/**
-		 * if there is a pending whitespace which is not contained in the
-		 * buffer. this acts like a second whitespace buffer, since we only
-		 * display one whitespace max we can do this with a boolean.
-		 */
-		private boolean whitespacePending = false;
-		/**
-		 * stores the active multi character replacing mode.
-		 */
-		private Replacing activeReplacing = Replacing.NONE;
-
-		/**
-		 * set a new multicharacter replacing mode and empties all buffers
-		 * except the result buffer.
-		 * @param replacing - replacing mode to set
-		 */
-		private void setReplacing(final Replacing replacing) {
-			if (activeReplacing != replacing) {
-				result.append(buffer);
-				buffer.replace(0, buffer.length(), "");
-				if (whitespacePending) {
-					result.append(' ');
-					whitespacePending = false;
-				}
-				activeReplacing = replacing;
-			}
-		}
-	}
-
-	/**
-	 * configuration key to read the attribute.
-	 */
-	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
-
-	private static final String TRANSFORMER_TRIM_CONTENT_KEY = "trimContent";
 
 	/**
 	 * attribute to cleanup in all beans.
 	 */
 	private String attribute = "";
 
-	private boolean trimContent = false;
+	/**
+	 * configuration key to read the attribute.
+	 */
+	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
 
 	/**
-	 * Create Instance of the transformer.
-	 *  @param config - configuration of the transformer holding the following
-	 *  options:
-	 *  - attribute @see {@link #attribute}
+	 * Remove indexdots like those which can be found in TOCs of word documents.
 	 */
+	private static final String TRANSFORMER_CLEAN_TABLE_OF_INDEX_DOTS = "cleanTableOfIndexDots";
+
+	/**
+	 * Remove non printable characters (but NOT control characters).
+	 */
+	private static final String TRANSFORMER_REMOVE_NON_PRINTABLE_CHARACTERS = "removeNonPrintableCharacters";
+
+	/**
+	 * @see TRANSFORMER_CLEAN_TABLE_OF_INDEX_DOTS
+	 */
+	private boolean cleanTableOfIndexDots = true;
+
+	/**
+	 * @see TRANSFORMER_REMOVE_NON_PRINTABLE_CHARACTERS
+	 */
+	private boolean removeNonPrintableCharacters = true;
+
 	public CleanupTextTransformer(final GenericConfiguration config) {
 		super(config);
 		attribute = config.getString(TRANSFORMER_ATTRIBUTE_KEY);
-		if (config.getString(TRANSFORMER_TRIM_CONTENT_KEY) != null) {
-			trimContent = config.getBoolean(TRANSFORMER_TRIM_CONTENT_KEY);
+		if (config.getString(TRANSFORMER_CLEAN_TABLE_OF_INDEX_DOTS) != null) {
+			cleanTableOfIndexDots = config.getBoolean(TRANSFORMER_CLEAN_TABLE_OF_INDEX_DOTS);
+		}
+		if (config.getString(TRANSFORMER_REMOVE_NON_PRINTABLE_CHARACTERS) != null) {
+			removeNonPrintableCharacters = config.getBoolean(TRANSFORMER_REMOVE_NON_PRINTABLE_CHARACTERS);
 		}
 	}
 
 	@Override
-	public final void processBean(final CRResolvableBean bean) throws CRException {
-		try {
-			if (attribute != null) {
-				Object obj = bean.get(attribute);
-				if (obj != null) {
-					boolean changed = false;
-					State state = new State();
-					Reader reader = getStreamContents(obj);
-					int cInt;
-					while ((cInt = reader.read()) != -1) {
-						char character = (char) cInt;
-						boolean whitespace = checkWhitespaceCharacter(character, cInt);
-						if (character == '.' || (state.activeReplacing == Replacing.INDEX_POINT && whitespace)) {
-							state.setReplacing(Replacing.INDEX_POINT);
-							if (whitespace) {
-								state.whitespacePending = true;
-								changed = true;
-							} else if (state.buffer.length() < INDEX_POINTS_TO_KEEP) {
-								state.buffer.append(character);
-							} else {
-								changed = true;
-							}
-						} else if (whitespace) {
-							state.setReplacing(Replacing.SPACES);
-							if (state.buffer.length() == 0) {
-								state.buffer.append(' ');
-							} else {
-								changed = true;
-							}
-						} else if (cInt <= LAST_ASCII_CONTROL_CHARACTER) {
-							//ASCII Controll Characters
-							changed = true;
-						} else {
-							state.setReplacing(Replacing.NONE);
-							state.result.append(character);
-						}
-					}
-					state.setReplacing(Replacing.NONE);
-					if (changed) {
-						String content = state.result.toString();
-						if (trimContent) {
-							bean.set(attribute, content.trim());
-						} else {
-							bean.set(attribute, content);
-						}
-					}
+	public void processBean(CRResolvableBean bean) throws CRException {
+		if (attribute == null) {
+			LOGGER.error("No attribute for processing specified. Nothing to do here.");
+		}
+
+		String content = readAttribute(bean);
+		if (cleanTableOfIndexDots) {
+			content = cleanTableOfIndexDots(content);
+			content = cleanTableOfIndexDotsWithSpacesInBetween(content);
+		}
+		if (removeNonPrintableCharacters) {
+			content = removeNonPrintableCharacters(content);
+		}
+		content = normalizeWhiteSpaceCharacters(content);
+		content = removeWhiteSpaces(content);
+
+		bean.set(attribute, content);
+	}
+
+	private String readAttribute(final CRResolvableBean bean) {
+		Object obj = bean.get(attribute);
+		String content = "";
+		if (obj != null) {
+			if (obj instanceof byte[]) {
+				try {
+					ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) obj);
+					StringWriter writer = new StringWriter();
+					IOUtils.copy(stream, writer, "UTF-8");
+					content = writer.toString();
+				} catch (UnsupportedEncodingException e) {
+					LOGGER.error("UTF-8 has to be supported.", e);
+				} catch (IOException e) {
+					LOGGER.error("Could not retrieve string from bytearray", e);
 				}
 			} else {
-				LOGGER.error("Configured attribute is null. " + "Bean will not be processed");
+				content = obj.toString();
 			}
-		} catch (IOException e) {
-			throw new CRException("Cannot read the attribute " + attribute + ".", e);
 		}
+		return content;
 	}
 
 	/**
-	 * check if the current character is a whitespace character.
-	 * @param character - char value of the character
-	 * @param cInt - int value of the character
-	 * @return <code>true</code> if the character is a whitespace character
+	 * replace all kinds of spaces (en, nonbreaking, ..) using normal spaces.
 	 */
-	private boolean checkWhitespaceCharacter(final char character, final int cInt) {
-		return character == '\r' || character == '\n' || character == '\t' || character == ' ' || cInt == NON_BREAKING_WHITESPACE
-				|| cInt == EM_WHITESPACE || cInt == EN_WHITESPACE;
+	private String normalizeWhiteSpaceCharacters(final String content) {
+		return CharMatcher.WHITESPACE.and(CharMatcher.isNot(' ')).and(CharMatcher.isNot('\n')).replaceFrom(content, "");
 	}
 
 	/**
-	 * convert the object to a StreamReader.
-	 * @param obj - object to convert
-	 * @return stream of the object or <code>null</code> if we cannot create a
-	 * StreamReader for it.
+	 * Removes newlines, blanks, tabs and replace them with only one of each.
+	 * @param content
+	 * @return
+	 * @throws IOException 
 	 */
-	private Reader getStreamContents(final Object obj) {
-		if (obj != null) {
-			if (obj instanceof String) {
-				return new StringReader((String) obj);
-			} else if (obj instanceof byte[]) {
-				try {
-					return new InputStreamReader(new ByteArrayInputStream((byte[]) obj), "UTF-8");
-				} catch (UnsupportedEncodingException e) {
-					LOGGER.fatal("UTF-8 has to be supported.", e);
-				}
-			}
-		}
-		return null;
+	private String removeWhiteSpaces(final String content) {
+		Pattern spaces = Pattern.compile("[\t ]+");
+		Pattern emptyLines = Pattern.compile("^\\s+$?", Pattern.MULTILINE);
+		Pattern newlines = Pattern.compile("\\s*\\n+");
+		return newlines.matcher(emptyLines.matcher(spaces.matcher(content).replaceAll(" ")).replaceAll("")).replaceAll("\n");
+	}
+
+	/**
+	 * Replace more than 3 dots with 3.
+	 **/
+	private String cleanTableOfIndexDots(final String content) {
+		return content.replaceAll("(\\.){3,}", "...");
+	}
+
+	/**
+	 * Replace occurance of ". . . " with ... 
+	 */
+	private String cleanTableOfIndexDotsWithSpacesInBetween(final String content) {
+		return content.replaceAll("(\\. ){3,}", "... ");
+	}
+
+	/**
+	 * Remove non printable characters but don't remove controlchars like newline, tabs.
+	 */
+	private String removeNonPrintableCharacters(final String input) {
+		return input.replaceAll("[^\\P{Cc}\\t\\r\\n]", "");
 	}
 
 	@Override
