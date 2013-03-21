@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,12 +16,12 @@ import com.gentics.cr.util.CRUtil;
 
 public class GenericConfigurationTest {
 
-	private URL confPath;
+	private String confPath;
 
 	@Before
 	public void setUp() throws Exception {
-		confPath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().toURI().toURL();
-		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath.getPath());
+		confPath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().getAbsolutePath();
+		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
 		EnvironmentConfiguration.setCacheFilePath("${" + CRUtil.PORTALNODE_CONFPATH + "}/cache.ccf");
 		EnvironmentConfiguration.loadLoggerProperties();
 		EnvironmentConfiguration.loadCacheProperties();

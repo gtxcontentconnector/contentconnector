@@ -64,14 +64,12 @@ public class VectorBolder extends AdvancedContentHighlighter {
 	 * @return highlighted text.
 	 * 
 	 */
-	public final String highlight(final Query parsedQuery, final IndexReader reader, final int docId,
-			final String fieldName) {
+	public final String highlight(final Query parsedQuery, final IndexReader reader, final int docId, final String fieldName) {
 		UseCase uc = MonitorFactory.startUseCase("Highlight.VectorBolder.highlight()");
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		if (fieldName != null && parsedQuery != null) {
 			FastVectorHighlighter highlighter = new FastVectorHighlighter(true, true, new SimpleFragListBuilder(),
-					new ScoreOrderFragmentsBuilder(new String[] { getHighlightPrefix() },
-							new String[] { getHighlightPostfix() }));
+					new ScoreOrderFragmentsBuilder(new String[] { getHighlightPrefix() }, new String[] { getHighlightPostfix() }));
 			FieldQuery fieldQuery = highlighter.getFieldQuery(parsedQuery);
 			//highlighter.setTextFragmenter(new WordCountFragmenter(fragmentSize));
 
@@ -81,24 +79,18 @@ public class VectorBolder extends AdvancedContentHighlighter {
 				UseCase ucFragments = MonitorFactory.startUseCase("Highlight.VectorBolder.highlight()#getFragments");
 				//TextFragment[] frags = highlighter.getBestTextFragments(tokenStream,
 				//		attribute, true, numMaxFragments);
-				String[] frags = highlighter.getBestFragments(
-					fieldQuery,
-					reader,
-					docId,
-					fieldName,
-					fragmentSize,
-					numMaxFragments);
+				String[] frags = highlighter.getBestFragments(fieldQuery, reader, docId, fieldName, fragmentSize, numMaxFragments);
 				ucFragments.stop();
 				boolean first = true;
 				if (frags != null) {
 					for (String frag : frags) {
 						frag = frag.replaceAll(REMOVE_TEXT_FROM_FRAGMENT_REGEX, "");
 						if (!first) {
-							result += getFragmentSeperator();
+							result.append(getFragmentSeperator());
 						} else {
 							first = false;
 						}
-						result += frag;
+						result.append(frag);
 					}
 				}
 			} catch (IOException e) {
@@ -106,7 +98,7 @@ public class VectorBolder extends AdvancedContentHighlighter {
 			}
 		}
 		uc.stop();
-		return result;
+		return result.toString();
 	}
 
 	@Override

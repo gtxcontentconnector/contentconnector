@@ -13,6 +13,8 @@ import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
@@ -27,7 +29,12 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 public class HTMLEditorKitStripper extends ContentTransformer {
 
 	/**
-	 * Create new instance of HTMLEdirtorKitStripper.
+	 * Log4j logger.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(HTMLEditorKitStripper.class);
+
+	/**
+	 * Create new instance of HTMLEditorKitStripper.
 	 * @param config
 	 */
 	public HTMLEditorKitStripper(GenericConfiguration config) {
@@ -95,19 +102,19 @@ public class HTMLEditorKitStripper extends ContentTransformer {
 	 */
 	public String getStringContents(Object obj) {
 
-		String ret = "";
+		StringBuilder ret = new StringBuilder();
 		List<String> lines;
 		try {
 			Reader r = tidy(convertToInputStream(obj));
 			lines = HTMLEditorKitStripper.extractText(r);
 			for (String line : lines) {
-				ret += line + newline;
+				ret.append(line + newline);
 			}
 		} catch (Exception e) {
 			// Catch all exceptions to not disturb indexer
-			e.printStackTrace();
+			LOGGER.error("Error while extracting text", e);
 		}
-		return ret;
+		return ret.toString();
 	}
 
 	@Override

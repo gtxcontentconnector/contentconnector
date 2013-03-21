@@ -42,7 +42,7 @@ public class XLSContentTransformer extends ContentTransformer {
 	 * @return
 	 */
 	private String getStringContents(Object obj) throws CRException {
-		String contents = "";
+		StringBuilder contents = new StringBuilder();
 		ByteArrayInputStream is;
 		if (obj instanceof byte[]) {
 			is = new ByteArrayInputStream((byte[]) obj);
@@ -72,15 +72,15 @@ public class XLSContentTransformer extends ContentTransformer {
 										if (celltype == HSSFCell.CELL_TYPE_STRING) {
 											HSSFRichTextString rts = cell.getRichStringCellValue();
 											if (rts != null) {
-												contents = contents + rts.getString() + ",";
+												contents.append(rts.getString() + ",");
 											}
 										} else if (celltype == HSSFCell.CELL_TYPE_NUMERIC) {
 											double num = cell.getNumericCellValue();
-											contents = contents + num + ",";
+											contents.append(num + ",");
 										}
 										HSSFComment comm = cell.getCellComment();
 										if (comm != null) {
-											contents = contents + comm + ",";
+											contents.append(comm + ",");
 										}
 
 									}
@@ -88,9 +88,6 @@ public class XLSContentTransformer extends ContentTransformer {
 							}
 						}
 					}
-				}
-				if ("".equals(contents)) {
-					contents = null;
 				}
 			}
 
@@ -100,7 +97,7 @@ public class XLSContentTransformer extends ContentTransformer {
 			throw new CRException(e);
 		}
 
-		return (contents);
+		return contents.toString();
 	}
 
 	@Override

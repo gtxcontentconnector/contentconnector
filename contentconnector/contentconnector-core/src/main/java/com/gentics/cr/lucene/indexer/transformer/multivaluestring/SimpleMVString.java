@@ -29,8 +29,9 @@ public class SimpleMVString extends ContentTransformer {
 		super(config);
 		//Define Value for NULLS
 		NULLValue = (String) config.get(NULL_VALUE_KEY);
-		if (NULLValue == null)
+		if (NULLValue == null) {
 			NULLValue = DEFAULT_NULL_VALUE;
+		}
 		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
 
@@ -39,19 +40,23 @@ public class SimpleMVString extends ContentTransformer {
 	 */
 	@SuppressWarnings("unchecked")
 	private String getStringContents(Object obj) {
-		String ret = NULLValue;
+		StringBuilder ret = new StringBuilder();
 		if (obj != null && obj instanceof Collection) {
-			ret = "";
 			Collection<Object> coll = (Collection<Object>) obj;
-			if (coll == null || coll.size() <= 0)
+			if (coll == null || coll.size() <= 0) {
 				return NULLValue;
+			}
 			for (Object object : coll) {
 				if (object != null) {
-					ret += object.toString() + " ";
+					ret.append(object.toString() + " ");
 				}
 			}
 		}
-		return ret;
+		if (ret.equals("")) {
+			return NULLValue;
+		} else {
+			return ret.toString();
+		}
 	}
 
 	@Override

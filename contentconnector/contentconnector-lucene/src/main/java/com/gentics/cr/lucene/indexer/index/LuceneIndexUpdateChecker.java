@@ -115,12 +115,12 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				return true;
 			} catch (IOException e) {
 				//TODO specify witch index is not readable
-				String directories = "";
+				StringBuilder directories = new StringBuilder();
 				Directory[] dirs = indexLocation.getDirectories();
 				for (Directory dir : dirs) {
-					directories += dir.toString() + '\n';
+					directories.append(dir.toString() + '\n');
 				}
-				log.error("Cannot open index for reading. (Directory: " + directories + ")", e);
+				log.error("Cannot open index for reading. (Directory: " + directories.toString() + ")", e);
 				return true;
 			} finally {
 				if (indexAccessor != null) {
