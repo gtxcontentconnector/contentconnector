@@ -40,7 +40,8 @@ public class NavObject {
 	 * @param template
 	 * @param objects 
 	 */
-	public NavObject(CRConfig conf, CRResolvableBean bean, int level, Vector<String> path, ITemplate template, Map<String, Object> objects) {
+	public NavObject(CRConfig conf, CRResolvableBean bean, int level, Vector<String> path,
+			ITemplate template, Map<String, Object> objects) {
 		this.bean = bean;
 		this.path = path;
 		if (this.path == null && bean != null) {

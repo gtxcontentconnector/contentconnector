@@ -89,9 +89,6 @@ public class XLSContentTransformer extends ContentTransformer {
 						}
 					}
 				}
-				if ("".equals(contents)) {
-					contents = null;
-				}
 			}
 
 		} catch (IOException e) {

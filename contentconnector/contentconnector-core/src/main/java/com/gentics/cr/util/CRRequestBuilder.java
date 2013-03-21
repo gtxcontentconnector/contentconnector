@@ -6,8 +6,6 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -47,8 +45,6 @@ public class CRRequestBuilder {
 	private ContentRepositoryConfig contentRepository = null;
 
 	protected GenericConfiguration config;
-
-	private static Logger LOGGER = Logger.getLogger(CRRequestBuilder.class);
 
 	/**
 	 * name of the configuration attribute where the defaultparameters are
@@ -250,12 +246,12 @@ public class CRRequestBuilder {
 			if (query_and != null && !"".equals(query_and)) {
 				StringBuilder filterAnd = new StringBuilder();
 				for (String query : query_and.split(" ")) {
-					if (!"".equals(filterAnd)) {
+					if (!"".equals(filterAnd.toString())) {
 						filterAnd.append(" AND ");
 					}
 					filterAnd.append(query.toLowerCase());
 				}
-				if (!"".equals(filterAnd)) {
+				if (!"".equals(filterAnd.toString())) {
 					filter = "(" + filterAnd.toString() + ")";
 				}
 				query_and = "";
@@ -263,12 +259,12 @@ public class CRRequestBuilder {
 			if (query_or != null && !"".equals(query_or)) {
 				StringBuilder filterOr = new StringBuilder();
 				for (String query : query_or.split(" ")) {
-					if (!"".equals(filterOr)) {
+					if (!"".equals(filterOr.toString())) {
 						filterOr.append(" OR ");
 					}
 					filterOr.append(query.toLowerCase());
 				}
-				if (!"".equals(filterOr)) {
+				if (!"".equals(filterOr.toString())) {
 					if (!"".equals(filter)) {
 						filter += " AND ";
 					}
@@ -279,12 +275,12 @@ public class CRRequestBuilder {
 			if (query_not != null && !"".equals(query_not)) {
 				StringBuilder filterNot = new StringBuilder();
 				for (String query : query_not.split(" ")) {
-					if (!"".equals(filterNot)) {
+					if (!"".equals(filterNot.toString())) {
 						filterNot.append(" OR ");
 					}
 					filterNot.append(query.toLowerCase());
 				}
-				if (!"".equals(filterNot)) {
+				if (!"".equals(filterNot.toString())) {
 					if (!"".equals(filter)) {
 						filter += " AND ";
 					}
@@ -305,7 +301,7 @@ public class CRRequestBuilder {
 				&& !filter.matches("(.+[ (])?node_id\\:[0-9]+.*")) {
 			StringBuilder nodeFilter = new StringBuilder();
 			for (int i = 0; i < node_id.length; i++) {
-				if (!nodeFilter.equals("")) {
+				if (!nodeFilter.toString().equals("")) {
 					nodeFilter.append(" OR ");
 				}
 				nodeFilter.append("node_id:" + node_id[i]);

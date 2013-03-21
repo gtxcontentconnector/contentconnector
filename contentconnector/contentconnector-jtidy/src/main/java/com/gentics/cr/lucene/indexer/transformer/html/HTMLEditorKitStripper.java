@@ -28,7 +28,10 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
  */
 public class HTMLEditorKitStripper extends ContentTransformer {
 
-	private static Logger LOGGER = Logger.getLogger(HTMLEditorKitStripper.class);
+	/**
+	 * Log4j logger.
+	 */
+	private static final Logger LOGGER = Logger.getLogger(HTMLEditorKitStripper.class);
 
 	/**
 	 * Create new instance of HTMLEditorKitStripper.

@@ -128,8 +128,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 			}
 
 		}
-		String statementString = "SELECT " + statement.toString() + " FROM " + this.table + " WHERE " + translate(requestFilter);
-		return statementString;
+		return ("SELECT " + statement.toString() + " FROM " + this.table + " WHERE " + translate(requestFilter));
 	}
 
 	/**
