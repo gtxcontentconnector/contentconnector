@@ -61,7 +61,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 
 	@Override
 	public void processBean(final CRResolvableBean contentBean) {
-		String targetAttributeValues = "";
+		StringBuilder targetAttributeValues = new StringBuilder();
 		CRResolvableBean folderBean = null;
 
 		Resolvable contentResolvable = contentBean.getResolvable();
@@ -74,7 +74,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 						Object attributeObject = folderResolvable.getProperty(attribute);
 						if (attributeObject != null) {
 							String folderAttributesString = attributeObject.toString();
-							targetAttributeValues += folderAttributesString;
+							targetAttributeValues.append(folderAttributesString);
 						}
 					}
 				}
@@ -85,7 +85,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 			Object attributeObject = contentBean.get(attribute);
 			if (attributeObject != null) {
 				String contentAttributesString = attributeObject.toString();
-				targetAttributeValues += contentAttributesString;
+				targetAttributeValues.append(contentAttributesString);
 			}
 		}
 
@@ -93,7 +93,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 			logger.debug("contentid: " + contentBean.getContentid() + " " + " - folder: " + folderBean.getContentid()
 					+ " - targetattribute: " + targetAttributeValues);
 		}
-		contentBean.set(targetAttribute, targetAttributeValues);
+		contentBean.set(targetAttribute, targetAttributeValues.toString());
 	}
 
 	@Override

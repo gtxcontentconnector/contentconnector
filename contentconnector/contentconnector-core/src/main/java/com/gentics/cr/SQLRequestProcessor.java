@@ -92,8 +92,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 		mergeOnIdColumn = config.getBoolean(MERGE_ON_IDCOLUMN_KEY, mergeOnIdColumn);
 	}
 
-	private static final Pattern CONTAINSONEOFPATTERN = Pattern
-			.compile("object\\.([a-zA-Z0-9_]*)[ ]*CONTAINSONEOF[ ]*\\[(.*)\\]");
+	private static final Pattern CONTAINSONEOFPATTERN = Pattern.compile("object\\.([a-zA-Z0-9_]*)[ ]*CONTAINSONEOF[ ]*\\[(.*)\\]");
 
 	private String translate(String requestFilter) {
 		//TANSLATE CONTAINSONEOF
@@ -112,25 +111,25 @@ public class SQLRequestProcessor extends RequestProcessor {
 	}
 
 	private String getStatement(String requestFilter, String[] attributes) {
-		String statement = new String();
+		StringBuilder statement = new StringBuilder();
 		if (attributes == null || attributes.length == 0 || columns.length == 0) {
-			statement = "*";
+			statement.append("*");
 		} else {
 			if (!Arrays.asList(attributes).contains(idcolumn)) {
-				statement = idcolumn;
+				statement.append(idcolumn);
 			}
 			for (String att : attributes) {
 				if (Arrays.asList(columns).contains(att)) {
 					if (!statement.equals("")) {
-						statement += ",";
+						statement.append(",");
 					}
-					statement += att;
+					statement.append(att);
 				}
 			}
 
 		}
-		statement = "SELECT " + statement + " FROM " + this.table + " WHERE " + translate(requestFilter);
-		return statement;
+		String statementString = "SELECT " + statement.toString() + " FROM " + this.table + " WHERE " + translate(requestFilter);
+		return statementString;
 	}
 
 	/**
@@ -170,18 +169,21 @@ public class SQLRequestProcessor extends RequestProcessor {
 			throw new CRException(e);
 		} finally {
 			try {
-				if (rset != null)
+				if (rset != null) {
 					rset.close();
+				}
 			} catch (SQLException e) {
 			}
 			try {
-				if (stmt != null)
+				if (stmt != null) {
 					stmt.close();
+				}
 			} catch (SQLException e) {
 			}
 			try {
-				if (conn != null)
+				if (conn != null) {
 					conn.close();
+				}
 			} catch (SQLException e) {
 			}
 		}
@@ -277,7 +279,7 @@ public class SQLRequestProcessor extends RequestProcessor {
 				CRResolvableBean bean = new CRResolvableBean();
 				for (int i = 1; i <= colnames.length; i++) {
 					String colname = colnames[i - 1];
-					if(colname != null && colname.equalsIgnoreCase(idcolumn)) {
+					if (colname != null && colname.equalsIgnoreCase(idcolumn)) {
 						Object o = rset.getObject(i);
 						bean.setContentid(o.toString());
 					}
