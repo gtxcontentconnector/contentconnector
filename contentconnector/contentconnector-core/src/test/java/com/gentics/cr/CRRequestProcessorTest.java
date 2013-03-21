@@ -1,5 +1,7 @@
 package com.gentics.cr;
 
+import java.net.URISyntaxException;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -11,7 +13,7 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 	private static HSQLTestHandler testHandler;
 
 	@BeforeClass
-	public static void setUp() throws CRException {
+	public static void setUp() throws CRException, URISyntaxException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName());
 		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));
 		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));

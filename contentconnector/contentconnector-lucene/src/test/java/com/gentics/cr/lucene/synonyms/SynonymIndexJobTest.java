@@ -1,11 +1,8 @@
 package com.gentics.cr.lucene.synonyms;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,52 +30,31 @@ public class SynonymIndexJobTest {
 	private CRConfig config2;
 
 	@Before
-	public void setup() {
-		URL confPath = null;
-		try {
-			confPath = new File(this.getClass()
-					.getResource("indexer.properties").toURI()).getParentFile()
-					.toURI().toURL();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath.getPath());
-		EnvironmentConfiguration.setCacheFilePath("${"
-				+ CRUtil.PORTALNODE_CONFPATH + "}/cache.ccf");
+	public void setup() throws URISyntaxException {
+		String confPath = null;
+		confPath = new File(this.getClass().getResource("indexer.properties").toURI()).getParentFile().getAbsolutePath();
+		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
+		EnvironmentConfiguration.setCacheFilePath("${" + CRUtil.PORTALNODE_CONFPATH + "}/cache.ccf");
 		EnvironmentConfiguration.loadLoggerProperties();
 		EnvironmentConfiguration.loadCacheProperties();
 	}
 
 	@Before
-	public void create() throws CRException,
-			FileNotFoundException, URISyntaxException {
+	public void create() throws CRException, URISyntaxException, IOException {
 		GenericConfiguration genericConf = new GenericConfiguration();
-		try {
-			URL confPath2 = new File(this.getClass()
-					.getResource("indexer.properties").toURI()).getParentFile()
-					.toURI().toURL();
-			GenericConfigurationFileLoader.load(genericConf,
-					confPath2.getPath() + "/indexer.properties");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String confPath2 = new File(this.getClass().getResource("indexer.properties").toURI()).getParentFile().getAbsolutePath();
+		GenericConfigurationFileLoader.load(genericConf, confPath2 + "/indexer.properties");
 		CRConfigUtil config = new CRConfigUtil(genericConf, "DEFAULT");
 
 		GenericConfiguration sc = new GenericConfiguration();
 		sc.set("indexLocations.1.path", "RAM_1");
-		sc.set("indexLocationClass",
-				"com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation");
+		sc.set("indexLocationClass", "com.gentics.cr.lucene.indexer.index.LuceneSingleIndexLocation");
 
 		CRConfig singleConfig1 = new CRConfigUtil(sc, "sc1");
 		singleLoc1 = LuceneIndexLocation.getIndexLocation(singleConfig1);
 
-		config2 = new CRConfigUtil(config.getSubConfig("index")
-				.getSubConfig("DEFAULT").getSubConfig("extensions")
-				.getSubConfig("SYN"), "SYN");
+		config2 = new CRConfigUtil(config.getSubConfig("index").getSubConfig("DEFAULT").getSubConfig("extensions").getSubConfig("SYN"),
+				"SYN");
 
 		indexExtension = new SynonymIndexExtension(config2, singleLoc1);
 
@@ -86,15 +62,13 @@ public class SynonymIndexJobTest {
 
 	@Test
 	public void testSynonymIndexJob() {
-		SynonymIndexJob job = new SynonymIndexJob(config2, singleLoc1,
-				indexExtension);
+		SynonymIndexJob job = new SynonymIndexJob(config2, singleLoc1, indexExtension);
 		job.run();
 	}
 
 	@After
 	public void delete() {
-		SynonymIndexDeleteJob job2 = new SynonymIndexDeleteJob(config2,
-				singleLoc1, indexExtension);
+		SynonymIndexDeleteJob job2 = new SynonymIndexDeleteJob(config2, singleLoc1, indexExtension);
 		job2.run();
 	}
 }

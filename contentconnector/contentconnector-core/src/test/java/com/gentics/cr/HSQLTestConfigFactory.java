@@ -1,5 +1,8 @@
 package com.gentics.cr;
 
+import java.io.File;
+import java.net.URISyntaxException;
+
 import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.plink.PlinkProcessor;
 
@@ -12,8 +15,9 @@ public class HSQLTestConfigFactory {
 	 * A default empty repository will be generated.
 	 * Default name: mytestdatasource
 	 * @return
+	 * @throws URISyntaxException 
 	 */
-	public static final CRConfigUtil getDefaultHSQLConfiguration() {
+	public static final CRConfigUtil getDefaultHSQLConfiguration() throws URISyntaxException {
 		return getDefaultHSQLConfiguration("mytestdatasource");
 	}
 	
@@ -22,9 +26,10 @@ public class HSQLTestConfigFactory {
 	 * A default empty repository will be generated.
 	 * @param dsName name of the datasource
 	 * @return
+	 * @throws URISyntaxException 
 	 */
-	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName) {
-		EnvironmentConfiguration.setConfigPath(HSQLTestConfigFactory.class.getResource("conf/gentics").getPath());
+	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName) throws URISyntaxException {
+		EnvironmentConfiguration.setConfigPath(new File(HSQLTestConfigFactory.class.getResource("conf/gentics").toURI()).getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 
 		CRConfigUtil config = new CRConfigUtil();

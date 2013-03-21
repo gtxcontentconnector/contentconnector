@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -39,8 +38,8 @@ public class CleanupTextTransformerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		URL confPath = new File(this.getClass().getResource("/config/nodelog.properties").toURI()).getParentFile().toURI().toURL();
-		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath.getPath());
+		String confPath = new File(this.getClass().getResource("/config/nodelog.properties").toURI()).getParentFile().getAbsolutePath();
+		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
 		config = new CRConfigUtil();
 		config.set("attribute", CONTENT_ATTRIBUTE);
 	}
