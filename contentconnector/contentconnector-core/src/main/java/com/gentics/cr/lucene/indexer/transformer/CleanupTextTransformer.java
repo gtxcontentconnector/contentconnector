@@ -44,6 +44,11 @@ public class CleanupTextTransformer extends ContentTransformer {
 	 * @see TRANSFORMER_CLEAN_TABLE_OF_INDEX_DOTS
 	 */
 	private boolean cleanTableOfIndexDots = true;
+	
+	/**
+	 * Newline.
+	 */
+	private static final String NEWLINE_CHARACTER = System.getProperty("line.separator");
 
 	/**
 	 * @see TRANSFORMER_REMOVE_NON_PRINTABLE_CHARACTERS
@@ -120,7 +125,7 @@ public class CleanupTextTransformer extends ContentTransformer {
 		Pattern spaces = Pattern.compile("[\t ]+");
 		Pattern emptyLines = Pattern.compile("^\\s+$?", Pattern.MULTILINE);
 		Pattern newlines = Pattern.compile("\\s*\\n+");
-		return newlines.matcher(emptyLines.matcher(spaces.matcher(content).replaceAll(" ")).replaceAll("")).replaceAll("\n");
+		return newlines.matcher(emptyLines.matcher(spaces.matcher(content).replaceAll(" ")).replaceAll("")).replaceAll(NEWLINE_CHARACTER);
 	}
 
 	/**

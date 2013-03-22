@@ -25,6 +25,11 @@ public class CleanupTextTransformerTest {
 	CRConfigUtil config = null;
 
 	/**
+	 * Newline.
+	 */
+	private static final String NEWLINE_CHARACTER = System.getProperty("line.separator");
+	
+	/**
 	 * Log4j logger for debug and error messages.
 	 */
 	private static Logger logger = Logger.getLogger(CleanupTextTransformerTest.class);
@@ -61,8 +66,8 @@ public class CleanupTextTransformerTest {
 
 	@Test
 	public void testNotPrintableCharactersWithNewLines() throws CRException {
-		String stringWithNonPrintableCharacters = "Person Familienname:  FORMTEXT   \n    Vorname:  FORMTEXT   \t    Standort:  FORMTEXT       Stock:  FORMTEXT ";
-		String expectedResult = "Person Familienname: FORMTEXT\nVorname: FORMTEXT Standort: FORMTEXT Stock: FORMTEXT ";
+		String stringWithNonPrintableCharacters = "Person Familienname:  FORMTEXT   " + NEWLINE_CHARACTER + "    Vorname:  FORMTEXT   \t    Standort:  FORMTEXT       Stock:  FORMTEXT ";
+		String expectedResult = "Person Familienname: FORMTEXT" + NEWLINE_CHARACTER + "Vorname: FORMTEXT Standort: FORMTEXT Stock: FORMTEXT ";
 		assertEquals("Special characters are not elminiated correctly.", expectedResult, transform(stringWithNonPrintableCharacters));
 	}
 
@@ -97,12 +102,12 @@ public class CleanupTextTransformerTest {
 	@Test
 	public void testIndexPoints() throws CRException {
 		String result = transform("1. Index\n"
-				+ "Title ....................................................................................................................... 1\n"
-				+ "1. First chapter ...................................................................................................................... 2\n"
+				+ "Title ....................................................................................................................... 1" + NEWLINE_CHARACTER
+				+ "1. First chapter ...................................................................................................................... 2" + NEWLINE_CHARACTER
 				+ "2. Second chapter .................................................................................................................................... 7");
 		assertEquals(
 			"Index points are not reduced correctly.",
-			"1. Index\nTitle ... 1\n1. First chapter ... 2\n2. Second chapter ... 7",
+			"1. Index" + NEWLINE_CHARACTER + "Title ... 1" + NEWLINE_CHARACTER + "1. First chapter ... 2" + NEWLINE_CHARACTER + "2. Second chapter ... 7",
 			result);
 	}
 
