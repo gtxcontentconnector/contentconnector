@@ -4,11 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -23,7 +21,6 @@ import com.gentics.cr.configuration.GenericConfigurationFileLoader;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.indexing.update.filesystem.FileSystemUpdateCheckerTest;
 
-
 /**
  * Check if createAllCRIndexJobs() creates the CRIndexJobs in correct order (alphabetically)
  * 
@@ -34,45 +31,42 @@ public class CreateAllCRIndexJobsOrderTest {
 	private static final Logger LOGGER = Logger.getLogger(FileSystemUpdateCheckerTest.class);
 
 	static CRConfigUtil config = new CRConfigUtil();
-	
+
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	private final PrintStream saveOut = System.out;
 
 	DummyIndexLocation2 indexLocation;
-
 
 	@BeforeClass
 	public static void init() throws URISyntaxException {
 		ConfigDirectory.useThis();
 	}
 
-	public CreateAllCRIndexJobsOrderTest(){
+	public CreateAllCRIndexJobsOrderTest() {
 
 	}
+
 	@Before
-	public void setUpStreams() {		
-	    System.setOut(new PrintStream(outContent));
+	public void setUpStreams() {
+		System.setOut(new PrintStream(outContent));
 	}
-
 
 	@Test
-	public void testUpdateFiles() throws CRException, FileNotFoundException, URISyntaxException {
+	public void testUpdateFiles() throws CRException, URISyntaxException, IOException {
 		GenericConfiguration genericConf = new GenericConfiguration();
-		try {
-			URL confPath2 = new File(this.getClass().getResource("testOrder.properties").toURI()).getParentFile().toURI().toURL();
-			GenericConfigurationFileLoader.load(genericConf, confPath2.getPath()+"/testOrder.properties");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String confPath2 = new File(this.getClass().getResource("testOrder.properties").toURI()).getParentFile().getAbsolutePath();
+		GenericConfigurationFileLoader.load(genericConf, confPath2 + "/testOrder.properties");
 		CRConfigUtil config = new CRConfigUtil(genericConf, "Test");
-	
+
 		indexLocation = new DummyIndexLocation2(config);
 		indexLocation.createAllCRIndexJobs();
-		assertEquals(outContent.toString(),"Create Job: Test.AFILESBRANCHENKAERNTEN Create Job: Test.AFILESBRANCHENWIEN Create Job: Test.APAGESBRANCHENKAERNTEN Create Job: Test.APAGESBRANCHENWIEN Create Job: Test.FILES Create Job: Test.PAGES ");
+		assertEquals(
+			outContent.toString(),
+			"Create Job: Test.AFILESBRANCHENKAERNTEN Create Job: Test.AFILESBRANCHENWIEN Create Job: Test.APAGESBRANCHENKAERNTEN Create Job: Test.APAGESBRANCHENWIEN Create Job: Test.FILES Create Job: Test.PAGES ");
 	}
-	
+
 	@After
 	public void cleanUpStreams() {
-	    System.setOut(saveOut);
+		System.setOut(saveOut);
 	}
 }

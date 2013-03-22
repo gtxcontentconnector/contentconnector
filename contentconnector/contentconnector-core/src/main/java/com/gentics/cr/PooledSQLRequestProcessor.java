@@ -102,22 +102,23 @@ public class PooledSQLRequestProcessor extends RequestProcessor {
 	 * @return statement
 	 */
 	private String getStatement(final String requestFilter, final String[] attributes) {
-		String statement = "SELECT ";
+		StringBuilder statement = new StringBuilder();
+		statement.append("SELECT ");
 		if (attributes == null || attributes.length == 0) {
-			statement += "*";
+			statement.append("*");
 		} else {
 			boolean first = true;
 			for (String att : attributes) {
 				if (!first) {
-					statement += ",";
+					statement.append(",");
 				} else {
 					first = false;
 				}
-				statement += att;
+				statement.append(att);
 			}
 		}
-		statement += " FROM " + this.table + " WHERE " + translate(requestFilter);
-		return statement;
+		statement.append(" FROM " + this.table + " WHERE " + translate(requestFilter));
+		return statement.toString();
 	}
 
 	@Override

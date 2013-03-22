@@ -20,7 +20,7 @@ import com.gentics.cr.template.ITemplateManager;
 public class NavObject {
 
 	/**
-	 * 
+	 * unique serialization id.
 	 */
 	private static final long serialVersionUID = -2977348089081661754L;
 
@@ -40,8 +40,8 @@ public class NavObject {
 	 * @param template
 	 * @param objects 
 	 */
-	public NavObject(CRConfig conf, CRResolvableBean bean, int level, Vector<String> path, ITemplate template,
-		Map<String, Object> objects) {
+	public NavObject(CRConfig conf, CRResolvableBean bean, int level, Vector<String> path,
+			ITemplate template, Map<String, Object> objects) {
 		this.bean = bean;
 		this.path = path;
 		if (this.path == null && bean != null) {
@@ -116,7 +116,7 @@ public class NavObject {
 	 */
 	@SuppressWarnings("unchecked")
 	public String getSubTree() {
-		String ret = "";
+		StringBuilder ret = new StringBuilder();
 		if (this.path == null) {
 			this.path = new Vector<String>();
 		}
@@ -125,12 +125,12 @@ public class NavObject {
 		for (CRResolvableBean child : this.bean.getChildRepository()) {
 			NavObject no = new NavObject(conf, child, level + 1, p, this.template, objects);
 			try {
-				ret += no.render();
+				ret.append(no.render());
 			} catch (CRException e) {
 				e.printStackTrace();
 			}
 		}
-		return (ret);
+		return ret.toString();
 	}
 
 	/**

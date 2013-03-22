@@ -154,9 +154,8 @@ public class LanguageIdentifier {
 	 */
 	public static void main(String[] args) {
 
-		String usage = "Usage: LanguageIdentifier " + "[-identifyrows filename maxlines] "
-				+ "[-identifyfile charset filename] " + "[-identifyfileset charset files] " + "[-identifytext text] "
-				+ "[-identifyurl url]";
+		String usage = "Usage: LanguageIdentifier " + "[-identifyrows filename maxlines] " + "[-identifyfile charset filename] "
+				+ "[-identifyfileset charset files] " + "[-identifytext text] " + "[-identifyurl url]";
 		int command = 0;
 
 		final int IDFILE = 1;
@@ -168,7 +167,7 @@ public class LanguageIdentifier {
 		Vector<String> fileset = new Vector<String>();
 		String filename = "";
 		String charset = "";
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		int max = 0;
 
 		if (args.length == 0) {
@@ -197,7 +196,7 @@ public class LanguageIdentifier {
 			if (args[i].equals("-identifytext")) {
 				command = IDTEXT;
 				for (i++; i < args.length - 1; i++) {
-					text += args[i] + " ";
+					text.append(args[i] + " ");
 				}
 			}
 
@@ -262,8 +261,7 @@ public class LanguageIdentifier {
 
 				case IDFILESET:
 					/*
-					 * used for benchs for (int j=128; j<=524288; j*=2) { long start = System.currentTimeMillis();
-					 * idfr.analyzeLength = j;
+					 * used for benchs for (int j=128; j<=524288; j*=2) { long start = System.currentTimeMillis(); idfr.analyzeLength = j;
 					 */
 					System.out.println("FILESET");
 					Iterator<String> i = fileset.iterator();

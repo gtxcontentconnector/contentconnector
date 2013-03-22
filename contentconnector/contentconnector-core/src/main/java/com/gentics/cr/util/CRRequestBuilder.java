@@ -6,8 +6,6 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -47,8 +45,6 @@ public class CRRequestBuilder {
 	private ContentRepositoryConfig contentRepository = null;
 
 	protected GenericConfiguration config;
-
-	private static Logger logger = Logger.getLogger(CRRequestBuilder.class);
 
 	/**
 	 * name of the configuration attribute where the defaultparameters are
@@ -113,10 +109,10 @@ public class CRRequestBuilder {
 		this.contentRepository = new ContentRepositoryConfig(config);
 
 		this.request = requestWrapper;
-		this.filter = (String) requestWrapper.getParameter("filter");
-		this.contentid = (String) requestWrapper.getParameter("contentid");
+		this.filter = requestWrapper.getParameter("filter");
+		this.contentid = requestWrapper.getParameter("contentid");
 		this.count = requestWrapper.getParameter("count");
-		this.start = (String) requestWrapper.getParameter("start");
+		this.start = requestWrapper.getParameter("start");
 		this.sorting = requestWrapper.getParameterValues("sorting");
 		this.contentRepository.setAttributeArray(prepareAttributesArray(requestWrapper.getParameterValues("attributes")));
 		this.plinkattributes = requestWrapper.getParameterValues("plinkattributes");
@@ -151,7 +147,7 @@ public class CRRequestBuilder {
 			this.count = requestWrapper.getParameter("ps");
 		}
 		if (this.start == null && this.count != null) {
-			String numberOfPageStr = (String) requestWrapper.getParameter("np");
+			String numberOfPageStr = requestWrapper.getParameter("np");
 			calcStartFromCount(numberOfPageStr);
 		}
 
@@ -248,27 +244,27 @@ public class CRRequestBuilder {
 	private void addAdvancedSearchParameters() {
 		if (filter == null || "".equals(filter)) {
 			if (query_and != null && !"".equals(query_and)) {
-				String filterAnd = "";
+				StringBuilder filterAnd = new StringBuilder();
 				for (String query : query_and.split(" ")) {
-					if (!"".equals(filterAnd)) {
-						filterAnd += " AND ";
+					if (!"".equals(filterAnd.toString())) {
+						filterAnd.append(" AND ");
 					}
-					filterAnd += query.toLowerCase();
+					filterAnd.append(query.toLowerCase());
 				}
-				if (!"".equals(filterAnd)) {
-					filter = "(" + filterAnd + ")";
+				if (!"".equals(filterAnd.toString())) {
+					filter = "(" + filterAnd.toString() + ")";
 				}
 				query_and = "";
 			}
 			if (query_or != null && !"".equals(query_or)) {
-				String filterOr = "";
+				StringBuilder filterOr = new StringBuilder();
 				for (String query : query_or.split(" ")) {
-					if (!"".equals(filterOr)) {
-						filterOr += " OR ";
+					if (!"".equals(filterOr.toString())) {
+						filterOr.append(" OR ");
 					}
-					filterOr += query.toLowerCase();
+					filterOr.append(query.toLowerCase());
 				}
-				if (!"".equals(filterOr)) {
+				if (!"".equals(filterOr.toString())) {
 					if (!"".equals(filter)) {
 						filter += " AND ";
 					}
@@ -277,14 +273,14 @@ public class CRRequestBuilder {
 				query_or = "";
 			}
 			if (query_not != null && !"".equals(query_not)) {
-				String filterNot = "";
+				StringBuilder filterNot = new StringBuilder();
 				for (String query : query_not.split(" ")) {
-					if (!"".equals(filterNot)) {
-						filterNot += " OR ";
+					if (!"".equals(filterNot.toString())) {
+						filterNot.append(" OR ");
 					}
-					filterNot += query.toLowerCase();
+					filterNot.append(query.toLowerCase());
 				}
-				if (!"".equals(filterNot)) {
+				if (!"".equals(filterNot.toString())) {
 					if (!"".equals(filter)) {
 						filter += " AND ";
 					}
@@ -303,15 +299,15 @@ public class CRRequestBuilder {
 		}
 		if ((filter != null && !"".equals(filter)) && this.node_id != null && this.node_id.length != 0
 				&& !filter.matches("(.+[ (])?node_id\\:[0-9]+.*")) {
-			String nodeFilter = "";
+			StringBuilder nodeFilter = new StringBuilder();
 			for (int i = 0; i < node_id.length; i++) {
-				if (nodeFilter != "") {
-					nodeFilter += " OR ";
+				if (!nodeFilter.toString().equals("")) {
+					nodeFilter.append(" OR ");
 				}
-				nodeFilter += "node_id:" + node_id[i];
+				nodeFilter.append("node_id:" + node_id[i]);
 			}
 			node_id = new String[] {};
-			filter = "(" + filter + ") AND (" + nodeFilter + ")";
+			filter = "(" + filter + ") AND (" + nodeFilter.toString() + ")";
 		}
 	}
 

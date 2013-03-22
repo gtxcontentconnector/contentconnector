@@ -25,17 +25,18 @@ public class MonitorFactory {
 	}
 
 	public static String getSimpleReport() {
-		String ret = "<table class=\"report_table\">";
+		StringBuilder ret = new StringBuilder();
+		ret.append("<table class=\"report_table\">");
 		if (monitoringEnabled) {
 			int maxField = 7;
 
 			String[] header = com.jamonapi.MonitorFactory.getHeader();
 			if (header != null) {
-				ret += "<tr>";
+				ret.append("<tr>");
 				for (int i = 0; i <= maxField; i++) {
-					ret += "<th>" + header[i] + "</th>";
+					ret.append("<th>" + header[i] + "</th>");
 				}
-				ret += "</tr>";
+				ret.append("</tr>");
 			}
 			Object[][] data = com.jamonapi.MonitorFactory.getData();
 
@@ -43,9 +44,9 @@ public class MonitorFactory {
 			if (data != null) {
 				for (int j = 0; j < data.length; j++) {
 					if (j % 2 == 0) {
-						ret += "<tr class=\"even\">";
+						ret.append("<tr class=\"even\">");
 					} else {
-						ret += "<tr class=\"odd\">";
+						ret.append("<tr class=\"odd\">");
 					}
 					for (int i = 0; i <= maxField; i++) {
 						Object obj = data[j][i];
@@ -54,16 +55,16 @@ public class MonitorFactory {
 							obj = output.format(obj);
 						}
 						if (i > 0) {
-							ret += "<td class=\"value\">" + obj.toString() + "</td>";
+							ret.append("<td class=\"value\">" + obj.toString() + "</td>");
 						} else {
-							ret += "<td>" + obj.toString() + "</td>";
+							ret.append("<td>" + obj.toString() + "</td>");
 						}
 					}
-					ret += "</tr>";
+					ret.append("</tr>");
 				}
 			}
 		}
-		ret += "</table>";
-		return ret;
+		ret.append("</table>");
+		return ret.toString();
 	}
 }

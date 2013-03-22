@@ -79,7 +79,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 	 */
 	public final String highlight(final String attribute, final Query parsedQuery) {
 		UseCase uc = MonitorFactory.startUseCase("Highlight.PhraseBolder.highlight()");
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		if (attribute != null && parsedQuery != null) {
 			Highlighter highlighter = new Highlighter(this, new QueryScorer(parsedQuery));
 			highlighter.setTextFragmenter(new WordCountFragmenter(getFragmentSize()));
@@ -87,8 +87,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 			TokenStream tokenStream = analyzer.tokenStream(this.getHighlightAttribute(), new StringReader(attribute));
 			try {
 				UseCase ucFragments = MonitorFactory.startUseCase("Highlight.PhraseBolder.highlight()#getFragments");
-				TextFragment[] frags = highlighter
-						.getBestTextFragments(tokenStream, attribute, true, getMaxFragments());
+				TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, attribute, true, getMaxFragments());
 				ucFragments.stop();
 				boolean first = true;
 				int startPosition = -1;
@@ -99,12 +98,12 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 					startPosition = attribute.indexOf(fragment);
 					endPosition = startPosition + fragment.length();
 					if (!first || (addSeperatorArroundAllFragments() && startPosition != 0)) {
-						result += getFragmentSeperator();
+						result.append(getFragmentSeperator());
 					}
-					result += fragment;
+					result.append(fragment);
 				}
 				if (addSeperatorArroundAllFragments() && endPosition != attribute.length() && result.length() != 0) {
-					result += getFragmentSeperator();
+					result.append(getFragmentSeperator());
 				}
 			} catch (IOException e) {
 				LOGGER.error("Error getting fragments from highlighter.", e);
@@ -113,7 +112,7 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 			}
 		}
 		uc.stop();
-		return result;
+		return result.toString();
 	}
 
 	@Override

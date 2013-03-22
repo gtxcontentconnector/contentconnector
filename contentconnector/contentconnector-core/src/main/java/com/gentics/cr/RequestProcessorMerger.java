@@ -30,11 +30,11 @@ public class RequestProcessorMerger {
 	 * @param idAttribute
 	 * @throws CRException
 	 */
-	public static void fillAttributes(RequestProcessor rp, Collection<CRResolvableBean> col, CRRequest request,
-			String idAttribute) throws CRException {
+	public static void fillAttributes(RequestProcessor rp, Collection<CRResolvableBean> col, CRRequest request, String idAttribute)
+			throws CRException {
 		LinkedHashMap<Object, CRResolvableBean> resultMap = new LinkedHashMap<Object, CRResolvableBean>();
 
-		String mergefilter = "";
+		StringBuilder mergefilter = new StringBuilder();
 
 		boolean first = true;
 
@@ -48,14 +48,19 @@ public class RequestProcessorMerger {
 			}
 			if (first) {
 				first = false;
-				mergefilter += "\"" + key + "\"";
+				mergefilter.append("\"");
+				mergefilter.append(key);
+				mergefilter.append("\"");
 			} else {
-				mergefilter += "," + "\"" + key + "\"";
+				mergefilter.append(",");
+				mergefilter.append("\"");
+				mergefilter.append(key);
+				mergefilter.append("\"");
 			}
 			resultMap.put(key, crBean);
 		}
 
-		request.setRequestFilter("object." + idAttribute + " CONTAINSONEOF [" + mergefilter + "]");
+		request.setRequestFilter("object." + idAttribute + " CONTAINSONEOF [" + mergefilter.toString() + "]");
 
 		Collection<CRResolvableBean> res = rp.getObjects(request);
 		String[] attributes = request.getAttributeArray();
@@ -92,8 +97,8 @@ public class RequestProcessorMerger {
 	 * @param request
 	 * @throws CRException
 	 */
-	public static Collection<CRResolvableBean> merge(String uniquemergeattribute, RequestProcessor primaryRP,
-			RequestProcessor secondaryRP, CRRequest request) throws CRException {
+	public static Collection<CRResolvableBean> merge(String uniquemergeattribute, RequestProcessor primaryRP, RequestProcessor secondaryRP,
+			CRRequest request) throws CRException {
 
 		Collection<CRResolvableBean> rp1res = primaryRP.getObjects(request);
 
@@ -148,9 +153,8 @@ public class RequestProcessorMerger {
 	 * @param resultMap2
 	 * @param attributes
 	 */
-	private static void useFirstMerge(ArrayList<CRResolvableBean> result,
-			LinkedHashMap<Object, CRResolvableBean> resultMap, LinkedHashMap<Object, CRResolvableBean> resultMap2,
-			String[] attributes) {
+	private static void useFirstMerge(ArrayList<CRResolvableBean> result, LinkedHashMap<Object, CRResolvableBean> resultMap,
+			LinkedHashMap<Object, CRResolvableBean> resultMap2, String[] attributes) {
 
 		for (Entry<Object, CRResolvableBean> e : resultMap.entrySet()) {
 
@@ -179,9 +183,8 @@ public class RequestProcessorMerger {
 	 * @param resultMap2
 	 * @param attributes
 	 */
-	private static void useSecondaryMerge(ArrayList<CRResolvableBean> result,
-			LinkedHashMap<Object, CRResolvableBean> resultMap, LinkedHashMap<Object, CRResolvableBean> resultMap2,
-			String[] attributes) {
+	private static void useSecondaryMerge(ArrayList<CRResolvableBean> result, LinkedHashMap<Object, CRResolvableBean> resultMap,
+			LinkedHashMap<Object, CRResolvableBean> resultMap2, String[] attributes) {
 
 		for (Entry<Object, CRResolvableBean> e : resultMap.entrySet()) {
 

@@ -3,6 +3,7 @@ package com.gentics.cr.rest;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -24,7 +25,7 @@ public class RESTBinaryContainerTest{
 	private static HSQLTestHandler testHandler;
 	
 	@BeforeClass
-	public static void setUp() throws CRException {
+	public static void setUp() throws CRException, URISyntaxException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(RESTBinaryContainerTest.class.getName());
 		config.set("rp.1.rpClass", "com.gentics.cr.CRRequestProcessor");
 		container = new RESTBinaryContainer(config);

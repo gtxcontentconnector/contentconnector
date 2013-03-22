@@ -78,26 +78,27 @@ public class HTMLContentTransformer extends ContentTransformer {
 	}
 
 	private String retrieveContent(final Document documentFragment) {
-		String strippedString = "";
+		StringBuilder strippedString = new StringBuilder();
 		List<Node> children = documentFragment.body().childNodes();
 		for (int pos = 0; pos < children.size(); pos++) {
 			Node node = children.get(pos);
 			String text = getTextFromNode(node);
 			if (!text.equals("")) {
-				if (strippedString.equals("") || strippedString.endsWith(" ") || strippedString.endsWith("/")
-						|| strippedString.endsWith(".") || strippedString.endsWith(":")) {
+				String tempString = strippedString.toString();
+				if (tempString.equals("") || tempString.endsWith(" ") || tempString.endsWith("/") || tempString.endsWith(".")
+						|| tempString.endsWith(":")) {
 					// directly add the text if the string is empty or ends with a space, slash, dot, doublepoint
-					strippedString += text;
+					strippedString.append(text);
 				} else {
 					// check next element if a space shall be added
 					if (checkNextElement(children, pos)) {
-						strippedString += " ";
+						strippedString.append(" ");
 					}
-					strippedString += text;
+					strippedString.append(text);
 				}
 			}
 		}
-		return strippedString.trim();
+		return strippedString.toString().trim();
 	}
 
 	private boolean checkNextElement(List<Node> children, int pos) {
