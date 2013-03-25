@@ -24,7 +24,8 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 /**
  * Transformer to automatically parse various filetypes using autodetect of the mimetype.
  * Uses the Tika framework internally for detection and parsing.
- * Tika uses Apache POI and pdfbox.
+ * Tika uses Apache POI and pdfbox and some other parsing libraries underneath.
+ * {@link http://tika.apache.org/}
  * 
  * @author Friedreich Bernhard
  */
@@ -34,33 +35,100 @@ public class TikaParserTransformer extends ContentTransformer {
 	 * Config key to set the attribute to use for parsing.
 	 */
 	private static final String TRANSFORMER_CONTENT_ATTRIBUTE_FIELD_KEY = "contentAttribute";
+
+	/**
+	 * Config key to define the field used for writing the resulting string to.
+	 */
 	private static final String TRANSFORMER_TARGET_ATTRIBUTE_FIELD_KEY = "targetAttribute";
 
+	/**
+	 * Config key to define the field used for writing the creationtimestamp to.
+	 */
 	private static final String TRANSFORMER_CREATETIMESTAMP_ATTRIBUTE_FIELD_KEY = "createTimestampField";
+
+	/**
+	 * Config key to define the field used for writing the edittimestamp to.
+	 */
 	private static final String TRANSFORMER_EDITTIMESTAMP_ATTRIBUTE_FIELD_KEY = "editTimestampField";
+
+	/**
+	 * Config key to define the field used for writing the publishtimestamp to.
+	 */
 	private static final String TRANSFORMER_PUBLISHTIMESTAMP_ATTRIBUTE_FIELD_KEY = "publishTimestampField";
+
+	/**
+	 * Config key to define the field used for writing the heading to.
+	 */
 	private static final String TRANSFORMER_HEADING_ATTRIBUTE_FIELD_KEY = "headingField";
+
+	/**
+	 * Config key to define the field used for writing the search keywords to.
+	 */
 	private static final String TRANSFORMER_KEYWORDS_ATTRIBUTE_FIELD_KEY = "keywordsField";
+
+	/**
+	 * Config key to define the field used for writing the mimetype to (if not already set properly).
+	 */
 	private static final String TRANSFORMER_MIMETYPE_ATTRIBUTE_FIELD_KEY = "mimetypeField";
 
+	/**
+	 * Config key to configure allowed languages, separated by ','.
+	 */
 	private static final String TRANSFORMER_ALLOWED_LANGS_FIELD_KEY = "allowedLanguages";
 
+	/**
+	 * Config key to enable or disable language detection of content.
+	 */
 	private static final String TRANSFORMER_DETECT_LANGUAGES_FIELD_KEY = "detectLanguages";
 
 	/**
 	 * Field to store the config value representing the attribute to use for parsing.
 	 */
 	private String contentAttributeField = "content";
+
+	/**
+	 * Default field for storing the transformed cotent to.
+	 */
 	private String targetAttributeField = "binarycontent";
+
+	/**
+	 * Default field for reading the creation timestamp of a file from contentrepository. If not set it will be set by best guess using tika.
+	 */
 	private String createTimestampField = "createtimestamp";
+
+	/**
+	 * Default field for reading the publish timestamp of a file from contentrepository. If not set it will be set by best guess using tika.
+	 */
 	private String publishTimestampField = "publishtimestamp";
+
+	/**
+	 * Default field for reading the edit timestamp of a file from contentrepository. If not set it will be set by best guess using tika.
+	 */
 	private String editTimestampField = "edittimestamp";
+
+	/**
+	 * Field in the contentrepository containing the heading of a file. If not set it will be set by best guess using tika.
+	 */
 	private String headingField = "heading";
+
+	/**
+	 * Field in the contentrepository containing keywords for search. If not set it will be set by best guess using tika.
+	 */
 	private String keywordsField = "keywords";
+
+	/**
+	 * Field in the contentrepository of the mimetype. If not set it will be set by best guess using tika.
+	 */
 	private String mimetypeField = "mimetype";
 
+	/**
+	 * By default all languages are allowed. This may result in funny entries if tika detection is used.
+	 */
 	private List<String> allowedLanguages = null;
 
+	/**
+	 * Language detection is disabled by default.
+	 */
 	private boolean languageDetection = false;
 
 	/**
@@ -158,24 +226,24 @@ public class TikaParserTransformer extends ContentTransformer {
 						bean.set(mimetypeField, metadata.get(Metadata.CONTENT_TYPE));
 					}
 
-					String content = prepareContent(bean, textHandler);
+					String content = prepareContent(bean, textHandler.toString());
 					bean.set(this.targetAttributeField, content);
 
 				} catch (IOException e) {
-					LOGGER.error("Error reading inputstream from bean: " + bean.getContentid(), e);
+					LOGGER.error("Error reading inputstream from bean: " + getBeanInfo(bean), e);
 				} catch (SAXException e) {
-					LOGGER.error("Sax Parser Exception while reading inputstream from bean: " + bean.getContentid(), e);
+					LOGGER.error("Sax Parser Exception while reading inputstream from bean: " + getBeanInfo(bean), e);
 				} catch (TikaException e) {
-					LOGGER.error("Tika Parser Exception while reading inputstream  from bean: " + bean.getContentid(), e);
+					LOGGER.error("Tika Parser Exception while reading inputstream  from bean: " + getBeanInfo(bean), e);
 				} catch (Exception e) {
-					LOGGER.error("Exception occured while indexing file at bean: " + bean.getContentid(), e);
+					LOGGER.error("Exception occured while indexing file at bean: " + getBeanInfo(bean), e);
 				} finally {
 					try {
 						if (inputStream != null) {
 							inputStream.close();
 						}
 					} catch (IOException e) {
-						LOGGER.error("Could not close inputstream of bean: " + bean.getContentid(), e);
+						LOGGER.error("Could not close inputstream of bean: " + getBeanInfo(bean), e);
 					}
 				}
 			}
@@ -184,9 +252,24 @@ public class TikaParserTransformer extends ContentTransformer {
 		}
 	}
 
-	private String prepareContent(final CRResolvableBean bean, ContentHandler textHandler) {
-		String content = textHandler.toString();
+	/**
+	 * Extract debug information of bean for display on error output.
+	 * @param bean extract information from this bean.
+	 * @return String to be used for log output.
+	 */
+	private String getBeanInfo(final CRResolvableBean bean) {
+		return bean.getContentid() + " (NodeId: " + bean.getString("node_id") + ") - " + bean.getString("pub_dir") + "/"
+				+ bean.getString("filename");
+	}
 
+	/**
+	 * Analyze and prepare content for further processing.
+	 * Atm. it analyzes the language of the provided bean if the feature is enabled through TRANSFORMER_DETECT_LANGUAGES_FIELD_KEY.
+	 * @param bean used to analyze the language. it first tries to read languagecode and if that fails tika is used.
+	 * @param content useful for analyzing and modifying content.
+	 * @return content which may have been altered.
+	 */
+	private String prepareContent(final CRResolvableBean bean, final String content) {
 		if (languageDetection) {
 			String languageCode = bean.getString("languagecode");
 			if (languageCode == null || languageCode.equals("")) {
@@ -197,7 +280,6 @@ public class TikaParserTransformer extends ContentTransformer {
 				}
 			}
 		}
-
 		return content;
 	}
 
