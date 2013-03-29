@@ -49,26 +49,30 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 		</dependency>
 		<dependency>
+			<!-- LICENSE: COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL)Version 1.1 -->
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>2.1</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<!-- LICENSE: COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL)Version 1.1 -->
 			<artifactId>servlet-api</artifactId>
 			<groupId>javax.servlet</groupId>
 			<version>2.3</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 	</dependencies>
 </project>

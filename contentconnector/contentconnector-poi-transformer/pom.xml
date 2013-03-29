@@ -56,62 +56,68 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 		</dependency>
-
-		<!-- POIFS (OLE2 Filesystem), HPSF (OLE2 Property Set), HSSF (Excel XLS)  -->
 		<dependency>
+			<!-- POIFS (OLE2 Filesystem), HPSF (OLE2 Property Set), HSSF (Excel XLS)  -->
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>${org.apache.poi.version}</version>
 		</dependency>
-		<!-- HSLF Powerpoint (ppt), HWPF Word (doc), HDGF Visio (vsd), HPBF Publisher (pub), HSMF Outlook (msg)  -->
 		<dependency>
+			<!-- HSLF Powerpoint (ppt), HWPF Word (doc), HDGF Visio (vsd), HPBF Publisher (pub), HSMF Outlook (msg)  -->
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-scratchpad</artifactId>
 			<version>${org.apache.poi.version}</version>
 		</dependency>
-		<!-- XSSF Excel (xlsx), XSLF Powerpoint (pptx), XWPF Word (docx) -->
 		<dependency>
+			<!-- XSSF Excel (xlsx), XSLF Powerpoint (pptx), XWPF Word (docx) -->
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>${org.apache.poi.version}</version>
 		</dependency>
-		<!-- OpenXML4J OOXML  -->
 		<dependency>
+			<!-- OpenXML4J OOXML  -->
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml-schemas</artifactId>
 			<version>${org.apache.poi.version}</version>
 		</dependency>
-
-		<!-- PDF Parsing -->
 		<dependency>
+			<!-- PDF Parsing -->
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
 			<version>${org.apache.pdfbox.version}</version>
 		</dependency>
-
-		<!-- Mimetype detection -->
 		<dependency>
+			<!-- Mimetype detection -->
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-app</artifactId>
 			<version>${org.apache.tika.version}</version>
 		</dependency>
-		<!-- Highlevel abstraction for text parsing (uses apache poi and many other dependencies for parsing) -->
 		<dependency>
+			<!-- Highlevel abstraction for text parsing (uses apache poi and many other dependencies for parsing) -->
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
 			<version>${org.apache.tika.version}</version>
 		</dependency>
-
 		<dependency>
+			<!-- LICENSE: MIT -->
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk16</artifactId>
 			<version>${org.bouncycastle.version}</version>
 		</dependency>
 		<dependency>
+			<!-- LICENSE: MIT -->
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
 			<version>${org.bouncycastle.version}</version>
@@ -122,16 +128,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<!-- Needed for dependencies like CRResolvableBean -->
 		<dependency>
+			<!-- LICENSE: Apache 2.0 -->
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-lucene</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- Unit tests -->
+		<!-- ###### TEST DEPENDENCIES ####### -->
 		<dependency>
+			<!-- LICENSE: Common Public License -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
