@@ -51,7 +51,7 @@
 		<dependency>
 			<artifactId>portalnode-lib</artifactId>
 			<groupId>com.gentics</groupId>
-			<version>4.1.1</version>
+			<version>4.2.0</version>
 		</dependency>
 		<!-- The node lib must be added since the maven resolvement of portalnode-lib 
 		    transitive dependencies does not work due to the portalnode/pom.xml node-lib property.-->
