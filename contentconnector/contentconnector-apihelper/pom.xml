@@ -58,7 +58,7 @@
 		<dependency>
 			<artifactId>node-lib</artifactId>
 			<groupId>com.gentics</groupId>
-			<version>1.11.6</version>
+			<version>1.14.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>hsqldb</artifactId>
