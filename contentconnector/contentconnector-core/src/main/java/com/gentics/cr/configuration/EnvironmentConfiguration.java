@@ -83,9 +83,10 @@ public final class EnvironmentConfiguration {
 	}
 
 	/**
-	 * Load Property file for log4j.
+	 * Load Property file for log4j and configure it.
 	 */
 	public static void loadLoggerProperties() {
+		loggerInitFailed = false;
 		Properties logprops = new Properties();
 		String confpath = CRUtil.resolveSystemProperties(loggerFilePath);
 		StringBuilder errorMessage = new StringBuilder("Could not find nodelog.properties at: ").append(confpath);
