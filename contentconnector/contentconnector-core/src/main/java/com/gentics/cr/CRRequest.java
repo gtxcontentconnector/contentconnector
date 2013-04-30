@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
+import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
@@ -236,8 +237,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param startString
 	 */
 	public void setStartString(String startString) {
-		Integer start = new Integer((startString != null) ? startString : "0");
-		this.set("start", start);
+		this.set("start", ObjectTransformer.getInteger(startString, 0));
 	}
 
 	/**
@@ -262,8 +262,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param countString
 	 */
 	public void setCountString(String countString) {
-		Integer count = new Integer((countString != null) ? countString : "-1");
-		this.set("count", count);
+		this.set("count", ObjectTransformer.getInteger(countString, -1));
 	}
 
 	/**
