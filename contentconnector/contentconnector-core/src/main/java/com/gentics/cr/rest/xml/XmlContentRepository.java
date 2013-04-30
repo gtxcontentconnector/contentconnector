@@ -144,7 +144,7 @@ public class XmlContentRepository extends ContentRepository {
 		clearElement(this.rootElement);
 		Element errElement = doc.createElement("Error");
 		errElement.setAttribute("type", ex.getType());
-		errElement.setAttribute("messge", ex.getMessage());
+		errElement.setAttribute("message", ex.getMessage());
 		if (isDebug) {
 			Element stackTrace = doc.createElement("StackTrace");
 			Text text = doc.createCDATASection(ex.getStringStackTrace());
