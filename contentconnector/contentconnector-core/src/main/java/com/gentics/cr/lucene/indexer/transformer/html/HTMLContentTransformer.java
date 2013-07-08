@@ -89,6 +89,7 @@ public class HTMLContentTransformer extends ContentTransformer {
 						|| tempString.endsWith(":")) {
 					// directly add the text if the string is empty or ends with a space, slash, dot, doublepoint
 					strippedString.append(text);
+					
 				} else {
 					// check next element if a space shall be added
 					if (checkNextElement(children, pos)) {
@@ -96,6 +97,10 @@ public class HTMLContentTransformer extends ContentTransformer {
 					}
 					strippedString.append(text);
 				}
+				if(!text.endsWith(" ") && node instanceof Element && ((Element) node).tag().isBlock()) {
+					// make sure there is always a space at the end of block elements!
+					strippedString.append(" ");
+				} 
 			}
 		}
 		return strippedString.toString().trim();
