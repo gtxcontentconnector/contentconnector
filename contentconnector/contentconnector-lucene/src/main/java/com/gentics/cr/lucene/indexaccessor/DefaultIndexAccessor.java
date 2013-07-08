@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -96,6 +97,8 @@ class DefaultIndexAccessor implements IndexAccessor {
 	private Analyzer analyzer;
 
 	private IndexReader cachedReadingReader = null;
+	
+	private final Map<IndexReader, Integer> oldReadingReaders = new HashMap<IndexReader, Integer>();
 
 	/**
 	 * cache for searchers.
@@ -199,10 +202,14 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 		try {
 			cachedReadingReader.close();
+			for (Entry<IndexReader, Integer> entry: oldReadingReaders.entrySet()) {
+				entry.getKey().close();
+			}
 		} catch (IOException e) {
 			LOGGER.error("error closing reading Reader", e);
 		} finally {
 			cachedReadingReader = null;
+			oldReadingReaders.clear();
 		}
 	}
 
@@ -545,12 +552,25 @@ class DefaultIndexAccessor implements IndexAccessor {
 		if (reader == null) {
 			return;
 		}
-
-		if (reader != cachedReadingReader) {
+		// check if reader is one of the old reading readers
+		if (reader != cachedReadingReader && oldReadingReaders.get(reader) != null) {
+			Integer oldReaderUseCount = oldReadingReaders.get(reader) - 1;
+			if (oldReaderUseCount > 0) {
+				oldReadingReaders.put(reader, oldReaderUseCount);
+			} else {
+				oldReadingReaders.remove(reader);
+				// close unused old reader
+				try {
+					reader.close();
+				} catch (IOException e) {
+					LOGGER.error("error closing reading Reader", e);
+				}	
+			}
+		} else if (reader != cachedReadingReader) {
 			throw new IllegalArgumentException("reading reader not opened by this index accessor");
+		} else {
+			readingReaderUseCount--;
 		}
-
-		readingReaderUseCount--;
 		notifyAll();
 	}
 
@@ -637,13 +657,23 @@ class DefaultIndexAccessor implements IndexAccessor {
 		if (cachedReadingReader == null) {
 			return;
 		}
-
+		
 		LOGGER.debug("reopening cached reading reader");
 		IndexReader oldReader = cachedReadingReader;
+		if(readingReaderUseCount > 0) {
+			// if the reading reader is currently in use, save it with use count in Map
+			oldReadingReaders.put(oldReader, readingReaderUseCount);
+		}		
 		try {
 			cachedReadingReader = cachedReadingReader.reopen();
 			if (oldReader != cachedReadingReader) {
-				oldReader.close();
+				// if the old reader was not used close it 
+				if(readingReaderUseCount == 0) {
+					oldReader.close();
+				} else {
+					// set use count to 0 for the new reader
+					readingReaderUseCount = 0;
+				}
 			}
 		} catch (IOException e) {
 			LOGGER.error("error reopening reading Reader", e);
@@ -728,6 +758,9 @@ class DefaultIndexAccessor implements IndexAccessor {
 			this.release(tempWriter);
 		}
 		releaseAllSearchers();
+		synchronized (DefaultIndexAccessor.this) {
+			reopenReadingReader();
+		}
 	}
 
 	/**
@@ -742,5 +775,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 			closeAllReleasedSearchers = true;
 		}
 	}
+	
 
 }
