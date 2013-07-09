@@ -549,7 +549,8 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	/** Release the reader that was opened for read-only operations. */
 	private synchronized void releaseReadingReader(IndexReader reader) {
-		if (reader == null) {
+		// do nothing if no reader was passed to the method or the reader was already released
+		if (reader == null || readingReaderUseCount == 0) {
 			return;
 		}
 		// check if reader is one of the old reading readers
