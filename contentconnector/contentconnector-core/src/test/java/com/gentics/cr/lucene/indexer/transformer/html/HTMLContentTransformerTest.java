@@ -81,6 +81,36 @@ public class HTMLContentTransformerTest {
 		transformer.processBean(bean4);
 		assertEquals("", bean4.get("name"));
 	}
+	/**
+	 * Test if spaces after block elements are added 
+	 * 
+	 * Example 1: (space between block elemets added)
+	 * [..] lorem ipsum.&lt;/p&gt;&lt;h2&gt;Dolor sit amet [..] => lorem ipsum. Dolor sit amet
+	 *  
+	 * Example 2: (no spaces between inline elements)
+	 * &lt;strong>ip&lt;/strong>&lt;i>sum&lt;/i> => ipsum
+	 *  
+	 * Example 3: (no spaces between inline elements)
+	 * &lt;strong>ip&lt;/strong>&lt;i>sum&lt;/i> => ipsum
+	 *  
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 * @throws CRException
+	 */
+	@Test 
+	public void testSpaces() throws URISyntaxException, IOException, CRException {
+		CRConfigUtil config = new CRConfigUtil();
+		config.set(HTMLContentTransformer.TRANSFORMER_ATTRIBUTE_KEY, "content");
+
+		CRResolvableBean bean = new CRResolvableBean();
+		bean.set("contentid", "10007.1");
+		bean.set("content", readFile("testHtmlSpaces.html").toString());
+
+		HTMLContentTransformer transformer = new HTMLContentTransformer(config);
+		transformer.processBean(bean);
+		
+		assertEquals(readFile("testHtmlSpacesResult.html").toString().trim(), bean.get("content").toString().trim());
+	}
 
 	private StringBuilder readFile(final String fileName) throws URISyntaxException, FileNotFoundException, IOException {
 		File file = new File(this.getClass().getResource(fileName).toURI());
