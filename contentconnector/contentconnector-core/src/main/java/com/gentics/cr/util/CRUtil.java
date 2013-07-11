@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
+import com.gentics.cr.exceptions.ConfpathConfigurationException;
 import com.gentics.cr.util.resolver.CRUtilResolver;
 
 /**
@@ -50,6 +52,12 @@ public class CRUtil {
 	 * File protocol handler.
 	 */
 	private static final String FILE_PROTOCOL_IDENTIFIER = "file:/";
+	
+	/**
+	 * Classpath protocol handler.
+	 */
+	private static final String CLASSPATH_PROTOCOL_IDENTIFIER = "classpath:";
+
 
 	/**
 	 * Convert a String like "contentid:asc,name:desc" into an Sorting Array.
@@ -161,22 +169,36 @@ public class CRUtil {
 		} else if (string.startsWith(DONOTRESOLVE_MARKER)) {
 			return string.replaceAll("^" + DONOTRESOLVE_MARKER, "");
 		}
+		String confpath = System.getProperty(PORTALNODE_CONFPATH);
 		//init com.gentics.portalnode.confpath if it isn't set
-		if (System.getProperty(PORTALNODE_CONFPATH) == null || System.getProperty(PORTALNODE_CONFPATH).equals("")) {
+		if (confpath == null || confpath.equals("")) {
 			String defaultConfPath = System.getProperty("catalina.base") + File.separator + "conf" + File.separator + "gentics"
 					+ File.separator;
 			System.setProperty(PORTALNODE_CONFPATH, defaultConfPath);
-		} else if (System.getProperty(PORTALNODE_CONFPATH).startsWith(FILE_PROTOCOL_IDENTIFIER)) {
+		} else if (confpath.startsWith(FILE_PROTOCOL_IDENTIFIER)) {
 			File confFile = null;
 			try {
-				confFile = new File(new URI(System.getProperty(PORTALNODE_CONFPATH)));
+				confFile = new File(new URI(confpath));
 			} catch (URISyntaxException e) {
-				LOGGER.error(
-					"Could not convert PORTALNODE_CONFPATH (" + System.getProperty(PORTALNODE_CONFPATH) + ") to an absolutePath",
-					e);
+				String message = "Could not convert PORTALNODE_CONFPATH (" + confpath + ") to an absolutePath"; 
+				LOGGER.error(message, e);
+				throw new ConfpathConfigurationException(message, e);
 			}
 			String confFilePath = confFile.getAbsolutePath();
 			System.setProperty(PORTALNODE_CONFPATH, confFilePath);
+		} else if (confpath.startsWith(CLASSPATH_PROTOCOL_IDENTIFIER)) {
+			File confFile = null;
+			String classpath = confpath.substring(CLASSPATH_PROTOCOL_IDENTIFIER.length());
+			URL classpathURL = Thread.currentThread().getContextClassLoader().getResource(classpath);
+			if(classpathURL == null) {
+				throw new ConfpathConfigurationException("Could not find configured confpath '" + confpath + "' in classpath.");
+			}
+			try {
+				confFile = new File(classpathURL.toURI());
+			} catch (URISyntaxException e) {
+				throw new ConfpathConfigurationException("Could not open directory in '" + classpathURL.toString() + "' for configured confpath: " + confpath, e);
+			}
+			System.setProperty(PORTALNODE_CONFPATH, confFile.getAbsolutePath());
 		}
 		String result = CRUtilResolver.resolveSystemProperties(string);
 		result = CRUtilResolver.resolveContentConnectorProperties(result);
