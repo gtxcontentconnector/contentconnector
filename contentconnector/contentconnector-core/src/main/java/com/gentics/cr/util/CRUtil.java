@@ -8,7 +8,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -279,5 +283,17 @@ public class CRUtil {
 		} else {
 			throw new IOException("Failed to create temp dir named " + newTempDir.getAbsolutePath());
 		}
+	}
+	
+	/**
+	 * Convert a properties instance to a map of strings.
+	 * @param props
+	 * @return Map of strings.
+	 */
+	public static Map<String, String> propertiesToMap(Properties props) {
+		if (props != null) {
+			return new HashMap<String, String>((Map)props);
+		}
+		return null;
 	}
 }

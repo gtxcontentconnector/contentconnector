@@ -1,4 +1,4 @@
-package com.gentics.cr;
+package com.gentics.cr.mccr;
 
 import java.util.Collections;
 import java.util.Map;
@@ -9,15 +9,18 @@ import com.gentics.api.lib.datasource.WriteableDatasource;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Changeable;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
+import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.CRDatabaseFactory;
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.testutils.AbstractTestHandler;
 import com.gentics.cr.testutils.GenticsCRHelper;
 
-public class HSQLTestHandler extends AbstractTestHandler{
+public class MCCRHSQLTestHandler extends AbstractTestHandler{
 	
 	WriteableDatasource wDs; 
 	
-	public HSQLTestHandler(CRConfigUtil rpConfig) throws CRException {
+	public MCCRHSQLTestHandler(CRConfigUtil rpConfig) throws CRException {
 		wDs = (WriteableDatasource) rpConfig.getDatasource();
 		try {
 			GenticsCRHelper.importObjectTypes(wDs);

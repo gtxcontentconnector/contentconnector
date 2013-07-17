@@ -1,4 +1,4 @@
-package com.gentics.cr;
+package com.gentics.cr.testutils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,19 +9,18 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.io.IOUtils;
 
-import com.gentics.cr.exceptions.CRException;
 
 public class AbstractTestHandler {
 	
 	public InputStream getFileAsStream(String path) throws FileNotFoundException, URISyntaxException {
-		return new FileInputStream(new File(AbstractTestHandler.class.getResource("file").toURI()).getAbsolutePath() + "/" + path);
+		return new FileInputStream(new File(getClass().getResource("file").toURI()).getAbsolutePath() + "/" + path);
 	}
 	
-	public byte[] getFileAsByteArray(String path) throws CRException, URISyntaxException {
+	public byte[] getFileAsByteArray(String path) throws Exception, URISyntaxException {
 		try {
 			return IOUtils.toByteArray(getFileAsStream(path));
 		} catch (IOException e) {
-			throw new CRException(e);
+			throw new Exception(e);
 		}
 	}
 }

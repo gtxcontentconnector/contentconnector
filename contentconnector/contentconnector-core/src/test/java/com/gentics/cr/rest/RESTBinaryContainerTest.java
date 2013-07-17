@@ -25,7 +25,7 @@ public class RESTBinaryContainerTest{
 	private static HSQLTestHandler testHandler;
 	
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws Exception, URISyntaxException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(RESTBinaryContainerTest.class.getName());
 		config.set("rp.1.rpClass", "com.gentics.cr.CRRequestProcessor");
 		container = new RESTBinaryContainer(config);

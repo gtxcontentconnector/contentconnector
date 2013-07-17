@@ -415,6 +415,7 @@ public abstract class RequestProcessor {
 		return (Collection<CRResolvableBean>) col;
 	}
 
+	
 	/**
 	 * Fills the attributes defined in the requests attribute array to each element of the collection col.
 	 * @param col
