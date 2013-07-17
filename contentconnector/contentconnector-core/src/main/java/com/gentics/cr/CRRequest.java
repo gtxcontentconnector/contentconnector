@@ -418,6 +418,14 @@ public class CRRequest implements Cloneable, Serializable {
 		}
 		return count;
 	}
+	
+	/**
+	 * Sets the sorting as array of Sorting instances. This will disable the creation of a new Sorting array from the sorting string array that is passed via setSortArray().
+	 * @param sorting
+	 */
+	public void setSorting(Sorting[] sorting) {
+		this.set("sorting", sorting);
+	}
 
 	/**
 	 * Returns the configured sort array prepared as Datasource Sorting array.
@@ -425,6 +433,10 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return sorting
 	 */
 	public Sorting[] getSorting() {
+		Sorting[] sorting = (Sorting[]) this.get("sorting");
+		if (sorting != null) {
+			return sorting;
+		}
 		return CRUtil.convertSorting(this.getSortArray());
 	}
 

@@ -6,15 +6,15 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import com.gentics.api.lib.exception.ParserException;
+import com.gentics.api.lib.expressionparser.Expression;
+import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.portalnode.expressions.ExpressionParserHelper;
-import com.gentics.api.lib.exception.ParserException;
-import com.gentics.api.lib.expressionparser.Expression;
-import com.gentics.api.lib.expressionparser.ExpressionParserException;
 
 /**
  * {@link RequestProcessor} for requesting and indexing a filesystem.

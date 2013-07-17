@@ -1,13 +1,16 @@
 package com.gentics.cr;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
+import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.portalnode.PortalNodeInteractor;
+import com.gentics.cr.util.CRUtil;
 
 /**
  * The datasource factory manages the gentics content repository datasources.
@@ -132,7 +135,13 @@ public final class CRDatabaseFactory {
 				String key = (String) dsHandle.get("portalnodedb");
 				ds = PortalNodeInteractor.getPortalnodeDatasource(key);
 			} else if (dsProps != null && dsProps.size() != 0) {
-				ds = PortalConnectorFactory.createWriteableDatasource(dsHandle, dsProps);
+				boolean mccr = ObjectTransformer.getBoolean(dsProps.get("mccr"), false);
+				if (mccr) {
+					ds = PortalConnectorFactory.createWritableMultichannellingDatasource(CRUtil.propertiesToMap(dsHandle), CRUtil.propertiesToMap(dsProps));
+				} else {
+					ds = PortalConnectorFactory.createWriteableDatasource(dsHandle, dsProps);
+				}
+				
 			} else {
 				ds = PortalConnectorFactory.createWriteableDatasource(dsHandle);
 			}

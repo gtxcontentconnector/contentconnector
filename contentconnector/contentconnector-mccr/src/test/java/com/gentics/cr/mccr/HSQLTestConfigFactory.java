@@ -1,15 +1,17 @@
-package com.gentics.cr;
+package com.gentics.cr.mccr;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
 import com.gentics.DefaultTestConfiguration;
+import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.plink.PlinkProcessor;
 
 public class HSQLTestConfigFactory {
 	
-	private static final String CR_1_PREFIX = "RP.1.";
+	public static final String CR_1_PREFIX = "RP.1.";
 	
 	/**
 	 * This method generates a DB configuration for an in memory HSQL.
