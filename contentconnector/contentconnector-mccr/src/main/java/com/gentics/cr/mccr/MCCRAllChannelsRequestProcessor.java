@@ -30,6 +30,7 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.ArrayHelper;
+import com.gentics.cr.util.PNSortingComparator;
 import com.gentics.lib.datasource.mccr.MCCRDatasource;
 
 /**
