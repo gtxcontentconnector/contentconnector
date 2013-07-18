@@ -26,12 +26,29 @@ import com.gentics.cr.util.ArrayHelper;
 import com.gentics.cr.util.PNSortingComparator;
 
 /**
+ * <p>
+ * This request processor is optimized for good scaling navigation tree
+ * building. Especially for large datasets the navigation object building can be
+ * very expensive in database calls. With this request processor the amount of
+ * database calls is always fixed.
+ * </p>
+ * <p>
+ * Consider the child request filter to be as restrictive as possible to avoid
+ * unnecessary fetched database rows. For example for projects with many nodes
+ * you should add a child filter for
+ * </p>
  * 
+ * <pre>
+ * node_id
+ * </pre>
+ * <p>
+ * Basically only the method
+ * {@link OptimisticNavigationRequestProcessor#getObjects(CRRequest, boolean)}
+ * method is optimized when the parameter doNavigation is true. The rest is
+ * adapted from the {@link CRRequestProcessor}.
+ * </p>
  * 
- * Last changed: $Date: 2013-07-18 15:24:02 +0200 (Do, 18 Jul 2013) $
- * 
- * @version $Revision: 541 $
- * @author $Author: l.osang@gentics.com $
+ * @author l.osang@gentics.com, c.supnig@gentics.com, s.vogel@gentics.com
  * 
  */
 public class OptimisticNavigationRequestProcessor extends RequestProcessor {
@@ -62,7 +79,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		super(config);
 
 		if (!StringUtils.isEmpty(config.getString(FOLDER_ID_KEY))) {
-			this.folderIdContentmapName = config.getString(FOLDER_ID_KEY);
+			folderIdContentmapName = config.getString(FOLDER_ID_KEY);
 		}
 
 	}

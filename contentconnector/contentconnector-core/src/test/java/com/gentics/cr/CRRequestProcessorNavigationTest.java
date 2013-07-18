@@ -3,8 +3,6 @@ package com.gentics.cr;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
-import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -15,33 +13,50 @@ import org.junit.Test;
 import com.gentics.cr.exceptions.CRException;
 
 /**
- * This test checks the functionality of building of navigation objects in the
+ * This test checks the functionality of building of navigation objects in the.
+ * 
  * {@link OptimisticNavigationRequestProcessor} Request Processor.
  * 
  * @author l.osang@gentics.com
- * 
  */
 
 public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 
+	/** The Constant LOGGER. */
 	private final static Logger LOGGER = Logger.getLogger(CRRequestProcessorNavigationTest.class);
 
+	/** The Constant attributes. */
 	private static final String[] attributes = { "name", "folder_id" };
 
+	/** The Constant FOLDER_TYPE. */
 	private static final String FOLDER_TYPE = CRResolvableBean.DEFAULT_DIR_TYPE;
 
+	/** The request processor. */
 	private static CRRequestProcessor requestProcessor;
 
+	/** The test handler. */
 	private static HSQLTestHandler testHandler;
 
+	/** The navigation request processor. */
 	private static OptimisticNavigationRequestProcessor navigationRequestProcessor;
 
+	/** The expected collection size. */
 	private static Integer expectedCollectionSize = 0;
 
+	/** The root folder content id. */
 	private static String rootFolderContentId;
 
+	/** The original navigation object. */
 	private static Collection<CRResolvableBean> originalNavigationObject;
 
+	/**
+	 * Setup the request processors and the hsql database handler
+	 * 
+	 * @throws CRException
+	 *             the cR exception
+	 * @throws URISyntaxException
+	 *             the uRI syntax exception
+	 */
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName());
@@ -55,11 +70,22 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		createTestNavigationData(2, 3);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.gentics.cr.RequestProcessorTest#getRequestProcessor()
+	 */
 	@Override
 	protected RequestProcessor getRequestProcessor() {
 		return requestProcessor;
 	}
 
+	/**
+	 * Tear down.
+	 * 
+	 * @throws CRException
+	 *             the cR exception
+	 */
 	@AfterClass
 	public static void tearDown() throws CRException {
 		requestProcessor.finalize();
@@ -67,11 +93,21 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		testHandler.cleanUp();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.gentics.cr.RequestProcessorTest#getExpectedCollectionSize()
+	 */
 	@Override
 	protected int getExpectedCollectionSize() {
 		return expectedCollectionSize;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.gentics.cr.RequestProcessorTest#getRequest()
+	 */
 	@Override
 	protected CRRequest getRequest() {
 		CRRequest req = new CRRequest();
@@ -79,6 +115,12 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		return req;
 	}
 
+	/**
+	 * Test optimistic navigation building.
+	 * 
+	 * @throws CRException
+	 *             the cR exception
+	 */
 	@Test
 	public void testOptimisticNavigationBuilding() throws CRException {
 
@@ -93,8 +135,14 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		}
 	}
 
+	/**
+	 * Test normal navigation building.
+	 * 
+	 * @throws CRException
+	 *             the cR exception
+	 */
 	@Test
-	public void testNavigationObject() throws CRException {
+	public void testNavigationBuilding() throws CRException {
 
 		Collection<CRResolvableBean> result = requestProcessor.getNavigation(getNavigationRequest());
 
@@ -108,7 +156,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 
 	/**
 	 * Gets the prepared Request for a Navigation Object building for any
-	 * request processor
+	 * request processor.
 	 * 
 	 * @return the prepared Navigation Request
 	 */
@@ -124,12 +172,14 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	}
 
 	/**
+	 * Creates the test navigation data.
 	 * 
 	 * @param vertical
 	 *            specifies how many nodes should be appended to every node
 	 * @param depth
 	 *            specifies how deep the tree should be
 	 * @throws CRException
+	 *             the cR exception
 	 */
 	private static void createTestNavigationData(Integer vertical, Integer depth) throws CRException {
 		// check if all necessary object are present
@@ -155,12 +205,11 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 			LOGGER.debug("Inserted folders amount: " + expectedCollectionSize);
 			LOGGER.debug(toStringWithChildren(rootFolder, 0));
 		}
-		
+
 	}
 
 	/**
-	 * recursive method to create a tree, should only be called by
-	 * {@link CRRequestProcessorTest#createTestNavigationData(Integer, Integer)}
+	 * recursive method to create a tree, should only be called by.
 	 * 
 	 * @param active
 	 *            is the active element, initially the root element
@@ -169,6 +218,8 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	 * @param depth
 	 *            specifies how deep the tree should be
 	 * @throws CRException
+	 *             the cR exception
+	 *             {@link CRRequestProcessorTest#createTestNavigationData(Integer, Integer)}
 	 */
 	private static void recursiveTreeCreation(CRResolvableBean active, int vertical, int depth) throws CRException {
 
@@ -191,8 +242,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	}
 
 	/**
-	 * 
-	 * creates and persists a folder with specified parent folder and name
+	 * creates and persists a folder with specified parent folder and name.
 	 * 
 	 * @param parentFolder
 	 *            the mother folder
@@ -200,6 +250,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	 *            the name for the new folder, should not be null
 	 * @return the created and persisted folder
 	 * @throws CRException
+	 *             the cR exception
 	 */
 	private static CRResolvableBean createTestFolder(CRResolvableBean parentFolder, String name) throws CRException {
 
@@ -230,8 +281,13 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	}
 
 	/**
-	 * Prints a tree view of the CRResolvable, convenient for navigation objects
+	 * Prints a tree view of the CRResolvable, convenient for navigation
+	 * objects.
 	 * 
+	 * @param resolvable
+	 *            the resolvable
+	 * @param depth
+	 *            the depth
 	 * @return String tree with children
 	 */
 	private static String toStringWithChildren(CRResolvableBean resolvable, int depth) {
@@ -255,9 +311,16 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 
 		return sb.toString();
 	}
-	
+
+	/**
+	 * Gets tab amount for output.
+	 * 
+	 * @param amount
+	 *            the amount
+	 * @return the tabs
+	 */
 	private static String getTabs(int amount) {
-		
+
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < amount; i++) {
 			sb.append("	");
