@@ -27,10 +27,11 @@ import com.gentics.cr.util.PNSortingComparator;
 
 /**
  * 
- * Last changed: $Date: 2010-04-01 15:24:02 +0200 (Do, 01 Apr 2010) $
+ * 
+ * Last changed: $Date: 2013-07-18 15:24:02 +0200 (Do, 18 Jul 2013) $
  * 
  * @version $Revision: 541 $
- * @author $Author: supnig@constantinopel.at $
+ * @author $Author: l.osang@gentics.com $
  * 
  */
 public class OptimisticNavigationRequestProcessor extends RequestProcessor {
@@ -38,12 +39,14 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	private static Logger logger = Logger.getLogger(OptimisticNavigationRequestProcessor.class);
 
 	private HashMap<String, Resolvable> resolvables = null;
-	
+
 	/**
-	 * Key for {@link OptimisticNavigationRequestProcessor#folderIdContentmapName} in the config
+	 * Key for
+	 * {@link OptimisticNavigationRequestProcessor#folderIdContentmapName} in
+	 * the config
 	 */
 	private static final String FOLDER_ID_KEY = "folder_id.key";
-	
+
 	/**
 	 * String of content map folder id column
 	 */
@@ -57,11 +60,11 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	 */
 	public OptimisticNavigationRequestProcessor(CRConfig config) throws CRException {
 		super(config);
-		
-		if(!StringUtils.isEmpty(config.getString(FOLDER_ID_KEY))) {
+
+		if (!StringUtils.isEmpty(config.getString(FOLDER_ID_KEY))) {
 			this.folderIdContentmapName = config.getString(FOLDER_ID_KEY);
 		}
-		
+
 	}
 
 	/**
@@ -115,16 +118,22 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 					// IF NAVIGAION WE PROCESS THE FAST NAVIGATION ALGORITHM
 					if (doNavigation) {
 
-						CRRequest childReq = request.Clone();
+						// Build the request to fetch all possible children
+						CRRequest childReq = new CRRequest();
+						// set children attributes (folder_id)
+						String[] fetchAttributesForChildren = { folderIdContentmapName };
+						childReq.setAttributeArray(fetchAttributesForChildren);
 						childReq.setRequestFilter(request.getChildFilter());
-						childReq.setSortArray(new String[] { "folder_id" });
-						Collection<CRResolvableBean> children = getObjects(request, false);
+						childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
+
+						Collection<CRResolvableBean> children = getObjects(childReq, false);
 
 						// get original sorting order for child sorting
 						// sort childrepositories with that
 						Sorting[] sorting = request.getSorting();
 
-						// those Resolvables will be filled with specified attributes
+						// those Resolvables will be filled with specified
+						// attributes
 						List<Resolvable> itemsToPrefetch = new Vector<Resolvable>();
 
 						HashMap<String, Vector<CRResolvableBean>> prepareFolderMap = prepareFolderMap(children);
@@ -134,8 +143,9 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 							recursiveTreeBuild(item, prepareFolderMap, sorting, itemsToPrefetch);
 						}
 
-						// prefetch all necessary attribute that are specified in the request 
-						PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch, Arrays.asList(request.getAttributeArray()));
+						// prefetch all necessary attribute that are specified
+						// in the request
+						PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch, Arrays.asList(prefillAttributes));
 					}
 				}
 			} catch (ParserException e) {
@@ -157,9 +167,9 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	}
 
 	/**
-	 * <p>prepare the fetched children objects and put them to a prepared map with
-	 * this format: 
-	 * <code>(folder_id, Collection children)</code>
+	 * <p>
+	 * prepare the fetched children objects and put them to a prepared map with
+	 * this format: <code>(folder_id, Collection children)</code>
 	 * 
 	 * @param children
 	 * @return the prepared HashMap
@@ -171,14 +181,17 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		for (CRResolvableBean crResolvableBean : children) {
 
 			String folder_id = crResolvableBean.getString(folderIdContentmapName);
-			Vector<CRResolvableBean> col = map.get(folder_id);
 
-			if (col == null) {
-				col = new Vector<CRResolvableBean>();
-				map.put(folder_id, col);
+			if (StringUtils.isNotEmpty(folder_id)) {
+				Vector<CRResolvableBean> col = map.get(folder_id);
+
+				if (col == null) {
+					col = new Vector<CRResolvableBean>();
+					map.put(folder_id, col);
+				}
+
+				col.add(crResolvableBean);
 			}
-
-			col.add(crResolvableBean);
 		}
 
 		return map;
@@ -187,43 +200,45 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	/**
 	 * Builds the tree and fills the children of the root element
 	 * 
-	 * @param root the element that will be filled with children
+	 * @param root
+	 *            the element that will be filled with children
 	 * @param folderMap
 	 * @param sorting
 	 * @param itemsToPrefetch
 	 */
-	private void recursiveTreeBuild(CRResolvableBean root,
-			HashMap<String, Vector<CRResolvableBean>> folderMap, Sorting[] sorting,
-			List<Resolvable> itemsToPrefetch) {
+	private void recursiveTreeBuild(CRResolvableBean root, HashMap<String, Vector<CRResolvableBean>> folderMap,
+			Sorting[] sorting, List<Resolvable> itemsToPrefetch) {
 
 		// remove added items from children
 		Vector<CRResolvableBean> children = folderMap.get(root.getContentid());
-		
+
 		// brake condition, there are no children for this tree node
-		if(ObjectTransformer.isEmpty(children)) {
+		if (ObjectTransformer.isEmpty(children)) {
 			return;
 		}
-		
+
 		if (sorting != null && sorting.length > 0) {
 			sortCollection(children, sorting[0]);
 		}
-		
+
 		// fill the actual object with children
 		root.fillChildRepository(children);
-		
+
 		for (CRResolvableBean crResolvableBean : children) {
-			
+
 			// recursive call to build children map
 			recursiveTreeBuild(crResolvableBean, folderMap, sorting, itemsToPrefetch);
-			
+
 			// fill to items that should be filled with attributes
-			itemsToPrefetch.add(crResolvableBean);
+			itemsToPrefetch.add(crResolvableBean.getResolvable());
 		}
-		
+
 	}
-	
+
 	/**
-	 * We do the sorting in memory because we cannot fetch the objects sorted from the database.
+	 * We do the sorting in memory because we cannot fetch the objects sorted
+	 * from the database.
+	 * 
 	 * @param collection
 	 * @param sorting
 	 */
