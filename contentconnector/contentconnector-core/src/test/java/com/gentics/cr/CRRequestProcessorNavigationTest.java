@@ -2,6 +2,8 @@ package com.gentics.cr;
 
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -67,7 +69,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
 
 		// a folder structure
-		createTestNavigationData(2, 3);
+		createTestNavigationData(2, 2);
 	}
 
 	/*
@@ -133,6 +135,8 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 				LOGGER.debug(toStringWithChildren(crResolvableBean, 0));
 			}
 		}
+
+		Assert.assertTrue(compareResolvableChildren(originalNavigationObject, result));
 	}
 
 	/**
@@ -152,6 +156,8 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 				LOGGER.debug(toStringWithChildren(crResolvableBean, 0));
 			}
 		}
+
+		Assert.assertTrue(compareResolvableChildren(originalNavigationObject, result));
 	}
 
 	/**
@@ -270,6 +276,10 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		// persist the Bean
 		folder = testHandler.createBean(folder, attributes);
 
+		if (parentFolder != null) {
+			parentFolder.getChildRepository().add(folder);
+		}
+
 		// increase size
 		expectedCollectionSize++;
 
@@ -278,6 +288,64 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		}
 
 		return folder;
+	}
+
+	/**
+	 * Compares two collections of CRResolvableBeans against contentid and
+	 * childrepositories.
+	 * 
+	 * ATTENTION: the fetchedTree will be modified and truncated!
+	 * 
+	 * @param origTree
+	 * @param fetchedTree
+	 * @return true if the two collections are equal
+	 */
+	private static boolean compareResolvableChildren(final Collection<CRResolvableBean> origTree,
+			Collection<CRResolvableBean> fetchedTree) {
+		Boolean result = true;
+
+		Set<CRResolvableBean> matchesFoundOrig = new HashSet<CRResolvableBean>();
+		Set<CRResolvableBean> matchesFoundFetched = new HashSet<CRResolvableBean>();
+
+		for (CRResolvableBean crResolvableBean : origTree) {
+
+			for (CRResolvableBean crResolvableBeanFetched : fetchedTree) {
+
+				// check if we got a match and that match
+				if (crResolvableBean.getContentid().equals(crResolvableBeanFetched.getContentid())
+						&& !matchesFoundOrig.contains(crResolvableBean)) {
+
+					result = compareResolvableChildren(crResolvableBean.getChildRepository(),
+							crResolvableBeanFetched.getChildRepository());
+
+					if (result == false) {
+						break;
+					}
+
+					matchesFoundFetched.add(crResolvableBeanFetched);
+					// store which matches we already found
+					matchesFoundOrig.add(crResolvableBean);
+
+				}
+			}
+
+			if (result == false) {
+				break;
+			}
+		}
+
+		// return false if we didn't find all original entries
+		if (matchesFoundOrig.size() != origTree.size()) {
+			result = false;
+		}
+
+		// return false if we didn't got all fetched entries in the original
+		// tree
+		if (matchesFoundFetched.size() != fetchedTree.size()) {
+			result = false;
+		}
+
+		return result;
 	}
 
 	/**
@@ -297,7 +365,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		sb.append("[" + resolvable.getContentid() + "]" + "\n");
 		sb.append(getTabs(depth));
 
-		if (resolvable.getChildRepository().size() > 0) {
+		if (resolvable.getChildRepository() != null && resolvable.getChildRepository().size() > 0) {
 			sb.append("children: { ");
 
 			for (CRResolvableBean child : resolvable.getChildRepository()) {
