@@ -16,6 +16,8 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 
 	private static CRRequestProcessor requestProcessor;
 	private static HSQLTestHandler testHandler;
+	
+	private static String [] attributes = {"filename", "mimetype"};
 
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
@@ -29,7 +31,7 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 		testBean.set("filename", "picture.png");
 		testBean.set("mimetype", "image/png");
 		
-		testHandler.createBean(testBean);
+		testHandler.createBean(testBean, attributes);
 		
 		CRResolvableBean testBean2 = new CRResolvableBean();
 		testBean2.setObj_type("10008");
@@ -37,7 +39,7 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 		testBean2.set("filename", "file.txt");
 		testBean2.set("mimetype", "text/plain");
 		
-		testHandler.createBean(testBean2);
+		testHandler.createBean(testBean2, attributes);
 	}
 	
 	@Test

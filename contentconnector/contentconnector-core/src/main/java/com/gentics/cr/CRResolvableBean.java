@@ -608,4 +608,5 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	public String toString() {
 		return this.getContentid();
 	}
+	
 }
