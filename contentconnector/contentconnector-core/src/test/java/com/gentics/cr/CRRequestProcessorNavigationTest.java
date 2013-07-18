@@ -264,5 +264,4 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		}
 		return sb.toString();
 	}
-		
 }
