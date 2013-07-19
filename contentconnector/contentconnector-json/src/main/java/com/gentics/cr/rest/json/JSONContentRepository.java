@@ -76,8 +76,8 @@ public class JSONContentRepository extends ContentRepository {
 	 * @return "application/jsonrequest"
 	 */
 	public String getContentType() {
-		// return "text/javascript";
-		return ("application/jsonrequest");
+		// use correct content type for json requests "application/json", see RFC4627
+		return ("application/json");
 	}
 
 	/**
