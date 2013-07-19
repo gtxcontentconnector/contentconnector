@@ -2,24 +2,25 @@ package com.gentics.cr.lucene.indexer.transformer.doc.test;
 
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.poi.util.IOUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.indexer.transformer.AbstractTransformerTest;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.lucene.indexer.transformer.doc.RTFContentTransformer;
 
-public class RTFContentTransformerTest extends TestCase {
+public class RTFContentTransformerTest extends AbstractTransformerTest {
 
 	CRResolvableBean bean;
 	GenericConfiguration config;
 
 	@Before
-	public void setUp() throws Exception {
+	public void init() throws Exception {
 		bean = new CRResolvableBean();
 
 		InputStream stream = RTFContentTransformerTest.class.getResourceAsStream("testdoc.rtf");
@@ -30,12 +31,13 @@ public class RTFContentTransformerTest extends TestCase {
 		config.set("attribute", "binarycontent");
 	}
 
+	@Test
 	public void testTransformer() throws Exception {
 		ContentTransformer t = new RTFContentTransformer(config);
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
 
-		assertTrue("testtext\n".equals(s));
+		Assert.assertTrue("testtext\n".equals(s));
 	}
 
 	@After

@@ -3,27 +3,26 @@ package com.gentics.cr.lucene.indexer.transformer.test;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.poi.util.IOUtils;
-import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.indexer.transformer.AbstractTransformerTest;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.lucene.indexer.transformer.POIContentTransformer;
 
-public class POIContentTransformerTest extends TestCase {
+public class POIContentTransformerTest extends AbstractTransformerTest {
 	private static final String BINARY_ATTRIBUTE = "binarycontent";
 	GenericConfiguration config;
 
 	ContentTransformer t;
 
 	@Before
-	public void setUp() throws Exception {
+	public void init() throws Exception {
 		config = new GenericConfiguration();
 		config.set("attribute", BINARY_ATTRIBUTE);
 
@@ -67,7 +66,7 @@ public class POIContentTransformerTest extends TestCase {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
 		t.processBean(bean);
-		assertEquals("Testtext ÄÖÜäüöß€\n", bean.get(BINARY_ATTRIBUTE));
+		Assert.assertEquals("Testtext ÄÖÜäüöß€\n", bean.get(BINARY_ATTRIBUTE));
 	}
 	
 	@Test
@@ -110,7 +109,7 @@ public class POIContentTransformerTest extends TestCase {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
 		t.processBean(bean);
-		assertEquals("Testtext ÄÖÜäüöß€\n\n", bean.get(BINARY_ATTRIBUTE));
+		Assert.assertEquals("Testtext ÄÖÜäüöß€\n\n", bean.get(BINARY_ATTRIBUTE));
 	}
 
 	@Test
@@ -142,7 +141,7 @@ public class POIContentTransformerTest extends TestCase {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
 		t.processBean(bean);
-		assertEquals("Tabelle1\ntesttext ÄÖÜäüöß€\nTabelle2\nTabelle3\n",
+		Assert.assertEquals("Tabelle1\ntesttext ÄÖÜäüöß€\nTabelle2\nTabelle3\n",
 				bean.get(BINARY_ATTRIBUTE));
 	}
 

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <definition>
+  <objecttype excludeversioning="false" id="10001" name="Dummy">
+  	<attributetype name="category" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  	<attributetype name="mimetype" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  	<attributetype name="filename" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  </objecttype>
   <objecttype excludeversioning="false" id="10008" name="File">
   	<attributetype name="binarycontent" attributetype="6" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
   	<attributetype name="mimetype" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>

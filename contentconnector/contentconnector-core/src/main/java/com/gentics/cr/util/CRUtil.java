@@ -11,13 +11,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
@@ -309,7 +308,7 @@ public class CRUtil {
 	 * @param sorting
 	 *            the sorting
 	 */
-	public static void sortCollection(Vector<CRResolvableBean> collection, Sorting sorting) {
+	public static void sortCollection(List<CRResolvableBean> collection, Sorting sorting) {
 		
 		if(CollectionUtils.isEmpty(collection)) {
 			return;
@@ -330,7 +329,7 @@ public class CRUtil {
 	 * @param sorting
 	 *            the sorting as sorting array
 	 */
-	public static void sortCollection(Vector<CRResolvableBean> collection, Sorting[] sorting) {
+	public static void sortCollection(List<CRResolvableBean> collection, Sorting[] sorting) {
 		
 		if(CollectionUtils.isEmpty(collection)) {
 			return;
@@ -338,7 +337,7 @@ public class CRUtil {
 		
 		if (sorting != null) {
 			
-			for (int i = sorting.length; i >= 0; --i) {
+			for (int i = (sorting.length - 1); i >= 0; --i) {
 				sortCollection(collection, sorting[i]);
 			}
 		}

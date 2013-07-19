@@ -2,24 +2,25 @@ package com.gentics.cr.lucene.indexer.transformer.doc.test;
 
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.poi.util.IOUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.lucene.indexer.transformer.AbstractTransformerTest;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.lucene.indexer.transformer.doc.DOCContentTransformer;
 
-public class DOCContentTransformerTest extends TestCase {
+public class DOCContentTransformerTest extends AbstractTransformerTest {
 
 	CRResolvableBean bean;
 	GenericConfiguration config;
 
 	@Before
-	public void setUp() throws Exception {
+	public void init() throws Exception {
 		bean = new CRResolvableBean();
 
 		InputStream stream = DOCContentTransformerTest.class.getResourceAsStream("testdoc.doc");
@@ -30,12 +31,13 @@ public class DOCContentTransformerTest extends TestCase {
 		config.set("attribute", "binarycontent");
 	}
 
+	@Test
 	public void testTransformer() throws Exception {
 		ContentTransformer t = new DOCContentTransformer(config);
 		t.processBean(bean);
 		String s = (String) bean.get("binarycontent");
 		String ls = System.getProperty("line.separator");
-		assertEquals("testtext" + ls + ls, s);
+		Assert.assertEquals("testtext" + ls + ls, s);
 	}
 
 	@After
