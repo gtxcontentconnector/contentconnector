@@ -30,7 +30,7 @@ public class HSQLTestConfigFactory {
 	 * @throws URISyntaxException 
 	 */
 	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName) throws URISyntaxException {
-		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").toURI()).getAbsolutePath());
+		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").getFile()).getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 
 		CRConfigUtil config = new CRConfigUtil();

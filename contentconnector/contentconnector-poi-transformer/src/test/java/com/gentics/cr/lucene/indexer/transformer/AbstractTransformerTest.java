@@ -13,7 +13,7 @@ public class AbstractTransformerTest {
 
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
-		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").toURI()).getAbsolutePath());
+		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").getFile()).getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 	}
 }

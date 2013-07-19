@@ -22,7 +22,7 @@ public class LanguageIdentifyerTest {
 
 	@Before
 	public void init() throws Exception {
-		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").toURI()).getAbsolutePath());
+		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").getFile()).getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 		bean = new CRResolvableBean();
 
