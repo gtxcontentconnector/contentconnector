@@ -62,7 +62,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	 */
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
-		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName());
+		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorNavigationTest.class.getName());
 
 		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));
 		navigationRequestProcessor = new OptimisticNavigationRequestProcessor(config.getRequestProcessorConfig(1));
