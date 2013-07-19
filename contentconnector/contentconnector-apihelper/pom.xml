@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>contentconnector</artifactId>
@@ -53,8 +54,9 @@
 			<groupId>com.gentics</groupId>
 			<version>4.2.0</version>
 		</dependency>
-		<!-- The node lib must be added since the maven resolvement of portalnode-lib 
-		    transitive dependencies does not work due to the portalnode/pom.xml node-lib property.-->
+		<!-- The node lib must be added since the maven resolvement of portalnode-lib
+			transitive dependencies does not work due to the portalnode/pom.xml node-lib
+			property. -->
 		<dependency>
 			<artifactId>node-lib</artifactId>
 			<groupId>com.gentics</groupId>
@@ -67,6 +69,14 @@
 				<exclusion>
 					<artifactId>org.eclipse.core.runtime</artifactId>
 					<groupId>org.eclipse.core</groupId>
+				</exclusion>
+				<!-- the jmimemagic artifact comes with its own log4j.properties which
+					causes problems with log4j in some environments.
+					according to NOP it is not needed for the parts of node-lib
+					that the ccr uses so we can exclude it -->
+				<exclusion>
+					<groupId>jmimemagic</groupId>
+					<artifactId>jmimegic</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
