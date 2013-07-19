@@ -8,17 +8,21 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
+import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.ConfpathConfigurationException;
 import com.gentics.cr.util.resolver.CRUtilResolver;
 
@@ -295,5 +299,48 @@ public class CRUtil {
 			return new HashMap<String, String>((Map)props);
 		}
 		return null;
+	}
+	
+	/**
+	 * Sorts a collection in memory with the given sorting object.
+	 * 
+	 * @param collection
+	 *            the collection
+	 * @param sorting
+	 *            the sorting
+	 */
+	public static void sortCollection(Vector<CRResolvableBean> collection, Sorting sorting) {
+		
+		if(CollectionUtils.isEmpty(collection)) {
+			return;
+		}
+		
+		if (sorting != null) {
+			String columnName = sorting.getColumnName();
+			int order = sorting.getSortOrder();
+			Collections.sort(collection, new PNSortingComparator<CRResolvableBean>(columnName, order));
+		}
+	}
+	
+	/**
+	 * Sorts a collection in memory with the given sorting array
+	 * 
+	 * @param collection
+	 *            the collection
+	 * @param sorting
+	 *            the sorting as sorting array
+	 */
+	public static void sortCollection(Vector<CRResolvableBean> collection, Sorting[] sorting) {
+		
+		if(CollectionUtils.isEmpty(collection)) {
+			return;
+		}
+		
+		if (sorting != null) {
+			
+			for (int i = sorting.length; i >= 0; --i) {
+				sortCollection(collection, sorting[i]);
+			}
+		}
 	}
 }
