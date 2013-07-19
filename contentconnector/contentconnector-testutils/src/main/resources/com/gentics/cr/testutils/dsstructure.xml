@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <definition>
+  <objecttype excludeversioning="false" id="10001" name="Dummy">
+  	<attributetype name="category" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  	<attributetype name="mimetype" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  	<attributetype name="filename" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  </objecttype>
   <objecttype excludeversioning="false" id="10008" name="File">
   	<attributetype name="binarycontent" attributetype="6" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
   	<attributetype name="mimetype" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
@@ -11,9 +16,16 @@
   	<attributetype name="filename" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
   	<attributetype name="node_id" attributetype="3" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="true"/>
   </objecttype>
+  <objecttype excludeversioning="false" id="10002" name="Folder">
+  	<attributetype name="name" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  	<attributetype name="folder_id" attributetype="2" excludeVersioning="false" filesystem="false" linkedobjecttype="10002" multivalue="false" optimized="true">
+  		<foreignlinkattribute>content_id</foreignlinkattribute>
+  	</attributetype>
+  	<attributetype name="node_id" attributetype="3" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="true"/>
+  </objecttype>
   <objecttype excludeversioning="false" id="1000" name="TestObject">
      <!-- single value, non optimized -->
-  <attributetype name="text" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+	<attributetype name="text" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
   <attributetype name="link" attributetype="2" excludeVersioning="false" filesystem="false" linkedobjecttype="1000" multivalue="false" optimized="false"/>
   <attributetype name="int" attributetype="3" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
   <attributetype name="longtext" attributetype="5" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>

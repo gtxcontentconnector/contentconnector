@@ -18,8 +18,8 @@ public class HSQLTestConfigFactory {
 	 * @return
 	 * @throws URISyntaxException 
 	 */
-	public static final CRConfigUtil getDefaultHSQLConfiguration() throws URISyntaxException {
-		return getDefaultHSQLConfiguration("mytestdatasource");
+	public static final CRConfigUtil getDefaultHSQLConfiguration(Class testClazz) throws URISyntaxException {
+		return getDefaultHSQLConfiguration("mytestdatasource" + testClazz.toString());
 	}
 	
 	/**

@@ -2,8 +2,6 @@ package com.gentics.cr.lucene.pdftest;
 
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -18,11 +16,14 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.poi.util.IOUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.cr.lucene.indexer.transformer.AbstractTransformerTest;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.lucene.indexer.transformer.pdf.PDFContentTransformer;
 import com.gentics.cr.lucene.search.highlight.ContentHighlighter;
@@ -30,7 +31,7 @@ import com.gentics.cr.lucene.search.highlight.PhraseBolder;
 import com.gentics.cr.lucene.search.highlight.VectorBolder;
 import com.gentics.cr.lucene.search.highlight.WhitespaceVectorBolder;
 
-public class PDFHighlighterTest extends TestCase {
+public class PDFHighlighterTest extends AbstractTransformerTest {
 
 	private static final int HITS = 1;
 
@@ -43,7 +44,7 @@ public class PDFHighlighterTest extends TestCase {
 	Query query;
 
 	@Before
-	public void setUp() throws Exception {
+	public void init() throws Exception {
 		bean = new CRResolvableBean();
 
 		InputStream stream = PDFHighlighterTest.class.getResourceAsStream("test.pdf");
@@ -87,24 +88,27 @@ public class PDFHighlighterTest extends TestCase {
 
 	}
 
+	@Test
 	public void testVectorBolder() throws Exception {
 		System.out.println("VECTOR");
 		VectorBolder h = new VectorBolder(new GenericConfiguration());
 		String ret = h.highlight(query, searcher.getIndexReader(), 0, "binarycontent");
 		System.out.println(ret);
 
-		assertTrue(ret != null && !"".equals(ret));
+		Assert.assertTrue(ret != null && !"".equals(ret));
 	}
 
+	@Test
 	public void testWhitespaceVectorBolder() throws Exception {
 		System.out.println("WHITESPACEVECTOR");
 		WhitespaceVectorBolder h = new WhitespaceVectorBolder(new GenericConfiguration());
 		String ret = h.highlight(query, searcher.getIndexReader(), 0, "binarycontent");
 		System.out.println(ret);
 
-		assertTrue(ret != null && !"".equals(ret));
+		Assert.assertTrue(ret != null && !"".equals(ret));
 	}
 
+	@Test
 	public void testPhraseBolder2() throws Exception {
 		System.out.println("PHRASE2");
 		ContentHighlighter h = new PhraseBolder(new GenericConfiguration());
@@ -113,7 +117,7 @@ public class PDFHighlighterTest extends TestCase {
 		String ret = h.highlight((String) crBean.get("binarycontent"), query);
 		System.out.println(ret);
 
-		assertTrue(ret != null && !"".equals(ret));
+		Assert.assertTrue(ret != null && !"".equals(ret));
 	}
 
 	@After

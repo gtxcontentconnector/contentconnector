@@ -68,5 +68,12 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<!-- LICENSE: Apache 2.0 -->
+			<groupId>com.gentics</groupId>
+			<artifactId>contentconnector-testutils</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

@@ -3,7 +3,6 @@ package com.gentics.cr.mccr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -30,6 +29,7 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.ArrayHelper;
+import com.gentics.cr.util.CRUtil;
 import com.gentics.lib.datasource.mccr.MCCRDatasource;
 
 /**
@@ -125,7 +125,7 @@ public class MCCRAllChannelsRequestProcessor extends RequestProcessor {
 				//SORT THE COLLECTION BY THE UNIQUE ID
 				Sorting[] sorting = request.getSorting();
 				if (sorting != null && sorting.length > 0) {
-					sortCollection(collection, sorting[0]);
+					CRUtil.sortCollection(collection, sorting[0]);
 				}
 
 			} catch (ParserException e) {
@@ -145,19 +145,6 @@ public class MCCRAllChannelsRequestProcessor extends RequestProcessor {
 			}
 		}
 		return collection;
-	}
-	
-	/**
-	 * We do the sorting in memory because we cannot fetch the objects sorted from the database.
-	 * @param collection
-	 * @param sorting
-	 */
-	private void sortCollection(List<CRResolvableBean> collection, Sorting sorting) {
-		if (sorting != null) {
-			String columnName = sorting.getColumnName();
-			int order = sorting.getSortOrder();
-			Collections.sort(collection, new PNSortingComparator<CRResolvableBean>(columnName, order));
-		}
 	}
 
 	/**
