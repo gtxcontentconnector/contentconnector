@@ -2,19 +2,19 @@ package com.gentics.cr;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.api.lib.datasource.DatasourceException;
-import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
@@ -23,7 +23,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.ArrayHelper;
-import com.gentics.cr.util.PNSortingComparator;
+import com.gentics.cr.util.CRUtil;
 
 /**
  * <p>
@@ -232,12 +232,13 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		Vector<CRResolvableBean> children = folderMap.get(root.getContentid());
 
 		// brake condition, there are no children for this tree node
-		if (ObjectTransformer.isEmpty(children)) {
+		if (CollectionUtils.isEmpty(children)) {
 			return;
 		}
 
-		if (sorting != null && sorting.length > 0) {
-			sortCollection(children, sorting[0]);
+		// do the sorting
+		if (!ArrayUtils.isEmpty(sorting)) {
+			CRUtil.sortCollection(children, sorting);
 		}
 
 		// fill the actual object with children
@@ -252,23 +253,6 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 			itemsToPrefetch.add(crResolvableBean.getResolvable());
 		}
 
-	}
-
-	/**
-	 * We do the sorting in memory because we cannot fetch the objects sorted
-	 * from the database.
-	 * 
-	 * @param collection
-	 *            the collection
-	 * @param sorting
-	 *            the sorting
-	 */
-	private void sortCollection(Vector<CRResolvableBean> collection, Sorting sorting) {
-		if (sorting != null) {
-			String columnName = sorting.getColumnName();
-			int order = sorting.getSortOrder();
-			Collections.sort(collection, new PNSortingComparator<CRResolvableBean>(columnName, order));
-		}
 	}
 
 	/*
