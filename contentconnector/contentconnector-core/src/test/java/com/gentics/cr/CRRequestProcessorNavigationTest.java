@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -69,7 +70,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
 
 		// a folder structure
-		createTestNavigationData(2, 2);
+		createTestNavigationData(3, 3);
 	}
 
 	/*
@@ -83,7 +84,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down and clean up.
 	 * 
 	 * @throws CRException
 	 *             the cR exception
@@ -126,6 +127,10 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	@Test
 	public void testOptimisticNavigationBuilding() throws CRException {
 
+		// check that the original navigation object is not empty
+		Assert.assertFalse(CollectionUtils.isEmpty(originalNavigationObject));
+
+		// do a request with the navigation request and the optimistic request processor
 		Collection<CRResolvableBean> result = navigationRequestProcessor.getNavigation(getNavigationRequest());
 
 		if (LOGGER.isDebugEnabled()) {
@@ -148,6 +153,10 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	@Test
 	public void testNavigationBuilding() throws CRException {
 
+		// check that the original navigation object is not empty
+		Assert.assertFalse(CollectionUtils.isEmpty(originalNavigationObject));
+
+		// do a request with the navigation request and the normal request processor
 		Collection<CRResolvableBean> result = requestProcessor.getNavigation(getNavigationRequest());
 
 		if (LOGGER.isDebugEnabled()) {
@@ -215,7 +224,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	}
 
 	/**
-	 * recursive method to create a tree, should only be called by.
+	 * recursive method to create a tree.
 	 * 
 	 * @param active
 	 *            is the active element, initially the root element
@@ -294,7 +303,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	 * Compares two collections of CRResolvableBeans against contentid and
 	 * childrepositories.
 	 * 
-	 * ATTENTION: the fetchedTree will be modified and truncated!
+	 * ATTENTION: not very fast! Should only be used for testing!
 	 * 
 	 * @param origTree
 	 * @param fetchedTree

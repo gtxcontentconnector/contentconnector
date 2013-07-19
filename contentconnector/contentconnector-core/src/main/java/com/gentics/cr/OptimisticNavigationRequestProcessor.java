@@ -53,27 +53,26 @@ import com.gentics.cr.util.PNSortingComparator;
  */
 public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 
+	/** The logger. */
 	private static Logger logger = Logger.getLogger(OptimisticNavigationRequestProcessor.class);
 
-	private HashMap<String, Resolvable> resolvables = null;
-
 	/**
-	 * Key for
+	 * Key for.
 	 * {@link OptimisticNavigationRequestProcessor#folderIdContentmapName} in
 	 * the config
 	 */
 	private static final String FOLDER_ID_KEY = "folder_id.key";
 
-	/**
-	 * String of content map folder id column
-	 */
+	/** String of content map folder id column, default: "folder_id". */
 	private static String folderIdContentmapName = "folder_id";
 
 	/**
 	 * Create a new instance of CRRequestProcessor.
 	 * 
 	 * @param config
+	 *            the config
 	 * @throws CRException
+	 *             the cR exception
 	 */
 	public OptimisticNavigationRequestProcessor(CRConfig config) throws CRException {
 		super(config);
@@ -184,11 +183,11 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	}
 
 	/**
-	 * <p>
 	 * prepare the fetched children objects and put them to a prepared map with
-	 * this format: <code>(folder_id, Collection children)</code>
+	 * this format: <code>(folder_id, Collection children)</code>.
 	 * 
 	 * @param children
+	 *            the children
 	 * @return the prepared HashMap
 	 */
 	private HashMap<String, Vector<CRResolvableBean>> prepareFolderMap(Collection<CRResolvableBean> children) {
@@ -215,13 +214,16 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	}
 
 	/**
-	 * Builds the tree and fills the children of the root element
+	 * Builds the tree and fills the children of the root element.
 	 * 
 	 * @param root
 	 *            the element that will be filled with children
 	 * @param folderMap
+	 *            the folder map
 	 * @param sorting
+	 *            the sorting
 	 * @param itemsToPrefetch
+	 *            the items to prefetch
 	 */
 	private void recursiveTreeBuild(CRResolvableBean root, HashMap<String, Vector<CRResolvableBean>> folderMap,
 			Sorting[] sorting, List<Resolvable> itemsToPrefetch) {
@@ -257,7 +259,9 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	 * from the database.
 	 * 
 	 * @param collection
+	 *            the collection
 	 * @param sorting
+	 *            the sorting
 	 */
 	private void sortCollection(Vector<CRResolvableBean> collection, Sorting sorting) {
 		if (sorting != null) {
@@ -267,6 +271,11 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.gentics.cr.RequestProcessor#finalize()
+	 */
 	@Override
 	public void finalize() {
 	}
