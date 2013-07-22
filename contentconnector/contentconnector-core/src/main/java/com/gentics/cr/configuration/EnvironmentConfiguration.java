@@ -3,6 +3,7 @@ package com.gentics.cr.configuration;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.jcs.engine.control.CompositeCacheManager;
@@ -36,11 +37,22 @@ public final class EnvironmentConfiguration {
 	 * Path to the default log4j property file.
 	 */
 	private static String loggerFilePath = configurationPath + "/nodelog.properties";
+	
+	/**
+	 * Path to the fallback log4j property file.
+	 */
+	private static String loggerFallbackPath = "defaultconfiguration/nodelog.properties";
 
 	/**
 	 * Path to the jcs configuration file.
 	 */
 	private static String cacheFilePath = configurationPath + "/cache.ccf";
+	
+	/**
+	 * Path to the fallback jcs configuration file.
+	 */
+	private static String cacheFallbackPath = "defaultconfiguration/cache.ccf";
+	
 
 	/**
 	 * Configuration key if we should use the same caches as Gentics
@@ -58,12 +70,24 @@ public final class EnvironmentConfiguration {
 	 * message only once.
 	 */
 	private static boolean loggerInitFailed = false;
+	
+	/**
+	 * If the initialization of the logger fails, we load the default configuration
+	 * and set this property to true.
+	 */
+	private static boolean loggerInitFallback = false;
 
 	/**
 	 * Detect if cache property loading already failed, so we put out the error
 	 * message only once.
 	 */
 	private static boolean cacheInitFailed = false;
+	
+	/**
+	 * If the initialization of the cache fails, we load the default configuration
+	 * and set this property to true.
+	 */
+	private static boolean cacheInitFallback = false;
 
 	/**
 	 * private constructor to prevent initializing of the utility class.
@@ -87,24 +111,48 @@ public final class EnvironmentConfiguration {
 	 */
 	public static void loadLoggerProperties() {
 		loggerInitFailed = false;
-		Properties logprops = new Properties();
 		String confpath = CRUtil.resolveSystemProperties(loggerFilePath);
 		StringBuilder errorMessage = new StringBuilder("Could not find nodelog.properties at: ").append(confpath);
 		try {
-			logprops.load(new FileInputStream(confpath));
-			PropertyConfigurator.configure(logprops);
-			log = Logger.getLogger(EnvironmentConfiguration.class);
+			InputStream is = new FileInputStream(confpath);
+			loadLoggerProperties(is);
 		} catch (IOException e) {
 			if (!loggerInitFailed) {
 				System.out.println(errorMessage.toString());
 				loggerInitFailed = true;
 			}
+			loadLoggerFallbackProperties();
 		} catch (NullPointerException e) {
 			if (!loggerInitFailed) {
 				System.out.println(errorMessage.toString());
 				loggerInitFailed = true;
 			}
+			loadLoggerFallbackProperties();
 		}
+	}
+	
+	private static void loadLoggerFallbackProperties() {
+		InputStream stream = EnvironmentConfiguration.class.getResourceAsStream(loggerFallbackPath);
+		try {
+			loadLoggerProperties(stream);
+			loggerInitFallback = true;
+			log.debug("Loaded logger fallback configuration");
+		} catch (IOException e) {
+			System.out.println("Could not load logger fallback configuration.");
+		}
+	}
+
+	/**
+	 * Load logger properties from an InputStream
+	 * @param is
+	 * @throws IOException
+	 */
+	private static void loadLoggerProperties(InputStream is)
+			throws IOException {
+		Properties logprops = new Properties();
+		logprops.load(is);
+		PropertyConfigurator.configure(logprops);
+		log = Logger.getLogger(EnvironmentConfiguration.class);
 	}
 
 	/**
@@ -112,6 +160,13 @@ public final class EnvironmentConfiguration {
 	 */
 	public static boolean getLoggerState() {
 		return !loggerInitFailed;
+	}
+	
+	/**
+	 * @return <code>true</code> if the logger init has failed and we loaded the default/fallback configuration.
+	 */
+	public static boolean isLoggerFallbackLoaded() {
+		return loggerInitFallback;
 	}
 
 	/**
@@ -123,30 +178,58 @@ public final class EnvironmentConfiguration {
 				.append(confpath).append("!");
 		logDebug("Loading cache configuration from " + confpath);
 		try {
-			//LOAD CACHE CONFIGURATION
-			Properties cacheProps = new Properties();
-			cacheProps.load(new FileInputStream(confpath));
-			if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY) && Boolean.parseBoolean(cacheProps.getProperty(USE_PORTAL_CACHE_KEY))) {
-				logDebug("Will not initialize ContentConnector Cache - Using the " + "cache configured by portalnode instead.");
-			} else {
-				CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
-				cManager.configure(cacheProps);
-			}
+			InputStream stream = new FileInputStream(confpath);
+			loadCacheProperties(stream);
 		} catch (NullPointerException e) {
 			if (!cacheInitFailed) {
 				logError(errorMessage.toString());
 				cacheInitFailed = true;
 			}
+			loadCacheFallbackProperties();
 		} catch (FileNotFoundException e) {
 			if (!cacheInitFailed) {
 				logError(errorMessage.toString());
 				cacheInitFailed = true;
 			}
+			loadCacheFallbackProperties();
 		} catch (IOException e) {
 			if (!cacheInitFailed) {
 				logError(errorMessage.toString());
 				cacheInitFailed = true;
 			}
+			loadCacheFallbackProperties();
+		}
+	}
+	
+	/**
+	 * Load cache fallback.
+	 */
+	private static void loadCacheFallbackProperties() {
+		InputStream stream = EnvironmentConfiguration.class.getResourceAsStream(cacheFallbackPath);
+		try {
+			loadCacheProperties(stream);
+			cacheInitFallback = true;
+			log.debug("Loaded cache fallback configuration");
+		} catch (IOException e) {
+			System.out.println("Could not load cache fallback configuration.");
+		}
+	}
+
+	/**
+	 * Load cache configuration from an InputStream.
+	 * @param is
+	 * @throws IOException
+	 */
+	private static void loadCacheProperties(InputStream is)
+			throws IOException{
+		//LOAD CACHE CONFIGURATION
+		Properties cacheProps = new Properties();
+		cacheProps.load(is);
+		if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY) && Boolean.parseBoolean(cacheProps.getProperty(USE_PORTAL_CACHE_KEY))) {
+			logDebug("Will not initialize ContentConnector Cache - Using the " + "cache configured by portalnode instead.");
+		} else {
+			CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
+			cManager.configure(cacheProps);
 		}
 	}
 
@@ -235,5 +318,19 @@ public final class EnvironmentConfiguration {
 	 */
 	public static void setCacheFilePath(final String newCacheFilePath) {
 		cacheFilePath = newCacheFilePath;
+	}
+	
+	/**
+	 * @return <code>true</code> if the cache init has not (yet) failed, otherwhise false.
+	 */
+	public static boolean getCacheState() {
+		return !cacheInitFailed;
+	}
+	
+	/**
+	 * @return <code>true</code> if the cache init has failed and we loaded the default/fallback configuration.
+	 */
+	public static boolean isCacheFallbackLoaded() {
+		return cacheInitFallback;
 	}
 }

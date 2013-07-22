@@ -43,6 +43,12 @@ public class EnvironmentConfigurationTest {
 		EnvironmentConfiguration.loadLoggerProperties();
 		assertTrue("Logger initialization has failed.", EnvironmentConfiguration.getLoggerState());
 	}
+	
+	@Test
+	public void testLoadLoggerFallbackProperties() {
+		System.setProperty(CRUtil.PORTALNODE_CONFPATH, "some/wrong/path");
+		EnvironmentConfiguration.loadLoggerProperties();
+	}
 
 	@Test
 	public void testLoadLoggerPropertiesCleanedURL() {
@@ -52,10 +58,11 @@ public class EnvironmentConfigurationTest {
 		assertTrue("Logger initialization has failed.", EnvironmentConfiguration.getLoggerState());
 	}
 
-	@Test(expected = IllegalStateException.class)
 	public void testCacheInitFail() throws Throwable {
+		System.setProperty(CRUtil.PORTALNODE_CONFPATH, "some/wrong/path");
 		EnvironmentConfiguration.loadCacheProperties();
 		JCS.getInstance("test");
+		assertTrue("Cache fallback configuration could not be loaded.", EnvironmentConfiguration.isCacheFallbackLoaded());
 	}
 
 	@Test
