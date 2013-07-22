@@ -12,6 +12,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spell.LuceneDictionary;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.BytesRefIterator;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -78,11 +80,13 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 			// and the number of times it occurs
 			// CREATE WORD LIST FROM SOURCE INDEX
 			Map<String, Integer> wordsMap = new HashMap<String, Integer>();
-			Iterator<String> iter = (Iterator<String>) dict.getWordsIterator();
-			while (iter.hasNext()) {
-				String word = iter.next();
+			BytesRefIterator iter = dict.getWordsIterator();
+			BytesRef ref = iter.next();
+			while (ref != null) {
+				String word = ref.utf8ToString();
 				int len = word.length();
 				if (len < 3) {
+					ref = iter.next();
 					continue; // too short we bail but "too long" is fine...
 				}
 				if (wordsMap.containsKey(word)) {
@@ -91,6 +95,7 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 					// use the number of documents this word appears in
 					wordsMap.put(word, sourceReader.docFreq(new Term(autocompletefield, word)));
 				}
+				ref = iter.next();
 			}
 			// DELETE OLD OBJECTS FROM INDEX
 			writer.deleteAll();

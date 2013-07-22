@@ -24,6 +24,7 @@ import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.util.CRLuceneUtil;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 
@@ -267,7 +268,7 @@ public class DidYouMeanProvider implements IEventReceiver {
 		IndexReader sourceReader = IndexReader.open(source);
 		Collection<String> fields = null;
 		if (all) {
-			fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
+			fields = CRLuceneUtil.getFieldNames(sourceReader);
 		} else {
 			fields = dym_fields;
 		}

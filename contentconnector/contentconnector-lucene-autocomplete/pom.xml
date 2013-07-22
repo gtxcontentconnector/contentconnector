@@ -7,7 +7,7 @@
 	</parent>
 	<artifactId>contentconnector-lucene-autocomplete</artifactId>
 	<properties>
-		<lucene.version>3.1.0</lucene.version>
+		<lucene.version>3.6.2</lucene.version>
 	</properties>
 	<build>
 		<plugins>

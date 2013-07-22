@@ -97,12 +97,6 @@
 		<dependency>
 			<!-- LICENSE: Apache 2.0 -->
 			<groupId>com.gentics</groupId>
-			<artifactId>contentconnector-mccr</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<!-- LICENSE: Apache 2.0 -->
-			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-servlet</artifactId>
 			<version>${project.version}</version>
 			<exclusions>

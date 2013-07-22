@@ -12,6 +12,7 @@ import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.lucene.util.CRLuceneUtil;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
@@ -55,13 +56,13 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 		Collection<String> fields = null;
 
 		if (didyoumean.isAll()) {
-			fields = sourceReader.getFieldNames(IndexReader.FieldOption.ALL);
+			fields = CRLuceneUtil.getFieldNames(sourceReader);
 		} else {
 			fields = didyoumean.getDym_fields();
 		}
 		try {
 			for (String fieldname : fields) {
-				LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname);
+				LuceneDictionary dict = new LuceneDictionary(sourceReader, fieldname);				
 				spellchecker.indexDictionary(dict);
 			}
 		} finally {

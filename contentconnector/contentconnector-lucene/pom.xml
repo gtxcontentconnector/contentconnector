@@ -8,7 +8,7 @@
 	<artifactId>contentconnector-lucene</artifactId>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<lucene.version>3.5.0</lucene.version>
+		<lucene.version>3.6.2</lucene.version>
 	</properties>
 	<build>
 		<plugins>

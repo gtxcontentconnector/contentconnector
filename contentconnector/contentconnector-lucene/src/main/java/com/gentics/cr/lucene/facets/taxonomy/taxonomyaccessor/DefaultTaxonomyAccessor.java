@@ -13,6 +13,7 @@ import org.apache.lucene.facet.taxonomy.InconsistentTaxonomyException;
 import org.apache.lucene.facet.taxonomy.TaxonomyReader;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
+import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
@@ -20,7 +21,6 @@ import org.apache.lucene.index.LogByteSizeMergePolicy;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
-import com.gentics.cr.lucene.facets.taxonomy.DefaultDirectoryTaxonomyWriter;
 import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
 
 /**
@@ -136,7 +136,7 @@ public class DefaultTaxonomyAccessor implements TaxonomyAccessor {
 			LOGGER.debug("opening new writer and caching it:"
 					+ Thread.currentThread().getId());
 
-			taxoWriter = new DefaultDirectoryTaxonomyWriter(directory, openMode);
+			taxoWriter = new DirectoryTaxonomyWriter(directory, openMode);
 			writerUseCount = 1;
 		}
 
