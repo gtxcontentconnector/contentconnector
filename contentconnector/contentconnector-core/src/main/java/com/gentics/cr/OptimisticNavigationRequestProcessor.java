@@ -133,20 +133,29 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 					}
 					// IF NAVIGAION WE PROCESS THE FAST NAVIGATION ALGORITHM
 					if (doNavigation) {
+						
+						// get original sorting order for child sorting
+						// sort childrepositories with that
+						Sorting[] sorting = request.getSorting();
 
 						// Build the request to fetch all possible children
 						CRRequest childReq = new CRRequest();
 						// set children attributes (folder_id)
 						String[] fetchAttributesForChildren = { folderIdContentmapName };
+						
+						// add all attributes to fetch in order to sort correctly
+						if(!ArrayUtils.isEmpty(sorting)) {
+							for (int i = 0; i < sorting.length; i++) {
+								Sorting sortingElement = sorting[i];
+								fetchAttributesForChildren = (String[]) ArrayUtils.add(fetchAttributesForChildren, sortingElement.getColumnName());
+							}
+						}
+						
 						childReq.setAttributeArray(fetchAttributesForChildren);
 						childReq.setRequestFilter(request.getChildFilter());
 						childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
 
 						Collection<CRResolvableBean> children = getObjects(childReq, false);
-
-						// get original sorting order for child sorting
-						// sort childrepositories with that
-						Sorting[] sorting = request.getSorting();
 
 						// those Resolvables will be filled with specified
 						// attributes
@@ -175,6 +184,10 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 				throw new CRException(e);
 			} catch (NodeException e) {
 				logger.error("Error getting result from Datasource.", e);
+				throw new CRException(e);
+			} catch(Exception e) {
+				logger.error("Error getting result from Datasource.", e);
+				throw new CRException(e);
 			} finally {
 				CRDatabaseFactory.releaseDatasource(ds);
 			}
