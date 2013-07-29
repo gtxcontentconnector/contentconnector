@@ -52,7 +52,7 @@ public class SimpleMVString extends ContentTransformer {
 				}
 			}
 		}
-		if (ret.equals("")) {
+		if ("".equals(ret.toString())) {
 			return NULLValue;
 		} else {
 			return ret.toString();
@@ -61,16 +61,14 @@ public class SimpleMVString extends ContentTransformer {
 
 	@Override
 	public void processBean(CRResolvableBean bean) {
-		if (this.attribute != null) {
+		if (bean != null && this.attribute != null) {
 			Object obj = bean.get(this.attribute);
-			if (obj != null) {
-				String newString = getStringContents(obj);
-				if (newString != null) {
-					bean.set(this.attribute, newString);
-				}
-			}
+			String newString = getStringContents(obj);
+			if (newString != null) {
+				bean.set(this.attribute, newString);
+			}			
 		} else {
-			LOGGER.error("Configured attribute is null. Bean will not be processed");
+			LOGGER.error("Configured attribute or bean is null. Bean will not be processed");
 		}
 
 	}
