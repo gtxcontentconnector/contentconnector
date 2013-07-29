@@ -52,7 +52,7 @@
 		<dependency>
 			<artifactId>portalnode-lib</artifactId>
 			<groupId>com.gentics</groupId>
-			<version>4.4.0-SNAPSHOT</version>
+			<version>4.4.0</version>
 		</dependency>
 		<!-- The node lib must be added since the maven resolvement of portalnode-lib
 			transitive dependencies does not work due to the portalnode/pom.xml node-lib
@@ -60,7 +60,7 @@
 		<dependency>
 			<artifactId>node-lib</artifactId>
 			<groupId>com.gentics</groupId>
-			<version>1.17.0-SNAPSHOT</version>
+			<version>1.17.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>hsqldb</artifactId>
@@ -117,17 +117,6 @@
 			<id>maven.gentics.com</id>
 			<name>Gentics Maven Repository</name>
 			<url>https://maven.gentics.com/maven2/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>maven.mirror</id>
-			<name>Gentics Maven Mirror</name>
-			<url>http://archiva-mirror:8080/archiva/repository/internal/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
