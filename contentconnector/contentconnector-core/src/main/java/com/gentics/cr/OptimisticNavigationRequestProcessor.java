@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -133,7 +133,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 					}
 					// IF NAVIGAION WE PROCESS THE FAST NAVIGATION ALGORITHM
 					if (doNavigation) {
-						
+
 						// get original sorting order for child sorting
 						// sort childrepositories with that
 						Sorting[] sorting = request.getSorting();
@@ -142,15 +142,17 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 						CRRequest childReq = new CRRequest();
 						// set children attributes (folder_id)
 						String[] fetchAttributesForChildren = { folderIdContentmapName };
-						
-						// add all attributes to fetch in order to sort correctly
-						if(!ArrayUtils.isEmpty(sorting)) {
+
+						// add all attributes to fetch in order to sort
+						// correctly
+						if (!ArrayUtils.isEmpty(sorting)) {
 							for (int i = 0; i < sorting.length; i++) {
 								Sorting sortingElement = sorting[i];
-								fetchAttributesForChildren = (String[]) ArrayUtils.add(fetchAttributesForChildren, sortingElement.getColumnName());
+								fetchAttributesForChildren = (String[]) ArrayUtils.add(fetchAttributesForChildren,
+										sortingElement.getColumnName());
 							}
 						}
-						
+
 						childReq.setAttributeArray(fetchAttributesForChildren);
 						childReq.setRequestFilter(request.getChildFilter());
 						childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
@@ -159,7 +161,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 
 						// those Resolvables will be filled with specified
 						// attributes
-						List<Resolvable> itemsToPrefetch = new Vector<Resolvable>();
+						Map<Resolvable, CRResolvableBean> itemsToPrefetch = new HashMap<Resolvable, CRResolvableBean>();
 
 						HashMap<String, Vector<CRResolvableBean>> prepareFolderMap = prepareFolderMap(children);
 
@@ -170,7 +172,16 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 
 						// prefetch all necessary attribute that are specified
 						// in the request
-						PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch, Arrays.asList(prefillAttributes));
+						try {
+							PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch.keySet(), Arrays.asList(prefillAttributes));
+						} catch (NullPointerException e) {
+							logger.warn("Portal Connector throwed a NullPointerException, we will silently ignore this", e);
+						}
+						
+						// update the fetched attributes in the cr beans
+						for(CRResolvableBean crBean : itemsToPrefetch.values()) {
+							crBean.updateCRResolvableBeanAfterAttributePrefetch(prefillAttributes);
+						}
 					}
 				}
 			} catch (ParserException e) {
@@ -185,7 +196,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 			} catch (NodeException e) {
 				logger.error("Error getting result from Datasource.", e);
 				throw new CRException(e);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				logger.error("Error getting result from Datasource.", e);
 				throw new CRException(e);
 			} finally {
@@ -239,9 +250,12 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	 *            the items to prefetch
 	 */
 	private void recursiveTreeBuild(CRResolvableBean root, HashMap<String, Vector<CRResolvableBean>> folderMap,
-			Sorting[] sorting, List<Resolvable> itemsToPrefetch) {
+			Sorting[] sorting, Map<Resolvable, CRResolvableBean> itemsToPrefetch) {
 
-		// remove added items from children
+		// fill to items that should be filled with attributes
+		itemsToPrefetch.put(root.getResolvable(), root);
+
+		// get items from folderMap
 		Vector<CRResolvableBean> children = folderMap.get(root.getContentid());
 
 		// brake condition, there are no children for this tree node
@@ -261,11 +275,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 
 			// recursive call to build children map
 			recursiveTreeBuild(crResolvableBean, folderMap, sorting, itemsToPrefetch);
-
-			// fill to items that should be filled with attributes
-			itemsToPrefetch.add(crResolvableBean.getResolvable());
 		}
-
 	}
 
 	/*

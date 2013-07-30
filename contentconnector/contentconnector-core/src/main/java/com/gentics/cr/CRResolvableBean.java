@@ -189,6 +189,16 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	public CRResolvableBean(final Resolvable resolvable, final String[] attributeNames) {
 		init(resolvable, attributeNames);
 	}
+	
+	/**
+	 * This method updates an existing CRResolvableBean instance that has been created from an Resolvable
+	 * with additional attributes, that have been prefetched after the creation of the instance.
+	 * It will fetch the attributes passed in attributeNames from the Resolvable contained in this instance.
+	 * @param attributeNames
+	 */
+	public void updateCRResolvableBeanAfterAttributePrefetch(final String[] attributeNames) {
+		init(resolvable, attributeNames);
+	}
 
 	/**
 	 * Initialize the CRResolvableBean with the Resolvable and populate elements /
@@ -200,7 +210,11 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	private void init(final Resolvable givenResolvable, final String[] attributeNames) {
 		if (givenResolvable != null) {
 			this.resolvable = givenResolvable;
-			this.childRepository = new Vector<CRResolvableBean>();
+			// only reinitialize child repository when it is null 
+			if(this.childRepository == null) {
+				this.childRepository = new Vector<CRResolvableBean>();
+			}
+			
 			this.contentid = (String) givenResolvable.get("contentid");
 
 			if (givenResolvable.get("obj_id") != null) {
