@@ -57,6 +57,9 @@ public final class LuceneDirectoryFactory {
 		Directory dir = cachedDirectories.get(directoyLocation);
 		if (dir == null) {
 			dir = createNewDirectory(directoyLocation, config);
+			if (dir != null) {
+				LOG.debug("Created new directory using Directory implementation " + dir.getClass());
+			}
 		}
 		return dir;
 	}
