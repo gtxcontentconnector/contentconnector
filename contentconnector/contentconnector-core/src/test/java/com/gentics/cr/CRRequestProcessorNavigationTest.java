@@ -6,13 +6,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.cr.exceptions.CRException;
 
 /**
@@ -29,7 +32,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	private final static Logger LOGGER = Logger.getLogger(CRRequestProcessorNavigationTest.class);
 
 	/** The Constant attributes. */
-	private static final String[] attributes = { "name", "folder_id" };
+	private static final String[] attributes = { "name", "folder_id", "node_id", "test1"};
 
 	/** The Constant FOLDER_TYPE. */
 	private static final String FOLDER_TYPE = CRResolvableBean.DEFAULT_DIR_TYPE;
@@ -62,7 +65,11 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	 */
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
-		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorNavigationTest.class.getName());
+		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorNavigationTest.class
+				.getName());
+		
+		// enable node id feature
+		config.set("RP.1.usenodeidinchildrule", "true");
 
 		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));
 		navigationRequestProcessor = new OptimisticNavigationRequestProcessor(config.getRequestProcessorConfig(1));
@@ -70,7 +77,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
 
 		// a folder structure
-		createTestNavigationData(3, 3);
+		createTestNavigationData(2, 2);
 	}
 
 	/*
@@ -130,7 +137,8 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		// check that the original navigation object is not empty
 		Assert.assertFalse(CollectionUtils.isEmpty(originalNavigationObject));
 
-		// do a request with the navigation request and the optimistic request processor
+		// do a request with the navigation request and the optimistic request
+		// processor
 		Collection<CRResolvableBean> result = navigationRequestProcessor.getNavigation(getNavigationRequest());
 
 		if (LOGGER.isDebugEnabled()) {
@@ -156,7 +164,8 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		// check that the original navigation object is not empty
 		Assert.assertFalse(CollectionUtils.isEmpty(originalNavigationObject));
 
-		// do a request with the navigation request and the normal request processor
+		// do a request with the navigation request and the normal request
+		// processor
 		Collection<CRResolvableBean> result = requestProcessor.getNavigation(getNavigationRequest());
 
 		if (LOGGER.isDebugEnabled()) {
@@ -181,6 +190,8 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 
 		req.setRequestFilter("object.obj_type == " + FOLDER_TYPE + " AND object.folder_id == " + rootFolderContentId);
 		req.setChildFilter("object.obj_type == " + FOLDER_TYPE);
+		// sort by randomly added values
+		req.setSorting(new Sorting[] {new Sorting("test2", 1)});
 		req.setAttributeArray(attributes);
 
 		return req;
@@ -277,9 +288,24 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		folder.setObj_type(FOLDER_TYPE);
 		folder.set("name", name);
 
+		// randomly add some extra attributes
+		if(RandomUtils.nextBoolean()) {
+			folder.set("test1", RandomStringUtils.randomAlphabetic(8));
+		}
+
+		// randomly add some extra attributes
+		if(RandomUtils.nextBoolean()) {
+			folder.set("test2", RandomStringUtils.randomAlphabetic(8));
+		}
+
 		if (parentFolder != null) {
 			// append the parent folder
 			folder.set("folder_id", parentFolder.getContentid());
+			// set node id same as parent
+			folder.set("node_id", parentFolder.getInteger("node_id", 0));
+		} else {
+			// set random node id
+			folder.set("node_id", RandomUtils.nextInt(99));
 		}
 
 		// persist the Bean
@@ -371,7 +397,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(getTabs(depth));
-		sb.append("[" + resolvable.getContentid() + "]" + "\n");
+		sb.append("[" + resolvable.getContentid() + "]" + resolvable.getAttrMap() + "\n");
 		sb.append(getTabs(depth));
 
 		if (resolvable.getChildRepository() != null && resolvable.getChildRepository().size() > 0) {
