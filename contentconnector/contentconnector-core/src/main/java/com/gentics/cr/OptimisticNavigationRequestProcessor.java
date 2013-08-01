@@ -3,8 +3,10 @@ package com.gentics.cr;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -15,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.api.lib.datasource.DatasourceException;
+import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
@@ -62,9 +65,15 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	 * the config
 	 */
 	private static final String FOLDER_ID_KEY = "folder_id.key";
+	
+	private static final String NODE_ID_CHILDREN_FEATURE_KEY = "usenodeidinchildrule";
 
 	/** String of content map folder id column, default: "folder_id". */
-	private static String folderIdContentmapName = "folder_id";
+	private String folderIdContentmapName = "folder_id";
+	/** String of content map node id column, default: "node_id". */
+	private String nodeIdContentMapName = "node_id";
+	/** Boolean, if node id should be recognized for childfilter */
+	private boolean usenodeidsinchildrule = false;
 
 	/**
 	 * Create a new instance of CRRequestProcessor.
@@ -80,6 +89,8 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		if (!StringUtils.isEmpty(config.getString(FOLDER_ID_KEY))) {
 			folderIdContentmapName = config.getString(FOLDER_ID_KEY);
 		}
+		
+		usenodeidsinchildrule = ObjectTransformer.getBoolean(config.getString(NODE_ID_CHILDREN_FEATURE_KEY), false);
 
 	}
 
@@ -100,6 +111,10 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
+
+		// for storing all possible nodes for children
+		Set<String> nodeIds = new HashSet<String>();
+
 		if (request != null) {
 
 			// Parse the given expression and create a datasource filter
@@ -130,6 +145,14 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 					for (Iterator<Resolvable> it = col.iterator(); it.hasNext();) {
 						CRResolvableBean crBean = new CRResolvableBean(it.next(), request.getAttributeArray());
 						collection.add(this.replacePlinks(crBean, request));
+
+						if (usenodeidsinchildrule && doNavigation) {
+							// get all node ids of root elements
+							String nodeId = crBean.getString(nodeIdContentMapName, null);
+							if (!StringUtils.isEmpty(nodeId)) {
+								nodeIds.add(nodeId);
+							}
+						}
 					}
 					// IF NAVIGAION WE PROCESS THE FAST NAVIGATION ALGORITHM
 					if (doNavigation) {
@@ -141,7 +164,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 						// Build the request to fetch all possible children
 						CRRequest childReq = new CRRequest();
 						// set children attributes (folder_id)
-						String[] fetchAttributesForChildren = { folderIdContentmapName };
+						String[] fetchAttributesForChildren = { folderIdContentmapName, nodeIdContentMapName };
 
 						// add all attributes to fetch in order to sort
 						// correctly
@@ -154,7 +177,17 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 						}
 
 						childReq.setAttributeArray(fetchAttributesForChildren);
-						childReq.setRequestFilter(request.getChildFilter());
+						
+						StringBuilder childFilter = new StringBuilder();
+						childFilter.append(request.getChildFilter());
+						if(usenodeidsinchildrule && !CollectionUtils.isEmpty(nodeIds)) {
+							if(!StringUtils.isEmpty(request.getChildFilter())) {
+								childFilter.append(" AND");
+							}
+							childFilter.append( " object."+nodeIdContentMapName + " CONTAINSONEOF [ " + StringUtils.join(nodeIds, ',') + " ] ");
+						}
+						
+						childReq.setRequestFilter(childFilter.toString());
 						childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
 
 						Collection<CRResolvableBean> children = getObjects(childReq, false);
@@ -173,13 +206,15 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 						// prefetch all necessary attribute that are specified
 						// in the request
 						try {
-							PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch.keySet(), Arrays.asList(prefillAttributes));
+							PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch.keySet(),
+									Arrays.asList(prefillAttributes));
 						} catch (NullPointerException e) {
-							logger.warn("Portal Connector throwed a NullPointerException, we will silently ignore this", e);
+							logger.warn(
+									"Portal Connector throwed a NullPointerException, we will silently ignore this", e);
 						}
-						
+
 						// update the fetched attributes in the cr beans
-						for(CRResolvableBean crBean : itemsToPrefetch.values()) {
+						for (CRResolvableBean crBean : itemsToPrefetch.values()) {
 							crBean.updateCRResolvableBeanAfterAttributePrefetch(prefillAttributes);
 						}
 					}

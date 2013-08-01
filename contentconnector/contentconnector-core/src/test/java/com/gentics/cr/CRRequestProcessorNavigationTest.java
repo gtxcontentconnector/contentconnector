@@ -3,7 +3,6 @@ package com.gentics.cr;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -33,7 +32,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	private final static Logger LOGGER = Logger.getLogger(CRRequestProcessorNavigationTest.class);
 
 	/** The Constant attributes. */
-	private static final String[] attributes = { "name", "folder_id", "test1"};
+	private static final String[] attributes = { "name", "folder_id", "node_id", "test1"};
 
 	/** The Constant FOLDER_TYPE. */
 	private static final String FOLDER_TYPE = CRResolvableBean.DEFAULT_DIR_TYPE;
@@ -68,6 +67,9 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	public static void setUp() throws CRException, URISyntaxException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorNavigationTest.class
 				.getName());
+		
+		// enable node id feature
+		config.set("RP.1.usenodeidinchildrule", "true");
 
 		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));
 		navigationRequestProcessor = new OptimisticNavigationRequestProcessor(config.getRequestProcessorConfig(1));
@@ -75,7 +77,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
 
 		// a folder structure
-		createTestNavigationData(3, 3);
+		createTestNavigationData(2, 2);
 	}
 
 	/*
@@ -299,6 +301,11 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		if (parentFolder != null) {
 			// append the parent folder
 			folder.set("folder_id", parentFolder.getContentid());
+			// set node id same as parent
+			folder.set("node_id", parentFolder.getInteger("node_id", 0));
+		} else {
+			// set random node id
+			folder.set("node_id", RandomUtils.nextInt(99));
 		}
 
 		// persist the Bean
@@ -390,7 +397,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(getTabs(depth));
-		sb.append("[" + resolvable.getContentid() + "]" + "\n");
+		sb.append("[" + resolvable.getContentid() + "]" + resolvable.getAttrMap() + "\n");
 		sb.append(getTabs(depth));
 
 		if (resolvable.getChildRepository() != null && resolvable.getChildRepository().size() > 0) {
