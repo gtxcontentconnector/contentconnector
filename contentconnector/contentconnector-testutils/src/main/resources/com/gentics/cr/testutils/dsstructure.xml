@@ -22,6 +22,8 @@
   		<foreignlinkattribute>content_id</foreignlinkattribute>
   	</attributetype>
   	<attributetype name="node_id" attributetype="3" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="true"/>
+  	<attributetype name="test1" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
+  	<attributetype name="test2" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
   </objecttype>
   <objecttype excludeversioning="false" id="1000" name="TestObject">
      <!-- single value, non optimized -->
