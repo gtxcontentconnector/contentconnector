@@ -1,0 +1,558 @@
+BEGIN_TEST_ENTRY
+kw
+LandISO-CodeWährung1/1/002/1/003/1/004/1/005/1/006/1/007/1/008/1/009/1/0010/1/0011/1/0012/1/00
+AfghanistanAFAAfghani4,850.004,530.004,545.00
+ÄgyptenEGPÄgyptisches Pfund3.463.483.403.333.233.083.333.233.213.053.25
+AlbanienALLLek136.00138.00137.00134.00133.00134.00131.00127.00
+AlgerienDZDAlgerisch 
+BEGIN_TEST_ENTRY
+kw
+LandISO-CodeWährung1/1/012/1/013/1/014/1/014/15/015/1/016/1/017/1/018/1/019/1/0110/1/0111/1/0112/1/01
+AfghanistanAFAAfghani4,250.004,180.00
+ÄgyptenEGPÄgyptisches Pfund3.463.653.553.503.453.413.313.453.873.943.813.76
+AlbanienALLLek131.00126.80130.00
+AlgerienDZDAlgerischer Dinar69.1071.5070.7070.0 
+BEGIN_TEST_ENTRY
+kw
+LandISO-CodeWährung1/1/022/1/023/1/024/1/025/1/026/1/027/1/028/1/029/1/0210/1/0211/1/0212/1/02
+AfghanistanAFAAfghani4,225.004,195.004,380.004,500.004,740.00
+ÄgyptenEGPÄgyptisches Pfund3.814.094.034.104.124.274.434.684.564.504.63
+AlbanienALLLek122.60123.10125.00133.50136.40138.00136.80
+AlgerienDZ 
+BEGIN_TEST_ENTRY
+Kassenwerte
+Gegenwert für je 1 Euro
+LandISO-CodeWährung1/1/032/1/033/1/033/12/034/1/035/1/036/1/037/1/038/1/039/1/0310/1/0311/1/0312/1/03
+AfghanistanAFNAfghani4,860.0050.00
+ÄgyptenEGPÄgyptisches Pfund4.734.935.946.086.486.956.976.946.887.007.157.36
+AlbanienALLLek137.50141.10139.00137.70133.15136.00 
+BEGIN_TEST_ENTRY
+Zollwertkurse
+Gegenwert für je 1 Euro zum
+ISO-CodeWährung15/12/200401/12/200401/11/200401/10/200401/9/200425/8/200401/8/200401/7/200430/6/200401/6/200426/5/200412/5/200401/5/200401/4/200410/3/200401/3/200425/2/200401/2/200428/1/200421/1/200401/1/2004
+AUDAustralischer Dollar1.75861.67091.71401.73941 
+BEGIN_TEST_ENTRY
+Zollwertkurse
+Gegenwert für je 1 EUR zum
+ISO-CodeWährung01/12/200501/11/200501/10/200501/09/200531/08/200501/08/200520/07/200501/07/200529/06/200522/06/200515/06/200501/06/200501/05/200501/04/200516/03/200501/03/200501/02/200526/01/200501/01/2005
+USDUS-Dollar1.17761.19501.22251.22111.20631.21111.26 
+BEGIN_TEST_ENTRY
+Zollwertkurse
+Gegenwert für je 1 EUR zum
+ISO-CodeWährung12/1/0611/22/0611/1/0610/25/0610/11/0610/1/069/1/068/23/068/1/067/19/067/1/066/28/066/1/065/31/065/24/065/17/065/1/064/19/064/1/063/29/0622/03/200601/03/200601/02/200601/01/2006
+USDUS-Dollar1.28861.25431.26761.28121.24821.26321.28511.23461.206 
+BEGIN_TEST_ENTRY
+Kassenwerte
+KassenwerteGegenwert für je 1 Euro zum
+LandISO-CodeWährung12/1/0711/1/0710/1/079/1/078/3/078/1/077/1/076/1/075/15/075/1/074/1/073/1/072/1/071/1/07
+AfghanistanAFNAfghani68.1067.1068.3065.9565.30
+ÄgyptenEGPÄgyptisches Pfund8.097.867.817.757.837.647.667.737.497.387.53
+AlbanienALLLek122.001 
+BEGIN_TEST_ENTRY
+Kassenwerte
+KassenwerteGegenwert für je 1 Euro zum
+LandISO-CodeWährung12/1/0811/1/0810/1/089/1/088/1/087/1/086/15/086/1/085/20/085/1/084/15/084/1/083/1/082/4/082/1/081/1/08
+AfghanistanAFNAfghani78.7077.3078.8273.70
+ÄgyptenEGPÄgyptisches Pfund7.007.487.767.888.418.288.358.558.677.98
+AlbanienALLLek12 
+BEGIN_TEST_ENTRY
+Kassenwerte
+KassenwerteGegenwert für je 1 Euro zum
+LandISO-CodeWährung12/1/0911/1/0910/1/099/1/098/1/097/1/096/1/095/1/094/1/093/1/092/11/092/1/091/1/09
+AfghanistanAFNAfghani74.0073.6071.5071.0066.0068.7069.4071.0065.0068.0072.10
+ÄgyptenEGPÄgyptisches Pfund8.168.157.957.757.807.307.607.107.54
+Alban 
+BEGIN_TEST_ENTRY
+Kassenwerte
+KassenwerteGegenwert für je 1 Euro zum
+LandISO-CodeWährung12/1/1011/1/1010/1/109/1/108/1/107/1/106/1/105/1/104/1/103/1/102/1/101/15/101/1/10
+AfghanistanAFNAfghani57.2059.4058.9056.4058.6056.0057.0061.0061.5064.5067.8069.50
+ÄgyptenEGPÄgyptisches Pfund7.758.007.507.247.337.007.007.417.347 
+BEGIN_TEST_ENTRY
+Kassenwerte
+KassenwerteGegenwert für je 1 Euro zum
+LandISO-CodeWährung12/1/1111/4/1111/1/1110/6/1110/1/119/1/118/1/117/1/116/1/115/1/114/1/113/1/112/1/111/19/111/1/11
+AfghanistanAFNAfghani65.0067.0058.3061.9062.0061.9060.7062.7060.6058.7056.50
+ÄgyptenEGPÄgyptisches Pfund8.038.318.068.538.568.388.62 
+BEGIN_TEST_ENTRY
+Tabelle1
+LändercodeZahlencodeLandPräferenzmaßnahmenFindok
+AF660AfghanistanAPS→LDCUP-3500
+EG220ÄgyptenAPSAbkommen↔UP-3420
+AL070AlbanienAbkommen↔UP-3310
+DZ208AlgerienAPSAbkommen↔UP-3410
+VI457Amerikanische JungferninselnAPS→UP-3500
+AS830Amerikanisch-SamoaAPS→UP-3500
+AD043Andorra: AgrarwarenAbkommen↔UP 
+BEGIN_TEST_ENTRY
+FA_2011_ST_31_10_2009
+Bevölkerungszahl 31.10.2009 für das Finanzjahr 2011 gemäß § 9 Abs. 9 FAG 2008
+GKZGemeindenameBevölkerungs-zahl 31.10.2009 gemäß 9 Abs. 9 FAG 2008ZMR-Bestand 31.10.2009 1)Saldo der Bestands-bereinigungen im ZMR (inkl. Lücken-schluss zum Stichtag) 2)Saldo aus der Anwendung der 1 
+BEGIN_TEST_ENTRY
+Tabelle1
+Endgültige Bevölkerungszahl 31.10.2008 für die Finanzjahre 2009 und 2010 gemäß § 9 Abs. 9 FAG 2008
+GKZGemeindenameEndgültige Bevölkerungs-zahl 31.10.2008 gemäß § 9 Abs. 9 FAG 2008ZMR1) -Bestand 31.10.2008Saldo der Bestands-bereinigung im ZMR (inkl. Lücken-schluss zum Stichtag) 2)Saldo aus  
+BEGIN_TEST_ENTRY
+2008-10-31 vorl
+Statistik des Bevölkerungsstandes
+Stichtag 31.10.2008, vorläufige Werte gemäß § 24 Abs. 8 FAG 2008
+GKZGemeindeEinw.
+10101Eisenstadt12,688
+10201Rust1,871
+10301Breitenbrunn1,835
+10302Donnerskirchen1,729
+10303Großhöflein1,854
+10304Hornstein2,733
+10305Klingenbach1,181
+10306Leithaproders 
+BEGIN_TEST_ENTRY
+2002
+Aufgliederung des Jahreserfolges 2002
+BUNDLÄNDERGEMEINDENBUNDLÄNDERGEMEINDENSUMMESUMME L+G
+%%%€€€€€
+K(Velden)60%5%35%435,000.0036,250.00253,750.00725,000.00290,000.00
+70%15%15%6,200,221.411,328,618.871,328,618.878,857,459.152,657,237.74
+zus.6,635,221.411,364,868.871,582,368.879,582,459.152,947 
+BEGIN_TEST_ENTRY
+EAVERT
+Verteilung der gemeinschaftlichen Bundesabgaben 2010
+in 1000.- Euro
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+ErfolgBeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,668,392172,5982,495,7942,495,794Länder0
+Lohnsteuer20,433,423517,79419 
+BEGIN_TEST_ENTRY
+EAVERT
+Verteilung der gemeinschaftlichen Bundesabgaben 2009
+in 1000.- Euro
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+vorl. ErfolgBeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,605,399172,5982,432,8012,432,801Länder0
+Lohnsteuer19,897,471517 
+BEGIN_TEST_ENTRY
+EAVERT
+Verteilung der gemeinschaftlichen Bundesabgaben 2008
+in 1000.- Euro
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VertlngÜbersicht über diverse Abzüge
+BeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,741,783172,5982,569,1852,569,185Länder0
+Lohnsteuer21,308,439517,79420,790,6452 
+BEGIN_TEST_ENTRY
+EAVERT
+Verteilung der gemeinschaftlichen Bundesabgaben 2007
+in 1000.- Euro
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+BeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,628,760172,5982,456,1622,456,162Länder311,750
+Lohnsteuer19,663,583517,79419 
+BEGIN_TEST_ENTRY
+EAVERT
+Verteilung der gemeinschaftlichen Bundesabgaben 2006
+in 1000.- Euro
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+BeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,524,534172,5982,351,9362,351,936Länder311,750
+Lohnsteuer18,092,006517,79417 
+BEGIN_TEST_ENTRY
+EAVERT
+Verteilung der gemeinschaftlichen Bundesabgaben 2005
+in 1000.- Euro
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+BeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,537,961172,5982,365,3632,365,363Länder311,750
+Lohnsteuer16,931,892517,79416 
+BEGIN_TEST_ENTRY
+EAVERT
+Verteilung der gemeinschaftlichen Bundesabgaben 2004
+in 1000.- Euro
+Sockelbetrag pro Einw.p.a.72.66
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+BeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,818,884172,5982,646,2862,646,286Länder311,7 
+BEGIN_TEST_ENTRY
+EAVERT-Aufr
+Verteilung der gemeinschaftlichen Bundesabgaben 2003 - lt. Aufrollung im März 2005
+in 1000.- Euro
+Sockelbetrag pro Einw.p.a.63.03
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+ErfolgBeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.2,67 
+BEGIN_TEST_ENTRY
+EAVERT-Aufr
+Verteilung der gemeinschaftlichen Bundesabgaben 2002 - lt. Aufrollung im März 2005
+in 1000.- Euro
+Sockelbetrag pro Einw.p.a.53.40
+AufkommenFlAF (§ 39/5a)verbleibt alsVorwegabz.EA zur VerteilungÜbersicht über diverse Abzüge
+ErfolgBeihilfenGAufkommen
+fixe Vorwegabzüge
+veranl. Eink.st.3,12 
+BEGIN_TEST_ENTRY
+2000 Euro
+Kassenmäßige Ertragsanteile 2000, Erfolg, in Mio. Euro
+Ertragsanteile 2000 Kassa, Gemeinden
+mit Sonderkonto Werbeabgabe
+Bgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSe.
+VS 2000138.85349.92882.41864.07363.22709.46447.59243.111,441.165,439.80
+Zw Vj7.0615.6241.1536.5115.3333.0019.149.5358.85236.19
+S 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2010
+Version 11.00.04.S vom 2011.02.15
+Erstellt am 17.03.2011 um 07:41:18
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länder-
+anteil gemäßverbleibender
+Abgabenartunterliegen§9 Abs. 3 FAGLänderanteil
+in Euro%in Euro%in Euro%in Euroin Euro
+Veranla 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2009
+Version 10.01.07 vom 2010.01.26
+Erstellt am 26.01.2010 um 11:02:20
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länder-
+anteil gemäßverbleibender
+Abgabenartunterliegen§9 Abs. 3 FAGLänderanteil
+in Euro%in Euro%in Euro%in Euroin Euro
+Veranlagt 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2008
+Version 8.01.02 vom 2009.01.21
+Erstellt am 23.01.2009 um 06:37:13
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länder-
+anteil gemäßverbleibender
+Abgabenartunterliegen§9 Abs. 3 FAGLänderanteil
+in Euro%in Euro%in Euro%in Euroin Euro
+Veranlagte 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2007
+Version 5.02.09 vom 2008.01.30
+Erstellt am 30.01.2008 um 08:53:00
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länder-
+anteil gemäßabz. Länder-
+anteil gemäßverbleibender
+Abgabenartunterliegen§9 Ab.3 Z.1a FAG§9 Ab.3 Z.1b FAGLänderanteil
+in Eu 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2006
+Version 5.01.05 vom 2007.01.25
+Erstellt am 05.02.2007 um 11:23:37
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länder-
+anteil gemäßabz. Länder-
+anteil gemäßverbleibender
+Abgabenartunterliegen§9 Ab.3 Z.1a FAG§9 Ab.3 Z.1b FAGLänderanteil
+in Eu 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2005
+Version 4.06.03 vom 2006.01.23
+Erstellt am 24.01.2006 um 14:53:28
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länder-
+anteil gemäßabz. Länder-
+anteil gemäßverbleibender
+Abgabenartunterliegen§9 Ab.3 Z.1a FAG§9 Ab.3 Z.1b FAGLänderanteil
+in Eu 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2004
+Version 3.02.03zz vom 2005.02.08
+Erstellt am 08.02.2005 um 14:55:38
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länderanteil gemäßabz. Länderanteil gemäßverbleibender
+Abgabenartunterliegen§9 Absatz 3 Ziffer 1a FAG§9 Absatz 3 Ziffer 1b FAGLä 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2003
+Version 1.03.12 vom 2003.03.03
+Erstellt am 21.01.2005 um 13:34:46
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länderanteil gemäßabz. Länderanteil gemäßverbleibender
+Abgabenartunterliegen§10 Absatz 3 Ziffer 1a FAG§10 Absatz 3 Ziffer 1b FAGLä 
+BEGIN_TEST_ENTRY
+Info
+Ertragsanteile für das Jahr 2002
+Version 1.3.10 vom 2003.02.04
+Teilung LÄNDER
+der TeilungAnteil des BundesAnteil der Länderabz. Länderanteil gemäßabz. Länderanteil gemäßverbleibender
+Abgabenartunterliegen§10 Absatz 3 Ziffer 1a FAG§10 Absatz 3 Ziffer 1b FAGLänderanteil
+in Euro%in Euro%in Euro%i 
+BEGIN_TEST_ENTRY
+Einnahmen
+Einnahmen der Gemeinden 2010 aus Ertragsanteilen und den wichtigsten GemeindeabgabenZuschüsse im Jahr 2012
+*) Grundsteuer A und B: Keine getrennte Darstellung bei den niederösterr. Gemeinden!
+GkzGemeindeEinwohnerGrundst A *)Grundst B *)GewerbesteuerKommunalsteuerGetränkesteuerErtragsantei 
+BEGIN_TEST_ENTRY
+Einnahmen
+Einnahmen der Gemeinden 2009 aus Ertragsanteilen und den wichtigsten GemeindeabgabenZuschüsse im Jahr 2011
+*) Grundsteuer A und B: Keine getrennte Darstellung bei den niederösterr. Gemeinden!
+GkzGemeindeEinwohnerGrundst A *)Grundst B *)GewerbesteuerKommunalsteuerGetränkesteuerErtragsantei 
+BEGIN_TEST_ENTRY
+Einnahmen
+Einnahmen der Gemeinden 2008 aus Ertragsanteilen und den wichtigsten GemeindeabgabenZuschüsse im Jahr 2010
+*) Grundsteuer A und B: Keine getrennte Darstellung bei den niederösterr. Gemeinden!
+GkzGemeindeEinwohnerGrundst A *)Grundst B *)GewerbesteuerKommunalsteuerGetränkesteuerErtragsantei 
+BEGIN_TEST_ENTRY
+Einnahmen
+Einnahmen der Gemeinden 2007 aus Ertragsanteilen und den wichtigsten GemeindeabgabenZuschüsse im Jahr 2009
+*) Grundsteuer A und B: Keine getrennte Darstellung bei den niederösterr. Gemeinden!
+GkzGemeindeEinwohnerGrundst A *)Grundst B *)GewerbesteuerKommunalsteuerGetränkesteuerErtragsantei 
+BEGIN_TEST_ENTRY
+Einnahmen
+Einnahmen der Gemeinden 2006 aus Ertragsanteilen und den wichtigsten GemeindeabgabenZuschüsse im Jahr 2008
+*) Grundsteuer A und B: Keine getrennte Darstellung bei den niederösterr. Gemeinden!
+GkzGemeindeEinwohnerGrundst A *)Grundst B *)GewerbesteuerKommunalsteuerGetränkesteuerErtragsantei 
+BEGIN_TEST_ENTRY
+Einnahmen
+Einnahmen der Gemeinden 2005 aus Ertragsanteilen und den wichtigsten GemeindeabgabenZuschüsse im Jahr 2007
+*) Grundsteuer A und B: Keine getrennte Darstellung bei den niederösterr. Gemeinden!
+GkzGemeindeEinwohnerGrundst A *)Grundst B *)GewerbesteuerKommunalsteuerGetränkesteuerErtragsantei 
+BEGIN_TEST_ENTRY
+Einnahmen
+Einnahmen der Gemeinden 2004 aus Ertragsanteilen und den wichtigsten GemeindeabgabenZuschüsse im Jahr 2006
+*) Grundsteuer A und B: Keine getrennte Darstellung bei den niederösterr. Gemeinden!
+GkzGemeindeEinwohnerGrundst A *)Grundst B *)GewerbesteuerKommunalsteuerGetränkesteuerErtragsantei 
+BEGIN_TEST_ENTRY
+1989-1997
+Ausgaben und Einnahmen der Länder für die Wohnbauförderung
+Daten laut Jahresberichten der Länder gemäß § 4 Abs. 2 WBF-ZG, in Mio. S
+Ausgaben 1989Bgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVlbg.WienSumme
+für Förderung des Wohnbaus8281,4603,9912,9291,2613,5511,7601,0063,92620,710
+für Förderung der Wohnha 
+BEGIN_TEST_ENTRY
+BMIT Euro
+Wohnbauförderung - Bundesmittel in 1000.- Euro
+1986Bgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+§§ 8 u 12 WFG 198434,41176,892196,039185,04969,089167,48585,85347,200316,4421,178,460
+WSG2586261,5591,5245741,4547174133,77510,901
+§ 7/2 WFG 19849752,1785,5545,2431,9574,7452,4321,3378,96433,386
+ 
+BEGIN_TEST_ENTRY
+2011
+Länderweise Anteile an den Ertragsanteilen und den wichtigsten Zweckzuschüssen und Finanzzuweisungen im Jahr 2011
+in Mio. € (Version vom 15.10.2012)
+VA-AnsatzBgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+Zahlungen an die Länder
+Ertragsanteile446.2909.12,527.42,204.4874.71,904.31,148.8615.32,832.2 
+BEGIN_TEST_ENTRY
+2010
+Länderweise Anteile an den Ertragsanteilen und den wichtigsten Zweckzuschüssen und Finanzzuweisungen im Jahr 2010
+in Mio. € (Version vom 15.10.2012)
+VA-AnsatzBgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+Zahlungen an die Länder
+Ertragsanteile404.3827.72,293.01,999.9805.71,730.11,041.8559.72,578.6 
+BEGIN_TEST_ENTRY
+2009
+Länderweise Anteile an den Ertragsanteilen und den wichtigsten Zweckzuschüssen und Finanzzuweisungen im Jahr 2009
+in Mio. € (Version vom 15.10.2012)
+VA-AnsatzZahlungen an die LänderBgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+Ertragsanteile:410.1840.62,328.32,031.5816.91,755.31,056.4569.22,601.6 
+BEGIN_TEST_ENTRY
+2008
+Länderweise Anteile an den Ertragsanteilen und den wichtigsten Zweckzuschüssen und Finanzzuweisungen im Jahr 2008
+in Mio. € (Version vom 15.10.2012)
+VA-AnsatzZahlungen an die LänderBgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+Ertragsanteile:343.2703.11,903.01,659.7667.11,447.3868.3464.81,949.810 
+BEGIN_TEST_ENTRY
+2007
+Länderweise Anteile an den Ertragsanteilen und den wichtigsten Zweckzuschüssen und Finanzzuweisungen im Jahr 2007
+in Mio. € (Version vom 15.10.2012)
+VA-AnsatzZahlungen an die LänderBgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+Ertragsanteile:259.0553.11,506.71,364.3537.61,156.7704.6379.21,644.48, 
+BEGIN_TEST_ENTRY
+2006
+Länderweise Anteile an den Ertragsanteilen und den wichtigsten Zweckzuschüssen und Finanzzuweisungen im Jahr 2006
+in Mio. € (Version vom 15.10.2012)
+VA-AnsatzZahlungen an die LänderBgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+Ertragsanteile238.8511.71,393.91,263.6498.81,069.4654.1353.41,528.77,5 
+BEGIN_TEST_ENTRY
+2005
+Länderweise Anteile an den Ertragsanteilen und den wichtigsten Zweckzuschüssen und Finanzzuweisungen im Jahr 2005
+in Mio. € (Version vom 15.10.2012)
+VA-AnsatzZahlungen an die LänderBgld.Ktn.Nö.Oö.Sbg.Stmk.TirolVbg.WienSumme
+Ertragsanteile234.2497.41,356.41,229.3482.51,043.1629.4336.41,473.87,2 
+BEGIN_TEST_ENTRY
+Zahlstr_Tab7
+Die wichtigsten Transfers des Bundes an die Länder und Gemeinden
+in Mio. €
+VA-Ansatz (bis 2008)VA-Ansatz (ab 2009)Budgetposition (ab 2013)Tranfers des Bundes an die Länder19971998199920002001200220032004200520062007200820092010201120122013
+Zweckzuschüsse und Finanzzuweisungen
+1/53007Er 
+BEGIN_TEST_ENTRY
+Überblick 2009
+Überblick über die
+Haushaltsergebnisse 2009 gemäß Artikel 10 des Österreichischen Stabilitätspaktes 2005
+in Mio. €
+Tabelle 1
+Sektoren-ebeneRechtsträgerÖffentliches Defizit gemäß ESVG 951)
+(1)(2)
+Berechnungsstand 30. September 2010(+)(+)Ergebnis
+Bundesebene
+Bund und Bundesfonds-7,4551 
+BEGIN_TEST_ENTRY
+Überblick 2005
+Überblick über die
+Haushaltsergebnisse 2005 gemäß Artikel 10 des Österreichischen Stabilitätspaktes 2005
+in Mio. €
+Tabelle 1
+Sektoren-ebeneRechtsträgerÖffentliches Defizit gemäß ESVG 951)Unterschiedsbeträge zum Öffentlichen Defizit gemäß ESVG 95
+(1)(2)(3)(4)
+Berechnungsstand 29. Sept 
+BEGIN_TEST_ENTRY
+Überblick 2004
+Überblick über die
+Haushaltsergebnisse 2004 gemäß Artikel 10 des Österreichischen Stabilitätspaktes 2001
+in Mio. €
+Tabelle 1
+Sektoren-ebeneRechtsträgerÖffentliches Defizit gemäß ESVG 95 1)Unterschiedsbeträge zum Öffentlichen Defizit gemäß ESVG 95
+(1)(2)(3)(4)
+(-)(+)(+)(-)Ergebnis
+Bun 
+BEGIN_TEST_ENTRY
+Tabellen
+Bedienstete mit Dienstverhältnis zur Gebietskörperschaft, tätig in einer Dienststelle der Gebietskörperschaft
+BundLänderDaten je Bundesland
+Bgld.Ktn.Stmk.TirolVlbg.Slbg.Oö.Nö.Wien
+BeamtInnen79,57477,5521,5114,7767,3245,0542,0844,11410,83714,57827,275
+vertragliches Personal1)52,783106,0662, 
+BEGIN_TEST_ENTRY
+CL101
+Arten von Bewilligungen (RDV_ECO_OP_TYPE_ALL)
+CodeBezeichnungIND_400 lA (Jahresproduktion)
+TWDVerschlussbrennereien (Steuerlager)N = Verschlussbrennerei mit ermäßigtem Steuersatz
+TWPHerstellungsbetrieb (Steuerlager)
+TWSLagerbetrieb (Steuerlager)
+RCEBerechtigter Empfänger
+CL102
+Steuerart (RDE_ 
+BEGIN_TEST_ENTRY
+Titelblatt
+elektronische Übermittlung
+der Jahresabschlüsse
+an die Firmenbuchgerichte (ERV-JAb)
+und an die Finanzverwaltung (E-Bilanz)
+gemeinsamer Aufbau des Jahresabschlusses
+(Version 3.24)
+gültig ab 05.10.2012
+Änderungen zur Version 3.23 sind in roter Schrift gekennzeichnet.
+Änderungen befinden si 
+BEGIN_TEST_ENTRY
+Titelblatt
+elektronische Übermittlung
+der Jahresabschlüsse
+an die Firmenbuchgerichte (ERV-JAb)
+und an die Finanzverwaltung (E-Bilanz)
+gemeinsamer Aufbau des Jahresabschlusses
+(Version 3.23)
+gültig ab 01.09.2010
+Änderungen zur Version 3.22 sind in roter Schrift gekennzeichnet.
+Änderungen befinden si 
+BEGIN_TEST_ENTRY
+Titelblatt
+elektronische Übermittlung
+der Jahresabschlüsse
+an die Firmenbuchgerichte (ERV-JAb)
+und an die Finanzverwaltung (E-Bilanz)
+gemeinsamer Aufbau des Jahresabschlusses
+(Version 3.22)
+gültig ab 01.05.2009
+Änderungen zur Version 3.21 sind in roter Schrift gekennzeichnet.
+Änderungen befinden si 
+BEGIN_TEST_ENTRY
+Titelblatt
+elektronische Übermittlung
+der Jahresabschlüsse
+an die Firmenbuchgerichte (ERV-JAb)
+und an die Finanzverwaltung (E-Bilanz)
+gemeinsamer Aufbau des Jahresabschlusses
+(Version 3.21)
+gültig ab 02.01.2009
+Änderungen zur Version 3.20 sind in roter Schrift gekennzeichnet.
+Änderungen befinden si 
+BEGIN_TEST_ENTRY
+Titelblatt
+elektronische Übermittlung
+der Jahresabschlüsse
+an die Firmenbuchgerichte (ERV-JAb)
+und an die Finanzverwaltung (E-Bilanz)
+gemeinsamer Aufbau des Jahresabschlusses
+(Version 3.20)
+gültig ab 05.11.2008
+Änderungen zur Version 3.16 sind in roter Schrift gekennzeichnet.
+violett unterlegte ode 
+BEGIN_TEST_ENTRY
+Tabelle1
+LändercodeZahlencodeLandPräferenzmaßnahmenFindok
+AF660AfghanistanAPS→LDCUP-3500
+EG220ÄgyptenAPSAbkommen↔UP-3420
+AL070AlbanienAbkommen↔UP-3310
+DZ208AlgerienAPSAbkommen↔UP-3410
+VI457Amerikanische JungferninselnAPS→UP-3500
+AS830Amerikanisch-SamoaAPS→UP-3500
+AD043Andorra: AgrarwarenAbkommen↔UP 
+BEGIN_TEST_ENTRY
+Tabelle1
+LändercodeZahlencodeLandPräferenzmaßnahmenFindok
+AF660AfghanistanAPS→LDCUP-3500
+EG220ÄgyptenAPSAbkommen↔UP-3420
+AL070AlbanienAbkommen↔UP-3310
+DZ208AlgerienAPSAbkommen↔UP-3410
+VI457Amerikanische JungferninselnAPS→UP-3500
+AS830Amerikanisch-SamoaAPS→UP-3500
+AD043Andorra: AgrarwarenAbkommen↔UP 
+BEGIN_TEST_ENTRY
+Tabelle1
+LändercodeZahlencodeLandPräferenzmaßnahmenFindok
+AF660AfghanistanAPS→LDCUP-3500
+EG220ÄgyptenAPSAbkommen↔UP-3420
+AL070AlbanienAbkommen↔UP-3310
+DZ208AlgerienAPSAbkommen↔UP-3410
+VI457Amerikanische JungferninselnAPS→UP-3500
+AS830Amerikanisch-SamoaAPS→UP-3500
+AD043Andorra: AgrarwarenAbkommen↔UP 
+BEGIN_TEST_ENTRY
+Tabelle1
+LändercodeZahlencodeLandPräferenzmaßnahmenFindok
+AF660AfghanistanAPS→LDCUP-3500
+EG220ÄgyptenAPSAbkommen↔UP-3420
+AL070AlbanienAbkommen↔UP-3310
+DZ208AlgerienAPSAbkommen↔UP-3410
+VI457Amerikanische JungferninselnAPS→UP-3500
+AS830Amerikanisch-SamoaAPS→UP-3500
+AD043Andorra: AgrarwarenAbkommen↔UP 
+BEGIN_TEST_ENTRY
+Tabelle1
+LändercodeZahlencodeLandPräferenzmaßnahmenFindok
+AF660AfghanistanAPS→LDCUP-3500
+EG220ÄgyptenAPSAbkommen↔UP-3420
+AL070AlbanienAbkommen↔UP-3310
+DZ208AlgerienAPSAbkommen↔UP-3410
+VI457Amerikanische JungferninselnAPS→UP-3500
+AS830Amerikanisch-SamoaAPS→UP-3500
+AD043Andorra: AgrarwarenAbkommen↔UP 
+BEGIN_TEST_ENTRY
+Tabelle1
+LändercodeZahlencodeLandPräferenzmaßnahmenFindok
+AF660AfghanistanAPS→LDCUP-3500
+EG220ÄgyptenAPSAbkommen↔UP-3420
+AL070AlbanienAbkommen↔UP-3310
+DZ208AlgerienAPSAbkommen↔UP-3410
+VI457Amerikanische JungferninselnAPS→UP-3500
+AS830Amerikanisch-SamoaAPS→UP-3500
+AD043Andorra: AgrarwarenAbkommen↔UP

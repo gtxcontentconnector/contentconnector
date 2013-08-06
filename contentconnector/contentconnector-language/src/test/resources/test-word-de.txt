@@ -1,0 +1,354 @@
+BEGIN_TEST_ENTRY
+��
+Version 2.2
+Wien, 01.06.2013
+Economic Operators Registration and Identification (EORI)
+Leitfaden für das Antragsverfahren
+Inhalt
+4Impressum�
+5Vorwort�
+6Änderungsübersicht�
+6Änderungen gegenüber Version 2.1�
+6Änderungen gegenüber vorhergehender Versionen�
+7EORI Antrag�
+7Aufruf des Antrages�
+7EORI 
+BEGIN_TEST_ENTRY
+Zinssätze 2013
+Zinssatz
+EU-Mitgliedstaat
+Zollschuldentstehung
+Monat
+€-Zone
+BG
+CZ
+DK
+LV
+LT
+HU
+PL
+RO
+SE
+GB
+Monat
+Jahr
+NOV
+0,19
+1,45
+0,54
+0,30
+0,54
+0,73
+-
+4,62
+5,64
+1,46
+0,52
+JAN
+2013
+DEZ
+0,19
+1,39
+0,50
+0,28
+0,53
+0,70
+-
+4,26
+5,79
+1,37
+0,52
+FEB
+2013
+JAN
+0,20
+1,27
+0,50
+0,30
+0,50
+0,53
+5,80
+4,03
+5,71
+1,21 
+BEGIN_TEST_ENTRY
+Internet - Änderung von Zollwertkursen zum 26. Juni 2013
+From
+Hager, Mathilde
+To
+Graeven, Roland; Friessnegg, Christian; Schneider, Christa; Neuwirth, Thomas; Reitböck, Regina
+Recipients
+r.graeven@extern.bmf.gv.at; christian.friessnegg@bmf.gv.at; christa.schneider@brz.gv.at; thomas.neuwirth@bmf.gv. 
+BEGIN_TEST_ENTRY
+�Datenblatt "WO – Express"
+�����
+�����
+1. e-zoll Anwender
+Firmenbezeichnung
+Adresse
+Ort
+PLZ
+EORI Antragsteller
+Fallback-Mail-Adresse
+GZ. e-zoll Bewilligung
+Bewilligungs-Zollamt
+FORMDROPDOWN �
+KT
+Mail-Adresse
+FORMDROPDOWN �
+2. Angaben zum Warenortinhaber (falls nicht ident mit e-zoll Anwender lt. Pu 
+BEGIN_TEST_ENTRY
+�Datenblatt "WO – Express"
+�����
+�����
+1. e-zoll Anwender
+Firmenbezeichnung
+Adresse
+Ort
+PLZ
+EORI Antragsteller
+Fallback-Mail-Adresse
+GZ. e-zoll Bewilligung
+Bewilligungs-Zollamt
+FORMDROPDOWN �
+KT
+Mail-Adresse
+FORMDROPDOWN �
+2. Angaben zum Warenortinhaber (falls nicht ident mit e-zoll Anwender lt. Pu 
+BEGIN_TEST_ENTRY
+Antrag auf Bewilligung zur Teilnahme am Informatikverfahren
+gemäß § 55 Abs. 2 ZollR-DG sowie zur Gestellung und Vornahme von Förmlichkeiten an zugelassenen Warenorten gemäß § 11 Abs. 7 ZollR-DG
+(e-zoll - Bewilligung)
+Der Antrag auf Bewilligung für das Informatikverfahren bezieht sich ausschließlich 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+beantragte Änderungen von autonomen Zollaussetzungen und Zollkontingenten zum 1. 1. 2014
+1. Anträge auf Schaffung von neuen Aussetzungen oder Kontingenten
+Zahl
+KN-Pos
+Warenbezeichnung
+andere Bezeichnungen / nähere Informationen
+TAXUD/384413/2013
+ex 1515 30 90
+Rizinusöl “First Special Grade” bzw. „“ 
+BEGIN_TEST_ENTRY
+�
+���
+Vereinbarung zum Bezug von Findok-Daten
+zwischen:
+Bundesministerium für Finanzen
+Hintere Zollamtsstraße 2b
+1030 Wien
+nachfolgend BMF genannt
+und
+…………………………………….
+…………………………………….
+…………………………………….
+nachfolgend Vertragspartner genannt
+Vorbemerkungen
+Das Bundesministerium für Finanzen stellt seine R 
+BEGIN_TEST_ENTRY
+ANTRAG AUF ZOLLAUSSETZUNG/ZOLLKONTINGENT (Unzutreffendes bitte streichen)
+(Mitgliedstaat: Österreich)
+Teil I
+(auf der Website der GD TAXUD zu veröffentlichen)
+1
+Code der Kombinierten Nomenklatur:
+2
+Genaue Warenbezeichnung unter Berücksichtigung der zolltariflichen Kriterien:
+3
+Nur für Erzeugnisse d 
+BEGIN_TEST_ENTRY
+EINWAND GEGEN ANTRAG AUF ZOLLAUSSETZUNG/ZOLLKONTINGENT (Unzutreffendes bitte streichen)
+(Mitgliedstaat: Österreich)
+Teil I
+(öffentlich)
+Antrag Nr.:
+KN-Code:
+Warenbezeichnung:
+Aktenzeichen:
+( Die Waren werden gegenwärtig in der Europäischen Union oder der Türkei produziert und sind auf dem Markt ver 
+BEGIN_TEST_ENTRY
+ANTRAG AUF VERLÄNGERUNG EINER ZOLLAUSSETZUNG
+(Mitgliedstaat: Österreich)
+Teil I
+(öffentlich)
+Code der Kombinierten Nomenklatur (KN) oder TARIC-Code:
+Genaue Warenbezeichnung:
+�
+ANTRAG AUF VERLÄNGERUNG EINER ZOLLAUSSETZUNG
+(Mitgliedstaat: Österreich)
+Teil II
+(nur kommissionsintern)
+Antrag eingereicht 
+BEGIN_TEST_ENTRY
+Zinssätze 2013
+Zinssatz
+EU-Mitgliedstaat
+Zollschuldentstehung
+Monat
+€-Zone
+BG
+CZ
+DK
+HR
+LV
+LT
+HU
+PL
+RO
+SE
+GB
+Monat
+Jahr
+NOV
+0,19
+1,45
+0,54
+0,30
+-
+0,54
+0,73
+-
+4,62
+5,64
+1,46
+0,52
+JAN
+2013
+DEZ
+0,19
+1,39
+0,50
+0,28
+1,68
+0,53
+0,70
+-
+4,26
+5,79
+1,37
+0,52
+FEB
+2013
+JAN
+0,20
+1,27
+0,50
+0,30
+1,58
+0,50
+0,53
+5,80 
+BEGIN_TEST_ENTRY
+Finanz-Verfassungsgesetz1948 - F‑VG 1948
+Bundesverfassungsgesetzüber die Regelung der finanziellen Beziehungen zwischen dem Bund und den übrigen Gebietskörperschaften (Finanz-Verfassungsgesetz1948 - F‑VG 1948)
+BGBl. Nr.45/1948, zuletzt geändert mit BGBl.I Nr.51/2012
+§1. Das Finanz-Verfassungsgesetz 
+BEGIN_TEST_ENTRY
+ERKLÄRUNG
+zur Qualitätssicherung
+Fa.
+Anschrift:
+erklärt, dass ihre Erzeugnisse, identifiziert durch die oben abgebildete Verantwortlichkeitspunze, den jeweils angegebenen Feingehalt aufweisen.
+Dies wird sichergestellt durch: (Zutreffendes bitte ankreuzen, Mehrfachnennungen möglich)
+(Zertifiziertes 
