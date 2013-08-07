@@ -24,8 +24,6 @@ public final class DefaultConfigDirectory {
 	 * and the nodelog.properties).
 	 */
 	public static void useThis() throws URISyntaxException {
-		String configLocation = DefaultConfigDirectory.class.getResource(".").toURI().getPath();
-		EnvironmentConfiguration.setConfigPath(configLocation);
 		EnvironmentConfiguration.loadEnvironmentProperties();
 	}
 }
