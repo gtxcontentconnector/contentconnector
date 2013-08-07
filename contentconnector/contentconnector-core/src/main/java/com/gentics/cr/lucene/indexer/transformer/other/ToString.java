@@ -27,8 +27,9 @@ public class ToString extends ContentTransformer {
 	public void processBean(CRResolvableBean bean) {
 		Object value = bean.get(attribute);
 
-		if (value != null)
+		if (value != null) {
 			bean.set(attribute, value.toString());
+		}
 	}
 
 	@Override
