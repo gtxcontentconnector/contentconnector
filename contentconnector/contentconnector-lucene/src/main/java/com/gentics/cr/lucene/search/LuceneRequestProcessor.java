@@ -20,6 +20,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 
+import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRError;
 import com.gentics.cr.CRRequest;
@@ -324,7 +325,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 			+ ")#processSearch.Metaresolvables");
 
 		Object metaKey = request.get(META_RESOLVABLE_KEY);
-		if (metaKey != null && (Boolean) metaKey) {
+		if (ObjectTransformer.getBoolean(metaKey, false)) {
 			final CRResolvableBean metaBean;
 			if (showParsedQuery) {
 				metaBean = new CRMetaResolvableBean(searchResult, request, parsedQuery, start, count);
