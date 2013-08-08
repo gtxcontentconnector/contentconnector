@@ -14,9 +14,9 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
@@ -149,7 +149,7 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 		}
 
 		IndexAccessor ia = autocompleteLocation.getAccessor();
-		Searcher autoCompleteSearcher = ia.getPrioritizedSearcher();
+		IndexSearcher autoCompleteSearcher = ia.getPrioritizedSearcher();
 		IndexReader autoCompleteReader = ia.getReader(false);
 		try {
 			Query query = new TermQuery(new Term(GRAMMED_WORDS_FIELD, term));

@@ -36,7 +36,6 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
 import org.apache.lucene.store.Directory;
 
@@ -305,7 +304,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * @return
 	 * @throws IOException
 	 */
-	public Searcher getPrioritizedSearcher() throws IOException {
+	public IndexSearcher getPrioritizedSearcher() throws IOException {
 		boolean reopened = this.numReopening > 0;
 		IndexSearcher searcher = (IndexSearcher) getSearcher();
 
@@ -335,7 +334,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * (non-Javadoc)
 	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher()
 	 */
-	public Searcher getSearcher() throws IOException {
+	public IndexSearcher getSearcher() throws IOException {
 		return getSearcher(Similarity.getDefault(), null);
 	}
 
@@ -343,7 +342,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * (non-Javadoc)
 	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.index.IndexReader)
 	 */
-	public Searcher getSearcher(IndexReader indexReader) throws IOException {
+	public IndexSearcher getSearcher(IndexReader indexReader) throws IOException {
 		return getSearcher(Similarity.getDefault(), indexReader);
 	}
 
@@ -351,7 +350,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * (non-Javadoc)
 	 * @see com.mhs.indexaccessor.IndexAccessor#getSearcher(org.apache.lucene.search.Similarity, org.apache.lucene.index.IndexReader)
 	 */
-	public synchronized Searcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException {
+	public synchronized IndexSearcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException {
 
 		checkClosed();
 
@@ -538,7 +537,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * (non-Javadoc)
 	 * @see com.mhs.indexaccessor.IndexAccessor#release(org.apache.lucene.search.Searcher)
 	 */
-	public synchronized void release(Searcher searcher) {
+	public synchronized void release(IndexSearcher searcher) {
 		searcherUseCount--;
 		if (searcherUseCount == 0 && closeAllReleasedSearchers) {
 			closeCachedSearchers();

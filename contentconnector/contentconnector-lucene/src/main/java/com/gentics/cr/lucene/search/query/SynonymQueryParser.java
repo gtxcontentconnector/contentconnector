@@ -10,9 +10,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 
@@ -118,7 +118,7 @@ public class SynonymQueryParser extends CRQueryParser {
 		LuceneIndexLocation synonymLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(autoConf, "synonymlocation"));
 
 		IndexAccessor ia = synonymLocation.getAccessor();
-		Searcher synonymSearcher = ia.getPrioritizedSearcher();
+		IndexSearcher synonymSearcher = ia.getPrioritizedSearcher();
 		IndexReader synonymReader = ia.getReader(false);
 
 		try {
