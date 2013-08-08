@@ -176,6 +176,14 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		highlighters = ContentHighlighter.getTransformerTable(config);
 		showParsedQuery = Boolean.parseBoolean((String) this.config.get(SHOW_PARSED_QUERY_KEY));
 	}
+	
+	/**
+	 * Get cr searcher.
+	 * @return
+	 */
+	public CRSearcher getCRSearcher() {
+		return searcher;
+	}
 
 	/**
 	 * Converts a generic List to a List of Field.

@@ -5,8 +5,14 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spell.CustomSpellChecker;
 
 import com.gentics.cr.CRConfig;
@@ -61,6 +67,12 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 	public static final String REINDEXSTRATEGYCLASS_KEY = "reindexStrategyClass";
 
 	public static final String DIDYOUMEAN_SUBSCRIBE_TO_INDEX_FINISHED = "reindexOnCRIndexFinished";
+	
+	/**
+	 * Configuration key to activate the didyoumean feature for terms that are
+	 * in the index but have a low result size.
+	 */
+	private static final String DIDYOUMEAN_EXISTINGTERMS_KEY = "didyoumean_forexisitingterms";
 
 	private String didyoumeanfield = "all";
 
@@ -73,6 +85,12 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 	private Float minDScore = (float) 0.0;
 
 	private Integer minDFreq = 0;
+	
+	/**
+	 * Mark if we should provide the didyoumean feature for existing terms (with
+	 * low result count).
+	 */
+	private boolean checkForExistingTerms = false;
 
 	/**
 	 * The constructor is called in the {@link IndexLocation}
@@ -88,9 +106,12 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 		this.callingIndexLocation = callingLocation;
 
 		GenericConfiguration srcConf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
-		CRConfigUtil srcConfUtil = new CRConfigUtil(srcConf, "SOURCE_INDEX_KEY");
-		if (srcConfUtil.getPropertySize() > 0) {
-			sourceLocation = LuceneIndexLocation.getIndexLocation(srcConfUtil);
+		
+		if (srcConf != null) {
+			CRConfigUtil srcConfUtil = new CRConfigUtil(srcConf, "SOURCE_INDEX_KEY");
+			if (srcConfUtil.getPropertySize() > 0) {
+				sourceLocation = LuceneIndexLocation.getIndexLocation(srcConfUtil);
+			}
 		}
 		if (sourceLocation == null) {
 			sourceLocation = (LuceneIndexLocation) callingLocation;
@@ -100,6 +121,8 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 		didyoumeanLocation = LuceneIndexLocation.getIndexLocation(new CRConfigUtil(didyouConf, DIDYOUMEAN_INDEX_KEY));
 		didyoumeanLocation.registerDirectoriesSpecial();
 
+		
+		checkForExistingTerms = config.getBoolean(DIDYOUMEAN_EXISTINGTERMS_KEY, checkForExistingTerms);
 		didyoumeanfield = config.getString(DIDYOUMEAN_FIELD_KEY, didyoumeanfield);
 		minDScore = config.getFloat(DIDYOUMEAN_MIN_DISTANCESCORE, (float) 0.0);
 		minDFreq = config.getInteger(DIDYOUMEAN_MIN_DOCFREQ, 0);
@@ -220,14 +243,20 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 		}
 
 		if (REINDEX_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = new DidyoumeanIndexJob(this.config, actualLocation, this);
-			actualLocation.getQueue().addJob(job);
+			actualLocation.getQueue().addJob(createDYMIndexJob(actualLocation));
 		} else if (CLEAR_JOB.equalsIgnoreCase(name)) {
-			AbstractUpdateCheckerJob job = new DidyoumeanIndexDeleteJob(config, actualLocation, this);
-			actualLocation.getQueue().addJob(job);
+			actualLocation.getQueue().addJob(createDYMIndexDeleteJob(actualLocation));
 		} else {
 			throw new NoSuchMethodException("No Job-Method by the name: " + name);
 		}
+	}
+	
+	public AbstractUpdateCheckerJob createDYMIndexJob(IndexLocation indexLocation) {
+		return new DidyoumeanIndexJob(this.config, indexLocation, this);
+	}
+	
+	public AbstractUpdateCheckerJob createDYMIndexDeleteJob(IndexLocation indexLocation) {
+		return new DidyoumeanIndexDeleteJob(this.config, indexLocation, this);
 	}
 
 	public boolean isAll() {
@@ -277,6 +306,78 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 
 	public Integer getMinDFreq() {
 		return minDFreq;
+	}
+	
+	/**
+	 * 
+	 * @param termlist
+	 * @param count
+	 * @param reader
+	 * @return
+	 */
+	public Map<String, String[]> getSuggestions(Set<Term> termlist, int count, IndexReader reader) {
+		return getSuggestionsStringFromMap(getSuggestionTerms(termlist, count, reader));
+	}
+
+	/**
+	 * 
+	 * @param termlist
+	 * @param count
+	 * @param reader
+	 * @return
+	 */
+	public Map<Term, Term[]> getSuggestionTerms(Set<Term> termlist, int count, IndexReader reader) {
+
+		Map<Term, Term[]> result = new LinkedHashMap<Term, Term[]>();
+		Set<Term> termset = new HashSet<Term>();
+
+		if (this.spellchecker != null) {
+			for (Term t : termlist) {
+				// CHECK IF ALL FIELDS ENABLED FOR SUGGESTIONS OTHERWHISE ONLY
+				// ADD TERM IF IT COMES FROM A DYM FIELD
+				if (all || dym_fields.contains(t.field())) {
+					termset.add(t);
+				}
+			}
+			log.debug("Will use the following fields for dym: " + dym_fields.toString());
+			for (Term term : termset) {
+				try {
+					if (checkForExistingTerms || !this.spellchecker.exist(term.text())) {
+						String[] ts = this.spellchecker.suggestSimilar(term.text(), count, reader, term.field(), true);
+						if (ts != null && ts.length > 0) {
+							Term[] suggestedTerms = new Term[ts.length];
+							for (int i = 0; i < ts.length; i++) {
+								suggestedTerms[i] = term.createTerm(ts[i]);
+							}
+							result.put(term, suggestedTerms);
+						}
+					}
+				} catch (IOException ex) {
+					log.error("Could not suggest terms", ex);
+				}
+			}
+		} else {
+			log.error("Spellchecker has not properly been initialized.");
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param suggestions
+	 * @return
+	 */
+	public Map<String, String[]> getSuggestionsStringFromMap(Map<Term, Term[]> suggestions) {
+		Map<String, String[]> result = new LinkedHashMap<String, String[]>();
+		for (Term key : suggestions.keySet()) {
+			Term[] values = suggestions.get(key);
+			ArrayList<String> valueStrings = new ArrayList<String>(values.length);
+			for (Term value : values) {
+				valueStrings.add(value.text());
+			}
+			result.put(key.text(), valueStrings.toArray(new String[valueStrings.size()]));
+		}
+		return result;
 	}
 
 }

@@ -29,6 +29,8 @@ import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 
 /**
+ * ATTENTION: This class is deprecated as of 1.12.10. We now use the DidyoumeanIndexExtension.
+ * 
  * This class can be used to build an autocomplete index over an existing lucene
  * index.
  * 
@@ -38,6 +40,7 @@ import com.gentics.cr.monitoring.UseCase;
  * @author $Author: supnig@constantinopel.at $
  * 
  */
+@Deprecated
 public class DidYouMeanProvider implements IEventReceiver {
 
 	protected static final Logger log = Logger.getLogger(DidYouMeanProvider.class);

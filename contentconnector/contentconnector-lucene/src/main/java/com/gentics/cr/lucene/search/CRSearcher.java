@@ -42,6 +42,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.didyoumean.DidYouMeanProvider;
+import com.gentics.cr.lucene.didyoumean.DidyoumeanIndexExtension;
 import com.gentics.cr.lucene.facets.search.FacetsSearch;
 import com.gentics.cr.lucene.facets.search.FacetsSearchConfigKeys;
 import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
@@ -163,7 +164,7 @@ public class CRSearcher {
 	 */
 	private int didyoumeanactivatelimit = 0;
 
-	private DidYouMeanProvider didyoumeanprovider = null;
+	private DidyoumeanIndexExtension didyoumeanprovider = null;
 
 	/**
 	 * Create new instance of CRSearcher.
@@ -177,7 +178,7 @@ public class CRSearcher {
 		didyoumeanminscore = config.getFloat(DIDYOUMEAN_MIN_SCORE, didyoumeanminscore);
 
 		if (didyoumeanenabled) {
-			didyoumeanprovider = new DidYouMeanProvider(config);
+			didyoumeanprovider = new DidyoumeanIndexExtension(config, LuceneIndexLocation.getIndexLocation(config));
 			didyoumeanbestquery = config.getBoolean(DIDYOUMEAN_BESTQUERY_KEY, didyoumeanbestquery);
 			advanceddidyoumeanbestquery = config.getBoolean(ADVANCED_DIDYOUMEAN_BESTQUERY_KEY, advanceddidyoumeanbestquery);
 			didyoumeanactivatelimit = config.getInteger(DIDYOUMEAN_ACTIVATE_KEY, didyoumeanactivatelimit);
@@ -658,11 +659,19 @@ public class CRSearcher {
 		}
 		return null;
 	}
+	
+	/**
+	 * Get the DYM provider. May be null if none is used.
+	 * @return DYM provider.
+	 */
+	public DidyoumeanIndexExtension getDYMProvider() {
+		return didyoumeanprovider;
+	}
 
 	@Override
 	public void finalize() {
 		if (didyoumeanprovider != null) {
-			didyoumeanprovider.finalize();
+			didyoumeanprovider.stop();
 		}
 		if (config != null) {
 			LuceneIndexLocation.stopIndexLocation(config);

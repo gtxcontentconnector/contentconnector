@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.search;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.HashMap;
 
 import junit.framework.Assert;
 
@@ -21,8 +22,10 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.lucene.didyoumean.DidyoumeanIndexExtension;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 
 public class LuceneRequestProcessorTest {
 	private static CRConfigUtil config = null;
@@ -47,6 +50,10 @@ public class LuceneRequestProcessorTest {
 		addDoc(accessor, "content:potatoe", "category:plants", "contentid:10007.7");
 		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.8");
 		addDoc(accessor, "content:tree", "category:plants", "contentid:10007.9");
+		
+		DidyoumeanIndexExtension dymProvider = ((LuceneRequestProcessor) rp).getCRSearcher().getDYMProvider();
+		AbstractUpdateCheckerJob dymIndexJob = dymProvider.createDYMIndexJob(location);
+		dymIndexJob.run();
 	}
 	
 	@Test
@@ -76,6 +83,20 @@ public class LuceneRequestProcessorTest {
 		CRResolvableBean metabean = objects.iterator().next();
 		Assert.assertNotNull(metabean);
 		Assert.assertEquals("Hitcount did not match the expected value.", 3, metabean.getInteger("totalhits", 0));
+	}
+	
+	@Test
+	public void testDYMMetaResolvableSearch() throws CRException {
+		CRRequest request = new CRRequest();
+		request.set("metaresolvable", "true");
+		request.setRequestFilter("content:frd");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		
+		CRResolvableBean metabean = objects.iterator().next();
+		HashMap<String, String[]> suggestions = (HashMap<String, String[]>) metabean.get("suggestions");
+		Assert.assertNotNull(suggestions);
+		Assert.assertEquals("Suggestion count did not match the expected value.", 1, suggestions.get("frd").length);
+		Assert.assertEquals("Suggestion did not match the expected value.", "ford", suggestions.get("frd")[0]);
 	}
 	
 	/**
