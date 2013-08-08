@@ -12,6 +12,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -97,6 +98,14 @@ public class LuceneRequestProcessorTest {
 		Assert.assertNotNull(suggestions);
 		Assert.assertEquals("Suggestion count did not match the expected value.", 1, suggestions.get("frd").length);
 		Assert.assertEquals("Suggestion did not match the expected value.", "ford", suggestions.get("frd")[0]);
+	}
+	
+	@AfterClass
+	public static void tearDown() throws IOException {
+		DidyoumeanIndexExtension dymProvider = ((LuceneRequestProcessor) rp).getCRSearcher().getDYMProvider();
+		AbstractUpdateCheckerJob dymIndexJob = dymProvider.createDYMIndexDeleteJob(location);
+		dymIndexJob.run();
+		Assert.assertEquals("DYM Index should be empty.", 0, dymProvider.getDidyoumeanLocation().getDocCount());
 	}
 	
 	/**
