@@ -65,7 +65,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	 * the config
 	 */
 	private static final String FOLDER_ID_KEY = "folder_id.key";
-	
+
 	private static final String NODE_ID_CHILDREN_FEATURE_KEY = "usenodeidinchildrule";
 
 	/** String of content map folder id column, default: "folder_id". */
@@ -89,7 +89,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		if (!StringUtils.isEmpty(config.getString(FOLDER_ID_KEY))) {
 			folderIdContentmapName = config.getString(FOLDER_ID_KEY);
 		}
-		
+
 		usenodeidsinchildrule = ObjectTransformer.getBoolean(config.getString(NODE_ID_CHILDREN_FEATURE_KEY), false);
 
 	}
@@ -161,36 +161,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 						// sort childrepositories with that
 						Sorting[] sorting = request.getSorting();
 
-						// Build the request to fetch all possible children
-						CRRequest childReq = new CRRequest();
-						// set children attributes (folder_id)
-						String[] fetchAttributesForChildren = { folderIdContentmapName, nodeIdContentMapName };
-
-						// add all attributes to fetch in order to sort
-						// correctly
-						if (!ArrayUtils.isEmpty(sorting)) {
-							for (int i = 0; i < sorting.length; i++) {
-								Sorting sortingElement = sorting[i];
-								fetchAttributesForChildren = (String[]) ArrayUtils.add(fetchAttributesForChildren,
-										sortingElement.getColumnName());
-							}
-						}
-
-						childReq.setAttributeArray(fetchAttributesForChildren);
-						
-						StringBuilder childFilter = new StringBuilder();
-						childFilter.append(request.getChildFilter());
-						if(usenodeidsinchildrule && !CollectionUtils.isEmpty(nodeIds)) {
-							if(!StringUtils.isEmpty(request.getChildFilter())) {
-								childFilter.append(" AND");
-							}
-							childFilter.append( " object."+nodeIdContentMapName + " CONTAINSONEOF [ " + StringUtils.join(nodeIds, ',') + " ] ");
-						}
-						
-						childReq.setRequestFilter(childFilter.toString());
-						childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
-
-						Collection<CRResolvableBean> children = getObjects(childReq, false);
+						Collection<CRResolvableBean> children = getObjects(buildChildFilter(request, nodeIds), false);
 
 						// those Resolvables will be filled with specified
 						// attributes
@@ -239,6 +210,47 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 			}
 		}
 		return collection;
+	}
+
+	private CRRequest buildChildFilter(CRRequest request, Set<String> nodeIds) {
+		// get original sorting order for child sorting
+		// sort childrepositories with that
+		Sorting[] sorting = request.getSorting();
+		// Build the request to fetch all possible children
+		CRRequest childReq = new CRRequest();
+		// set children attributes (folder_id)
+		String[] fetchAttributesForChildren = { folderIdContentmapName, nodeIdContentMapName };
+
+		// add all attributes to fetch in order to sort
+		// correctly
+		if (!ArrayUtils.isEmpty(sorting)) {
+			for (int i = 0; i < sorting.length; i++) {
+				Sorting sortingElement = sorting[i];
+				fetchAttributesForChildren = (String[]) ArrayUtils.add(fetchAttributesForChildren,
+						sortingElement.getColumnName());
+			}
+		}
+
+		childReq.setAttributeArray(fetchAttributesForChildren);
+
+		StringBuilder childFilter = new StringBuilder();
+
+		if (!StringUtils.isEmpty(request.getChildFilter())) {
+			childFilter.append(request.getChildFilter());
+		}
+
+		if (usenodeidsinchildrule && !CollectionUtils.isEmpty(nodeIds)) {
+			if (!StringUtils.isEmpty(request.getChildFilter())) {
+				childFilter.append(" AND ");
+			}
+			childFilter.append("object." + nodeIdContentMapName + " CONTAINSONEOF [ " + StringUtils.join(nodeIds, ',')
+					+ " ] ");
+		}
+
+		childReq.setRequestFilter(childFilter.toString());
+		childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
+
+		return childReq;
 	}
 
 	/**
