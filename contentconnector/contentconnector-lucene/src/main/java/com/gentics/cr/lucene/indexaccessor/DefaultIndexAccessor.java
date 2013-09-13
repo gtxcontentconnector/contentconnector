@@ -129,8 +129,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	protected int numSearchersForRetirment = 0;
 
-	protected List<IndexSearcher> createdSearchers = new CopyOnWriteArrayList<IndexSearcher>();
-
 	protected int writingReaderUseCount = 0;
 
 	/**
@@ -360,7 +358,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 		} else {
 			LOGGER.debug("opening new searcher and caching it");
 			searcher = indexReader != null ? new IndexSearcher(indexReader) : new IndexSearcher(directory);
-			createdSearchers.add(searcher);
 			searcher.setSimilarity(similarity);
 			cachedSearchers.put(similarity, searcher);
 		}

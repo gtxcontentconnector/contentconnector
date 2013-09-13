@@ -101,7 +101,6 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 
 					retireSearchers();
 					IndexSearcher newSearcher = new IndexSearcher(newReader);
-					createdSearchers.add(newSearcher);
 					newSearcher.setSimilarity(oldSearcher.getSimilarity());
 					SearcherWarmer warmer = new SearcherWarmer(oldSearcher, newSearcher);
 					numSearchersForRetirment++;
