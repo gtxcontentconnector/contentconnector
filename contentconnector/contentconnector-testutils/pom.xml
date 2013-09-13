@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.12.10-SNAPSHOT</version>
+		<version>1.12.11-SNAPSHOT</version>
 	</parent>
 	<artifactId>contentconnector-testutils</artifactId>
 	<properties>
