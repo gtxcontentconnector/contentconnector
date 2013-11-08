@@ -25,6 +25,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiCollector;
@@ -290,20 +291,28 @@ public class CRSearcher {
 	 * @param searcher
 	 * @param parsedQuery
 	 * @param count
-	 * @param collector
+	 * @param ttcollector
 	 * @param explain
 	 * @param start
 	 * @param facetsCollector a {@link FacetsCollector} 
 	 * @return ArrayList of results
 	 */
-	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final IndexSearcher searcher, final Query parsedQuery,
+	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> ttcollector, final IndexSearcher searcher, final Query parsedQuery,
 			final boolean explain, final int count, final int start, final FacetsCollector facetsCollector) {
 		try {
-			// wrap the TopDocsCollector and the FacetsCollector to one
-			// MultiCollector and perform the search
-			searcher.search(parsedQuery, MultiCollector.wrap(collector, facetsCollector));
-
-			TopDocs tdocs = collector.topDocs(start, count);
+			
+			Collector collector = null;
+			if (facetsCollector != null) {
+				// wrap the TopDocsCollector and the FacetsCollector to one
+				// MultiCollector and perform the search
+				collector = MultiCollector.wrap(ttcollector, facetsCollector);
+			} else {
+				collector = ttcollector;
+			}
+			
+			searcher.search(parsedQuery, collector);
+			
+			TopDocs tdocs = ttcollector.topDocs(start, count);
 
 			float maxScoreReturn = tdocs.getMaxScore();
 			log.debug("maxScoreReturn: " + maxScoreReturn);
@@ -333,7 +342,7 @@ public class CRSearcher {
 					log.error("Loading search documents failed partly (document has MAX_INTEGER as document id");
 				}
 			}
-			log.debug("Fetched Document " + start + " to " + (start + num) + " of " + collector.getTotalHits() + " found Documents");
+			log.debug("Fetched Document " + start + " to " + (start + num) + " of " + ttcollector.getTotalHits() + " found Documents");
 
 			HashMap<String, Object> ret = new HashMap<String, Object>(3);
 			

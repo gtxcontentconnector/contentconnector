@@ -76,11 +76,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	 */
 	public synchronized void release(IndexSearcher multiSearcher) {
 		MultiReader mReader = (MultiReader) multiSearcher.getIndexReader();
-		IndexReader[] readers = mReader.getSequentialSubReaders();
-		
-		for (IndexReader reader : readers) {
-			multiReaderAccessors.remove(reader).release(reader, false);
-		}
+		release(mReader, false);
 	}
 
 	/**
@@ -125,6 +121,14 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 		MultiReader multiReader = new MultiReader(readers, true);
 
 		return multiReader;
+	}
+	
+	/**
+	 * Get directories.
+	 * @return
+	 */
+	public Directory[] getDirectories() {
+		return dirs;
 	}
 
 	public IndexSearcher getSearcher() throws IOException {
@@ -206,7 +210,11 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	public void release(IndexReader reader, boolean write) {
 		IndexReader[] readers = ((MultiReader) reader).getSequentialSubReaders();
 		for (IndexReader r : readers) {
-			multiReaderAccessors.remove(r).release(r, write);
+			IndexAccessor accessor = multiReaderAccessors.get(r);
+			if (accessor != null) {
+				accessor.release(r, write);
+				multiReaderAccessors.remove(r);
+			}
 		}
 	}
 
