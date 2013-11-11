@@ -162,7 +162,10 @@ public final class LuceneAnalyzerFactory {
 				try {
 					CRConfigFileLoader.loadConfiguration(analyzerConfig, confpath, null);
 				} catch (IOException e) {
-					LOGGER.error("Could not load analyzer configuration from " + confpath, e);
+					LOGGER.error("Could not load analyzer configuration from " + confpath + ". Using default config.");
+					analyzerConfig = new GenericConfiguration();
+					analyzerConfig.set("content.analyzerclass","com.gentics.cr.lucene.autocomplete.AutocompleteAnalyzer");
+					analyzerConfig.set("content.fieldname","grammedwords");
 				}
 			}
 			return analyzerConfig;

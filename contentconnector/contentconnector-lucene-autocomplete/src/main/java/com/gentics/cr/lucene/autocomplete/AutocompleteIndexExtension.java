@@ -62,9 +62,11 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension implement
 		this.callingIndexLocation = callingLocation;
 
 		GenericConfiguration src_conf = (GenericConfiguration) config.get(SOURCE_INDEX_KEY);
-		CRConfigUtil src_conf_util = new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY");
-		if (src_conf_util.getPropertySize() > 0) {
-			source = LuceneIndexLocation.getIndexLocation(src_conf_util);
+		if (src_conf != null) {
+			CRConfigUtil src_conf_util = new CRConfigUtil(src_conf, "SOURCE_INDEX_KEY");
+			if (src_conf_util.getPropertySize() > 0) {
+				source = LuceneIndexLocation.getIndexLocation(src_conf_util);
+			}
 		}
 		if (source == null) {
 			source = (LuceneIndexLocation) callingLocation;
