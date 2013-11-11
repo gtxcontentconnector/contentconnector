@@ -25,7 +25,6 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 
 public class AutocompleteTest {
-	private static CRConfigUtil config = null;
 	private static CRConfigUtil autoConfig = null;
 	private static RequestProcessor rp=null;
 	private static LuceneIndexLocation location=null;
@@ -33,7 +32,6 @@ public class AutocompleteTest {
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException, IOException {
 		EnvironmentConfiguration.loadEnvironmentProperties();
-		config = new CRConfigStreamLoader("search", AutocompleteTest.class.getResourceAsStream("search.properties"));
 		autoConfig = new CRConfigStreamLoader("autocomplete", AutocompleteTest.class.getResourceAsStream("autocomplete.properties"));
 		rp = autoConfig.getNewRequestProcessorInstance(1);
 		CRConfigUtil rpConfig = autoConfig.getRequestProcessorConfig(1);
