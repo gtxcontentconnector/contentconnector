@@ -25,7 +25,7 @@ public class AutocompleteAnalyzer extends Analyzer {
 			"then", "there", "these", "they", "this", "to", "was", "will", "with" };
 
 	@Override
-	public TokenStream tokenStream(String fieldName, Reader reader) {
+	public final TokenStream tokenStream(String fieldName, Reader reader) {
 		TokenStream result = new StandardTokenizer(LuceneVersion.getVersion(), reader);
 		result = new StandardFilter(result);
 		result = new LowerCaseFilter(result);
