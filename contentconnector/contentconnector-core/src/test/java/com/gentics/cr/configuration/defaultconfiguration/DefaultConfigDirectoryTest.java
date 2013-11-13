@@ -14,7 +14,7 @@ public class DefaultConfigDirectoryTest {
 	public void testDefaultConfig() throws URISyntaxException {
 		DefaultConfigDirectory.useThis();
 		EnvironmentConfiguration.loadLoggerProperties();
-		assertTrue("Logger initialization has failed.", EnvironmentConfiguration.isLoggerFallbackLoaded());
-		assertTrue("Cache initialization has failed.", EnvironmentConfiguration.isCacheFallbackLoaded());
+		assertTrue("Logger initialization has failed.", EnvironmentConfiguration.isLoggerFallbackLoaded() || EnvironmentConfiguration.getLoggerState());
+		assertTrue("Cache initialization has failed.", EnvironmentConfiguration.isCacheFallbackLoaded() || EnvironmentConfiguration.getCacheState());
 	}
 }

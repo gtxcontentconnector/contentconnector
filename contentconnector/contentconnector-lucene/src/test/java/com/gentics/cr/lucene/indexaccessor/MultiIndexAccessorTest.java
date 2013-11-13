@@ -31,6 +31,8 @@ public class MultiIndexAccessorTest {
 
 	private RAMDirectory ramdir = new RAMDirectory();
 	private RAMDirectory ramdir2 = new RAMDirectory();
+	
+	private RAMDirectory someOtherRAMDir = new RAMDirectory();
 
 	private Query query = null;
 	
@@ -45,6 +47,7 @@ public class MultiIndexAccessorTest {
 		query = new BooleanQuery();
 		factory.createAccessor(ramdir, analyzer);
 		factory.createAccessor(ramdir2, analyzer);
+		factory.createAccessor(someOtherRAMDir, analyzer);
 	}
 
 	@Test
@@ -96,6 +99,23 @@ public class MultiIndexAccessorTest {
 		IndexReader reader = accessor.getReader(false);
 		assertNotNull(reader);
 		IndexSearcher searcher = accessor.getSearcher();
+
+		accessor.release(searcher);
+		
+		accessor.close();
+	}
+	
+	@Test
+	public void testGetSearcherWithOtherIndexReader() throws IOException {
+		
+		IndexReader ir = IndexReader.open(someOtherRAMDir);
+		
+		IndexAccessor accessor = factory.getMultiIndexAccessor(new Directory[]{ramdir, ramdir2});
+		assertNotNull(accessor);
+
+		IndexSearcher searcher= accessor.getSearcher(ir);
+		
+		assertNotNull(searcher);
 
 		accessor.release(searcher);
 		accessor.close();
