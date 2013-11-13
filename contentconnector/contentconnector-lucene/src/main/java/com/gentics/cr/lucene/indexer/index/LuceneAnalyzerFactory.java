@@ -162,7 +162,10 @@ public final class LuceneAnalyzerFactory {
 				try {
 					CRConfigFileLoader.loadConfiguration(analyzerConfig, confpath, null);
 				} catch (IOException e) {
-					LOGGER.error("Could not load analyzer configuration from " + confpath, e);
+					LOGGER.error("Could not load analyzer configuration from " + confpath + ". Using default config.");
+					analyzerConfig = new GenericConfiguration();
+					analyzerConfig.set("content.analyzerclass","com.gentics.cr.lucene.autocomplete.AutocompleteAnalyzer");
+					analyzerConfig.set("content.fieldname","grammedwords");
 				}
 			}
 			return analyzerConfig;
@@ -188,6 +191,7 @@ public final class LuceneAnalyzerFactory {
 			} catch (Exception e2) {
 				//IF SIMPLE FAILS, PROBABLY DID NOT FIND CONSTRUCTOR,
 				//TRYING WITH VERSION ADDED
+				LOGGER.error("Configured Analyzer fails in the default constructor or it does not have a default constructor.", e2);
 				try {
 					a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[] { Version.class })
 							.newInstance(LuceneVersion.getVersion());

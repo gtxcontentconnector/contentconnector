@@ -18,14 +18,14 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 
 import com.gentics.cr.lucene.LuceneVersion;
 
-public class AutocompleteAnalyzer extends Analyzer {
+public final class AutocompleteAnalyzer extends Analyzer {
 
 	private static final String[] ENGLISH_STOP_WORDS = { "a", "an", "and", "are", "as", "at", "be", "but", "by", "for",
 			"i", "if", "in", "into", "is", "no", "not", "of", "on", "or", "s", "such", "t", "that", "the", "their",
 			"then", "there", "these", "they", "this", "to", "was", "will", "with" };
 
 	@Override
-	public TokenStream tokenStream(String fieldName, Reader reader) {
+	public final TokenStream tokenStream(final String fieldName, final Reader reader) {
 		TokenStream result = new StandardTokenizer(LuceneVersion.getVersion(), reader);
 		result = new StandardFilter(result);
 		result = new LowerCaseFilter(result);

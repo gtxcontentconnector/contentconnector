@@ -86,6 +86,7 @@ public interface IndexAccessor {
 	 * @return new or cached Searcher
 	 * @throws IOException
 	 */
+	@Deprecated
 	IndexSearcher getSearcher(IndexReader indexReader) throws IOException;
 
 	/**
@@ -96,7 +97,17 @@ public interface IndexAccessor {
 	 * @return new or cached Searcher
 	 * @throws IOException
 	 */
+	@Deprecated
 	IndexSearcher getSearcher(Similarity similarity, IndexReader indexReader) throws IOException;
+	
+	/**
+	 * Returns a Searcher that uses a Similarity.
+	 * 
+	 * @param similarity to create Searcher with
+	 * @return new or cached Searcher
+	 * @throws IOException
+	 */
+	IndexSearcher getSearcher(Similarity similarity) throws IOException;
 
 	/**
 	 * @throws IOException

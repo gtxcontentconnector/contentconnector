@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.12.10-SNAPSHOT</version>
+		<version>1.12.12-SNAPSHOT</version>
 	</parent>
 	<artifactId>contentconnector-lucene-autocomplete</artifactId>
 	<properties>
@@ -74,6 +74,21 @@
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-spellchecker</artifactId>
 			<version>${lucene.version}</version>
+		</dependency>
+		<!-- ###### TEST DEPENDENCIES ####### -->
+		<dependency>
+			<!-- LICENSE: Common Public License -->
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- LICENSE: Apache 2.0 -->
+			<groupId>com.gentics</groupId>
+			<artifactId>contentconnector-testutils</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
