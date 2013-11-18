@@ -43,7 +43,7 @@ public abstract class RequestProcessor {
 
 	private static Logger log = Logger.getLogger(RequestProcessor.class);
 
-	private static JCS cache;
+	private JCS cache;
 
 	/**
 	 * KEY to store switch for metaresolvable in request.
@@ -98,6 +98,14 @@ public abstract class RequestProcessor {
 			}
 		}
 
+	}
+	
+	/**
+	 * Get the cache region of the request processor.
+	 * @return
+	 */
+	public JCS getCache() {
+		return cache;
 	}
 
 	/**
