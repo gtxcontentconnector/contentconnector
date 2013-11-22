@@ -379,7 +379,7 @@ public abstract class RequestProcessor {
 	 * @param col
 	 * @return Collection parameterized to Resolvables
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Collection<Resolvable> toResolvableCollection(final Collection col) {
 		Collection<Resolvable> returnCollection = (Collection<Resolvable>) col;
 		return returnCollection;
@@ -418,7 +418,7 @@ public abstract class RequestProcessor {
 	 * @param col
 	 * @return Collection parameterized to CRResolvableBean
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Collection<CRResolvableBean> toCRResolvableBeanCollection(Collection col) {
 		return (Collection<CRResolvableBean>) col;
 	}

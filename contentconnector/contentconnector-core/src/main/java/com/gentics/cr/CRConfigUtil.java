@@ -302,8 +302,6 @@ public class CRConfigUtil extends CRConfig {
 		PathResolver pathResolver = new PathResolver(this, this.getApplicationRule());
 		if (pathResolver != null) {
 			log.debug("Loaded Pathresolver for " + this.getName());
-		} else {
-			log.error("Could not initialize Pathresolver for " + this.getName());
 		}
 		return pathResolver;
 	}

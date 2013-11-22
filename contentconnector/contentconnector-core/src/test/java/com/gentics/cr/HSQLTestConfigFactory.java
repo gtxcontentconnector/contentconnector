@@ -11,6 +11,8 @@ public class HSQLTestConfigFactory {
 	
 	private static final String CR_1_PREFIX = "RP.1.";
 	
+	private static final String CR_2_PREFIX = "RP.2.";
+	
 	/**
 	 * This method generates a DB configuration for an in memory HSQL.
 	 * A default empty repository will be generated.
@@ -36,18 +38,25 @@ public class HSQLTestConfigFactory {
 
 		CRConfigUtil config = new CRConfigUtil();
 		config.setName(dsName);
-		if (!cache) {
-			config.set(CR_1_PREFIX + RequestProcessor.CONTENTCACHE_KEY, "false");
-			config.set(CR_1_PREFIX + PlinkProcessor.PLINK_CACHE_ACTIVATION_KEY, "false");
-		}
-		config.set(CR_1_PREFIX + "ds-handle.url", "jdbc:hsqldb:mem:" + dsName);
-		config.set(CR_1_PREFIX + "ds-handle.driverClass", "org.hsqldb.jdbcDriver");
-		config.set(CR_1_PREFIX + "ds-handle.shutDownCommand", "SHUTDOWN");
-		config.set(CR_1_PREFIX + "ds-handle.type", "jdbc");
-		config.set(CR_1_PREFIX + "ds.sanitycheck2", "true");
-		config.set(CR_1_PREFIX + "ds.autorepair2", "true");
-		config.set(CR_1_PREFIX + "ds.sanitycheck", "false");
+		addRequestProcessor(CR_1_PREFIX, dsName, cache, config);
+		addRequestProcessor(CR_2_PREFIX, dsName, cache, config);
 		return config;
+	}
+
+	private static void addRequestProcessor(final String rpPrefix, final String dsName, final boolean cache,
+			final CRConfigUtil config) {
+		config.set(rpPrefix + "rpClass", "com.gentics.cr.CRRequestProcessor");
+		if (!cache) {
+			config.set(rpPrefix + RequestProcessor.CONTENTCACHE_KEY, "false");
+			config.set(rpPrefix + PlinkProcessor.PLINK_CACHE_ACTIVATION_KEY, "false");
+		}
+		config.set(rpPrefix + "ds-handle.url", "jdbc:hsqldb:mem:" + dsName);
+		config.set(rpPrefix + "ds-handle.driverClass", "org.hsqldb.jdbcDriver");
+		config.set(rpPrefix + "ds-handle.shutDownCommand", "SHUTDOWN");
+		config.set(rpPrefix + "ds-handle.type", "jdbc");
+		config.set(rpPrefix + "ds.sanitycheck2", "true");
+		config.set(rpPrefix + "ds.autorepair2", "true");
+		config.set(rpPrefix + "ds.sanitycheck", "false");
 	}
 	
 	/**

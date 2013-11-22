@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.exception.UnknownPropertyException;
 import com.gentics.api.lib.resolving.PropertyResolver;
 import com.gentics.api.lib.resolving.Resolvable;
@@ -56,11 +54,6 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	 * generated unique serial version id.
 	 */
 	private static final long serialVersionUID = -8743515908056719834L;
-
-	/**
-	 * Log4j logger.
-	 */
-	private final static Logger LOGGER = Logger.getLogger(CRResolvableBean.class);
 
 	private Collection<CRResolvableBean> childRepository;
 
