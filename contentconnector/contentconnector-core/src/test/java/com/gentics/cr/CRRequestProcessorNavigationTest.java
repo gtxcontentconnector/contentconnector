@@ -153,6 +153,35 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	}
 
 	/**
+	 * Test optimistic navigation building. Without child filter
+	 * 
+	 * @throws CRException
+	 *             the cR exception
+	 */
+	@Test
+	public void testOptimisticNavigationBuildingWithoutChildfilter() throws CRException {
+
+		// check that the original navigation object is not empty
+		Assert.assertFalse(CollectionUtils.isEmpty(originalNavigationObject));
+
+		// do a request with the navigation request and the optimistic request
+		// processor
+		Collection<CRResolvableBean> result = navigationRequestProcessor.getNavigation(getNavigationRequestWithoutChildfilter());
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("size of constructed object: " + result.size());
+
+			for (CRResolvableBean crResolvableBean : result) {
+				LOGGER.debug(toStringWithChildren(crResolvableBean, 0));
+			}
+		}
+
+		Assert.assertTrue(compareResolvableChildren(originalNavigationObject, result));
+	}
+	
+	
+	
+	/**
 	 * Test normal navigation building.
 	 * 
 	 * @throws CRException
@@ -190,6 +219,24 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 
 		req.setRequestFilter("object.obj_type == " + FOLDER_TYPE + " AND object.folder_id == " + rootFolderContentId);
 		req.setChildFilter("object.obj_type == " + FOLDER_TYPE);
+		// sort by randomly added values
+		req.setSorting(new Sorting[] {new Sorting("test2", 1)});
+		req.setAttributeArray(attributes);
+
+		return req;
+	}
+	
+	/**
+	 * Gets the prepared Request for a Navigation Object building for any
+	 * request processor.
+	 * 
+	 * @return the prepared Navigation Request
+	 */
+	private CRRequest getNavigationRequestWithoutChildfilter() {
+
+		CRRequest req = new CRRequest();
+
+		req.setRequestFilter("object.obj_type == " + FOLDER_TYPE + " AND object.folder_id == " + rootFolderContentId);
 		// sort by randomly added values
 		req.setSorting(new Sorting[] {new Sorting("test2", 1)});
 		req.setAttributeArray(attributes);

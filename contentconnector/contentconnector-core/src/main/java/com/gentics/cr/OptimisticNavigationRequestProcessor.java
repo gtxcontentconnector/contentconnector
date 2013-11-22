@@ -40,16 +40,25 @@ import com.gentics.cr.util.CRUtil;
  * unnecessary fetched database rows. For example for projects with many nodes
  * you should add a child filter for
  * </p>
- * 
- * <pre>
- * node_id
- * </pre>
+ * <p>
+ * For automatic inclusion of the <code>node_id</code> in the child filter to
+ * fetch only children of the same node there is a configuration parameter:
+ * <code>usenodeidinchildrule</code>.
+ * </p>
  * <p>
  * Basically only the method
  * {@link OptimisticNavigationRequestProcessor#getObjects(CRRequest, boolean)}
  * method is optimized when the parameter doNavigation is true. The rest is
  * adapted from the {@link CRRequestProcessor}.
  * </p>
+ * <p>
+ * Example configuration:
+ * </p>
+ * 
+ * <pre>
+ * rp.1.rpClass=com.gentics.cr.OptimisticNavigationRequestProcessor
+ * rp.1.usenodeidinchildrule=true
+ * </pre>
  * 
  * @author l.osang@gentics.com, c.supnig@gentics.com, s.vogel@gentics.com
  * 
@@ -65,7 +74,7 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	 * the config
 	 */
 	private static final String FOLDER_ID_KEY = "folder_id.key";
-	
+
 	private static final String NODE_ID_CHILDREN_FEATURE_KEY = "usenodeidinchildrule";
 
 	/** String of content map folder id column, default: "folder_id". */
@@ -86,12 +95,14 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 	public OptimisticNavigationRequestProcessor(CRConfig config) throws CRException {
 		super(config);
 
+		logger.debug("Initializing new " + this.getClass().getSimpleName() + " instance ...");
+
 		if (!StringUtils.isEmpty(config.getString(FOLDER_ID_KEY))) {
 			folderIdContentmapName = config.getString(FOLDER_ID_KEY);
 		}
-		
-		usenodeidsinchildrule = ObjectTransformer.getBoolean(config.getString(NODE_ID_CHILDREN_FEATURE_KEY), false);
 
+		usenodeidsinchildrule = ObjectTransformer.getBoolean(config.getString(NODE_ID_CHILDREN_FEATURE_KEY), false);
+		logger.debug("Using node id in child rule: " + usenodeidsinchildrule);
 	}
 
 	/**
@@ -111,6 +122,12 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 		Datasource ds = null;
 		DatasourceFilter dsFilter;
 		Vector<CRResolvableBean> collection = new Vector<CRResolvableBean>();
+		long start = 0;
+
+		if (logger.isDebugEnabled()) {
+			// starttime
+			start = System.currentTimeMillis();
+		}
 
 		// for storing all possible nodes for children
 		Set<String> nodeIds = new HashSet<String>();
@@ -134,11 +151,21 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 					}
 				}
 
+				if (logger.isDebugEnabled()) {
+					logger.debug("dsFilter: " + dsFilter.getExpressionString());
+				}
+
 				String[] prefillAttributes = request.getAttributeArray();
 				prefillAttributes = ArrayHelper.removeElements(prefillAttributes, "contentid", "updatetimestamp");
 				// do the query
 				Collection<Resolvable> col = this.toResolvableCollection(ds.getResult(dsFilter, prefillAttributes,
 						request.getStart().intValue(), request.getCount().intValue(), request.getSorting()));
+
+				if (logger.isDebugEnabled()) {
+					logger.debug("Getting columns for filter " + dsFilter.getExpressionString() + " took "
+							+ (System.currentTimeMillis() - start) + " ms");
+					start = System.currentTimeMillis();
+				}
 
 				// convert all objects to serializeable beans
 				if (col != null) {
@@ -161,41 +188,19 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 						// sort childrepositories with that
 						Sorting[] sorting = request.getSorting();
 
-						// Build the request to fetch all possible children
-						CRRequest childReq = new CRRequest();
-						// set children attributes (folder_id)
-						String[] fetchAttributesForChildren = { folderIdContentmapName, nodeIdContentMapName };
+						CRRequest childFilter = buildChildFilter(request, nodeIds);
 
-						// add all attributes to fetch in order to sort
-						// correctly
-						if (!ArrayUtils.isEmpty(sorting)) {
-							for (int i = 0; i < sorting.length; i++) {
-								Sorting sortingElement = sorting[i];
-								fetchAttributesForChildren = (String[]) ArrayUtils.add(fetchAttributesForChildren,
-										sortingElement.getColumnName());
-							}
+						Collection<CRResolvableBean> children = getObjects(childFilter, false);
+
+						if (logger.isDebugEnabled()) {
+							logger.debug("Getting children for filter " + childFilter.getRequestFilter() + " took "
+									+ (System.currentTimeMillis() - start) + " ms");
+							start = System.currentTimeMillis();
 						}
-
-						childReq.setAttributeArray(fetchAttributesForChildren);
-						
-						StringBuilder childFilter = new StringBuilder();
-						childFilter.append(request.getChildFilter());
-						if(usenodeidsinchildrule && !CollectionUtils.isEmpty(nodeIds)) {
-							if(!StringUtils.isEmpty(request.getChildFilter())) {
-								childFilter.append(" AND");
-							}
-							childFilter.append( " object."+nodeIdContentMapName + " CONTAINSONEOF [ " + StringUtils.join(nodeIds, ',') + " ] ");
-						}
-						
-						childReq.setRequestFilter(childFilter.toString());
-						childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
-
-						Collection<CRResolvableBean> children = getObjects(childReq, false);
 
 						// those Resolvables will be filled with specified
 						// attributes
 						Map<Resolvable, CRResolvableBean> itemsToPrefetch = new HashMap<Resolvable, CRResolvableBean>();
-
 						HashMap<String, Vector<CRResolvableBean>> prepareFolderMap = prepareFolderMap(children);
 
 						for (CRResolvableBean item : collection) {
@@ -203,19 +208,38 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 							recursiveTreeBuild(item, prepareFolderMap, sorting, itemsToPrefetch);
 						}
 
+						if (logger.isDebugEnabled()) {
+							logger.debug("Tree building took " + (System.currentTimeMillis() - start) + " ms");
+							start = System.currentTimeMillis();
+						}
+
 						// prefetch all necessary attribute that are specified
 						// in the request
 						try {
-							PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch.keySet(),
-									Arrays.asList(prefillAttributes));
+							if (!ArrayUtils.isEmpty(prefillAttributes)) {
+								PortalConnectorFactory.prefillAttributes(ds, itemsToPrefetch.keySet(),
+										Arrays.asList(prefillAttributes));
+							}
 						} catch (NullPointerException e) {
-							logger.warn(
-									"Portal Connector throwed a NullPointerException, we will silently ignore this", e);
+							logger.warn("Portal Connector threw a NullPointerException, we will silently ignore this",
+									e);
+						}
+
+						if (logger.isDebugEnabled()) {
+							logger.debug("Prefilling attibutes " + prefillAttributes + " took "
+									+ (System.currentTimeMillis() - start) + " ms");
+							start = System.currentTimeMillis();
 						}
 
 						// update the fetched attributes in the cr beans
 						for (CRResolvableBean crBean : itemsToPrefetch.values()) {
 							crBean.updateCRResolvableBeanAfterAttributePrefetch(prefillAttributes);
+						}
+
+						if (logger.isDebugEnabled()) {
+							logger.debug("Update Resolvables after prefetch took "
+									+ (System.currentTimeMillis() - start) + " ms");
+							start = System.currentTimeMillis();
 						}
 					}
 				}
@@ -239,6 +263,47 @@ public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 			}
 		}
 		return collection;
+	}
+
+	private CRRequest buildChildFilter(CRRequest request, Set<String> nodeIds) {
+		// get original sorting order for child sorting
+		// sort childrepositories with that
+		Sorting[] sorting = request.getSorting();
+		// Build the request to fetch all possible children
+		CRRequest childReq = new CRRequest();
+		// set children attributes (folder_id)
+		String[] fetchAttributesForChildren = { folderIdContentmapName, nodeIdContentMapName };
+
+		// add all attributes to fetch in order to sort
+		// correctly
+		if (!ArrayUtils.isEmpty(sorting)) {
+			for (int i = 0; i < sorting.length; i++) {
+				Sorting sortingElement = sorting[i];
+				fetchAttributesForChildren = (String[]) ArrayUtils.add(fetchAttributesForChildren,
+						sortingElement.getColumnName());
+			}
+		}
+
+		childReq.setAttributeArray(fetchAttributesForChildren);
+
+		StringBuilder childFilter = new StringBuilder();
+
+		if (!StringUtils.isEmpty(request.getChildFilter())) {
+			childFilter.append(request.getChildFilter());
+		}
+
+		if (usenodeidsinchildrule && !CollectionUtils.isEmpty(nodeIds)) {
+			if (!StringUtils.isEmpty(request.getChildFilter())) {
+				childFilter.append(" AND ");
+			}
+			childFilter.append("object." + nodeIdContentMapName + " CONTAINSONEOF [ " + StringUtils.join(nodeIds, ',')
+					+ " ] ");
+		}
+
+		childReq.setRequestFilter(childFilter.toString());
+		childReq.setSortArray(new String[] { folderIdContentmapName + ":asc" });
+
+		return childReq;
 	}
 
 	/**
