@@ -1,6 +1,7 @@
 package com.gentics.cr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URISyntaxException;
@@ -8,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.jcs.JCS;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,16 +20,24 @@ import com.gentics.cr.exceptions.CRException;
 public class CRRequestProcessorTest extends RequestProcessorTest {
 
 	private static CRRequestProcessor requestProcessor;
+	private static CRRequestProcessor requestProcessor2;
 	private static HSQLTestHandler testHandler;
+	
+	private static String configname;
 	
 	private static String [] attributes = {"filename", "mimetype"};
 	private static String [] attributes2 = {"filename", "category"};
 
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
-		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName());
+		configname = CRRequestProcessorTest.class.getName() + ".RP.1";
+		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName(), true);
 		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));
 		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
+		
+		CRConfigUtil config2 = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName(), true);
+		config2.setName("dummy");
+		requestProcessor2 = new CRRequestProcessor(config2.getRequestProcessorConfig(1));
 		
 		CRResolvableBean testBean = new CRResolvableBean();
 		testBean.setObj_type("10008");
@@ -68,6 +78,19 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 		for(CRResolvableBean bean : beans) {
 			testAttributeArray(bean, atts);
 		}
+	}
+	
+	@Test
+	public void testCachRegionName() throws CRException {
+		CRRequest request = getRequest();
+		RequestProcessor processor = getRequestProcessor();
+		CRResolvableBean content = processor.getContent(request);
+		assertNotNull("Content should not be null.", content);
+		
+		JCS cache = processor.getCache();
+		
+		String regionName = cache.getStatistics().getRegionName();
+		assertEquals("Region name was not correct.","gentics-cr-" + configname + "-crcontent", regionName );
 	}
 	
 	private void testAttributeArray(CRResolvableBean bean, String[] expectedAttributes) {

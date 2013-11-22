@@ -26,16 +26,20 @@ public class HSQLTestConfigFactory {
 	 * This method generates a DB configuration for an in memory HSQL.
 	 * A default empty repository will be generated.
 	 * @param dsName name of the datasource
+	 * @param cache true if cache should be enabled (default = false)
 	 * @return
 	 * @throws URISyntaxException 
 	 */
-	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName) throws URISyntaxException {
+	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName, boolean cache) throws URISyntaxException {
 		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").getFile()).getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 
 		CRConfigUtil config = new CRConfigUtil();
-		config.set(CR_1_PREFIX + RequestProcessor.CONTENTCACHE_KEY, "false");
-		config.set(CR_1_PREFIX + PlinkProcessor.PLINK_CACHE_ACTIVATION_KEY, "false");
+		config.setName(dsName);
+		if (!cache) {
+			config.set(CR_1_PREFIX + RequestProcessor.CONTENTCACHE_KEY, "false");
+			config.set(CR_1_PREFIX + PlinkProcessor.PLINK_CACHE_ACTIVATION_KEY, "false");
+		}
 		config.set(CR_1_PREFIX + "ds-handle.url", "jdbc:hsqldb:mem:" + dsName);
 		config.set(CR_1_PREFIX + "ds-handle.driverClass", "org.hsqldb.jdbcDriver");
 		config.set(CR_1_PREFIX + "ds-handle.shutDownCommand", "SHUTDOWN");
@@ -44,6 +48,17 @@ public class HSQLTestConfigFactory {
 		config.set(CR_1_PREFIX + "ds.autorepair2", "true");
 		config.set(CR_1_PREFIX + "ds.sanitycheck", "false");
 		return config;
+	}
+	
+	/**
+	 * This method generates a DB configuration for an in memory HSQL.
+	 * A default empty repository will be generated.
+	 * @param dsName name of the datasource
+	 * @return
+	 * @throws URISyntaxException 
+	 */
+	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName) throws URISyntaxException {
+		return getDefaultHSQLConfiguration(dsName, false);
 	}
 
 }
