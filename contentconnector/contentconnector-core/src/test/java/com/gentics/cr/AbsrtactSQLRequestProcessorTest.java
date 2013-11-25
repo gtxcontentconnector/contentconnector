@@ -23,11 +23,11 @@ public abstract class AbsrtactSQLRequestProcessorTest extends RequestProcessorTe
 	private static String configname;
 	
 
-	protected static CRConfigUtil initConfigurationAndTest() throws CRException, URISyntaxException {
-		configname = AbsrtactSQLRequestProcessorTest.class.getSimpleName() + ".RP.1";
-		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(AbsrtactSQLRequestProcessorTest.class.getSimpleName(), true);
+	protected static CRConfigUtil initConfigurationAndTest(Class<? extends AbsrtactSQLRequestProcessorTest> clazz) throws CRException, URISyntaxException {
+		configname = clazz.getSimpleName() + ".RP.1";
+		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(clazz.getSimpleName(), true);
 
-		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1), AbsrtactSQLRequestProcessorTest.class.getSimpleName(), new String[]{"contentid:VARCHAR(256)", "filename:VARCHAR(256)", "category:VARCHAR(256)", "obj_type:VARCHAR(256)"});
+		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1), clazz.getSimpleName(), new String[]{"contentid:VARCHAR(256)", "filename:VARCHAR(256)", "category:VARCHAR(256)", "obj_type:VARCHAR(256)"});
 		
 		CRResolvableBean testBean = new CRResolvableBean();
 		testBean.setObj_type("10008");

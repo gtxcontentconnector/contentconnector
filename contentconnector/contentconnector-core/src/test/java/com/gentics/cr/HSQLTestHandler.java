@@ -106,7 +106,7 @@ public class HSQLTestHandler extends AbstractTestHandler {
 		Connection conn = getConnection(rpConfig);
 		PreparedStatement ps;
 		try {
-			ps = conn.prepareCall("DELETE FROM " + table);
+			ps = conn.prepareCall("DROP TABLE " + table);
 			ps.executeUpdate();
 			conn.close();
 		} catch (Exception e) {

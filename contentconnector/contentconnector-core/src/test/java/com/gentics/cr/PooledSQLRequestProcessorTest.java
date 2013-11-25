@@ -12,7 +12,7 @@ public class PooledSQLRequestProcessorTest extends AbsrtactSQLRequestProcessorTe
 	
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
-		CRConfigUtil config = initConfigurationAndTest();
+		CRConfigUtil config = initConfigurationAndTest(PooledSQLRequestProcessorTest.class);
 		rp = new PooledSQLRequestProcessor(config.getRequestProcessorConfig(1));
 	}
 	

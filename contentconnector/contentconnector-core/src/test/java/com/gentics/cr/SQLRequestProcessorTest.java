@@ -12,7 +12,7 @@ public class SQLRequestProcessorTest extends AbsrtactSQLRequestProcessorTest {
 	
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException {
-		CRConfigUtil config = initConfigurationAndTest();
+		CRConfigUtil config = initConfigurationAndTest(SQLRequestProcessorTest.class);
 		rp = new SQLRequestProcessor(config.getRequestProcessorConfig(1));
 	}
 	
