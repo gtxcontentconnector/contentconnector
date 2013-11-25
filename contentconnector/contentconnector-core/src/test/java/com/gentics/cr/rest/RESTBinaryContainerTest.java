@@ -16,20 +16,20 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.HSQLTestConfigFactory;
-import com.gentics.cr.HSQLTestHandler;
+import com.gentics.cr.HSQLCRTestHandler;
 import com.gentics.cr.exceptions.CRException;
 
 public class RESTBinaryContainerTest{
 
 	private static RESTBinaryContainer container;
-	private static HSQLTestHandler testHandler;
+	private static HSQLCRTestHandler testHandler;
 	
 	@BeforeClass
 	public static void setUp() throws Exception, URISyntaxException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(RESTBinaryContainerTest.class.getName());
 		config.set("rp.1.rpClass", "com.gentics.cr.CRRequestProcessor");
 		container = new RESTBinaryContainer(config);
-		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
+		testHandler = new HSQLCRTestHandler(config.getRequestProcessorConfig(1));
 		
 		CRResolvableBean testBean = new CRResolvableBean();
 		testBean.setObj_type("10008");

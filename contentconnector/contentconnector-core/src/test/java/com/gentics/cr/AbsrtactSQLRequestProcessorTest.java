@@ -11,33 +11,23 @@ import java.util.Map;
 
 import org.apache.jcs.JCS;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.exceptions.CRException;
 
-public class CRRequestProcessorTest extends RequestProcessorTest {
+public abstract class AbsrtactSQLRequestProcessorTest extends RequestProcessorTest {
 
-	private static CRRequestProcessor requestProcessor;
-	private static CRRequestProcessor requestProcessor2;
-	private static HSQLCRTestHandler testHandler;
+	private static HSQLTestHandler testHandler;
 	
 	private static String configname;
 	
-	private static String [] attributes = {"filename", "mimetype"};
-	private static String [] attributes2 = {"filename", "category"};
 
-	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
-		configname = CRRequestProcessorTest.class.getName() + ".RP.1";
-		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName(), true);
-		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));
-		testHandler = new HSQLCRTestHandler(config.getRequestProcessorConfig(1));
-		
-		CRConfigUtil config2 = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName(), true);
-		config2.setName("dummy");
-		requestProcessor2 = new CRRequestProcessor(config2.getRequestProcessorConfig(1));
+	protected static CRConfigUtil initConfigurationAndTest() throws CRException, URISyntaxException {
+		configname = AbsrtactSQLRequestProcessorTest.class.getSimpleName() + ".RP.1";
+		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(AbsrtactSQLRequestProcessorTest.class.getSimpleName(), true);
+
+		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1), AbsrtactSQLRequestProcessorTest.class.getSimpleName(), new String[]{"contentid:VARCHAR(256)", "filename:VARCHAR(256)", "category:VARCHAR(256)", "obj_type:VARCHAR(256)"});
 		
 		CRResolvableBean testBean = new CRResolvableBean();
 		testBean.setObj_type("10008");
@@ -45,7 +35,7 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 		testBean.set("filename", "picture.png");
 		testBean.set("mimetype", "image/png");
 		
-		testHandler.createBean(testBean, attributes);
+		testHandler.createBean(testBean);
 		
 		CRResolvableBean testBean2 = new CRResolvableBean();
 		testBean2.setObj_type("10008");
@@ -53,15 +43,16 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 		testBean2.set("filename", "file.txt");
 		testBean2.set("mimetype", "text/plain");
 		
-		testHandler.createBean(testBean2, attributes);
-		testHandler.createBean(createBean("10001.1", "falcon.jpg", "animals"), attributes2);
-		testHandler.createBean(createBean("10001.2", "ford.jpg", "cars"), attributes2);
-		testHandler.createBean(createBean("10001.3", "eagle.jpg", "animals"), attributes2);
-		testHandler.createBean(createBean("10001.4", "tree.jpg", "plants"), attributes2);
-		testHandler.createBean(createBean("10001.5", "bird.jpg", "animals"), attributes2);
-		testHandler.createBean(createBean("10001.6", "honda.jpg", "cars"), attributes2);
-		testHandler.createBean(createBean("10001.7", "flower.jpg", "plants"), attributes2);
-		testHandler.createBean(createBean("10001.8", "saab.jpg", "cars"), attributes2);
+		testHandler.createBean(testBean2);
+		testHandler.createBean(createBean("10001.1", "falcon.jpg", "animals"));
+		testHandler.createBean(createBean("10001.2", "ford.jpg", "cars"));
+		testHandler.createBean(createBean("10001.3", "eagle.jpg", "animals"));
+		testHandler.createBean(createBean("10001.4", "tree.jpg", "plants"));
+		testHandler.createBean(createBean("10001.5", "bird.jpg", "animals"));
+		testHandler.createBean(createBean("10001.6", "honda.jpg", "cars"));
+		testHandler.createBean(createBean("10001.7", "flower.jpg", "plants"));
+		testHandler.createBean(createBean("10001.8", "saab.jpg", "cars"));
+		return config;
 	}
 	
 	@Test
@@ -96,41 +87,35 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 	private void testAttributeArray(CRResolvableBean bean, String[] expectedAttributes) {
 		Map<String, Object> attrMap = bean.getAttrMap();
 		for (String att : expectedAttributes) {
-			assertEquals("Expected attribute was not in attribute map.", true, attrMap.containsKey(att));
-			assertEquals("Expected attribute was null.", true, bean.get(att) != null);
+			assertEquals("Expected attribute was not in attribute map.", true, attrMap.containsKey(att) || attrMap.containsKey(att.toUpperCase()));
+			assertEquals("Expected attribute was null.", true, bean.get(att) != null || bean.get(att.toUpperCase()) != null);
 		}
 	}
 	
 	@Test
 	public void testSorting() throws CRException {
 		CRRequest req = new CRRequest();
-		req.setRequestFilter("object.obj_type == 10001");
+		req.setRequestFilter("obj_type == '10001'");
 		req.setSortArray(new String[]{"category:asc", "filename:asc"});
 		RequestProcessor processor = getRequestProcessor();
 		Collection<CRResolvableBean> beans = processor.getObjects(req);
 		assertTrue("Collection is not properly sorted.", isSorted(beans, new String[]{"10001.5", "10001.3", "10001.1", "10001.2", "10001.6", "10001.8", "10001.7", "10001.4"}));
 	}
-
-	@Override
-	protected RequestProcessor getRequestProcessor() {
-		return requestProcessor;
-	}
-	
+			
 	@AfterClass
 	public static void tearDown() throws CRException {
-		requestProcessor.finalize();
 		testHandler.cleanUp();
 	}
 
 	@Override
 	protected int getExpectedCollectionSize() {
-		return 2;
+		return 10;
 	}
 
 	@Override
 	protected CRRequest getRequest() {
 		CRRequest req = new CRRequest();
-		req.setRequestFilter("object.obj_type == 10008");
+		req.setRequestFilter("1 == 1");
 		return req;
 	}
 	

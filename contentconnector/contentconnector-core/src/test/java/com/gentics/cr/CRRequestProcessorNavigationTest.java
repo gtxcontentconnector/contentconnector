@@ -41,7 +41,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	private static CRRequestProcessor requestProcessor;
 
 	/** The test handler. */
-	private static HSQLTestHandler testHandler;
+	private static HSQLCRTestHandler testHandler;
 
 	/** The navigation request processor. */
 	private static OptimisticNavigationRequestProcessor navigationRequestProcessor;
@@ -74,7 +74,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));
 		navigationRequestProcessor = new OptimisticNavigationRequestProcessor(config.getRequestProcessorConfig(1));
 
-		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
+		testHandler = new HSQLCRTestHandler(config.getRequestProcessorConfig(1));
 
 		// a folder structure
 		createTestNavigationData(2, 2);

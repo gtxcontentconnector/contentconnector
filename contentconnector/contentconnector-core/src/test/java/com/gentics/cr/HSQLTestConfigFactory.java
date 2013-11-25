@@ -57,6 +57,8 @@ public class HSQLTestConfigFactory {
 		config.set(rpPrefix + "ds.sanitycheck2", "true");
 		config.set(rpPrefix + "ds.autorepair2", "true");
 		config.set(rpPrefix + "ds.sanitycheck", "false");
+		config.set(rpPrefix + "ds.table", dsName);
+		config.set(rpPrefix + "ds.idcolumn", "contentid");
 	}
 	
 	/**

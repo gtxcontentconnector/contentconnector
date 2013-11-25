@@ -21,7 +21,7 @@ public class CachedCRRequestProcessorTest extends RequestProcessorTest {
 
 	private static RequestProcessor requestProcessor;
 	private static RequestProcessor requestProcessor2;
-	private static HSQLTestHandler testHandler;
+	private static HSQLCRTestHandler testHandler;
 	
 	private static String configname;
 	
@@ -33,7 +33,7 @@ public class CachedCRRequestProcessorTest extends RequestProcessorTest {
 		configname = CachedCRRequestProcessorTest.class.getName() + ".RP.1";
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CachedCRRequestProcessorTest.class.getName(), true);
 		requestProcessor = new CachedCRRequestProcessor(config.getRequestProcessorConfig(1));
-		testHandler = new HSQLTestHandler(config.getRequestProcessorConfig(1));
+		testHandler = new HSQLCRTestHandler(config.getRequestProcessorConfig(1));
 		
 		CRConfigUtil config2 = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CachedCRRequestProcessorTest.class.getName(), true);
 		config2.setName("dummy");

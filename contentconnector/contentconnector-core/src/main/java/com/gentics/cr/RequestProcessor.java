@@ -101,6 +101,14 @@ public abstract class RequestProcessor {
 	}
 	
 	/**
+	 * Get the configuration for this RP.
+	 * @return
+	 */
+	public CRConfig getConfig() {
+		return this.config;
+	}
+	
+	/**
 	 * Get the cache region of the request processor.
 	 * @return
 	 */
@@ -267,14 +275,14 @@ public abstract class RequestProcessor {
 			if (crBean == null) {
 				String binType = this.config.getBinaryType();
 				if (binType != null) {
-					if (binType.equals(reso.get("obj_type").toString())) {
+					if (binType.equals("" + reso.get("obj_type"))) {
 						attribute = "binarycontent";
 					} else if (binType.equals("all")) {
 						attribute = "binarycontent";
 					}
 				} else {
 					//If binary type is not set in the config => fall back to 10008
-					if ("10008".equals(reso.get("obj_type").toString())) {
+					if ("10008".equals("" + reso.get("obj_type"))) {
 						attribute = "binarycontent";
 					}
 				}

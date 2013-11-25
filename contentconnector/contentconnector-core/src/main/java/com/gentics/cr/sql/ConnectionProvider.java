@@ -13,6 +13,7 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
+import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 
 /**
@@ -36,7 +37,8 @@ public class ConnectionProvider {
 	  */
 	public static synchronized Connection getPooledJDBCConnection(CRConfigUtil config) throws Exception {
 		//CREATE CONNECTION POOL
-		if (!isPoolCreated(config.getName())) {
+		String name = getName(config);
+		if (!isPoolCreated(name)) {
 			Properties props = config.getDatasourceHandleProperties();
 
 			String connectionuri = props.getProperty("url");
@@ -46,10 +48,24 @@ public class ConnectionProvider {
 			} catch (ClassNotFoundException e) {
 				log.error("Could not load driver class.", e);
 			}
-			setupPoolingDriver(connectionuri, config.getName());
-			setPoolCreated(config.getName());
+			setupPoolingDriver(connectionuri, name);
+			setPoolCreated(name);
 		}
-		return DriverManager.getConnection("jdbc:apache:commons:dbcp:" + config.getName());
+		return DriverManager.getConnection("jdbc:apache:commons:dbcp:" + name);
+		
+	}
+	
+	/**
+	 * Get Name for pool.
+	 * @param config
+	 * @return
+	 */
+	public static String getName(CRConfig config) {
+		String name = config.getName();
+		if (name != null) {
+			name = name.replaceAll("\\.", "_");
+		}
+		return name;
 	}
 
 	/**
@@ -57,17 +73,18 @@ public class ConnectionProvider {
 	   * @throws Exception
 	   */
 	public static synchronized void releaseJDBCPool(CRConfigUtil config) throws Exception {
-		if (isPoolCreated(config.getName())) {
+		String name = getName(config);
+		if (isPoolCreated(name)) {
 			try {
 				PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
-				driver.closePool(config.getName());
-				setPoolReleased(config.getName());
-				log.debug("Connection pool for " + config.getName() + " has been released.");
+				driver.closePool(name);
+				setPoolReleased(name);
+				log.debug("Connection pool for " + name + " has been released.");
 			} catch (Exception e) {
-				log.error("Could not unload JDBCPool " + config.getName(), e);
+				log.error("Could not unload JDBCPool " + name, e);
 			}
 		} else {
-			log.error("JDBCPool " + config.getName() + " could not be found.");
+			log.error("JDBCPool " + name + " could not be found.");
 		}
 	}
 
@@ -89,17 +106,17 @@ public class ConnectionProvider {
 		// using the connect string passed in the command line
 		// arguments.
 		//
-		//ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectionURI, null);
+		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectionURI, null);
 
 		//
 		// Now we'll create the PoolableConnectionFactory, which wraps
 		// the "real" Connections created by the ConnectionFactory with
 		// the classes that implement the pooling functionality.
 		//
-		/* @SuppressWarnings("unused")
+		@SuppressWarnings("unused")
 		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,
 				connectionPool, null, null, false, true);
-		*/
+		
 		//
 		// Finally, we create the PoolingDriver itself...
 		//
