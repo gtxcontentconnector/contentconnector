@@ -3,7 +3,7 @@ package com.gentics.cr.analytics.language.test;
 import java.io.File;
 import java.util.Scanner;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -90,7 +90,7 @@ public class LanguageIdentifyerTest {
 		t.processBean(bean);
 		String s = (String) bean.get("lang");
 
-		Assert.assertEquals("The found Language (" + s + ") should be (" + language + "). String: '" + str + "'", language, s);
+		assertEquals("The found Language (" + s + ") should be (" + language + "). String: '" + str + "'", language, s);
 	}
 
 	@After
