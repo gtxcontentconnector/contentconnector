@@ -29,6 +29,10 @@ import com.gentics.cr.util.response.ServletResponseTypeSetter;
 public class CRServlet extends HttpServlet {
 
 	/**
+	 * Regex to validate the input of the content disposition header.
+	 */
+	private static final String CONTENT_DISPOSITION_HEADER_VALIDATION_REGEX = "[a-zA-Z0-9_\\.-]+";
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6943138512221124880L;
@@ -67,7 +71,6 @@ public class CRServlet extends HttpServlet {
 		if (request.getQueryString() != null) {
 			requestID += "?" + request.getQueryString();
 		}
-		String contentDisposition = request.getParameter("contentdisposition");
 
 		this.log.debug("Starting request: " + requestID);
 
@@ -83,9 +86,7 @@ public class CRServlet extends HttpServlet {
 			response.getOutputStream(),
 			new ServletResponseTypeSetter(response));
 
-		if (contentDisposition != null && contentDisposition != "") {
-			response.addHeader("Content-Disposition", "attachment; filename=\"" + contentDisposition + "\"");
-		}
+		handleContentDispositionParameter(request, response);
 
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
@@ -94,6 +95,14 @@ public class CRServlet extends HttpServlet {
 		long e = new Date().getTime();
 		this.log.debug("Executiontime for " + requestID + ":" + (e - s));
 
+	}
+
+	private void handleContentDispositionParameter(HttpServletRequest request,
+			final HttpServletResponse response) {
+		String contentDisposition = request.getParameter("contentdisposition");
+		if (contentDisposition != null && contentDisposition != "" && contentDisposition.matches(CONTENT_DISPOSITION_HEADER_VALIDATION_REGEX)) {
+			response.addHeader("Content-Disposition", "attachment; filename=\"" + contentDisposition + "\"");
+		}
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
