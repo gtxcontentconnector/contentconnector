@@ -1,7 +1,5 @@
 package com.gentics.cr.util;
 
-import org.apache.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+
+import org.apache.log4j.Logger;
 
 /**
  * Utility class with static methods for Strings.
@@ -279,7 +279,7 @@ public final class StringUtils {
 	 * @throws IOException - if there was an error reading the input stream.
 	 */
 	public static String readUntil(final InputStream is, final String end) throws IOException {
-		return readUntil(is, end.getBytes("UTF-8"));
+		return readUntil(is, end.getBytes());
 	}
 
 	/**
@@ -295,25 +295,22 @@ public final class StringUtils {
 	public static String readUntil(final InputStream is, final byte[] end) throws IOException {
 		StringBuilder result = new StringBuilder();
 		int matchposition = 0;
-		char[] read = new char[1];
-		char[] endChars = new String(end, "UTF-8").toCharArray();
-
-		InputStreamReader reader = new InputStreamReader(is, "UTF-8");
-		char[] buffer = new char[endChars.length];
-		while (reader.read(read, 0, 1) != -1) {
-			if (read[0] == endChars[matchposition]) {
-				buffer[matchposition++] = read[0];
-				if (matchposition == endChars.length) {
+		byte read;
+		byte[] buffer = new byte[end.length];
+		while ((read = (byte) is.read()) != -1) {
+			if (read == end[matchposition]) {
+				buffer[matchposition++] = read;
+				if (matchposition == end.length) {
 					break;
 				}
 			} else if (matchposition != 0) {
 				for (int i = 0; i < matchposition; i++) {
-					result.append(buffer[i]);
+					result.append((char) buffer[i]);
 				}
 				matchposition = 0;
-				result.append(read[0]);
+				result.append((char) read);
 			} else {
-				result.append(read[0]);
+				result.append((char) read);
 			}
 		}
 		is.mark(0);

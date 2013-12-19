@@ -1,11 +1,8 @@
 package com.gentics.cr.util;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test correct output of custom string utils.
@@ -55,15 +52,4 @@ public class StringUtilsTest {
 			StringUtils.abbreviateWordCount(input, 6, separator));
 	}
 
-
-	/** test read until with utf-8. */
-	@Test
-	public void testReadUntil() throws IOException {
-		String input = "Test öä [delißiter]üß";
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes("UTF-8"));
-
-		String s = StringUtils.readUntil(bais, "[delißiter]");
-		assertEquals("Test öä ", s);
-	}
 }
