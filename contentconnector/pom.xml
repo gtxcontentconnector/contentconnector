@@ -12,9 +12,9 @@
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 	</properties>
 	<scm>
-		<connection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</connection>
-		<developerConnection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</developerConnection>
-		<url>https://github.com/gtxcontentconnector/contentconnector</url>
+		<connection>scm:git:git@github.com:morghus/contentconnector.git</connection>
+		<developerConnection>scm:git:git@github.com:morghus/contentconnector.git</developerConnection>
+		<url>https://github.com/morghus/contentconnector</url>
 		<tag>1.12.13-PRERELEASE1</tag>
 	</scm>
 	<build>
