@@ -73,7 +73,7 @@ public class CRSearcher {
 	protected static final String STEMMING_KEY = "STEMMING";
 	protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
 	protected static final String COLLECTOR_CLASS_KEY = "collectorClass";
-	protected static final String FILTER_QUERY_KEY = "filterquery";
+	
 	private static final String COLLECTOR_CONFIG_KEY = "collector";
 
 	public static final String RETRIEVE_COLLECTOR_KEY = "collectorInResult";
@@ -443,7 +443,7 @@ public class CRSearcher {
 		}
 		TopDocsCollector<?> collector = createCollector(searcher, hits, sorting, computescores, userPermissions);
 		
-		String filterQuery = ObjectTransformer.getString(request.get(FILTER_QUERY_KEY), null);
+		String filterQuery = ObjectTransformer.getString(request.get(CRRequest.FILTER_QUERY_KEY), null);
 		HashMap<String, Object> result = null;
 		try {
 			analyzer = LuceneAnalyzerFactory.createAnalyzer(config);

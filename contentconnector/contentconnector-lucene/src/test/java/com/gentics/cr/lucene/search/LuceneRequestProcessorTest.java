@@ -76,10 +76,16 @@ public class LuceneRequestProcessorTest {
 	
 	@Test
 	public void testSimpleFilterSearch() throws CRException {
+		
 		CRRequest request = new CRRequest();
 		request.setRequestFilter("content:tree");
-		request.set("filterquery","category:plants");
 		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		Assert.assertEquals("The Search did not find all items.", 2, objects.size());
+				
+		request = new CRRequest();
+		request.setRequestFilter("content:tree");
+		request.set("filterquery","category:plants");
+		objects = rp.getObjects(request);
 		Assert.assertEquals("The Search did not find all items.", 1, objects.size());
 		for(CRResolvableBean bean : objects) {
 			Assert.assertEquals("Object was not in category plants.", "plants", bean.get("category"));

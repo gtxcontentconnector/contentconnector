@@ -327,6 +327,7 @@ public class CRRequestBuilder {
 		if (this.highlightquery != null) {
 			req.set(RequestProcessor.HIGHLIGHT_QUERY_KEY, this.highlightquery);
 		}
+		req.set(CRRequest.FILTER_QUERY_KEY, this.request.getParameter(CRRequest.FILTER_QUERY_KEY));
 		return req;
 	}
 
