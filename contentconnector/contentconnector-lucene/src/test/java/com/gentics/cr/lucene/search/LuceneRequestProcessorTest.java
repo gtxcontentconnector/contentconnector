@@ -47,7 +47,7 @@ public class LuceneRequestProcessorTest {
 		addDoc(accessor, "content:saab", "category:cars", "contentid:10007.3");
 		addDoc(accessor, "content:volvo", "category:cars", "contentid:10007.4");
 		addDoc(accessor, "content:ford", "category:cars", "contentid:10007.5");
-		addDoc(accessor, "content:pagani", "category:cars", "contentid:10007.6");
+		addDoc(accessor, "content:tree", "category:cars", "contentid:10007.6");
 		addDoc(accessor, "content:potatoe", "category:plants", "contentid:10007.7");
 		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.8");
 		addDoc(accessor, "content:tree", "category:plants", "contentid:10007.9");
@@ -68,6 +68,30 @@ public class LuceneRequestProcessorTest {
 		request.setRequestFilter("category:plants");
 		Collection<CRResolvableBean> objects = rp.getObjects(request);
 		Assert.assertEquals("The Search did not find all items.", 3, objects.size());
+		for(CRResolvableBean bean : objects) {
+			Assert.assertEquals("Object was not in category plants.", "plants", bean.get("category"));
+		}
+	}
+	
+	
+	@Test
+	public void testSimpleFilterSearch() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("content:tree");
+		request.set("filterquery","category:plants");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		Assert.assertEquals("The Search did not find all items.", 1, objects.size());
+		for(CRResolvableBean bean : objects) {
+			Assert.assertEquals("Object was not in category plants.", "plants", bean.get("category"));
+		}
+	}
+	
+	@Test
+	public void testSimpleFilterComparisonSearch() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("content:tree AND category:plants");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		Assert.assertEquals("The Search did not find all items.", 1, objects.size());
 		for(CRResolvableBean bean : objects) {
 			Assert.assertEquals("Object was not in category plants.", "plants", bean.get("category"));
 		}

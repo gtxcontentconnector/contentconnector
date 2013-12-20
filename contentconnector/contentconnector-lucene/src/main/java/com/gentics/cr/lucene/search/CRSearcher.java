@@ -27,9 +27,11 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Explanation;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiCollector;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
@@ -38,6 +40,7 @@ import org.apache.lucene.search.TopDocsCollector;
 import org.apache.lucene.search.TopFieldCollector;
 import org.apache.lucene.search.TopScoreDocCollector;
 
+import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -70,6 +73,7 @@ public class CRSearcher {
 	protected static final String STEMMING_KEY = "STEMMING";
 	protected static final String STEMMER_NAME_KEY = "STEMMERNAME";
 	protected static final String COLLECTOR_CLASS_KEY = "collectorClass";
+	protected static final String FILTER_QUERY_KEY = "filterquery";
 	private static final String COLLECTOR_CONFIG_KEY = "collector";
 
 	public static final String RETRIEVE_COLLECTOR_KEY = "collectorInResult";
@@ -282,7 +286,7 @@ public class CRSearcher {
 	 */
 	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> collector, final IndexSearcher searcher, final Query parsedQuery,
 			final boolean explain, final int count, final int start) {
-		return executeSearcher(collector, searcher, parsedQuery, explain, count, start, null);
+		return executeSearcher(collector, searcher, parsedQuery, explain, count, start, null, null);
 	}
 
 	/**
@@ -298,7 +302,7 @@ public class CRSearcher {
 	 * @return ArrayList of results
 	 */
 	private HashMap<String, Object> executeSearcher(final TopDocsCollector<?> ttcollector, final IndexSearcher searcher, final Query parsedQuery,
-			final boolean explain, final int count, final int start, final FacetsCollector facetsCollector) {
+			final boolean explain, final int count, final int start, final FacetsCollector facetsCollector, final Filter filter) {
 		try {
 			
 			Collector collector = null;
@@ -310,8 +314,11 @@ public class CRSearcher {
 				collector = ttcollector;
 			}
 			
-			searcher.search(parsedQuery, collector);
-			
+			if (filter != null) {
+				searcher.search(parsedQuery, filter, collector);
+			} else {
+				searcher.search(parsedQuery, collector);
+			}
 			TopDocs tdocs = ttcollector.topDocs(start, count);
 
 			float maxScoreReturn = tdocs.getMaxScore();
@@ -435,6 +442,8 @@ public class CRSearcher {
 			userPermissions = (String[]) userPermissionsObject;
 		}
 		TopDocsCollector<?> collector = createCollector(searcher, hits, sorting, computescores, userPermissions);
+		
+		String filterQuery = ObjectTransformer.getString(request.get(FILTER_QUERY_KEY), null);
 		HashMap<String, Object> result = null;
 		try {
 			analyzer = LuceneAnalyzerFactory.createAnalyzer(config);
@@ -449,6 +458,12 @@ public class CRSearcher {
 
 				result = new HashMap<String, Object>(3);
 				result.put(RESULT_QUERY_KEY, parsedQuery);
+				Filter filter = null;
+				if (filterQuery != null) {
+					Query parsedFilterQuery = parser.parse(filterQuery);
+					parsedFilterQuery = searcher.rewrite(parsedFilterQuery);
+					filter = new QueryWrapperFilter(parsedFilterQuery);
+				}
 
 				// when facets are active create a FacetsCollector
 				FacetsCollector facetsCollector = null;
@@ -456,7 +471,7 @@ public class CRSearcher {
 					facetsCollector = facetsSearch.createFacetsCollector(facetsIndexReader, taAccessor, taReader);
 				}
 
-				Map<String, Object> ret = executeSearcher(collector, searcher, parsedQuery, explain, count, start, facetsCollector);
+				Map<String, Object> ret = executeSearcher(collector, searcher, parsedQuery, explain, count, start, facetsCollector, filter);
 				if (log.isDebugEnabled()) {
 					for (Object res : ret.values()) {
 						if (res instanceof LinkedHashMap) {

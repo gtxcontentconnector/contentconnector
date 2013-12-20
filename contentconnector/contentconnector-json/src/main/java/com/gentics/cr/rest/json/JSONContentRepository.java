@@ -18,7 +18,7 @@ import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.rest.ContentRepository;
 
 /**
- * Implementaion of Json rappresentation for a REST contentrepositroy.
+ * Implementaion of Json representation for a REST contentrepositroy.
  * 
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -213,10 +213,7 @@ public class JSONContentRepository extends ContentRepository {
 		if (crBean.getChildRepository() != null && crBean.getChildRepository().size() > 0) {
 			// JSONObject childContainer = new JSONObject();
 			JSONArray childContainer = new JSONArray();
-			for (Iterator it = crBean.getChildRepository().iterator(); it.hasNext();) {
-
-				CRResolvableBean chBean = (CRResolvableBean) it.next();
-
+			for (CRResolvableBean chBean : crBean.getChildRepository()) {
 				JSONObject chElement = processElement(chBean);
 				childContainer.add(chElement);
 				// childContainer.element(chBean.getContentid(),chElement);
