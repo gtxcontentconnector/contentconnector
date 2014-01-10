@@ -51,7 +51,7 @@
 		<dependency>
 			<artifactId>portalnode-lib</artifactId>
 			<groupId>com.gentics</groupId>
-			<version>4.4.0</version>
+			<version>4.4.3</version>
 		</dependency>
 		<!-- The node lib must be added since the maven resolvement of portalnode-lib
 			transitive dependencies does not work due to the portalnode/pom.xml node-lib
@@ -59,7 +59,7 @@
 		<dependency>
 			<artifactId>node-lib</artifactId>
 			<groupId>com.gentics</groupId>
-			<version>1.17.0</version>
+			<version>1.17.5</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>hsqldb</artifactId>
