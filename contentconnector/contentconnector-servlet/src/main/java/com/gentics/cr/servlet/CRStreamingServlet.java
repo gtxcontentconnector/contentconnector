@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRServletConfig;
-import com.gentics.cr.rest.RESTBinaryContainer;
 import com.gentics.cr.rest.RESTBinaryStreamingContainer;
 import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
@@ -29,6 +28,10 @@ import com.gentics.cr.util.response.ServletResponseTypeSetter;
  */
 public class CRStreamingServlet extends HttpServlet {
 
+	/**
+	 * Regex to validate the input of the content disposition header.
+	 */
+	private static final String CONTENT_DISPOSITION_HEADER_VALIDATION_REGEX = "[a-zA-Z0-9_\\.-]+";
 	/**
 	 * 
 	 */
@@ -67,7 +70,6 @@ public class CRStreamingServlet extends HttpServlet {
 		if (request.getQueryString() != null) {
 			requestID += "?" + request.getQueryString();
 		}
-		String contentDisposition = request.getParameter("contentdisposition");
 
 		this.log.debug("Starting request: " + requestID);
 
@@ -83,9 +85,7 @@ public class CRStreamingServlet extends HttpServlet {
 			response.getOutputStream(),
 			new ServletResponseTypeSetter(response));
 
-		if (contentDisposition != null && contentDisposition != "") {
-			response.addHeader("Content-Disposition", "attachment; filename=\"" + contentDisposition + "\"");
-		}
+		handleContentDispositionParameter(request, response);
 
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
@@ -94,6 +94,14 @@ public class CRStreamingServlet extends HttpServlet {
 		long e = new Date().getTime();
 		this.log.debug("Executiontime for " + requestID + ":" + (e - s));
 
+	}
+
+	private void handleContentDispositionParameter(HttpServletRequest request,
+			final HttpServletResponse response) {
+		String contentDisposition = request.getParameter("contentdisposition");
+		if (contentDisposition != null && contentDisposition != "" && contentDisposition.matches(CONTENT_DISPOSITION_HEADER_VALIDATION_REGEX)) {
+			response.addHeader("Content-Disposition", "attachment; filename=\"" + contentDisposition + "\"");
+		}
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
