@@ -108,14 +108,14 @@
 	</repositories>
 	<distributionManagement>
 		<repository>
-			<id>archiva.com.gentics.public</id>
+			<id>archiva.lan.gentics.public</id>
 			<name>Gentics Public Repository</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+			<url>http://archiva.office/repository/public_releases</url>
 		</repository>
 		<snapshotRepository>
-			<id>archiva.com.gentics.public_snapshots</id>
+			<id>archiva.lan.public_snapshots</id>
 			<name>Gentics Public Snapshots Repository</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
+			<url>http://archiva.office/repository/public_snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
