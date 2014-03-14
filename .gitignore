@@ -4,4 +4,5 @@
 .metadata/
 target/
 Servers/
-contentconnector/contentconnector-config-sample/src/main/config/index/
+contentconnector-config-sample/src/main/config/index/
+
