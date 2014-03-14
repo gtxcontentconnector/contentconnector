@@ -6,3 +6,4 @@ target/
 Servers/
 contentconnector-config-sample/src/main/config/index/
 
+*.orig
