@@ -25,8 +25,9 @@ import com.gentics.cr.monitoring.UseCase;
  * This class is designed as an UpdateChecker for a ContentRepository. It checks
  * a Gentics ContentRepository for Updates and gives updated Documents to some
  * class
+ * 
  * @author perhab
- *
+ * 
  */
 public abstract class AbstractUpdateCheckerJob implements Runnable {
 
@@ -43,6 +44,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Configuration key for the attribute containing the id.
+	 * 
 	 * @see #idAttribute
 	 */
 	protected static final String ID_ATTRIBUTE_KEY = "IDATTRIBUTE";
@@ -50,6 +52,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	/**
 	 * Configuration key for the attribute containing an indicator if the object
 	 * was updated.
+	 * 
 	 * @see #timestampAttribute
 	 */
 	private static final String TIMESTAMP_ATTR_KEY = "updateattribute";
@@ -98,12 +101,16 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	/**
 	 * Initialises the default values for any implementation of the
 	 * {@link AbstractUpdateCheckerJob}.
-	 * @param updateCheckerConfig Configuration of the update job
-	 * @param indexLoc index location to compare with the repository
-	 * @param updateCheckerConfigmap TODO javadoc
+	 * 
+	 * @param updateCheckerConfig
+	 *            Configuration of the update job
+	 * @param indexLoc
+	 *            index location to compare with the repository
+	 * @param updateCheckerConfigmap
+	 *            TODO javadoc
 	 */
 	public AbstractUpdateCheckerJob(final CRConfig updateCheckerConfig, final IndexLocation indexLoc,
-		final ConcurrentHashMap<String, CRConfigUtil> updateCheckerConfigmap) {
+			final ConcurrentHashMap<String, CRConfigUtil> updateCheckerConfigmap) {
 		config = updateCheckerConfig;
 		configmap = updateCheckerConfigmap;
 		if (configmap == null) {
@@ -127,6 +134,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Gets the Job Identifyer. In most cases this is the CR id.
+	 * 
 	 * @return identifyer as string
 	 */
 	public final String getIdentifyer() {
@@ -135,6 +143,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Get job duration in milliseconds.
+	 * 
 	 * @return duration of the job in milliseconds
 	 */
 	public final long getDuration() {
@@ -143,6 +152,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Get the job's start time as timestamp.
+	 * 
 	 * @return start time of the job as timestamp
 	 */
 	public final long getStart() {
@@ -151,6 +161,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Get the job's start time as date.
+	 * 
 	 * @return start time of the job as date
 	 */
 	public final Date getStartDate() {
@@ -159,6 +170,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Get total count of objects to index.
+	 * 
 	 * @return object count as int.
 	 */
 	public final int getObjectsToIndex() {
@@ -167,6 +179,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Get the number ob objects already indexed.
+	 * 
 	 * @return objects already indexed in the current job
 	 */
 	public final int getObjectsDone() {
@@ -175,6 +188,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Calculates ETA of the current job.
+	 * 
 	 * @return ETA in ms
 	 */
 	public final long getETA() {
@@ -198,6 +212,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Get Current Status as String.
+	 * 
 	 * @return current status string
 	 */
 	public final String getStatusString() {
@@ -206,6 +221,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Check if job had an error.
+	 * 
 	 * @return true if error.
 	 */
 	public final boolean hasError() {
@@ -214,6 +230,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * Get the current error message if set.
+	 * 
 	 * @return error message.
 	 */
 	public final String getErrorMessage() {
@@ -223,7 +240,9 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	/**
 	 * Tests if a {@link AbstractUpdateCheckerJob} has the same identifier as
 	 * the given object being an instance of {@link AbstractUpdateCheckerJob}.
-	 * @param obj Object to test if it is equal to this
+	 * 
+	 * @param obj
+	 *            Object to test if it is equal to this
 	 * @return <code>true</code> if is equal to obj, otherwise false.
 	 */
 	@Override
@@ -235,7 +254,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return this.identifyer.hashCode();
@@ -243,27 +262,38 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 
 	/**
 	 * get the objects to update and update them in the index.
-	 * @param indexLocation - index location to update
-	 * @param config - configuration of the update job
-	 * @throws CRException in case something goes wrong please document in your implementation if you plan to throw an exception
+	 * 
+	 * @param indexLocation
+	 *            - index location to update
+	 * @param config
+	 *            - configuration of the update job
+	 * @throws CRException
+	 *             in case something goes wrong please document in your
+	 *             implementation if you plan to throw an exception
 	 */
 	protected abstract void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException;
 
 	/**
 	 * get all objects that are not up to date.
-	 * @param forceFullUpdate - boolean use to force a full update in the index
-	 * @param request - Request describing the objects to index.
-	 * @param rp - RequestProcessor to get the objects from.
-	 * @param indexUpdateChecker - update checker for the index.
+	 * 
+	 * @param forceFullUpdate
+	 *            - boolean use to force a full update in the index
+	 * @param request
+	 *            - Request describing the objects to index.
+	 * @param rp
+	 *            - RequestProcessor to get the objects from.
+	 * @param indexUpdateChecker
+	 *            - update checker for the index.
 	 * @return {@link Collection} of {@link CRResolvableBean} that need to be
-	 * updated in the index.
+	 *         updated in the index.
 	 * @see IndexUpdateChecker#isUpToDate(String, Object, String,
-	 * com.gentics.api.lib.resolving.Resolvable)
+	 *      com.gentics.api.lib.resolving.Resolvable)
 	 * @see IndexUpdateChecker#deleteStaleObjects()
 	 */
 	protected Collection<CRResolvableBean> getObjectsToUpdate(final CRRequest request, final RequestProcessor rp,
 			final boolean forceFullUpdate, final IndexUpdateChecker indexUpdateChecker) {
 		Collection<CRResolvableBean> updateObjects = new Vector<CRResolvableBean>();
+		boolean interrupted = false;
 
 		UseCase objectsToUpdateCase = MonitorFactory.startUseCase("AbstractUpdateCheck.getObjectsToUpdate("
 				+ request.get("CRID") + ")");
@@ -278,8 +308,8 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 					status.setError(message);
 				}
 			} else {
-				//Sorted (by the idAttribute) list of Resolvables to check for
-				//Updates.
+				// Sorted (by the idAttribute) list of Resolvables to check for
+				// Updates.
 				Collection<CRResolvableBean> objectsToIndex;
 				try {
 					defaultizeRequest(request);
@@ -293,6 +323,11 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 				Iterator<CRResolvableBean> resolvableIterator = objectsToIndex.iterator();
 				try {
 					while (resolvableIterator.hasNext()) {
+						if (Thread.currentThread().isInterrupted()) {
+							interrupted = true;
+							break;
+						}
+
 						CRResolvableBean crElement = resolvableIterator.next();
 						Object crElementIDObject = crElement.get(idAttribute);
 						if (crElementIDObject == null) {
@@ -300,13 +335,12 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 						}
 						String crElementID = crElementIDObject.toString();
 						Object crElementTimestamp = crElement.get(timestampAttribute);
-						//TODO: if any transformers change an attribute that is used for the update check we have to run the transformers
-						//before
-						if (!indexUpdateChecker.isUpToDate(
-							crElementID,
-							crElementTimestamp,
-							timestampAttribute,
-							crElement)) {
+						// TODO: if any transformers change an attribute that is
+						// used for the update check we have to run the
+						// transformers
+						// before
+						if (!indexUpdateChecker.isUpToDate(crElementID, crElementTimestamp, timestampAttribute,
+								crElement)) {
 							updateObjects.add(crElement);
 						}
 					}
@@ -316,16 +350,21 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 					return null;
 				}
 			}
-			//Finally delete all Objects from Index that are not checked for an
-			//Update
-			//fixing possible npe
+			// Finally delete all Objects from Index that are not checked for an
+			// Update
+			// fixing possible npe
 			if (indexUpdateChecker != null) {
 				indexUpdateChecker.deleteStaleObjects();
 			}
 		} finally {
 			objectsToUpdateCase.stop();
 		}
-		return updateObjects;
+		if (interrupted) {
+			// if the thread was interrupted, we return null
+			return null;
+		} else {
+			return updateObjects;
+		}
 	}
 
 	private void defaultizeRequest(CRRequest request) {
