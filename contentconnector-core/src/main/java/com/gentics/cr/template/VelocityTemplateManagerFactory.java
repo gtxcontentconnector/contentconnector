@@ -12,15 +12,11 @@ import org.apache.jcs.access.exception.CacheException;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
 
 import com.gentics.cr.util.CRUtil;
-import java.io.InputStream;
-import java.util.logging.Level;
 
 /**
  * 
@@ -92,7 +88,7 @@ public class VelocityTemplateManagerFactory {
 	 * @return template (either a cached one, found using the key: name + source
 	 *         or a newly created one).
 	 */
-	public static Template getTemplate(String name, String source, String encoding) {
+	public static Template getTemplate(String name, String source, String encoding) throws CRException {
 		if (encoding == null) {
 			encoding = "utf-8";
 		}
@@ -101,9 +97,7 @@ public class VelocityTemplateManagerFactory {
 			try {
 				cache = JCS.getInstance("gentics-cr-velocitytemplates");
 				log.debug("Initialized cache zone for \"gentics-cr-velocitytemplates\".");
-
 			} catch (CacheException e) {
-
 				log.warn("Could not initialize Cache for Velocity templates.", e);
 			}
 		}
@@ -131,14 +125,13 @@ public class VelocityTemplateManagerFactory {
 
 				wrapper = new VelocityTemplateWrapper(Velocity.getTemplate(name));
 
-			} catch (ResourceNotFoundException e1) {
-				log.warn("Could not create Velocity Template.", e1);
-			} catch (ParseErrorException e1) {
-				log.warn("Could not create Velocity Template.", e1);
-			} catch (Exception e1) {
-				log.warn("Could not create Velocity Template.", e1);
+			} catch (Exception e) {
+				log.error("Could not create Velocity Template.", e);
+				throw new CRException(e);
+			} finally {
+			    rep.removeStringResource(name);
 			}
-			rep.removeStringResource(name);
+			
 			if (cache != null) {
 				try {
 					cache.put(name, wrapper);
