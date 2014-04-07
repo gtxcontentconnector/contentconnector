@@ -18,6 +18,7 @@ import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
 
 import com.gentics.cr.util.CRUtil;
 
+import org.apache.log4j.Logger;
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -36,11 +37,12 @@ public class VelocityTemplateManagerFactory {
 
 	private static JCS cache;
 	
+	public static final String VELOCITY_TEMPLATE_CACHEZONE_KEY = "gentics-cr-velocitytemplates";
 	static {
 	    if (cache == null) {
 		try {
-			cache = JCS.getInstance("gentics-cr-velocitytemplates");
-			log.debug("Initialized cache zone for \"gentics-cr-velocitytemplates\".");
+			cache = JCS.getInstance(VELOCITY_TEMPLATE_CACHEZONE_KEY);
+			log.debug("Initialized cache zone for \"" + VELOCITY_TEMPLATE_CACHEZONE_KEY + "\".");
 		} catch (CacheException e) {
 			log.warn("Could not initialize Cache for Velocity templates.", e);
 		}
@@ -193,7 +195,13 @@ public class VelocityTemplateManagerFactory {
 			if (!props.containsKey("file.resource.loader.path")) {
 				props.setProperty("file.resource.loader.path", macropath);
 			}
-
+			// This property, which has possible values of true or false, 
+			// determines whether Velocimacros can be defined in regular 
+			// templates. The default, true, allows template designers to 
+			// define Velocimacros in the templates themselves.
+			if (!props.containsKey("velocimacro.permissions.allow.inline")) {
+			    props.setProperty("velocimacro.permissions.allow.inline", "true");
+			}
 			// This property, with possible values of true or false, defaulting
 			// to false, controls if Velocimacros defined inline are 'visible'
 			// only to the defining template. In other words, with this property
@@ -203,7 +211,9 @@ public class VelocityTemplateManagerFactory {
 			// scope, a template can define a private implementation of the
 			// second VM that will be called by the first VM when invoked by
 			// that template. All other templates are unaffected.
-			props.setProperty("velocimacro.permissions.allow.inline.local.scope", "true");
+			if (!props.containsKey("velocimacro.permissions.allow.inline.local.scope")) {
+			    props.setProperty("velocimacro.permissions.allow.inline.local.scope", "true");
+			}
 
 			if (!props.containsKey("velocimacro.library")) {
 				try {
@@ -227,7 +237,6 @@ public class VelocityTemplateManagerFactory {
 
 		props.put("input.encoding", encoding);
 		props.put("output.encoding", encoding);
-
 		Velocity.init(props);
 	}
 }
