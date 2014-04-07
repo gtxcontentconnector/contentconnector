@@ -19,9 +19,10 @@ import com.gentics.cr.exceptions.CRException;
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
+ * 
  * @version $Revision: 545 $
  * @author $Author: supnig@constantinopel.at $
- *
+ * 
  */
 public class VelocityTemplateManager implements ITemplateManager {
 
@@ -39,6 +40,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 
 	/**
 	 * Create Instance.
+	 * 
 	 * @param encoding
 	 */
 	public VelocityTemplateManager(final String encoding) {
@@ -48,7 +50,8 @@ public class VelocityTemplateManager implements ITemplateManager {
 	}
 
 	/**
-	 * implements {@link com.gentics.cr.template.ITemplateManager#put(String, Object)}.
+	 * implements
+	 * {@link com.gentics.cr.template.ITemplateManager#put(String, Object)}.
 	 */
 	public void put(final String key, final Object value) {
 		if (value != null) {
@@ -57,38 +60,32 @@ public class VelocityTemplateManager implements ITemplateManager {
 	}
 
 	/**
-	 * implements {@link com.gentics.cr.template.ITemplateManager#render(String, String)}
+	 * implements
+	 * {@link com.gentics.cr.template.ITemplateManager#render(String, String)}
 	 */
 	public String render(String templateName, String templateSource) throws CRException {
 		String renderedTemplate = null;
 		long s1 = System.currentTimeMillis();
 
-		StringResourceRepository rep = StringResourceLoader.getRepository();
-		if (rep == null) {
-			rep = new StringResourceRepositoryImpl();
-			StringResourceLoader.setRepository(StringResourceLoader.REPOSITORY_NAME_DEFAULT, rep);
-		}
-		rep.setEncoding(this.encoding);
 		try {
 
-			Template template = this.templates.get(templateName);
-			if (template == null) {
-				rep.putStringResource(templateName, templateSource);
+			// gets the template from the VelocityTemplateManagerFactory, in
+			// order to be able to cache the template
+			Template template = VelocityTemplateManagerFactory.getTemplate(templateName, templateSource, this.encoding);
 
-				template = Velocity.getTemplate(templateName);
-				rep.removeStringResource(templateName);
-				this.templates.put(templateName, template);
-			}
-
+			// generate the velocity context
 			VelocityContext context = new VelocityContext();
 			Iterator<String> it = this.objectstoput.keySet().iterator();
 			while (it.hasNext()) {
 				String key = it.next();
 				context.put(key, this.objectstoput.get(key));
 			}
+
+			// evaluate the template
 			StringWriter ret = new StringWriter();
 			template.merge(context, ret);
 			renderedTemplate = ret.toString();
+
 		} catch (ResourceNotFoundException e) {
 			throw new CRException(e);
 		} catch (ParseErrorException e) {
