@@ -35,7 +35,17 @@ public class VelocityTemplateManagerFactory {
 	private static boolean configured = false;
 
 	private static JCS cache;
-
+	
+	static {
+	    if (cache == null) {
+		try {
+			cache = JCS.getInstance("gentics-cr-velocitytemplates");
+			log.debug("Initialized cache zone for \"gentics-cr-velocitytemplates\".");
+		} catch (CacheException e) {
+			log.warn("Could not initialize Cache for Velocity templates.", e);
+		}
+	    }
+	}
 	/**
 	 * Get a configured VelocityTemplateManager.
 	 * 
@@ -91,15 +101,6 @@ public class VelocityTemplateManagerFactory {
 	public static Template getTemplate(String name, String source, String encoding) throws CRException {
 		if (encoding == null) {
 			encoding = "utf-8";
-		}
-
-		if (cache != null) {
-			try {
-				cache = JCS.getInstance("gentics-cr-velocitytemplates");
-				log.debug("Initialized cache zone for \"gentics-cr-velocitytemplates\".");
-			} catch (CacheException e) {
-				log.warn("Could not initialize Cache for Velocity templates.", e);
-			}
 		}
 		
 		VelocityTemplateWrapper wrapper = null;
