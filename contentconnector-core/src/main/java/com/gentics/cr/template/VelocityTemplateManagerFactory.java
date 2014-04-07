@@ -200,6 +200,17 @@ public class VelocityTemplateManagerFactory {
 				props.setProperty("file.resource.loader.path", macropath);
 			}
 
+			// This property, with possible values of true or false, defaulting
+			// to false, controls if Velocimacros defined inline are 'visible'
+			// only to the defining template. In other words, with this property
+			// set to true, a template can define inline VMs that are usable
+			// only by the defining template. You can use this for fancy VM
+			// tricks - if a global VM calls another global VM, with inline
+			// scope, a template can define a private implementation of the
+			// second VM that will be called by the first VM when invoked by
+			// that template. All other templates are unaffected.
+			props.setProperty("velocimacro.permissions.allow.inline.local.scope", "true");
+
 			if (!props.containsKey("velocimacro.library")) {
 				try {
 
