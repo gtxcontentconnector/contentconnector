@@ -38,16 +38,6 @@ public class VelocityTemplateManagerFactory {
 	private static JCS cache;
 	
 	public static final String VELOCITY_TEMPLATE_CACHEZONE_KEY = "gentics-cr-velocitytemplates";
-	static {
-	    if (cache == null) {
-		try {
-			cache = JCS.getInstance(VELOCITY_TEMPLATE_CACHEZONE_KEY);
-			log.debug("Initialized cache zone for \"" + VELOCITY_TEMPLATE_CACHEZONE_KEY + "\".");
-		} catch (CacheException e) {
-			log.warn("Could not initialize Cache for Velocity templates.", e);
-		}
-	    }
-	}
 	/**
 	 * Get a configured VelocityTemplateManager.
 	 * 
@@ -101,6 +91,16 @@ public class VelocityTemplateManagerFactory {
 	 *         or a newly created one).
 	 */
 	public static Template getTemplate(String name, String source, String encoding) throws CRException {
+		if (cache == null) {
+		    try {
+			    cache = JCS.getInstance(VELOCITY_TEMPLATE_CACHEZONE_KEY);
+			    if(log.isDebugEnabled()) {
+				log.debug("Initialized cache zone for \"" + VELOCITY_TEMPLATE_CACHEZONE_KEY + "\".");
+			    }
+		    } catch (CacheException e) {
+			    log.warn("Could not initialize Cache for Velocity templates.", e);
+		    }
+		}
 		if (encoding == null) {
 			encoding = "utf-8";
 		}
