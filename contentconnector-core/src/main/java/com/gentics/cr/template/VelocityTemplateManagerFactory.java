@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
-import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
@@ -79,16 +78,18 @@ public class VelocityTemplateManagerFactory {
 	}
 
 	/**
-	 * Create a Velocity template with the given name and source.
+	 * Create a Velocity template with the given name and source and store it into JCS cache. If a template with a
+	 * given name was found in the cache, the cached template will be returned instead of a newly created.
+	 * <p>
+	 * Attention: the name of template must be unique because it is used as cache key!!
 	 * 
-	 * Attention: name of template must be unique!!
-	 * 
-	 * @param name
-	 * @param source
+	 * @param name the unique name of the template
+	 * @param source the velocity source-code of the template
 	 * @param encoding
 	 *            encoding as string or null => defaults to utf-8
-	 * @return template (either a cached one, found using the key: name + source
+	 * @return template (either a cached one, found using the name as cache key
 	 *         or a newly created one).
+	 * @throws com.gentics.cr.exceptions.CRException
 	 */
 	public static Template getTemplate(String name, String source, String encoding) throws CRException {
 		if (cache == null) {
@@ -108,7 +109,6 @@ public class VelocityTemplateManagerFactory {
 		VelocityTemplateWrapper wrapper = null;
 
 		if (cache != null) {
-			// removed source from cache key because name should be unique.
 			wrapper = (VelocityTemplateWrapper) cache.get(name);
 		}
 

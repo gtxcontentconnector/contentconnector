@@ -68,12 +68,8 @@ public class VelocityTemplateManager implements ITemplateManager {
 		long s1 = System.currentTimeMillis();
 
 		try {
-
-			// gets the template from the VelocityTemplateManagerFactory, in
-			// order to be able to cache the template
 			Template template = VelocityTemplateManagerFactory.getTemplate(templateName, templateSource, this.encoding);
 
-			// generate the velocity context
 			VelocityContext context = new VelocityContext();
 			Iterator<String> it = this.objectstoput.keySet().iterator();
 			while (it.hasNext()) {
@@ -81,7 +77,6 @@ public class VelocityTemplateManager implements ITemplateManager {
 				context.put(key, this.objectstoput.get(key));
 			}
 
-			// evaluate the template
 			StringWriter ret = new StringWriter();
 			template.merge(context, ret);
 			renderedTemplate = ret.toString();
