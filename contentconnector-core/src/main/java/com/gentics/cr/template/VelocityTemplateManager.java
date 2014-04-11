@@ -7,14 +7,12 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
-import org.apache.velocity.runtime.resource.util.StringResourceRepository;
-import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
 
 import com.gentics.cr.exceptions.CRException;
+import java.io.IOException;
+import org.apache.velocity.exception.MethodInvocationException;
 
 /**
  * 
@@ -29,14 +27,9 @@ public class VelocityTemplateManager implements ITemplateManager {
 	/**
 	 * Log4j Logger.
 	 */
-	private static Logger log = Logger.getLogger(VelocityTemplateManager.class);
-	private String encoding;
+	private static final Logger log = Logger.getLogger(VelocityTemplateManager.class);
+	private final String encoding;
 	private HashMap<String, Object> objectstoput;
-
-	/**
-	 * Templatecache.
-	 */
-	private HashMap<String, Template> templates;
 
 	/**
 	 * Create Instance.
@@ -46,7 +39,6 @@ public class VelocityTemplateManager implements ITemplateManager {
 	public VelocityTemplateManager(final String encoding) {
 		this.encoding = encoding;
 		this.objectstoput = new HashMap<String, Object>();
-		this.templates = new HashMap<String, Template>();
 	}
 
 	/**
@@ -63,6 +55,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 	 * implements
 	 * {@link com.gentics.cr.template.ITemplateManager#render(String, String)}
 	 */
+	@Override
 	public String render(String templateName, String templateSource) throws CRException {
 		String renderedTemplate = null;
 		long s1 = System.currentTimeMillis();
@@ -81,16 +74,15 @@ public class VelocityTemplateManager implements ITemplateManager {
 			template.merge(context, ret);
 			renderedTemplate = ret.toString();
 
-		} catch (ResourceNotFoundException e) {
-			throw new CRException(e);
-		} catch (ParseErrorException e) {
-			throw new CRException(e);
 		} catch (Exception e) {
+			// convert all expections thrown during rendering of the velocity template to CRExceptions
 			throw new CRException(e);
 		} finally {
 			this.objectstoput = new HashMap<String, Object>();
 		}
-		log.debug("Velocity has been rendered in " + (System.currentTimeMillis() - s1) + "ms");
+		if(log.isDebugEnabled()) {
+		    log.debug("Velocity has been rendered in " + (System.currentTimeMillis() - s1) + "ms");
+		}
 		return renderedTemplate;
 	}
 

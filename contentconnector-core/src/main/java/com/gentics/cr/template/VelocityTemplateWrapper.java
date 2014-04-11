@@ -17,15 +17,19 @@ public class VelocityTemplateWrapper implements Serializable {
 
 	/** The template. */
 	private Template template;
+	/** The source of the template. */
+	private String source;
 
 	/**
 	 * Instantiates a new velocity template wrapper.
 	 * 
 	 * @param template
 	 *            the template
+	 * @param source the source of the template
 	 */
-	public VelocityTemplateWrapper(Template template) {
+	public VelocityTemplateWrapper(Template template, String source) {
 		this.template = template;
+		this.source = source;
 	}
 
 	/**
@@ -45,6 +49,15 @@ public class VelocityTemplateWrapper implements Serializable {
 	 */
 	public void setTemplate(Template template) {
 		this.template = template;
+	}
+	/**
+	 * Returns the source of the template
+	 * 
+	 * @return the source
+	 */
+	public String getSource() {
+	    return source;
+	    
 	}
 
 }

@@ -28,15 +28,21 @@ import org.apache.log4j.Logger;
  */
 public class VelocityTemplateManagerFactory {
 
-	private static Logger log = Logger.getLogger(VelocityTemplateManagerFactory.class);
-
+	private static final String DEFAULT_ENCODING = "utf-8";
+	
+	private static final String CACHE_KEY_SEPARATOR = "|";
+	
 	private static final String VELOCITYMACRO_FILENAME = "velocitymacros.vm";
+	
+	/** The cache zone key for the velocity template cache zone */
+	public static final String VELOCITY_TEMPLATE_CACHEZONE_KEY = "gentics-cr-velocitytemplates";
+    
+	private static Logger log = Logger.getLogger(VelocityTemplateManagerFactory.class);
 
 	private static boolean configured = false;
 
 	private static JCS cache;
 	
-	public static final String VELOCITY_TEMPLATE_CACHEZONE_KEY = "gentics-cr-velocitytemplates";
 	/**
 	 * Get a configured VelocityTemplateManager.
 	 * 
@@ -67,7 +73,7 @@ public class VelocityTemplateManagerFactory {
 	public static synchronized VelocityTemplateManager getConfiguredVelocityTemplateManagerInstance(String encoding,
 			String macropath, String propFile) throws Exception {
 		if (encoding == null) {
-			encoding = "utf-8";
+			encoding = DEFAULT_ENCODING;
 		}
 		if (!configured) {
 			configure(encoding, macropath, propFile);
@@ -78,16 +84,36 @@ public class VelocityTemplateManagerFactory {
 	}
 
 	/**
-	 * Create a Velocity template with the given name and source and store it into JCS cache. If a template with a
-	 * given name was found in the cache, the cached template will be returned instead of a newly created.
-	 * <p>
-	 * Attention: the name of template must be unique because it is used as cache key!!
+	 * Creates a unique cache key which is used to store templates in cache. To create the cash key the name, the 
+	 * hash-code of the source and the encoding are concatenated using a separator.
 	 * 
-	 * @param name the unique name of the template
+	 * @param name the name of the template
+	 * @param source the velocity source-code of the template
+	 * @param encoding encoding as string
+	 * @return the cache key 
+	 */
+	public static String createCacheKey(String name, String source, String encoding) {
+		StringBuilder cacheKey = new StringBuilder();
+		cacheKey.append(name)
+			.append(CACHE_KEY_SEPARATOR)
+			.append(source.hashCode())
+			.append(CACHE_KEY_SEPARATOR)
+			.append(encoding);
+		return cacheKey.toString();
+	}
+	
+	/**
+	 * Create a Velocity template with the given name and source and store it into JCS cache. If a template with a
+	 * was found in the cache, the cached template will be returned instead of a newly created.
+	 * <p>
+	 * to generate the cache key the method {@link #createCacheKey(java.lang.String, java.lang.String, java.lang.String)} 
+	 * is used
+	 * 
+	 * @param name the name of the template
 	 * @param source the velocity source-code of the template
 	 * @param encoding
 	 *            encoding as string or null => defaults to utf-8
-	 * @return template (either a cached one, found using the name as cache key
+	 * @return template (either a cached one, found using the generated cache key,
 	 *         or a newly created one).
 	 * @throws com.gentics.cr.exceptions.CRException
 	 */
@@ -103,16 +129,18 @@ public class VelocityTemplateManagerFactory {
 		    }
 		}
 		if (encoding == null) {
-			encoding = "utf-8";
+			encoding = DEFAULT_ENCODING;
 		}
 		
 		VelocityTemplateWrapper wrapper = null;
-
+		String cacheKey = null;
 		if (cache != null) {
-			wrapper = (VelocityTemplateWrapper) cache.get(name);
+			cacheKey = VelocityTemplateManagerFactory.createCacheKey(name, source, encoding);
+			wrapper = (VelocityTemplateWrapper) cache.get(cacheKey);
 		}
-
-		if (wrapper == null) {
+		// the cache key is built using String.hasCode() - there could be collisions so make sure that 
+		// the source of the cached template matches the current source
+		if (wrapper == null || !source.equals(wrapper.getSource())) {
 
 			StringResourceRepository rep = StringResourceLoader.getRepository();
 
@@ -126,7 +154,7 @@ public class VelocityTemplateManagerFactory {
 
 			try {
 
-				wrapper = new VelocityTemplateWrapper(Velocity.getTemplate(name));
+				wrapper = new VelocityTemplateWrapper(Velocity.getTemplate(name), source);
 
 			} catch (Exception e) {
 				log.error("Could not create Velocity Template.", e);
@@ -137,7 +165,7 @@ public class VelocityTemplateManagerFactory {
 			
 			if (cache != null) {
 				try {
-					cache.put(name, wrapper);
+					cache.put(cacheKey, wrapper);
 				} catch (CacheException e) {
 					log.warn("Could not put Velocity Template to cache.", e);
 				}
