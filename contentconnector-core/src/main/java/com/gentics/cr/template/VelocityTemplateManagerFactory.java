@@ -189,10 +189,6 @@ public class VelocityTemplateManagerFactory {
 		return (wrapper.getTemplate());
 	}
 
-	private static void configure(String encoding, String macropath) throws Exception {
-		configure(encoding, macropath, "");
-	}
-
 	private static void configure(String encoding, String macropath, String propFile) throws Exception {
 		Properties props = new Properties();
 
