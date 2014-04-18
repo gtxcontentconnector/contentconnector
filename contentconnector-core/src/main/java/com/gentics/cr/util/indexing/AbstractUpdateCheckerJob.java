@@ -263,31 +263,21 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	/**
 	 * get the objects to update and update them in the index.
 	 * 
-	 * @param indexLocation
-	 *            - index location to update
-	 * @param config
-	 *            - configuration of the update job
-	 * @throws CRException
-	 *             in case something goes wrong please document in your
-	 *             implementation if you plan to throw an exception
+	 * @param indexLocation - index location to update
+	 * @param config - configuration of the update job
+	 * @throws CRException in case something goes wrong please document in your implementation if you plan to throw an exception
 	 */
 	protected abstract void indexCR(IndexLocation indexLocation, CRConfigUtil config) throws CRException;
 
 	/**
 	 * get all objects that are not up to date.
 	 * 
-	 * @param forceFullUpdate
-	 *            - boolean use to force a full update in the index
-	 * @param request
-	 *            - Request describing the objects to index.
-	 * @param rp
-	 *            - RequestProcessor to get the objects from.
-	 * @param indexUpdateChecker
-	 *            - update checker for the index.
-	 * @return {@link Collection} of {@link CRResolvableBean} that need to be
-	 *         updated in the index.
-	 * @see IndexUpdateChecker#isUpToDate(String, Object, String,
-	 *      com.gentics.api.lib.resolving.Resolvable)
+	 * @param forceFullUpdate - boolean use to force a full update in the index
+	 * @param request - Request describing the objects to index.
+	 * @param rp - RequestProcessor to get the objects from.
+	 * @param indexUpdateChecker - update checker for the index.
+	 * @return {@link Collection} of {@link CRResolvableBean} that need to be updated in the index.
+	 * @see IndexUpdateChecker#isUpToDate(String, Object, String, com.gentics.api.lib.resolving.Resolvable)
 	 * @see IndexUpdateChecker#deleteStaleObjects()
 	 */
 	protected Collection<CRResolvableBean> getObjectsToUpdate(final CRRequest request, final RequestProcessor rp,

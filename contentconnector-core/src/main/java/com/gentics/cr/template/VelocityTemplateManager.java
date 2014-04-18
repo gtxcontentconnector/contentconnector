@@ -80,7 +80,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 		} finally {
 			this.objectstoput = new HashMap<String, Object>();
 		}
-		if(log.isDebugEnabled()) {
+		if (log.isDebugEnabled()) {
 		    log.debug("Velocity has been rendered in " + (System.currentTimeMillis() - s1) + "ms");
 		}
 		return renderedTemplate;
