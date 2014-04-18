@@ -264,6 +264,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	protected Collection<CRResolvableBean> getObjectsToUpdate(final CRRequest request, final RequestProcessor rp,
 			final boolean forceFullUpdate, final IndexUpdateChecker indexUpdateChecker) {
 		Collection<CRResolvableBean> updateObjects = new Vector<CRResolvableBean>();
+		boolean interrupted = false;
 
 		UseCase objectsToUpdateCase = MonitorFactory.startUseCase("AbstractUpdateCheck.getObjectsToUpdate("
 				+ request.get("CRID") + ")");
@@ -293,6 +294,11 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 				Iterator<CRResolvableBean> resolvableIterator = objectsToIndex.iterator();
 				try {
 					while (resolvableIterator.hasNext()) {
+						if (Thread.currentThread().isInterrupted()) {
+							interrupted = true;
+							break;
+						}
+
 						CRResolvableBean crElement = resolvableIterator.next();
 						Object crElementIDObject = crElement.get(idAttribute);
 						if (crElementIDObject == null) {
@@ -325,7 +331,12 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 		} finally {
 			objectsToUpdateCase.stop();
 		}
-		return updateObjects;
+		if (interrupted) {
+			// if the thread was interrupted, we return null
+			return null;
+		} else {
+			return updateObjects;
+		}
 	}
 
 	private void defaultizeRequest(CRRequest request) {
