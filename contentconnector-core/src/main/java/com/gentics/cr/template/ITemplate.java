@@ -1,5 +1,7 @@
 package com.gentics.cr.template;
 
+import java.io.Serializable;
+
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -7,7 +9,7 @@ package com.gentics.cr.template;
  * @author $Author: supnig@constantinopel.at $
  *
  */
-public interface ITemplate {
+public interface ITemplate extends Serializable {
 	/**
 	 * gets the key of the template. usually a md5 hash
 	 * @return key

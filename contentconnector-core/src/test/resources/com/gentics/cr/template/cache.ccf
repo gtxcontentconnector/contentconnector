@@ -55,13 +55,7 @@ jcs.region.gentics-parsedexpressions.cacheattributes.MaxObjects=1000
 jcs.region.gentics-portal-cachedb-metadata=
 jcs.region.gentics-portal-cachedb-metadata.cacheattributes.MaxObjects=1000
 
-## cache region for velocity templates
-jcs.region.gentics-cr-velocitytemplates=
-jcs.region.gentics-cr-velocitytemplates.cacheattributes.MaxObjects=100
-
 # AVAILABLE AUXILIARY CACHES not used
 # jcs.auxiliary.DC=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory
 # jcs.auxiliary.DC.attributes=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes
 # jcs.auxiliary.DC.attributes.DiskPath=${java.io.tmpdir}/jcs
-
-#com.gentics.cr.useportalcaches=true
