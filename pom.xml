@@ -27,6 +27,7 @@
 					<goals>deploy</goals>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<tagNameFormat>@{project.version}</tagNameFormat>
+                                        <completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=contentconnector-changelog/src/changelog/mappings/**</completionGoals>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -66,6 +67,7 @@
 		</plugins>
 	</build>
 	<modules>
+		<module>contentconnector-changelog</module>
 		<module>contentconnector-core</module>
 		<module>contentconnector-apihelper</module>
 		<module>contentconnector-config-sample</module>
