@@ -1,0 +1,1 @@
+Lucene Index Update Checker now exits gracefully on server shutdown.
