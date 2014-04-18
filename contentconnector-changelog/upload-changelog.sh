@@ -1,10 +1,10 @@
 #!/bin/bash
 REMOTE_HOST=gentics@www.gentics.com
-REMOTE_DEST=/var/www/genticscom/gcc/changelog
+REMOTE_DEST=/var/www/genticscom/gcc
 TMPDIR=target
 
-SCRIPT="`readlink -f $0`" 
-BASEDIR="`dirname "$SCRIPT"`"
+SCRIPT="$(readlink -f $0)" 
+BASEDIR="$(dirname "$SCRIPT")"
 
 cd $BASEDIR
 
@@ -23,7 +23,6 @@ read
   echo -e "\n * Cleanup"
     rm $TMPDIR/*single*.zip
     ssh $REMOTE_HOST "cd $REMOTE_DEST/changelog ; rm *.zip"
-    handleError $? "Could not cleanup remote changelog directory"
   echo "Done."
   
   echo -e "\n * Transfering and extracting changelog"
@@ -31,6 +30,8 @@ read
     handleError $? "Could not transfer changelog"
     ssh $REMOTE_HOST "cd $REMOTE_DEST/changelog ; unzip -o *.zip" 
     handleError $? "Could not extract changelog"
+    ssh $REMOTE_HOST "cd $REMOTE_DEST/changelog ; rm *.zip"
+    handleError $? "Could not remove zipfile"
   echo "Done."
 
 echo "Done."
