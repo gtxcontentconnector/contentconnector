@@ -1,1 +1,2 @@
-Fixed Velocity template caching.
+A bug in the velocity template caching was fixed. Previously the template caching didn't cache the evaluated templates correctly.
+
