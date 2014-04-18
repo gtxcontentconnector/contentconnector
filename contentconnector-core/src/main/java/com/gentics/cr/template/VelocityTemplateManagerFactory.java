@@ -151,7 +151,7 @@ public class VelocityTemplateManagerFactory {
 				// that were waiting the cache may now be filled.
 				if (cache != null) {
 					wrapper = (VelocityTemplateWrapper) cache.get(cacheKey);
-					if (wrapper != null) {
+					if (wrapper != null && source.equals(wrapper.getSource())) {
 						return wrapper.getTemplate();
 					}
 				}
@@ -187,6 +187,10 @@ public class VelocityTemplateManagerFactory {
 			}
 		}
 		return (wrapper.getTemplate());
+	}
+
+	private static void configure(String encoding, String macropath) throws Exception {
+		configure(encoding, macropath, "");
 	}
 
 	private static void configure(String encoding, String macropath, String propFile) throws Exception {
