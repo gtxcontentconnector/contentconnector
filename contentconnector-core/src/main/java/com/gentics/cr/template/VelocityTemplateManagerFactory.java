@@ -207,6 +207,11 @@ public class VelocityTemplateManagerFactory {
 				}
 			}
 		}
+		if (wrapper == null) {
+		    String message = "Could not create Velocity Template with name \"" + name + "\"";
+		    log.error(message);
+		    throw new CRException(message);
+		}
 		return (wrapper.getTemplate());
 	}
 
