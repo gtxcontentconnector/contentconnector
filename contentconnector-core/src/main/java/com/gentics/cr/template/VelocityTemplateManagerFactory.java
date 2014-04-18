@@ -1,6 +1,7 @@
 package com.gentics.cr.template;
 
 import com.gentics.cr.exceptions.CRException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -160,32 +161,46 @@ public class VelocityTemplateManagerFactory {
 		// the source of the cached template matches the current source
 		if (wrapper == null || !source.equals(wrapper.getSource())) {
 
-			StringResourceRepository rep = StringResourceLoader.getRepository();
+			// fetching and evaluating the template may only be done once at
+			// a time
+			synchronized (VelocityTemplateManagerFactory.class) {
 
-			if (rep == null) {
-				rep = new StringResourceRepositoryImpl();
-				StringResourceLoader.setRepository(StringResourceLoader.REPOSITORY_NAME_DEFAULT, rep);
-			}
+				// recheck cache after entering the synchronized area. For threads
+				// that were waiting the cache may now be filled.
+				if (cache != null) {
+					wrapper = (VelocityTemplateWrapper) cache.get(cacheKey);
+					if (wrapper != null && source.equals(wrapper.getSource())) {
+						return wrapper.getTemplate();
+					}
+				}
 
-			rep.setEncoding(encoding);
-			rep.putStringResource(name, source);
+				StringResourceRepository rep = StringResourceLoader.getRepository();
 
-			try {
+				if (rep == null) {
+					rep = new StringResourceRepositoryImpl();
+					StringResourceLoader.setRepository(StringResourceLoader.REPOSITORY_NAME_DEFAULT, rep);
+				}
 
-				wrapper = new VelocityTemplateWrapper(Velocity.getTemplate(name), source);
+				rep.setEncoding(encoding);
+				rep.putStringResource(name, source);
 
-			} catch (Exception e) {
-				log.error("Could not create Velocity Template.", e);
-				throw new CRException(e);
-			} finally {
-			    rep.removeStringResource(name);
-			}
-			
-			if (cache != null) {
 				try {
-					cache.put(cacheKey, wrapper);
-				} catch (CacheException e) {
-					log.warn("Could not put Velocity Template to cache.", e);
+
+					wrapper = new VelocityTemplateWrapper(Velocity.getTemplate(name), source);
+
+				} catch (Exception e) {
+					log.error("Could not create Velocity Template.", e);
+					throw new CRException(e);
+				} finally {
+				    rep.removeStringResource(name);
+				}
+				
+				if (cache != null) {
+					try {
+						cache.put(cacheKey, wrapper);
+					} catch (CacheException e) {
+						log.warn("Could not put Velocity Template to cache.", e);
+					}
 				}
 			}
 		}
