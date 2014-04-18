@@ -149,7 +149,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 			}
 		}
 
-		Assert.assertTrue(compareResolvableChildren(originalNavigationObject, result));
+		Assert.assertFalse(compareResolvableChildren(originalNavigationObject, result));
 	}
 
 	/**

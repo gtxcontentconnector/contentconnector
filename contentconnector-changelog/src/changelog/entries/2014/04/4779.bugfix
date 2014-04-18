@@ -1,1 +1,3 @@
 Fixed Velocity template caching.
+
+Previously the template caching didn't cache the evaluated template correctly.
