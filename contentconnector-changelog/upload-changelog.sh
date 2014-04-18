@@ -1,6 +1,6 @@
 #!/bin/bash
 REMOTE_HOST=gentics@www.gentics.com
-REMOTE_DEST=/var/www/vhosts/www.gentics.com/gcn
+REMOTE_DEST=/var/www/genticscom/gcc/changelog
 TMPDIR=target
 
 SCRIPT="`readlink -f $0`" 
@@ -16,8 +16,6 @@ function handleError() {
      exit 10
   fi
 }
-
-
 
 echo -e "\n * Uploading Changelog. Press enter to continue"
 read
