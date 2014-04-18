@@ -168,9 +168,12 @@ public class VelocityTemplateManagerFactory {
 				// recheck cache after entering the synchronized area. For threads
 				// that were waiting the cache may now be filled.
 				if (cache != null) {
-					wrapper = (VelocityTemplateWrapper) cache.get(cacheKey);
-					if (wrapper != null && source.equals(wrapper.getSource())) {
+					Object obj = cache.get(cacheKey);
+					if (obj != null && obj instanceof VelocityTemplateWrapper) {
+					    wrapper = (VelocityTemplateWrapper) obj;
+					    if (source.equals(wrapper.getSource())) {
 						return wrapper.getTemplate();
+					    }
 					}
 				}
 
