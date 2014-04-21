@@ -16,7 +16,7 @@ public class StringUtilsTest {
 		String expectedOutput = "Test ÄÜÖßöäü test &lt; hallo &gt;";
 		String output = StringUtils.escapeSearchContent(input);
 
-		assertEquals("Escaping failed.", expectedOutput, output);
+		assertEquals("Escaping failed.", expectedOutput, output + "failure");
 	}
 
 	/** simple test. */
