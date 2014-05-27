@@ -18,6 +18,15 @@
 		<tag>HEAD</tag>
 	</scm>
 	<build>
+	<pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>com.gentics</groupId>
+				<artifactId>changelog-manager-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+		</plugins>
+	</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
