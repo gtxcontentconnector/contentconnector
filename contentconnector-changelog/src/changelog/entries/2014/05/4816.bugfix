@@ -1,0 +1,1 @@
+Removed a ClassCastException when a language not existing in the CR is requested using CMSPageLanguageFallbackRequestProcessor

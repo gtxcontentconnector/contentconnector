@@ -17,6 +17,9 @@
   	<attributetype name="filename" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>
   	<attributetype name="node_id" attributetype="3" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="true"/>
   	<attributetype name="permissions" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="true" optimized="false"/>
+  	<attributetype name="lang" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="true"/>
+  	<attributetype name="contentid_de" attributetype="2" excludeVersioning="false" filesystem="false" linkedobjecttype="10007" multivalue="false" optimized="true"/>
+  	<attributetype name="contentid_en" attributetype="2" excludeVersioning="false" filesystem="false" linkedobjecttype="10007" multivalue="false" optimized="true"/>
   </objecttype>
   <objecttype excludeversioning="false" id="10002" name="Folder">
   	<attributetype name="name" attributetype="1" excludeVersioning="false" filesystem="false" linkedobjecttype="0" multivalue="false" optimized="false"/>

@@ -100,7 +100,11 @@ public class CMSPageLanguageFallbackRequestProcessor extends RequestProcessor {
 				if (langs != null) {
 
 					for (String lang : langs) {
-						Resolvable langVersion = (Resolvable) reso.get("contentid_" + lang);
+						Resolvable langVersion = null;
+						Object result = reso.get("contentid_" + lang);
+						if (result instanceof Resolvable) {
+							langVersion = (Resolvable)result;
+						}
 						if (langVersion != null) {
 							found = true;
 							if (!fallbackedColl.contains(langVersion)) {
@@ -119,7 +123,7 @@ public class CMSPageLanguageFallbackRequestProcessor extends RequestProcessor {
 				}
 			}
 
-			if (count != 0) {
+			if (count > 0 ) {
 				Collection<Resolvable> sizedColl = new ArrayList<Resolvable>();
 				Iterator<Resolvable> it = fallbackedColl.iterator();
 				int counter = 0;
