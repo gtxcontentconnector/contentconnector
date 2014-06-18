@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gentics</groupId>
 	<artifactId>contentconnector</artifactId>
@@ -8,8 +9,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
-		<maven.javadoc.plugin.version>2.8.1</maven.javadoc.plugin.version>
-		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 		<node.version>2.0.1-SNAPSHOT</node.version>
 		<portalnode.version>4.6.0-SNAPSHOT</portalnode.version>
 	</properties>
@@ -19,17 +18,204 @@
 		<url>https://github.com/gtxcontentconnector/contentconnector</url>
 		<tag>HEAD</tag>
 	</scm>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+
+	<modules>
+		<module>contentconnector-changelog</module>
+		<module>contentconnector-core</module>
+		<module>contentconnector-apihelper</module>
+		<module>contentconnector-config-sample</module>
+		<module>contentconnector-http</module>
+		<module>contentconnector-json</module>
+		<module>contentconnector-jtidy</module>
+		<module>contentconnector-language</module>
+		<module>contentconnector-lucene</module>
+		<module>contentconnector-lucene-autocomplete</module>
+		<module>contentconnector-poi-transformer</module>
+		<module>contentconnector-portlet</module>
+		<module>contentconnector-servlet</module>
+		<module>contentconnector-servlet-sample</module>
+		<module>contentconnector-social-networking</module>
+		<module>contentconnector-testutils</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-apihelper</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-lucene</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-language</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-json</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<artifactId>portalnode-lib</artifactId>
+				<groupId>com.gentics</groupId>
+				<version>${portalnode.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-testutils</artifactId>
+				<version>${project.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<artifactId>node-lib</artifactId>
+				<groupId>com.gentics</groupId>
+				<version>${node.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-httpclient</groupId>
+				<artifactId>commons-httpclient</artifactId>
+				<version>3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>1.6.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity-tools</artifactId>
+				<version>1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.16</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jcs</groupId>
+				<artifactId>jcs</artifactId>
+				<version>1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>3.1</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb-j5</artifactId>
+				<version>2.2.4</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.8.1</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.2</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet.jsp</groupId>
+				<artifactId>jsp-api</artifactId>
+				<version>2.1</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.portlet</groupId>
+				<artifactId>portlet-api</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.3</version>
+				<scope>provided</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<build>
-	<pluginManagement>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.gentics</groupId>
+					<artifactId>changelog-manager-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
-				<groupId>com.gentics</groupId>
-				<artifactId>changelog-manager-plugin</artifactId>
-				<version>2.2</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
+				<configuration>
+					<compilerVersion>1.7</compilerVersion>
+					<encoding>UTF-8</encoding>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
 			</plugin>
-		</plugins>
-	</pluginManagement>
-		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -38,7 +224,9 @@
 					<goals>deploy</goals>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<tagNameFormat>@{project.version}</tagNameFormat>
-					<completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=contentconnector-changelog/src/changelog/mappings/**</completionGoals>
+					<completionGoals>scm:checkin -Dmessage="Added generated changelog
+						mapping" -Dbasedir=${project.basedir}/
+						-Dincludes=contentconnector-changelog/src/changelog/mappings/**</completionGoals>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -77,24 +265,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<modules>
-		<module>contentconnector-changelog</module>
-		<module>contentconnector-core</module>
-		<module>contentconnector-apihelper</module>
-		<module>contentconnector-config-sample</module>
-		<module>contentconnector-http</module>
-		<module>contentconnector-json</module>
-		<module>contentconnector-jtidy</module>
-		<module>contentconnector-language</module>
-		<module>contentconnector-lucene</module>
-		<module>contentconnector-lucene-autocomplete</module>
-		<module>contentconnector-poi-transformer</module>
-		<module>contentconnector-portlet</module>
-		<module>contentconnector-servlet</module>
-		<module>contentconnector-servlet-sample</module>
-		<module>contentconnector-social-networking</module>
-		<module>contentconnector-testutils</module>
-	</modules>
 	<repositories>
 		<repository>
 			<id>asf-snapshot</id>
