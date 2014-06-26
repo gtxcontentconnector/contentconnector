@@ -1,4 +1,4 @@
-package com.gentics.cr.lucene.search;
+package com.gentics.cr.lucene.search.collector;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,9 +26,12 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.didyoumean.DidyoumeanIndexExtension;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.cr.lucene.search.CRSearcher;
+import com.gentics.cr.lucene.search.LuceneRequestProcessor;
+import com.gentics.cr.lucene.search.LuceneRequestProcessorTest;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 
-public class LuceneRequestProcessorTest {
+public class LanguageFallbackCollectorTest {
 	private static CRConfigUtil config = null;
 	private static RequestProcessor rp=null;
 	private static LuceneIndexLocation location=null;
@@ -36,20 +39,31 @@ public class LuceneRequestProcessorTest {
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException, IOException {
 		EnvironmentConfiguration.loadEnvironmentProperties();
-		config = new CRConfigStreamLoader("search", LuceneRequestProcessorTest.class.getResourceAsStream("search.properties"));
+		config = new CRConfigStreamLoader("languagefallbacksearch", LuceneRequestProcessorTest.class.getResourceAsStream("languagefallbacksearch.properties"));
 		rp = config.getNewRequestProcessorInstance(1);
 		CRConfigUtil rpConfig = config.getRequestProcessorConfig(1);
 		location = LuceneIndexLocation.getIndexLocation(rpConfig);
 		IndexAccessor accessor = location.getAccessor();
 		
-		addDoc(accessor, "content:content1", "category:cars", "contentid:10007.1");
-		addDoc(accessor, "content:audi", "category:cars", "contentid:10007.2");
-		addDoc(accessor, "content:saab", "category:cars", "contentid:10007.3");
-		addDoc(accessor, "content:volvo", "category:cars", "contentid:10007.4");
-		addDoc(accessor, "content:ford", "category:cars", "contentid:10007.5");
-		addDoc(accessor, "content:tree", "category:cars", "contentid:10007.6");
-		addDoc(accessor, "content:potatoe", "category:plants", "contentid:10007.7");
-		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.8");
+		addDoc(accessor, "content:content1", "category:cars", "contentid:10007.1", "languagesetit:10007.1","languagecode:de");
+		addDoc(accessor, "content:content1", "category:cars", "contentid:10007.11", "languagesetit:10007.1","languagecode:en");
+		addDoc(accessor, "content:content1", "category:cars", "contentid:10007.12", "languagesetit:10007.1","languagecode:es");
+		addDoc(accessor, "content:audi", "category:cars", "contentid:10007.2", "languagesetit:10007.2","languagecode:de");
+		addDoc(accessor, "content:audi", "category:cars", "contentid:10007.21", "languagesetit:10007.2","languagecode:en");
+		addDoc(accessor, "content:audi", "category:cars", "contentid:10007.22", "languagesetit:10007.2","languagecode:es");
+		addDoc(accessor, "content:saab", "category:cars", "contentid:10007.3", "languagesetit:10007.3","languagecode:de");
+		addDoc(accessor, "content:saab", "category:cars", "contentid:10007.31", "languagesetit:10007.3","languagecode:en");
+		addDoc(accessor, "content:saab saab saab saab", "category:cars", "contentid:10007.32", "languagesetit:10007.3","languagecode:es");
+		addDoc(accessor, "content:volvo", "category:cars", "contentid:10007.4", "languagesetit:10007.4","languagecode:de");
+		addDoc(accessor, "content:volvo", "category:cars", "contentid:10007.41", "languagesetit:10007.4","languagecode:en");
+		addDoc(accessor, "content:volvo", "category:cars", "contentid:10007.42", "languagesetit:10007.4","languagecode:es");
+		addDoc(accessor, "content:ford", "category:cars", "contentid:10007.5", "languagesetit:10007.5","languagecode:de");
+		addDoc(accessor, "content:ford", "category:cars", "contentid:10007.51", "languagesetit:10007.5","languagecode:en");
+		addDoc(accessor, "content:ford", "category:cars", "contentid:10007.52", "languagesetit:10007.5","languagecode:es");
+		addDoc(accessor, "content:tree", "category:cars", "contentid:10007.6","languagesetit:10007.6","languagecode:de");
+		addDoc(accessor, "content:potatoe", "category:plants", "contentid:10007.7","languagesetit:10007.7","languagecode:en");
+		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.8","languagesetit:10007.8","languagecode:en");
+		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.81","languagesetit:10007.8","languagecode:es");
 		addDoc(accessor, "content:tree", "category:plants", "contentid:10007.9");
 		
 		DidyoumeanIndexExtension dymProvider = ((LuceneRequestProcessor) rp).getCRSearcher().getDYMProvider();
@@ -63,7 +77,7 @@ public class LuceneRequestProcessorTest {
 	}
 	
 	@Test
-	public void testSimpleSearch() throws CRException {
+	public void simpleSearchTest() throws CRException {
 		CRRequest request = new CRRequest();
 		request.setRequestFilter("category:plants");
 		Collection<CRResolvableBean> objects = rp.getObjects(request);
@@ -71,6 +85,18 @@ public class LuceneRequestProcessorTest {
 		for(CRResolvableBean bean : objects) {
 			Assert.assertEquals("Object was not in category plants.", "plants", bean.get("category"));
 		}
+		
+	}
+	
+	@Test
+	public void simpleFallbackTest() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("content:saab");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		Assert.assertEquals("The Search did not find all items.", 1, objects.size());
+		for(CRResolvableBean bean : objects) {
+			Assert.assertEquals("Object was not in the desired language", "de", bean.get("languagecode"));
+		}	
 	}
 	
 	@Test
@@ -88,9 +114,23 @@ public class LuceneRequestProcessorTest {
 		}
 	}
 	
+	@Test
+	public void sortedByScoreSearchTest() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("category:plants");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		Float last = null;
+		for(CRResolvableBean bean : objects) {
+			if (last != null) {
+				Assert.assertEquals("Object was not corrent order.", true, last.compareTo(bean.getFloat("score", Float.POSITIVE_INFINITY)) >= 0);
+			}
+			last = new Float(bean.getFloat("score", Float.POSITIVE_INFINITY));
+		}
+	}
+	
 	
 	@Test
-	public void testSimpleFilterSearch() throws CRException {
+	public void simpleFilterSearchTest() throws CRException {
 		
 		CRRequest request = new CRRequest();
 		request.setRequestFilter("content:tree");
@@ -108,7 +148,7 @@ public class LuceneRequestProcessorTest {
 	}
 	
 	@Test
-	public void testSimpleFilterComparisonSearch() throws CRException {
+	public void simpleFilterComparisonSearchTest() throws CRException {
 		CRRequest request = new CRRequest();
 		request.setRequestFilter("content:tree AND category:plants");
 		Collection<CRResolvableBean> objects = rp.getObjects(request);
@@ -119,16 +159,18 @@ public class LuceneRequestProcessorTest {
 	}
 	
 	@Test
-	public void testMetaResolvableSearch() throws CRException {
+	public void metaResolvableSearchTest() throws CRException {
 		CRRequest request = new CRRequest();
 		request.set("metaresolvable", "true");
 		request.setRequestFilter("category:plants");
 		Collection<CRResolvableBean> objects = rp.getObjects(request);
-		Assert.assertEquals("The Search did not find all items.", 4, objects.size());
-		
 		CRResolvableBean metabean = objects.iterator().next();
 		Assert.assertNotNull(metabean);
+		Object collector = metabean.get(CRSearcher.RESULT_COLLECTOR_KEY);
+		Assert.assertEquals("Collector was not the expected one (LanguageFallbackTopDocsCollecto!="+collector.getClass().getName()+")", true, collector instanceof LanguageFallbackTopDocsCollector);
+		Assert.assertEquals("The Search did not find all items.", 4, objects.size());
 		Assert.assertEquals("Hitcount did not match the expected value.", 3, metabean.getInteger("totalhits", 0));
+		
 	}
 	
 	@Test
@@ -162,6 +204,8 @@ public class LuceneRequestProcessorTest {
 	 * @throws IOException
 	 */
 	private static Document addDoc(IndexAccessor ia, String... fields) throws CorruptIndexException, IOException {
+		IndexWriter writer = ia.getWriter();
+		
 		Document document = new Document();
 		for (String field : fields) {
 			String name = field.replaceAll(":.*", "");
@@ -169,7 +213,7 @@ public class LuceneRequestProcessorTest {
 			document.add(new Field(name, value, Field.Store.YES, Field.Index.ANALYZED,
 					TermVector.WITH_POSITIONS_OFFSETS));
 		}
-		IndexWriter writer = ia.getWriter();
+		
 		writer.addDocument(document);
 		ia.release(writer);
 		return document;
