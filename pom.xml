@@ -9,8 +9,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
-		<node.version>2.0.1-SNAPSHOT</node.version>
-		<portalnode.version>4.6.0-SNAPSHOT</portalnode.version>
+		<node.version>2.0.4-SNAPSHOT</node.version>
+		<portalnode.version>4.6.1-SNAPSHOT</portalnode.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</connection>
