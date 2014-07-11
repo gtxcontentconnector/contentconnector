@@ -8,8 +8,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
@@ -57,7 +59,7 @@ public class PDFHighlighterTest extends AbstractTransformerTest {
 		dir = new RAMDirectory();
 		prepareIndex();
 
-		searcher = new IndexSearcher(dir);
+		searcher = new IndexSearcher(DirectoryReader.open(dir));
 
 		QueryParser parser = new QueryParser(LuceneVersion.getVersion(), "binarycontent", analyzer);
 
@@ -82,7 +84,8 @@ public class PDFHighlighterTest extends AbstractTransformerTest {
 	}
 
 	private void prepareIndex() throws Exception {
-		IndexWriter writer = new IndexWriter(dir, analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
+		IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.getVersion(),analyzer);
+		IndexWriter writer = new IndexWriter(dir, config);
 		writer.addDocument(getDocument(bean));
 		writer.close();
 

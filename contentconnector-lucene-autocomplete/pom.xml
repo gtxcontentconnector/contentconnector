@@ -7,7 +7,7 @@
 	</parent>
 	<artifactId>contentconnector-lucene-autocomplete</artifactId>
 	<properties>
-		<lucene.version>3.6.2</lucene.version>
+		<lucene.version>4.9.0</lucene.version>
 	</properties>
 	<build>
 		<plugins>
@@ -72,7 +72,7 @@
 		<dependency>
 			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-spellchecker</artifactId>
+			<artifactId>lucene-suggest</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
 		<!-- ###### TEST DEPENDENCIES ####### -->

@@ -8,7 +8,7 @@
 	<artifactId>contentconnector-lucene</artifactId>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<lucene.version>3.6.2</lucene.version>
+		<lucene.version>4.9.0</lucene.version>
 	</properties>
 	<build>
 		<plugins>
@@ -79,13 +79,13 @@
 		<dependency>
 			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers</artifactId>
+			<artifactId>lucene-analyzers-common</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
 		<dependency>
 			<!-- LICENSE: Apache 2.0 -->
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-spellchecker</artifactId>
+			<artifactId>lucene-suggest</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
 		<dependency>

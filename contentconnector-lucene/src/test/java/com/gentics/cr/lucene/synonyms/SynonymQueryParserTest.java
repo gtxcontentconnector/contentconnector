@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 import junit.framework.Assert;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.junit.After;
 import org.junit.Before;

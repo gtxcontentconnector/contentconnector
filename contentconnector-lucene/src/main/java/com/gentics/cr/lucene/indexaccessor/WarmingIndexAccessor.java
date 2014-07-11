@@ -8,12 +8,14 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Scorer;
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 
 class WarmingIndexAccessor extends DefaultIndexAccessor {
@@ -93,9 +95,9 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 		for (Similarity key : keys) {
 			IndexSearcher searcher = cachedSearchers.get(key);
 			try {
-				IndexReader oldReader = searcher.getIndexReader();
+				DirectoryReader oldReader = (DirectoryReader) searcher.getIndexReader();
 				IndexSearcher oldSearcher = searcher;
-				IndexReader newReader = oldReader.reopen();
+				DirectoryReader newReader = DirectoryReader.openIfChanged(oldReader);
 
 				if (newReader != oldReader) {
 
@@ -176,16 +178,17 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 
 					}
 
-					@Override
-					public void setNextReader(IndexReader arg0, int arg1) throws IOException {
-						// TODO Auto-generated method stub
-
-					}
 
 					@Override
 					public void setScorer(Scorer arg0) throws IOException {
 						// TODO Auto-generated method stub
 
+					}
+
+					@Override
+					public void setNextReader(AtomicReaderContext arg0)
+							throws IOException {
+						
 					}
 				});
 

@@ -19,11 +19,12 @@ package org.apache.lucene.search.spell;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -33,10 +34,10 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.suggest.InputIterator;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.BytesRefIterator;
 
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
@@ -77,10 +78,6 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 */
 	public static final String F_WORD = "word";
 
-	/**
-	 * FWORDTERM.
-	 */
-	private static final Term F_WORD_TERM = new Term(F_WORD);
 
 	/**
 	 * the spell index.
@@ -294,7 +291,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 			int minfrq = this.minDFreq;
 			final int lengthWord = word.length();
 
-			List<String> fieldnames = null;
+			Collection<String> fieldnames = null;
 
 			int intfreq = 0;
 			if (ir != null) {
@@ -504,7 +501,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 		final IndexAccessor accessor = this.spellIndex.getAccessor();
 		final IndexSearcher indexSearcher = (IndexSearcher) accessor.getPrioritizedSearcher();
 		try {
-			return indexSearcher.docFreq(F_WORD_TERM.createTerm(word)) > 0;
+			return indexSearcher.getIndexReader().docFreq(new Term(F_WORD, word)) > 0;
 		} finally {
 			if (accessor != null && indexSearcher != null) {
 				accessor.release(indexSearcher);
@@ -529,12 +526,11 @@ public class CustomSpellChecker implements java.io.Closeable {
 
 			final IndexAccessor accessor = this.spellIndex.getAccessor();
 			final IndexWriter writer = accessor.getWriter();
-			writer.setMergeFactor(300);
 			final IndexSearcher indexSearcher = (IndexSearcher) accessor.getPrioritizedSearcher();
 			int obj_count = 0;
 
 			try {
-				BytesRefIterator iter = dict.getWordsIterator();
+				InputIterator iter = dict.getEntryIterator();
 				BytesRef ref = iter.next();
 				while (ref != null) {
 					String word = ref.utf8ToString();
@@ -545,7 +541,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 						continue; // too short we bail but "too long" is fine...
 					}
 
-					if (indexSearcher.docFreq(F_WORD_TERM.createTerm(word)) > 0) {
+					if (indexSearcher.getIndexReader().docFreq(new Term(F_WORD, word)) > 0) {
 						// if the word already exist in the gramindex
 						ref = iter.next();
 						continue;
@@ -562,7 +558,6 @@ public class CustomSpellChecker implements java.io.Closeable {
 				// if documents where added to the index create a reopen file and
 				// optimize the writer
 				if (obj_count > 0) {
-					writer.optimize();
 					this.spellIndex.createReopenFile();
 				}
 				accessor.release(writer);
@@ -719,7 +714,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	 */
 	// for testing purposes
 	final IndexSearcher createSearcher(final Directory dir) throws IOException {
-		return new IndexSearcher(dir, true);
+		return new IndexSearcher(DirectoryReader.open(dir));
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -76,7 +77,7 @@ public class SpecialDirectoryInformationEntry {
 		if (directory instanceof FSDirectory) {
 			size = FileUtils.sizeOfDirectory(((FSDirectory) directory).getDirectory());
 		} else if (directory instanceof RAMDirectory) {
-			size = ((RAMDirectory) directory).sizeInBytes();
+			size = ((RAMDirectory) directory).ramBytesUsed();
 		}
 		return size;
 	}
@@ -112,8 +113,8 @@ public class SpecialDirectoryInformationEntry {
 		boolean ret = false;
 		IndexReader reader = null;
 		try {
-			reader = IndexReader.open(directory);
-			ret = reader.isOptimized();
+			reader = DirectoryReader.open(directory);
+
 		} catch (IOException ex) {
 			LOG.error("IOException happened during test of index. ", ex);
 		} finally {

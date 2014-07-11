@@ -55,16 +55,9 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	/**
 	 * Requests an optimize command on the index.
 	 */
+	@Deprecated
 	public void optimizeIndex() {
-		IndexAccessor indexAccessor = getAccessor();
-		IndexWriter indexWriter;
-		try {
-			indexWriter = indexAccessor.getWriter();
-			indexWriter.optimize(true);
-			indexAccessor.release(indexWriter);
-		} catch (IOException e) {
-			log.error(e.getMessage(), e);
-		}
+		//Optimize is very bad for you and has been removed in Lucene 4.0
 	}
 
 	/**

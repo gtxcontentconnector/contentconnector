@@ -8,8 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.facet.taxonomy.InconsistentTaxonomyException;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.facet.taxonomy.TaxonomyReader;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyReader;
@@ -246,12 +245,12 @@ public class DefaultTaxonomyAccessor implements TaxonomyAccessor {
 
 		LOGGER.debug("refreshing taxonomy reader");
 		try {
-			taxoReader.refresh();
+			TaxonomyReader newReader = TaxonomyReader.openIfChanged(taxoReader);
+			if (newReader != null) {
+				taxoReader = newReader;
+			}
 		} catch (IOException e) {
 			LOGGER.error("error refreshing taxonomy Reader", e);
-		} catch (InconsistentTaxonomyException e) {
-			LOGGER.info("inconsistent taxononmy found when trying to refresh it", e);
-			closeTaxonomyReader();
 		} catch(Exception e) {
 			LOGGER.info("Could not refresh TaxonomyReader - closing it", e);
 			closeTaxonomyReader();

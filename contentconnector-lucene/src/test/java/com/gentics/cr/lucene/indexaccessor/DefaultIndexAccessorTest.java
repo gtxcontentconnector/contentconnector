@@ -17,10 +17,13 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import com.gentics.cr.lucene.LuceneVersion;
 
 public class DefaultIndexAccessorTest {
 
@@ -39,7 +42,7 @@ public class DefaultIndexAccessorTest {
 	public void setUp() throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
 		factory = IndexAccessorFactory.getInstance();
-		analyzer = (Analyzer) Class.forName("org.apache.lucene.analysis.WhitespaceAnalyzer").getConstructor().newInstance();
+		analyzer = (Analyzer) Class.forName("org.apache.lucene.analysis.core.WhitespaceAnalyzer").getConstructor(Version.class).newInstance(LuceneVersion.getVersion());
 		query = new BooleanQuery();
 	}
 
@@ -66,14 +69,14 @@ public class DefaultIndexAccessorTest {
 		IndexAccessor accessor = factory.getAccessor(ramdir);
 		assertNotNull(accessor);
 
-		IndexReader writingReader1 = accessor.getReader(true);
-		assertEquals(1, accessor.writingReadersUseCount());
+		IndexReader writingReader1 = accessor.getReader();
+		assertEquals(1, accessor.readingReadersOut());
 		writingReader1.close();
-		assertEquals(1, accessor.writingReadersUseCount());
-		accessor.release(writingReader1, true);
-		assertEquals(0, accessor.writingReadersUseCount());
+		assertEquals(1, accessor.readingReadersOut());
+		accessor.release(writingReader1);
+		assertEquals(0, accessor.readingReadersOut());
 		accessor.close();
-		assertEquals(0, accessor.writingReadersUseCount());
+		assertEquals(0, accessor.readingReadersOut());
 	}
 
 	@Test
@@ -100,7 +103,7 @@ public class DefaultIndexAccessorTest {
 		IndexAccessor accessor = factory.getAccessor(ramdir);
 		assertNotNull(accessor);
 
-		IndexReader reader = accessor.getReader(true);
+		IndexReader reader = accessor.getReader();
 		IndexSearcher searcher = accessor.getSearcher(reader);
 
 		accessor.release(searcher);
@@ -113,7 +116,7 @@ public class DefaultIndexAccessorTest {
 		IndexAccessor accessor = factory.getAccessor(ramdir);
 		assertNotNull(accessor);
 
-		IndexReader reader = accessor.getReader(true);
+		IndexReader reader = accessor.getReader();
 		assertNotNull(reader);
 		IndexSearcher searcher = accessor.getSearcher();
 
@@ -127,7 +130,7 @@ public class DefaultIndexAccessorTest {
 		IndexAccessor accessor = factory.getAccessor(ramdir);
 		assertNotNull(accessor);
 
-		IndexReader reader = accessor.getReader(true);
+		IndexReader reader = accessor.getReader();
 		assertNotNull(reader);
 		IndexSearcher searcher = accessor.getSearcher();
 
@@ -149,26 +152,26 @@ public class DefaultIndexAccessorTest {
 		factory.createAccessor(fsDir, analyzer);
 		IndexAccessor accessor = factory.getAccessor(fsDir);
 		
-		IndexReader reader = accessor.getReader(false);
+		IndexReader reader = accessor.getReader();
 		accessor.reopen();
-		IndexReader newReader = accessor.getReader(false);
+		IndexReader newReader = accessor.getReader();
 		// before the index is overwritten every call to "getReader" should return the same reader
 		assertEquals(reader, newReader);
 		// the reading reader use count should be 2
 		assertEquals(accessor.readingReadersOut(), 2);
 		FileUtils.copyDirectory(changedIndex, reopenIndexLocation);
 		accessor.reopen();
-		IndexReader changedReader = accessor.getReader(false);
+		IndexReader changedReader = accessor.getReader();
 		// after the index is overwritten the call to "getReader" should return a new reader
 		assertEquals(reader.equals(changedReader), false);
 		// the reading reader use count should be 1 because only the new Reader is counted
 		assertEquals(accessor.readingReadersOut(), 1);
-		accessor.release(changedReader, false);
+		accessor.release(changedReader);
 		assertEquals(accessor.readingReadersOut(), 0);
 		// releasing those readers should throw no illegal argument exception
-		accessor.release(reader, false);
-		accessor.release(newReader, false);
-		accessor.release(changedReader, false);
+		accessor.release(reader);
+		accessor.release(newReader);
+		accessor.release(changedReader);
 		// releasing an already released reader should not change the use count
 		assertEquals(accessor.readingReadersOut(), 0);
 	}

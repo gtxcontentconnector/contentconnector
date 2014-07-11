@@ -40,12 +40,8 @@ public class AlterIndexTransformer extends AbstractLuceneMonitoringTransformer {
 
 	public void processBean(CRResolvableBean bean, IndexWriter writer) throws CRException {
 
-		try {
-			System.out.println(writer.numDocs());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println(writer.numDocs());
+		
 
 	}
 

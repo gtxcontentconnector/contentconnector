@@ -14,10 +14,11 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.FieldInfo.DocValuesType;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
 
 import com.gentics.api.lib.etc.ObjectTransformer;
@@ -190,7 +191,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	 * @return list of vectors, null in case l was null, Vector<Field> with size
 	 * null if l.size() was 0
 	 */
-	private static List<Field> toFieldList(final List<Fieldable> l) {
+	private static List<Field> toFieldList(final List<Field> l) {
 		if (l == null) {
 			return null;
 		} else if (l.size() > 0) {
@@ -366,7 +367,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		IndexAccessor indexAccessor = idsLocation.getAccessor();
 		IndexReader reader = null;
 		try {
-			reader = indexAccessor.getReader(false);
+			reader = indexAccessor.getReader();
 
 			parsedQuery = parseHighlightQuery(request, reader, parsedQuery);
 
@@ -375,7 +376,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 		} catch (IOException e) {
 			LOGGER.error("Cannot get Index reader for highlighting", e);
 		} finally {
-			indexAccessor.release(reader, false);
+			indexAccessor.release(reader);
 		}
 
 		ucProcessSearchResolvables.stop();
@@ -492,10 +493,10 @@ public class LuceneRequestProcessor extends RequestProcessor {
 				Float score = entry.getValue();
 				CRResolvableBean crBean = new CRResolvableBean(doc.get(idAttribute));
 				if (getStoredAttributes) {
-					for (Field field : toFieldList(doc.getFields())) {
-						if (field.isStored()) {
-							if (field.isBinary()) {
-								crBean.set(field.name(), field.getBinaryValue());
+					for (IndexableField field : doc.getFields()) {
+						if (field.fieldType().stored()) {
+							if (field.fieldType().docValueType() == DocValuesType.BINARY) {
+								crBean.set(field.name(), field.binaryValue());
 							} else {
 								crBean.set(field.name(), field.stringValue());
 							}

@@ -7,11 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.facet.search.FacetsCollector;
-import org.apache.lucene.facet.search.params.CountFacetRequest;
-import org.apache.lucene.facet.search.params.FacetSearchParams;
-import org.apache.lucene.facet.search.results.FacetResult;
-import org.apache.lucene.facet.search.results.FacetResultNode;
+import org.apache.lucene.facet.FacetResult;
+import org.apache.lucene.facet.FacetsCollector;
 import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.apache.lucene.facet.taxonomy.TaxonomyReader;
 import org.apache.lucene.index.IndexReader;
@@ -78,9 +75,8 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	 * @return the mapped {@link FacetSearchParams}
 	 * @author Sebastian Vogel <s.vogel@gentics.com>
 	 */
-	private FacetSearchParams getFacetSearchParams(TaxonomyAccessor taAccessor) {
-		FacetSearchParams params = new FacetSearchParams();
-
+	/*private FacetSearchParams getFacetSearchParams(TaxonomyAccessor taAccessor) {
+		
 		for (TaxonomyMapping map : taAccessor.getTaxonomyMappings()) {
 			CountFacetRequest req = new CountFacetRequest(new CategoryPath(
 					map.getCategory()), facetnumbercategories);
@@ -92,7 +88,7 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 		}
 
 		return params;
-	}
+	}*/
 
 	/**
 	 * gets the results from the {@link FacetsCollector} and returns a object
@@ -105,7 +101,7 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	 */
 	public Object getFacetsResults(FacetsCollector facetsCollector)
 			throws IOException {
-		List<FacetResult> facetResults = facetsCollector.getFacetResults();
+		/*List<FacetResult> facetResults = facetsCollector.
 
 		Map<String, Object> facetsResultsRootNode = new HashMap<String, Object>();
 		int i = 0;
@@ -114,8 +110,22 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 					buildFacetsResultTree(facetResult.getFacetResultNode()));
 			i++;
 		}
+		
+		/*
+		 * 
+		 * // Retrieve results
+    List<FacetResult> results = new ArrayList<>();
 
-		return facetsResultsRootNode;
+    // Count both "Publish Date" and "Author" dimensions
+    Facets facets = new FastTaxonomyFacetCounts(taxoReader, config, fc);
+   
+    results.add(facets.getTopChildren(10, "Author"));
+    results.add(facets.getTopChildren(10, "Publish Date"));
+    
+		 */
+
+		//return facetsResultsRootNode;
+		return null;
 	}
 
 	/**
@@ -129,34 +139,34 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	 *         the number of results to each category (and sub category)
 	 * @author Sebastian Vogel <s.vogel@gentics.com>
 	 */
-	private Map<String, Object> buildFacetsResultTree(FacetResultNode facetNode) {
+	private Map<String, Object> buildFacetsResultTree(FacetResult facetNode) {
 		Map<String, Object> facetsResultNode = new HashMap<String, Object>();
-		String path = facetNode.getLabel().toString(facetpathdelimiter);
+		String path = facetNode.toString();
 		String categoryName = path.substring(path
 				.lastIndexOf(facetpathdelimiter) + 1);
 		facetsResultNode.put(RESULT_FACETS_CATEGORY_NAME_KEY, categoryName);
 		facetsResultNode.put(RESULT_FACETS_TOTAL_COUNT_KEY,
-				String.valueOf((int) facetNode.getValue()));
+				String.valueOf(facetNode.value));
 
 		if (facetdisplayordinal) {
-			facetsResultNode.put(RESULT_FACETS_ORDINAL_KEY,
-					String.valueOf(facetNode.getOrdinal()));
+			//facetsResultNode.put(RESULT_FACETS_ORDINAL_KEY,
+			//		String.valueOf(facetNode.));
 		}
 
 		if (facetdisplaypath) {
 			facetsResultNode.put(RESULT_FACETS_PATH_KEY, path);
 		}
-
+/*
 		if (facetNode.getNumSubResults() > 0) {
 			List<Map<String, Object>> subnodes = new ArrayList<Map<String, Object>>();
-			for (FacetResultNode resultNode : facetNode.getSubResults()) {
+			for (FacetResult resultNode : facetNode.getSubResults()) {
 				subnodes.add(buildFacetsResultTree(resultNode));
 			}
 			if (subnodes.size() > 0) {
 				facetsResultNode.put(RESULT_FACETS_SUBNODES_KEY, subnodes);
 			}
 		}
-
+*/
 		return facetsResultNode;
 	}
 
@@ -173,9 +183,8 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	 */
 	public FacetsCollector createFacetsCollector(IndexReader indexReader,
 			TaxonomyAccessor taAccessor, TaxonomyReader taReader) {
-		FacetSearchParams facetSearchParams = getFacetSearchParams(taAccessor);
-		FacetsCollector facetsCollector = new FacetsCollector(
-				facetSearchParams, indexReader, taReader);
+		//FacetSearchParams facetSearchParams = getFacetSearchParams(taAccessor);
+		FacetsCollector facetsCollector = new FacetsCollector();
 		return facetsCollector;
 	}
 

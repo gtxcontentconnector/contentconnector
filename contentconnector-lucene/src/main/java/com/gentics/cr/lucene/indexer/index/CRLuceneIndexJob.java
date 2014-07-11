@@ -16,14 +16,19 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
-import org.apache.lucene.facet.index.CategoryDocumentBuilder;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfig;
@@ -257,6 +262,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		IndexAccessor indexAccessor = null;
 		IndexWriter indexWriter = null;
 		IndexReader indexReader = null;
+		IndexSearcher indexSearcher = null;
 		TaxonomyAccessor taxonomyAccessor = null;
 		TaxonomyWriter taxonomyWriter = null;
 		LuceneIndexUpdateChecker luceneIndexUpdateChecker = null;
@@ -332,7 +338,8 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				if (indexLocation instanceof LuceneIndexLocation) {
 					indexAccessor = ((LuceneIndexLocation) indexLocation).getAccessor();
 					indexWriter = indexAccessor.getWriter();
-					indexReader = indexAccessor.getReader(false);
+					indexReader = indexAccessor.getReader();
+					indexSearcher = indexAccessor.getSearcher();
 					useFacets = ((LuceneIndexLocation) indexLocation).useFacets();
 					if (useFacets) {
 						taxonomyAccessor = ((LuceneIndexLocation) indexLocation).getTaxonomyAccessor();
@@ -392,6 +399,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 							crid,
 							indexWriter,
 							indexReader,
+							indexSearcher,
 							slice,
 							attributes,
 							rp,
@@ -413,6 +421,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						crid,
 						indexWriter,
 						indexReader,
+						indexSearcher,
 						slice,
 						attributes,
 						rp,
@@ -422,30 +431,6 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						reverseAttributes,
 						taxonomyWriter,
 						taxonomyAccessor);
-				}
-				if (!interrupted) {
-					// Only Optimize the Index if the thread 
-					// has not been interrupted
-					if (optimize) {
-						log.debug("Executing optimize command.");
-						UseCase uc = MonitorFactory.startUseCase("optimize(" + crid + ")");
-						try {
-							indexWriter.optimize();
-						} finally {
-							uc.stop();
-						}
-					} else if (maxSegmentsString != null) {
-						log.debug("Executing optimize command with max" + " segments: " + maxSegmentsString);
-						int maxs = Integer.parseInt(maxSegmentsString);
-						UseCase uc = MonitorFactory.startUseCase("optimize(" + crid + ")");
-						try {
-							indexWriter.optimize(maxs);
-						} finally {
-							uc.stop();
-						}
-					}
-				} else {
-					log.debug("Job has been interrupted and will now be closed." + " Missing objects " + "will be reindexed next run.");
 				}
 				finishedIndexJobSuccessfull = true;
 			} catch (Exception ex) {
@@ -470,8 +455,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				if (indexAccessor != null && indexWriter != null) {
 					indexAccessor.release(indexWriter);
 				}
+				if (indexAccessor != null && indexSearcher != null) {
+					indexAccessor.release(indexSearcher);
+				}
 				if (indexAccessor != null && indexReader != null) {
-					indexAccessor.release(indexReader, false);
+					indexAccessor.release(indexReader);
 				}
 
 				if (objectCount > 0) {
@@ -513,7 +501,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @throws IOException TODO javadoc
 	 */
 	private void indexSlice(final String crid, final IndexWriter indexWriter, final IndexReader indexReader,
-			final Collection<CRResolvableBean> slice, final Map<String, Boolean> attributes, final RequestProcessor rp,
+			final IndexSearcher indexSearcher, final Collection<CRResolvableBean> slice, final Map<String, Boolean> attributes, final RequestProcessor rp,
 			final boolean create, final CRConfigUtil config, final List<ContentTransformer> transformerlist,
 			final List<String> reverseattributes, final TaxonomyWriter taxonomyWriter, final TaxonomyAccessor taxonomyAccessor)
 			throws CRException, IOException {
@@ -555,29 +543,29 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						}
 					}
 					Term idTerm = new Term(idAttribute, bean.getString(idAttribute));
-					Document docToUpdate = getUniqueDocument(indexReader, idTerm, crid);
+					Document docToUpdate = getUniqueDocument(indexSearcher, idTerm, crid);
 
 					// get the category paths for the facets
-					CategoryDocumentBuilder categoryDocBuilder = null;
+					/*CategoryDocumentBuilder categoryDocBuilder = null;
 					if (useFacets && taxonomyAccessor != null && taxonomyWriter != null) {
 						List<CategoryPath> categories = getCategoryAttributeMapping(bean, taxonomyAccessor.getTaxonomyMappings());
 						if (categories.size() > 0) {
 							categoryDocBuilder = new CategoryDocumentBuilder(taxonomyWriter).setCategoryPaths(categories);
 						}
-					}
+					}*/
 					if (!create && docToUpdate != null) {
 						Document doc = getDocument(docToUpdate, bean, attributes, config, reverseattributes);
 						// add facets to document
-						if (categoryDocBuilder != null) {
+						/*if (categoryDocBuilder != null) {
 							categoryDocBuilder.build(doc);
-						}
+						}*/
 						indexWriter.updateDocument(idTerm, doc);
 					} else {
 						Document doc = getDocument(null, bean, attributes, config, reverseattributes);
 						// add facets to document
-						if (categoryDocBuilder != null) {
+						/*if (categoryDocBuilder != null) {
 							categoryDocBuilder.build(doc);
-						}
+						}*/
 						indexWriter.addDocument(doc);
 					}
 				} finally {
@@ -603,15 +591,17 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @param searchCRID crid.
 	 * @return document.
 	 */
-	private Document getUniqueDocument(final IndexReader indexReader, final Term idTerm, final String searchCRID) {
+	private Document getUniqueDocument(final IndexSearcher indexSearcher, final Term idTerm, final String searchCRID) {
 		try {
-			TermDocs docs = indexReader.termDocs(idTerm);
-			while (docs.next()) {
-				Document doc = indexReader.document(docs.doc());
-				String crID = doc.get(CR_FIELD_KEY);
-				if (crID != null && crID.equals(searchCRID)) {
-					return doc;
-				}
+			TermQuery idQuery = new TermQuery(idTerm);
+			TermQuery crQuery = new TermQuery(new Term(CR_FIELD_KEY, searchCRID));
+			BooleanQuery query = new BooleanQuery();
+			query.add(idQuery, Occur.MUST);
+			query.add(crQuery, Occur.MUST);
+			
+			TopDocs docs = indexSearcher.search(query, 1);
+			for (ScoreDoc scoreDoc : docs.scoreDocs) {
+				return indexSearcher.doc(scoreDoc.doc);
 			}
 		} catch (IOException e) {
 			log.error("An error happend while fetching the document in the index.", e);
@@ -641,11 +631,22 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		} else {
 			newDoc = doc;
 		}
+		float docboostvalue = 1f;
+		if (boostingAttribute != null) {
+			String boostingValue = null;
+			// Set document boosting if present
+			boostingValue = (String) resolvable.get(boostingAttribute);
+			if (boostingValue != null && !"".equals(boostingValue)) {
+				docboostvalue = getFloat(boostingValue, 1f);
+			}
+		}
+		
 		String crID = (String) config.getName();
 		if (crID != null) {
 			newDoc.removeFields(CR_FIELD_KEY);
 			//Add content repository identification
-			newDoc.add(new Field(CR_FIELD_KEY, crID, Field.Store.YES, Field.Index.NOT_ANALYZED));
+			Field crIdField = new StringField(CR_FIELD_KEY, crID,Store.YES);
+			newDoc.add(crIdField);
 		}
 		if (!"".equals(timestampattribute)) {
 			Object updateTimestampObject = resolvable.get(timestampattribute);
@@ -658,24 +659,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				String updateTimestamp = updateTimestampObject.toString();
 				if (updateTimestamp != null && !"".equals(updateTimestamp)) {
 					newDoc.removeField(timestampAttribute);
-					newDoc.add(new Field(timestampattribute, updateTimestamp.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+					Field timestampField = new StringField(timestampattribute, updateTimestamp.toString(),Store.YES);
+					newDoc.add(timestampField);
 				}
 			}
 		}
 
-		if (boostingAttribute != null) {
-			String boostingValue = null;
-			// Set document boosting if present
-			boostingValue = (String) resolvable.get(boostingAttribute);
-			if (boostingValue != null && !"".equals(boostingValue)) {
-				try {
-					newDoc.setBoost(Float.parseFloat(boostingValue));
-				} catch (Exception e) {
-					LOG.error("Could not pars boosting information "
-							+ "from resolvable.", e);
-				}
-			}
-		}
+		
 
 		
 		for (Entry<String, Boolean> entry : attributes.entrySet()) {
@@ -686,35 +676,34 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			Object value = resolvable.getProperty(attributeName);
 
 			if (idAttribute.equalsIgnoreCase(attributeName) && !filled) {
-				newDoc.add(new Field(idAttribute, value.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+				newDoc.add(new StringField(idAttribute, value.toString(), Store.YES));
 			} else if (value != null) {
+				
 				if (filled) {
 					newDoc.removeField(attributeName);
 				}
-				Store storeFieldStore;
-				if (storeField) {
-					storeFieldStore = Store.YES;
-				} else {
-					storeFieldStore = Store.NO;
-				}
-				TermVector storeTermVector;
-				if (storeVectors) {
-					storeTermVector = TermVector.WITH_POSITIONS_OFFSETS;
-				} else {
-					storeTermVector = TermVector.NO;
-				}
+				FieldType fieldType = new FieldType();
+				fieldType.setIndexed(true);
+				fieldType.setStored(storeField);
+				fieldType.setTokenized(true);
+				fieldType.setStoreTermVectors(storeVectors);
+				fieldType.setStoreTermVectorPositions(storeVectors);
+			    
+				
 				if (value instanceof String || value instanceof Number || value instanceof Date) {
-					Field f = new Field(attributeName, value.toString(), storeFieldStore, Field.Index.ANALYZED, storeTermVector);
+					Field f = new Field(attributeName, value.toString(), fieldType);
 					Float boostValue = boostvalue.get(attributeName);
+					float fieldboostvalue = 1f;
 					if (boostValue != null) {
-						f.setBoost(boostValue);
+						fieldboostvalue = boostValue;
+						
 					}
+					f.setBoost(fieldboostvalue * docboostvalue);
 					newDoc.add(f);
 					//ADD REVERSEATTRIBUTE IF NEEDED
 					if (reverseattributes != null && reverseattributes.contains(attributeName)) {
 						String reverseAttributeName = attributeName + LuceneAnalyzerFactory.REVERSE_ATTRIBUTE_SUFFIX;
-						Field revField = new Field(reverseAttributeName, value.toString(), storeFieldStore, Field.Index.ANALYZED,
-								storeTermVector);
+						Field revField = new Field(reverseAttributeName, value.toString(), fieldType);
 						Float revBoostValue = boostvalue.get(reverseAttributeName);
 						if (revBoostValue != null) {
 							revField.setBoost(revBoostValue);
@@ -782,5 +771,16 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			}
 		}
 		return categories;
+	}
+	
+	private float getFloat(String string, float defaultvalue) {
+		float ret = defaultvalue;
+		try {
+			ret = Float.parseFloat(string);
+		} catch (Exception e) {
+			LOG.error("Could not parse " + string, e);
+			ret = defaultvalue;
+		}
+		return ret;
 	}
 }

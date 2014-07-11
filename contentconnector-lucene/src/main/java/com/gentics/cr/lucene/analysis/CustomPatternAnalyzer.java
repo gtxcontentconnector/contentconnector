@@ -27,12 +27,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.StopAnalyzer;
-import org.apache.lucene.analysis.StopFilter;
+import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -373,14 +375,14 @@ public final class CustomPatternAnalyzer extends Analyzer {
 
 	private final Pattern pattern;
 	private final boolean toLowerCase;
-	private final Set<?> stopWords;
+	private final CharArraySet stopWords;
 
 	private final Version matchVersion;
 
 	private final static String PATTERN_CONFIG_KEY = "pattern";
 
 	public CustomPatternAnalyzer(GenericConfiguration config) {
-		this(Version.LUCENE_31, getPattern(config), config.getBoolean(LOWERCASE_KEY, true), EXTENDED_ENGLISH_STOP_WORDS);
+		this(Version.LUCENE_4_9, getPattern(config), config.getBoolean(LOWERCASE_KEY, true), EXTENDED_ENGLISH_STOP_WORDS);
 	}
 
 	private static Pattern getPattern(GenericConfiguration config) {
@@ -410,7 +412,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	 *            or <a href="http://www.unine.ch/info/clef/">other stop words
 	 *            lists </a>.
 	 */
-	public CustomPatternAnalyzer(Version matchVersion, Pattern pattern, boolean toLowerCase, Set<?> stopWords) {
+	public CustomPatternAnalyzer(Version matchVersion, Pattern pattern, boolean toLowerCase, CharArraySet stopWords) {
 		if (pattern == null)
 			throw new IllegalArgumentException("pattern must not be null");
 
@@ -438,50 +440,31 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	 *            the string to tokenize
 	 * @return a new token stream
 	 */
-	public TokenStream tokenStream(String fieldName, String text) {
+	public TokenStreamComponents tokenStreamComponents(Reader reader, String fieldName, String text) {
 		// Ideally the Analyzer superclass should have a method with the same signature, 
 		// with a default impl that simply delegates to the StringReader flavour. 
 		if (text == null)
 			throw new IllegalArgumentException("text must not be null");
 
-		TokenStream stream;
+		Tokenizer stream=null;
+		TokenFilter filter=null;
 		if (pattern == NON_WORD_PATTERN) { // fast path
-			stream = new FastStringTokenizer(text, true, toLowerCase, stopWords);
+			stream = new FastStringTokenizer(reader, text, true, toLowerCase, stopWords);
 		} else if (pattern == WHITESPACE_PATTERN) { // fast path
-			stream = new FastStringTokenizer(text, false, toLowerCase, stopWords);
+			stream = new FastStringTokenizer(reader, text, false, toLowerCase, stopWords);
 		} else {
-			stream = new PatternTokenizer(text, pattern, toLowerCase);
-			if (stopWords != null)
-				stream = new StopFilter(matchVersion, stream, stopWords);
+			stream = new PatternTokenizer(reader, text, pattern, toLowerCase);
+			if (stopWords != null) {
+				filter = new StopFilter(matchVersion, stream, stopWords);
+			}
 		}
-
-		return stream;
+		if (filter != null) {
+			return new TokenStreamComponents(stream, filter);
+		}
+		return new TokenStreamComponents(stream);
 	}
 
-	/**
-	 * Creates a token stream that tokenizes all the text in the given Reader;
-	 * This implementation forwards to <code>tokenStream(String, String)</code> and is
-	 * less efficient than <code>tokenStream(String, String)</code>.
-	 * 
-	 * @param fieldName
-	 *            the name of the field to tokenize (currently ignored).
-	 * @param reader
-	 *            the reader delivering the text
-	 * @return a new token stream
-	 */
-	@Override
-	public TokenStream tokenStream(String fieldName, Reader reader) {
-		if (reader instanceof FastStringReader) { // fast path
-			return tokenStream(fieldName, ((FastStringReader) reader).getString());
-		}
-
-		try {
-			String text = toString(reader);
-			return tokenStream(fieldName, text);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	
 
 	/**
 	 * Indicates whether some other object is "equal to" this one.
@@ -576,7 +559,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	 * The work horse; performance isn't fantastic, but it's not nearly as bad
 	 * as one might think - kudos to the Sun regex developers.
 	 */
-	private static final class PatternTokenizer extends TokenStream {
+	private static final class PatternTokenizer extends Tokenizer {
 
 		private final String str;
 		private final boolean toLowerCase;
@@ -586,7 +569,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 		private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
 
-		public PatternTokenizer(String str, Pattern pattern, boolean toLowerCase) {
+		public PatternTokenizer(Reader reader, String str, Pattern pattern, boolean toLowerCase) {
+			super(reader);
 			this.str = str;
 			this.matcher = pattern.matcher(str);
 			this.toLowerCase = toLowerCase;
@@ -637,7 +621,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	 * Special-case class for best performance in common cases; this class is
 	 * otherwise unnecessary.
 	 */
-	private static final class FastStringTokenizer extends TokenStream {
+	private static final class FastStringTokenizer extends Tokenizer {
 
 		private final String str;
 		private int pos;
@@ -648,7 +632,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 		private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
 
-		public FastStringTokenizer(String str, boolean isLetter, boolean toLowerCase, Set<?> stopWords) {
+		public FastStringTokenizer(Reader reader, String str, boolean isLetter, boolean toLowerCase, Set<?> stopWords) {
+			super(reader);
 			this.str = str;
 			this.isLetter = isLetter;
 			this.toLowerCase = toLowerCase;
@@ -739,6 +724,31 @@ public final class CustomPatternAnalyzer extends Analyzer {
 
 		String getString() {
 			return s;
+		}
+	}
+
+	/**
+	 * Creates a token stream that tokenizes all the text in the given Reader;
+	 * This implementation forwards to <code>tokenStream(String, String)</code> and is
+	 * less efficient than <code>tokenStream(String, String)</code>.
+	 * 
+	 * @param fieldName
+	 *            the name of the field to tokenize (currently ignored).
+	 * @param reader
+	 *            the reader delivering the text
+	 * @return a new token stream
+	 */
+	@Override
+	protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+		if (reader instanceof FastStringReader) { // fast path
+			return tokenStreamComponents(reader,fieldName, ((FastStringReader) reader).getString());
+		}
+
+		try {
+			String text = toString(reader);
+			return tokenStreamComponents(reader,fieldName, text);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

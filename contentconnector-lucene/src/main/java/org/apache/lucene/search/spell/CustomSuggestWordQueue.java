@@ -30,7 +30,7 @@ final class CustomSuggestWordQueue extends PriorityQueue<CustomSuggestWord> {
 	 * @param size size
 	 */
 	CustomSuggestWordQueue(final int size) {
-		initialize(size);
+		super(size);
 	}
 
 	@Override

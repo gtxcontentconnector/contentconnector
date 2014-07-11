@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -119,7 +119,7 @@ public class SynonymQueryParser extends CRQueryParser {
 
 		IndexAccessor ia = synonymLocation.getAccessor();
 		IndexSearcher synonymSearcher = ia.getPrioritizedSearcher();
-		IndexReader synonymReader = ia.getReader(false);
+		IndexReader synonymReader = ia.getReader();
 
 		try {
 			HashSet<String> searchedTerms = new HashSet<String>();
@@ -183,7 +183,7 @@ public class SynonymQueryParser extends CRQueryParser {
 			}
 		} finally {
 			ia.release(synonymSearcher);
-			ia.release(synonymReader, false);
+			ia.release(synonymReader);
 		}
 
 		return query;

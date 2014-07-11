@@ -3,7 +3,8 @@ package com.gentics.cr.lucene.analysis;
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.TokenFilter;
+import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.reverse.ReverseStringFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
@@ -11,23 +12,12 @@ import com.gentics.cr.lucene.LuceneVersion;
 
 public class ReverseAnalyzer extends Analyzer {
 
-	Analyzer subanalyzer = null;
-
-	public ReverseAnalyzer(Analyzer subanalyzer) {
-		this.subanalyzer = subanalyzer;
-	}
-
 	@Override
-	public TokenStream tokenStream(String fieldName, Reader reader) {
-		TokenStream ts = null;
-		if (subanalyzer != null)
-			ts = subanalyzer.tokenStream(fieldName, reader);
-		else
-			ts = new StandardTokenizer(LuceneVersion.getVersion(), reader);
-
-		ts = new ReverseStringFilter(ts);
-
-		return ts;
+	protected TokenStreamComponents createComponents(String field, Reader reader) {
+		Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.getVersion(),reader);
+		TokenFilter filter = new ReverseStringFilter(LuceneVersion.getVersion(),tokenizer);
+		
+		return new TokenStreamComponents(tokenizer, filter);
 	}
 
 }
