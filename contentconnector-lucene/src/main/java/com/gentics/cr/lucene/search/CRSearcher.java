@@ -414,10 +414,9 @@ public class CRSearcher {
 			log.error("IndexAccessor is null. Search will not work.");
 		}
 
-		// Resources needed for faceted search
+		// Resource needed for faceted search
 		TaxonomyAccessor taAccessor = null;
-		TaxonomyReader taReader = null;
-		IndexReader facetsIndexReader = null;
+		
 		IndexReader uniqueMimeTypesIndexReader = null;
 		
 		List<String> uniqueMimeTypes = null;
@@ -435,9 +434,7 @@ public class CRSearcher {
 
 		// get accessors and reader only if facets are activated 
 		if (facetsSearch.useFacets()) {
-			facetsIndexReader = indexAccessor.getReader();
 			taAccessor = idsLocation.getTaxonomyAccessor();
-			taReader = taAccessor.getTaxonomyReader();
 		}
 
 		searcher = indexAccessor.getPrioritizedSearcher();
@@ -473,7 +470,7 @@ public class CRSearcher {
 				// when facets are active create a FacetsCollector
 				FacetsCollector facetsCollector = null;
 				if (facetsSearch.useFacets()) {
-					facetsCollector = facetsSearch.createFacetsCollector(facetsIndexReader, taAccessor, taReader);
+					facetsCollector = facetsSearch.createFacetsCollector();
 				}
 
 				Map<String, Object> ret = executeSearcher(collector, searcher, parsedQuery, explain, count, start, facetsCollector, filter);
@@ -529,7 +526,7 @@ public class CRSearcher {
 
 					// if a facetsCollector was created, store the faceted search results in the meta resolveable
 					if (facetsCollector != null) {
-						result.put(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY, facetsSearch.getFacetsResults(facetsCollector));
+						result.put(FacetsSearchConfigKeys.RESULT_FACETS_LIST_KEY, facetsSearch.getFacetsResults(facetsCollector, taAccessor));
 					}
 
 					int size = 0;
@@ -558,12 +555,7 @@ public class CRSearcher {
 			  * Always cleanup/release the taxonomy Reader/Writer 
 			  * before the Reader/Writers of the main index!
 			  */
-			if (taAccessor != null && taReader != null) {
-				taAccessor.release(taReader);
-			}
-			if (facetsIndexReader != null) {
-				indexAccessor.release(facetsIndexReader);
-			}
+			
 			if (uniqueMimeTypesIndexReader != null) {
 				indexAccessor.release(uniqueMimeTypesIndexReader);
 			}

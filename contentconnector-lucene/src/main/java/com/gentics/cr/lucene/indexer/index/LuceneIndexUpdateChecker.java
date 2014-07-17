@@ -89,10 +89,12 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		AtomicReader reader = rc.reader();
 		DocsEnum termDocs = reader.termDocsEnum(term);
 		int d;
-		while((d = termDocs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
-			Document doc = reader.document(d);
-			String docID = doc.get(this.idField);
-			docMap.put(docID, rc.docBase + d);
+		if (termDocs != null) {
+			while((d = termDocs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+				Document doc = reader.document(d);
+				String docID = doc.get(this.idField);
+				docMap.put(docID, rc.docBase + d);
+			}
 		}
 	}
 

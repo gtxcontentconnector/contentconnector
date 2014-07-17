@@ -18,8 +18,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.LogByteSizeMergePolicy;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
 
+import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
 
 /**
@@ -447,7 +447,7 @@ public class DefaultTaxonomyAccessor implements TaxonomyAccessor {
 		closeTaxonomyWriter();
 		
 		// Workaround for missing delete all method in the TaxonomyWriter
-		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_30,
+		IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.getVersion(),
 			        new KeywordAnalyzer()).setOpenMode(this.writerOpenMode).setMergePolicy(
 			        new LogByteSizeMergePolicy());		 
 		try {			
