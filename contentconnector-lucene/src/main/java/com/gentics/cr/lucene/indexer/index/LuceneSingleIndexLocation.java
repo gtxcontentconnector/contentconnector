@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
@@ -109,16 +110,21 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 
 	@Override
 	public final int getDocCount() {
-		IndexAccessor indexAccessor = this.getAccessor();
 		IndexReader reader = null;
 		int count = 0;
 		try {
-			reader = indexAccessor.getReader();
+			reader = DirectoryReader.open(dir);
 			count = reader.numDocs();
 		} catch (IOException ex) {
 			log.error("IOException happened during test of index. ", ex);
 		} finally {
-			indexAccessor.release(reader);
+			if (reader!=null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					log.error("Could not close reader");
+				}
+			}
 		}
 
 		return count;

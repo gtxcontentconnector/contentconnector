@@ -193,7 +193,7 @@ public final class LuceneAnalyzerFactory {
 			} catch (Exception e2) {
 				//IF SIMPLE FAILS, PROBABLY DID NOT FIND CONSTRUCTOR,
 				//TRYING WITH VERSION ADDED
-				LOGGER.error("Configured Analyzer fails in the default constructor or it does not have a default constructor.", e2);
+				LOGGER.info("Configured Analyzer fails in the default constructor or it does not have a default constructor. Trying wiht Version parameter.", e2);
 				try {
 					a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[] { Version.class })
 							.newInstance(LuceneVersion.getVersion());

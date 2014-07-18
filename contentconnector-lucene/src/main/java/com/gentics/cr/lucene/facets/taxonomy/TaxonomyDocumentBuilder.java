@@ -70,6 +70,8 @@ public class TaxonomyDocumentBuilder {
 			} else {
 				field = new FacetField(mapping.getCategory(), attribute.toString());
 			}
+		} else {
+			return null;
 		}
 		return field;
 	}

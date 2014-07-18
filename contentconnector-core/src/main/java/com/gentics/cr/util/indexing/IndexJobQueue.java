@@ -158,6 +158,14 @@ public class IndexJobQueue {
 	public final AbstractUpdateCheckerJob getCurrentJob() {
 		return this.currentJI;
 	}
+	
+	/**
+	 * Retrieves and removes the top of the job queue. null if no entry is present.
+	 * @return
+	 */
+	public final AbstractUpdateCheckerJob getAndRemoveNextJob() {
+		return this.queue.poll();
+	}
 
 	/**
 	 * Check the queue for new jobs each <interval> seconds.

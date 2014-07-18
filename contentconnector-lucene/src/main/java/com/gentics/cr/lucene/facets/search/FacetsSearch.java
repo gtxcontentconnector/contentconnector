@@ -110,9 +110,11 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 				config.setIndexFieldName(mapping.getCategory(), mapping.getAttribute());
 				Facets tFacet = new FastTaxonomyFacetCounts(mapping.getAttribute(),taReader,config,facetsCollector);
 				FacetResult result = tFacet.getTopChildren(facetnumbercategories, mapping.getCategory());
-				facetResultNodes.put(String.valueOf(i),
-						buildFacetsResultTree(result));
-				i++;
+				if (result != null) {
+					facetResultNodes.put(String.valueOf(i),
+							buildFacetsResultTree(result));
+					i++;
+				}
 			}
 	    }
 	    finally {

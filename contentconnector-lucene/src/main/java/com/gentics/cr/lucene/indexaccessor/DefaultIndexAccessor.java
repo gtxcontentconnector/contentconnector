@@ -40,6 +40,8 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import com.gentics.cr.lucene.LuceneVersion;
+
 /**
  * Provides a default implementation for {@link IndexAccessor}.
  */
@@ -396,7 +398,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 			writerUseCount++;
 		} else {
 			LOGGER.debug("opening new writer and caching it:" + Thread.currentThread().getId());
-			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyzer);
+			IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.getVersion(), analyzer);
 			cachedWriter = new IndexWriter(directory,config);
 			writerUseCount = 1;
 		}
@@ -487,7 +489,6 @@ class DefaultIndexAccessor implements IndexAccessor {
 				throw new IllegalArgumentException("writer not opened by this index accessor");
 			}
 			writerUseCount--;
-
 			if (writerUseCount == 0) {
 				LOGGER.debug("closing cached writer:" + Thread.currentThread().getId());
 
@@ -509,13 +510,15 @@ class DefaultIndexAccessor implements IndexAccessor {
 			pool.execute(new Runnable() {
 				public void run() {
 					synchronized (DefaultIndexAccessor.this) {
-						if (numReopening > 5) {
-							// there are too many reopens pending, so just bail
+						
+							if (numReopening > 5) {
+								// there are too many reopens pending, so just bail
+								numReopening--;
+								return;
+							}
+							waitForReadersAndReopenCached();
 							numReopening--;
-							return;
-						}
-						waitForReadersAndReopenCached();
-						numReopening--;
+						
 						DefaultIndexAccessor.this.notifyAll();
 					}
 				}

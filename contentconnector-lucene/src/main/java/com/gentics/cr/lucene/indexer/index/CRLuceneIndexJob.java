@@ -654,7 +654,10 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
 			Object value = resolvable.getProperty(attributeName);
 			if (taxoDocBuilder.useFacets() && taxoDocBuilder.isTaxonomyAttribute(attributeName)) {
-				newDoc.add(taxoDocBuilder.buildFacetField(resolvable, attributeName));
+				Field facetField = taxoDocBuilder.buildFacetField(resolvable, attributeName);
+				if (facetField != null) {
+					newDoc.add(facetField);
+				}
 			}else if (idAttribute.equalsIgnoreCase(attributeName) && !filled) {
 				newDoc.add(new StringField(idAttribute, value.toString(), Store.YES));
 			} else if (value != null) {
