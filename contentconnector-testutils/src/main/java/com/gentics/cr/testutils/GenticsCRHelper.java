@@ -41,7 +41,6 @@ public final class GenticsCRHelper {
 	 * @throws Exception in case of ObjectManagementError.
 	 */
 	public static void importObjectTypes(MCCRDatasource ds) throws Exception {
-		System.err.println("Loading dsstructure.xml from:: " + GenticsCRHelper.class.getResource("dsstructure.xml"));
 		importObjectTypes(ds, GenticsCRHelper.class.getResourceAsStream("dsstructure.xml"));
 	}
 	
