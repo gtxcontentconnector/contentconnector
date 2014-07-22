@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.lucene.index.IndexReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,11 +23,15 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
 
+/**
+ * Test creating an index with facets
+ * @author christopher
+ *
+ */
 public class IndexingAndFacetTest {
 
 	private static File temp;
@@ -88,6 +91,9 @@ public class IndexingAndFacetTest {
 	}
 	
 
+	/**
+	 * Test creating an index.
+	 */
 	@Test
 	public void testIndexing() {
 		LuceneIndexLocation indexLoc = index();
@@ -96,6 +102,10 @@ public class IndexingAndFacetTest {
 		indexLoc.finalize();
 	}
 	
+	/**
+	 * Test creating an index and searching with facets
+	 * @throws CRException in case of an error
+	 */
 	@Test
 	public void testSearchWithFacets() throws CRException {
 		LuceneIndexLocation indexLoc = index();

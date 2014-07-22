@@ -11,8 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.store.Directory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,7 +19,11 @@ import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
-
+/**
+ * Test deleting the index with a CRDeleteIndexJob
+ * @author christopher
+ *
+ */
 public class DeleteIndexTest {
 
 	private static File temp;
@@ -75,7 +77,10 @@ public class DeleteIndexTest {
 		job.run();
 	}
 	
-
+	/**
+	 * First create an index, check the contents, delete it and check the contents again.
+	 * @throws IOException in case of low level IO error
+	 */
 	@Test
 	public void testDelete() throws IOException {
 		LuceneIndexLocation indexLoc = index();

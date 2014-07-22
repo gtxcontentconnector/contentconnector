@@ -1,6 +1,10 @@
 package com.gentics.cr.lucene.search.highlight;
 
-
+/**
+ * Test highlighting with the PhraseBolder
+ * @author christopher
+ *
+ */
 public class PhraseBolderTest extends AbstractBolderTest {
 
 	public PhraseBolderTest(String name) {

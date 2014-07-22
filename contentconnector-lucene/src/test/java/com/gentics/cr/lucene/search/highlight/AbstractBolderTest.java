@@ -18,7 +18,11 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.AbstractLuceneTest;
 import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
-
+/**
+ * Abstract test class for all highlighters.
+ * @author christopher
+ *
+ */
 public abstract class AbstractBolderTest extends AbstractLuceneTest {
 
 	public AbstractBolderTest(String name) {
@@ -50,6 +54,12 @@ public abstract class AbstractBolderTest extends AbstractLuceneTest {
 				LuceneVersion.getVersion(), CharArraySet.EMPTY_SET));
 	}
 
+	/**
+	 * Test highlighting with the configured highlighter
+	 * @throws ParseException in case of a parse exception
+	 * @throws CorruptIndexException in case of a currupted index
+	 * @throws IOException in case of a low level IO error
+	 */
 	public void testHighlighting() throws ParseException, CorruptIndexException, IOException {
 		AdvancedContentHighlighter advancedHighlighter = new WhitespaceVectorBolder(config);
 		IndexReader reader = lucene.getReader();
