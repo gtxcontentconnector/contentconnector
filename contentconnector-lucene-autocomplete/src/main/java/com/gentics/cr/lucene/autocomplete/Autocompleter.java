@@ -182,9 +182,6 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 		}
 		return new ReIndexNoSkipStrategy(config);
 	}
-
-
-
 	@Override
 	public void processEvent(Event event) {
 		// TODO Auto-generated method stub
