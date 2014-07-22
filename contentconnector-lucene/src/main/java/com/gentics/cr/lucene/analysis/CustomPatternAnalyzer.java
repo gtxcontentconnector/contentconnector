@@ -438,7 +438,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	 *            the name of the field to tokenize (currently ignored).
 	 * @param text
 	 *            the string to tokenize
-	 * @return a new token stream
+	 * @return a TokenStreamComponents instance
 	 */
 	public TokenStreamComponents tokenStreamComponents(Reader reader, String fieldName, String text) {
 		// Ideally the Analyzer superclass should have a method with the same signature, 
@@ -569,6 +569,13 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 		private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
 
+		/**
+		 * Constructor for a PatternTokenizer
+		 * @param reader reader to read the content (only used in super class)
+		 * @param str content
+		 * @param pattern pattern to search for
+		 * @param toLowerCase true if tokens should be lower case
+		 */
 		public PatternTokenizer(Reader reader, String str, Pattern pattern, boolean toLowerCase) {
 			super(reader);
 			this.str = str;
@@ -632,6 +639,15 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 		private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
 
+		/**
+		 * Constructor.
+		 * Creates tokens from a String.
+		 * @param reader reader (only used in super)
+		 * @param str content that should be tokenized
+		 * @param isLetter if tokenizer string is a letter
+		 * @param toLowerCase true if tokens should be lower case
+		 * @param stopWords stop word list
+		 */
 		public FastStringTokenizer(Reader reader, String str, boolean isLetter, boolean toLowerCase, Set<?> stopWords) {
 			super(reader);
 			this.str = str;
