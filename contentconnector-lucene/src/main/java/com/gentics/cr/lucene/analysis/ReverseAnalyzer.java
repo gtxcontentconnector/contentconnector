@@ -12,6 +12,9 @@ import com.gentics.cr.lucene.LuceneVersion;
 
 public class ReverseAnalyzer extends Analyzer {
 
+	/**
+	 * Creates a TokenStreamComponents instance to reverse a given field
+	 */
 	@Override
 	protected TokenStreamComponents createComponents(String field, Reader reader) {
 		Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.getVersion(),reader);

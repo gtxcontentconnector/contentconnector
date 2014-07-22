@@ -62,31 +62,6 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	}
 
 	/**
-	 * Maps the categories defined in the mappings to {@link FacetSearchParams}
-	 * TODO: implement categories selection via request-parameters
-	 * 
-	 * @param taAccessor
-	 *            the {@link TaxonomyAccessor} as stored in the
-	 *            {@link LuceneIndexLocation}
-	 * @return the mapped {@link FacetSearchParams}
-	 * @author Sebastian Vogel <s.vogel@gentics.com>
-	 */
-	/*private FacetSearchParams getFacetSearchParams(TaxonomyAccessor taAccessor) {
-		
-		for (TaxonomyMapping map : taAccessor.getTaxonomyMappings()) {
-			CountFacetRequest req = new CountFacetRequest(new CategoryPath(
-					map.getCategory()), facetnumbercategories);
-			params.addFacetRequest(req);
-			if (log.isDebugEnabled()) {
-				log.debug("Added Category Path " + map.getCategory().toString()
-						+ " to the Facet Search Params");
-			}
-		}
-
-		return params;
-	}*/
-
-	/**
 	 * gets the results from the {@link FacetsCollector} and returns a object
 	 * which can be stored in the {@link CRMetaResolvableBean}
 	 * 
