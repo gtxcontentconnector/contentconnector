@@ -492,14 +492,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * @param taxonomyAccessor
 	*            the {@link DefaultTaxonomyAccessor} used to manage access to the
 	*            taxonomy
-	 * @throws CRException TODO javadoc
-	 * @throws IOException TODO javadoc
+	 * @throws CRException in case the slice could not properly be indexed.
 	 */
 	private void indexSlice(final String crid, final IndexWriter indexWriter, final IndexReader indexReader,
 			final IndexSearcher indexSearcher, final Collection<CRResolvableBean> slice, final Map<String, Boolean> attributes, final RequestProcessor rp,
 			final boolean create, final CRConfigUtil config, final List<ContentTransformer> transformerlist,
 			final List<String> reverseattributes, final TaxonomyDocumentBuilder taxoDocBuilder)
-			throws CRException, IOException {
+			throws CRException {
 		// prefill all needed attributes
 		UseCase uc = MonitorFactory.startUseCase("indexSlice(" + crid + ")");
 		try {
@@ -565,7 +564,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 
 	/**
 	 * Fetch an unique document from the index.
-	 * @param indexReader reader.
+	 * @param indexSearcher searcher to find the document.
 	 * @param idTerm term.
 	 * @param searchCRID crid.
 	 * @return document.
@@ -600,6 +599,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * configured in this config (usually contentid).
 	 * @param reverseattributes Attributes that should be indexed in reverse
 	 * order. This can be used to search faster for words ending with *ing.
+	 * @param taxoDocBuilder TaxonomyDocumentBuilder to create taxonomy fields if facets are enabled for this location.
 	 * @return Returns a Lucene Document, ready to be added to the index.
 	 */
 	private Document getDocument(final Document doc, final Resolvable resolvable, final Map<String, Boolean> attributes,

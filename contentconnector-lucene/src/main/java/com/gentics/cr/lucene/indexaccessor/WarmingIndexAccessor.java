@@ -160,6 +160,10 @@ class WarmingIndexAccessor extends DefaultIndexAccessor {
 
 		}
 
+		/**
+		 * Search with the configured warmQuery and an empty collector, that does nothing. 
+		 * This puts the searched documents into the lucene cache.
+		 */
 		public void run() {
 			LOGGER.debug("warming up searcher...");
 			try {

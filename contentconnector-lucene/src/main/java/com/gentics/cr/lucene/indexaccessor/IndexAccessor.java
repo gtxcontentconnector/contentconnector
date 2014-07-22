@@ -125,8 +125,8 @@ public interface IndexAccessor {
 	int readingReadersOut();
 
 	/**
-	 * @param reader
-	 * @param write
+	 * Release an IndexReader instance if it is not used any longer.
+	 * @param reader the Reader that should be released.
 	 */
 	void release(IndexReader reader);
 
