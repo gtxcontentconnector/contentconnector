@@ -4,68 +4,33 @@
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
 		<version>1.13.3-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>contentconnector-http</artifactId>
+	<packaging>jar</packaging>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.plugin.version}</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${maven.javadoc.plugin.version}</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-							<goal>javadoc</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>${maven.source.plugin.version}</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
-			<!-- LICENSE: Apache 2.0 -->
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
 		</dependency>
 		<dependency>
-			<!-- LICENSE: Apache 2.0 -->
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<!-- LICENSE: Apache 2.0 -->
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
 		</dependency>
 	</dependencies>
 </project>

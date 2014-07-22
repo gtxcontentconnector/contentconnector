@@ -5,8 +5,8 @@ import java.io.InputStream;
 import com.gentics.api.lib.datasource.WriteableDatasource;
 import com.gentics.lib.datasource.CNDatasource;
 import com.gentics.lib.datasource.mccr.MCCRDatasource;
-import com.gentics.portalnode.genericmodules.admin.ObjectManagementException;
-import com.gentics.portalnode.genericmodules.admin.ObjectManagementManager;
+import com.gentics.lib.datasource.object.ObjectManagementException;
+import com.gentics.lib.datasource.object.ObjectManagementManager;
 
 /**
  * ATTENTION!
@@ -41,7 +41,6 @@ public final class GenticsCRHelper {
 	 * @throws Exception in case of ObjectManagementError.
 	 */
 	public static void importObjectTypes(MCCRDatasource ds) throws Exception {
-		System.err.println("Loading dsstructure.xml from:: " + GenticsCRHelper.class.getResource("dsstructure.xml"));
 		importObjectTypes(ds, GenticsCRHelper.class.getResourceAsStream("dsstructure.xml"));
 	}
 	

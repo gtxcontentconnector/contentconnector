@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.httpclient.HttpConstants;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 
@@ -25,7 +24,6 @@ import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
 import com.gentics.lib.http.HTTPRequest;
-import com.sun.jersey.api.core.HttpResponseContext;
 
 /**
  * Container for Binary responses.
