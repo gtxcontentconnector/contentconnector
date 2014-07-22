@@ -85,6 +85,13 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		}
 	}
 	
+	/**
+	 * Fetch documents from atomic readers.
+	 * @param rc atomic reader context
+	 * @param docMap documents to fetch
+	 * @param term term to search documents by
+	 * @throws IOException in case of low level IO error
+	 */
 	private void fillDocs(AtomicReaderContext rc, Map<String, Integer> docMap, Term term) throws IOException {
 		AtomicReader reader = rc.reader();
 		DocsEnum termDocs = reader.termDocsEnum(term);
@@ -192,6 +199,11 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		checkedDocuments.clear();
 	}
 
+	/**
+	 * Sorts the given map by its keys.
+	 * @param map map to sort.
+	 * @return sorted map
+	 */
 	private LinkedHashMap<String, Integer> toSortedMap(Map<String, Integer> map) {
 		LinkedHashMap<String, Integer> ret = new LinkedHashMap<String, Integer>(map.size());
 		Vector<String> v = new Vector<String>(map.keySet());
