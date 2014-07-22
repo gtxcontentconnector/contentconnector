@@ -62,7 +62,7 @@ public class CRRecencyBoostingQuery extends CustomScoreQuery {
 	
 	/**
 	 * returns the a new RecencyBooster (innerClass of this).
-	 * @param r IndexReader for the queries
+	 * @param context AtomicReaderContext for the current reader.
 	 */
 	protected CustomScoreProvider getCustomScoreProvider(AtomicReaderContext context) throws IOException {
         return new RecencyBooster(context.reader());
