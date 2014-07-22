@@ -65,7 +65,8 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	 * gets the results from the {@link FacetsCollector} and returns a object
 	 * which can be stored in the {@link CRMetaResolvableBean}
 	 * 
-	 * @param facetsCollector
+	 * @param facetsCollector the facet collector that was used for searching
+	 * @param taAccessor the TaxonomyAccessor of the used IndexLocation
 	 * @return an Object that can be stored in the {@link CRMetaResolvableBean}
 	 * @throws IOException
 	 * @author Sebastian Vogel <s.vogel@gentics.com>
@@ -140,6 +141,7 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	 * Create a new {@link FacetsCollector}
 	 * </p>
 	 * @author Sebastian Vogel <s.vogel@gentics.com>
+	 * @return FacetsCollector returns a new FacetsCollector instance.
 	 */
 	public FacetsCollector createFacetsCollector() {
 		FacetsCollector facetsCollector = new FacetsCollector();

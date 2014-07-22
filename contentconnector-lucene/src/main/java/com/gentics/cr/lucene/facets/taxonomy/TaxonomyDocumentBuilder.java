@@ -36,13 +36,13 @@ public class TaxonomyDocumentBuilder {
 	public TaxonomyDocumentBuilder(LuceneIndexLocation loc) throws IOException {
 		this.loc = loc;
 		if (useFacets()) {
-			taxonomyAccessor = this.loc.getTaxonomyAccessor();
-			this.taxonomyWriter = taxonomyAccessor.getTaxonomyWriter();
-			Collection<TaxonomyMapping> maps = this.taxonomyAccessor.getTaxonomyMappings();
-			this.taxoMap = new HashMap<String, TaxonomyMapping>();
+			taxonomyAccessor = loc.getTaxonomyAccessor();
+			taxonomyWriter = taxonomyAccessor.getTaxonomyWriter();
+			Collection<TaxonomyMapping> maps = taxonomyAccessor.getTaxonomyMappings();
+			taxoMap = new HashMap<String, TaxonomyMapping>();
 			for (TaxonomyMapping map : maps) {
 				config.setIndexFieldName(map.getCategory(), map.getAttribute());
-				this.taxoMap.put(map.getAttribute(), map);
+				taxoMap.put(map.getAttribute(), map);
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public class TaxonomyDocumentBuilder {
 	public FacetField buildFacetField(Resolvable bean, String attributeKey) {
 		Object attribute = bean.get(attributeKey);
 		FacetField field = null;
-		TaxonomyMapping mapping = this.taxoMap.get(attributeKey);
+		TaxonomyMapping mapping = taxoMap.get(attributeKey);
 		// if bean does not have the attribute don't create a category path
 		if (attribute != null) {
 			Class<?> type = attribute.getClass();
@@ -92,8 +92,8 @@ public class TaxonomyDocumentBuilder {
 	 * @return
 	 */
 	public boolean isTaxonomyAttribute(String name) {
-		if (this.taxoMap != null) {
-			return this.taxoMap.containsKey(name);
+		if (taxoMap != null) {
+			return taxoMap.containsKey(name);
 		}
 		return false;
 	}
@@ -103,7 +103,7 @@ public class TaxonomyDocumentBuilder {
 	 * @return
 	 */
 	public boolean useFacets() {
-		return this.loc.useFacets();
+		return loc.useFacets();
 	}
 	
 	/**
@@ -111,7 +111,7 @@ public class TaxonomyDocumentBuilder {
 	 */
 	public void close() {
 		if (taxonomyAccessor != null && taxonomyWriter != null) {
-			this.taxonomyAccessor.release(taxonomyWriter);
+			taxonomyAccessor.release(taxonomyWriter);
 		}
 	}
 }
