@@ -703,19 +703,6 @@ public class CustomSpellChecker implements java.io.Closeable {
 		this.spellIndex.stop();
 	}
 
-	/**
-	 * Creates a new read-only IndexSearcher.
-	 * 
-	 * @param dir
-	 *            the directory used to open the searcher
-	 * @return a new read-only IndexSearcher
-	 * @throws IOException
-	 *             f there is a low-level IO error
-	 */
-	// for testing purposes
-	final IndexSearcher createSearcher(final Directory dir) throws IOException {
-		return new IndexSearcher(DirectoryReader.open(dir));
-	}
 
 	/**
 	 * Returns <code>true</code> if and only if the {@link SpellChecker} is
