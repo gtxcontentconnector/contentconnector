@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
@@ -109,16 +110,21 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 
 	@Override
 	public final int getDocCount() {
-		IndexAccessor indexAccessor = this.getAccessor();
 		IndexReader reader = null;
 		int count = 0;
 		try {
-			reader = indexAccessor.getReader(false);
+			reader = DirectoryReader.open(dir);
 			count = reader.numDocs();
 		} catch (IOException ex) {
 			log.error("IOException happened during test of index. ", ex);
 		} finally {
-			indexAccessor.release(reader, false);
+			if (reader!=null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					log.error("Could not close reader");
+				}
+			}
 		}
 
 		return count;
@@ -234,19 +240,9 @@ public class LuceneSingleIndexLocation extends LuceneIndexLocation implements Ta
 	 * @return true if it is optimized
 	 */
 	public final boolean isOptimized() {
-		boolean ret = false;
-		IndexAccessor indexAccessor = this.getAccessor();
-		IndexReader reader = null;
-		try {
-			reader = indexAccessor.getReader(false);
-			ret = reader.isOptimized();
-		} catch (IOException ex) {
-			log.error("IOException happened during test of index. ", ex);
-		} finally {
-			indexAccessor.release(reader, false);
-		}
-
-		return ret;
+		//Optimize is bad for you and has been removed in Lucene 4.0
+		//We now let lucene handle all the magic
+		return true;
 	}
 
 	@Override

@@ -6,12 +6,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.index.SlowCompositeReaderWrapper;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 
 import com.gentics.cr.CRRequest;
@@ -44,7 +43,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 
 		GenericConfiguration config = new GenericConfiguration();
 		Properties p = new Properties();
-		p.setProperty("MULTIPLICATORBOOST", "4.0");
+		p.setProperty("MULTIPLICATORBOOST", "6.0");
 		p.setProperty("BOOSTATTRIBUTE", "updatetimestamp");
 		p.setProperty("TIMERANGE", "1296000"); // 15 days
 
@@ -124,7 +123,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(orginalQuery));
 		assertEquals(6, matchedDocuments.size());
 		Iterator<ComparableDocument> i = matchedDocuments.iterator();
-
+		
 		assertEquals("Ordering of the matching collection not expected! First entry must be the 6th document.",
 					i.next(), documents.get(5));
 		assertEquals("Ordering of the matching collection not expected! Second entry must be the 1th document.",
@@ -142,7 +141,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 	public void testCRRecencyBoostingQueryCalculation() throws ParseException, CorruptIndexException, IOException {
 		CRRecencyBoostingQuery query = new CRRecencyBoostingQuery(parser.parse("word1"), 4, 1296000, "updatetimestamp");
 		
-		float result = query.getCustomScoreProvider(lucene.getReader()).customScore(0, 2, 1);
+		float result = query.getCustomScoreProvider(SlowCompositeReaderWrapper.wrap(lucene.getReader()).getContext()).customScore(0, 2, 1);
 		long currentTime = System.currentTimeMillis() / 1000;
 
 		float testingResult = 0;

@@ -51,7 +51,7 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 		// build a dictionary (from the spell package)
 		log.debug("Starting to reindex didyoumean index.");
 		IndexAccessor sourceAccessor = didyoumean.getSourceLocation().getAccessor();
-		IndexReader sourceReader = sourceAccessor.getReader(false);
+		IndexReader sourceReader = sourceAccessor.getReader();
 		CustomSpellChecker spellchecker = didyoumean.getSpellchecker();
 		Collection<String> fields = null;
 
@@ -67,7 +67,7 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 			}
 		} finally {
 			if (sourceAccessor != null && sourceReader != null) {
-				sourceAccessor.release(sourceReader, false);
+				sourceAccessor.release(sourceReader);
 			}
 		}
 		log.debug("Finished reindexing didyoumean index.");

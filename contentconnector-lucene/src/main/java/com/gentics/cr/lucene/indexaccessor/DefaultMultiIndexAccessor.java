@@ -20,15 +20,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 
 /**
@@ -44,9 +44,9 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	 * Log4j logger for error and debug messages.
 	 */
 	private static final Logger LOGGER = Logger.getLogger(DefaultMultiIndexAccessor.class);
-	private final Map<IndexSearcher, IndexAccessor> multiSearcherAccessors = new HashMap<IndexSearcher, IndexAccessor>();
-	private final Map<IndexReader, IndexAccessor> multiReaderAccessors = new HashMap<IndexReader, IndexAccessor>();
-
+	private final Map<IndexSearcher, IndexAccessor> multiSearcherAccessors = new ConcurrentHashMap<IndexSearcher, IndexAccessor>();
+	private final Map<IndexReader, IndexAccessor> multiReaderAccessors = new ConcurrentHashMap<IndexReader, IndexAccessor>();
+	private final Map<MultiReader, IndexReader[]> subReaderList = new ConcurrentHashMap<MultiReader, IndexReader[]>();
 	private Similarity similarity;
 
 	private Directory[] dirs;
@@ -56,7 +56,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	* @param dirs 
 	 */
 	public DefaultMultiIndexAccessor(Directory[] dirs) {
-		this.similarity = Similarity.getDefault();
+		this.similarity = IndexSearcher.getDefaultSimilarity();
 		this.dirs = dirs;
 	}
 
@@ -76,7 +76,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	 */
 	public synchronized void release(IndexSearcher multiSearcher) {
 		IndexReader reader = multiSearcher.getIndexReader();
-		release(reader, false);
+		release(reader);
 	}
 
 	/**
@@ -102,10 +102,8 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 		return getSearcher();
 	}
 
-	public IndexReader getReader(boolean write) throws IOException {
-		if (write) {
-			throw new UnsupportedOperationException();
-		}
+	public IndexReader getReader() throws IOException {
+		
 
 		IndexReader[] readers = new IndexReader[this.dirs.length];
 
@@ -113,13 +111,13 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 		int i = 0;
 		for (Directory index : this.dirs) {
 			IndexAccessor indexAccessor = factory.getAccessor(index);
-			readers[i] = indexAccessor.getReader(false);
+			readers[i] = indexAccessor.getReader();
 			multiReaderAccessors.put(readers[i], indexAccessor);
 			i++;
 		}
 
 		MultiReader multiReader = new MultiReader(readers, true);
-
+		subReaderList.put(multiReader, readers);
 		return multiReader;
 	}
 	
@@ -146,17 +144,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	public IndexSearcher getSearcher(final Similarity similarity, final IndexReader indexReader) throws IOException {
 		IndexReader ir = indexReader;
 		if (ir == null) {
-			IndexReader[] readers = new IndexReader[this.dirs.length];
-	
-			IndexAccessorFactory factory = IndexAccessorFactory.getInstance();
-			int i = 0;
-			for (Directory index : this.dirs) {
-				IndexAccessor indexAccessor = factory.getAccessor(index);
-				readers[i] = indexAccessor.getReader(false);
-				multiReaderAccessors.put(readers[i], indexAccessor);
-				i++;
-			}
-			ir = new MultiReader(readers, false); 
+			ir = getReader();
 		}
 		IndexSearcher multiSearcher = new IndexSearcher(ir);
 		multiSearcher.setSimilarity(similarity);
@@ -213,17 +201,19 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 		return usecount;
 	}
 
-	public void release(IndexReader reader, boolean write) {
-		if (reader instanceof MultiReader) {
-			IndexReader[] readers = ((MultiReader) reader).getSequentialSubReaders();
-			for (IndexReader r : readers) {
+	public void release(IndexReader reader) {
+		
+		IndexReader[] subReaders = subReaderList.get(reader);
+		if (subReaders != null) {
+			for (IndexReader r : subReaders) {
 				IndexAccessor accessor = multiReaderAccessors.get(r);
 				if (accessor != null) {
-					accessor.release(r, write);
-					multiReaderAccessors.remove(r);
+					accessor.release(r);
+					//multiReaderAccessors.remove(r);
 				}
 			}
 		}
+		//subReaderList.remove(reader);
 	}
 
 	public void release(IndexWriter writer) {

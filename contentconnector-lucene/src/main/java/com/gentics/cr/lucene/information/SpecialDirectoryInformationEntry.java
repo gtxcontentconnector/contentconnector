@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -76,7 +77,7 @@ public class SpecialDirectoryInformationEntry {
 		if (directory instanceof FSDirectory) {
 			size = FileUtils.sizeOfDirectory(((FSDirectory) directory).getDirectory());
 		} else if (directory instanceof RAMDirectory) {
-			size = ((RAMDirectory) directory).sizeInBytes();
+			size = ((RAMDirectory) directory).ramBytesUsed();
 		}
 		return size;
 	}
@@ -106,27 +107,10 @@ public class SpecialDirectoryInformationEntry {
 
 	/**
 	 * Check if the index is optimized.
-	 * @return true if optimized.
+	 * @return true if optimized (in lucene 4, we leave optimization to lucene and do not care any longer).
 	 */
 	public final boolean isOptimized() {
-		boolean ret = false;
-		IndexReader reader = null;
-		try {
-			reader = IndexReader.open(directory);
-			ret = reader.isOptimized();
-		} catch (IOException ex) {
-			LOG.error("IOException happened during test of index. ", ex);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				LOG.error("IOException happened during test of index. ", e);
-			}
-		}
-
-		return ret;
+		return true;
 	}
 
 	/**
@@ -137,7 +121,7 @@ public class SpecialDirectoryInformationEntry {
 		IndexReader reader = null;
 		int count = 0;
 		try {
-			reader = IndexReader.open(directory);
+			reader = DirectoryReader.open(directory);
 			count = reader.numDocs();
 		} catch (IOException ex) {
 			LOG.error("IOException happened during test of index. ", ex);

@@ -7,8 +7,11 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.gentics.cr.lucene.LuceneVersion;
 
 public class IndexAccessorFactoryTest {
 
@@ -24,7 +27,7 @@ public class IndexAccessorFactoryTest {
 	public void setUp() throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
 		factory = IndexAccessorFactory.getInstance();
-		analyzer = (Analyzer) Class.forName("org.apache.lucene.analysis.WhitespaceAnalyzer").getConstructor().newInstance();
+		analyzer = (Analyzer) Class.forName("org.apache.lucene.analysis.core.WhitespaceAnalyzer").getConstructor(Version.class).newInstance(LuceneVersion.getVersion());
 		query = new BooleanQuery();
 	}
 

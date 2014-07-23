@@ -1,7 +1,7 @@
 package com.gentics.cr.lucene.search.query;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.complexPhrase.ComplexPhraseQueryParser;
+import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRRequest;

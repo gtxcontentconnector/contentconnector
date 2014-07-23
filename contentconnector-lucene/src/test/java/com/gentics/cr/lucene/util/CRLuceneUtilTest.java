@@ -1,8 +1,8 @@
 package com.gentics.cr.lucene.util;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -42,7 +42,7 @@ public class CRLuceneUtilTest {
 	@Test
 	public void testGetFieldNames() throws CorruptIndexException, IOException {
 		IndexReader reader = lucene.getReader();
-		List<String> nameList = CRLuceneUtil.getFieldNames(reader);
+		Collection<String> nameList = CRLuceneUtil.getFieldNames(reader);
 		String[] expectedFields = new String[]{"content", "testfield1", "testfield2", "someotherfield", "content2", "testfield3", "someotherfield2"};
 		for(String s : expectedFields) {
 			Assert.assertTrue("Expected field " + s + " could not be found in name list.", nameList.contains(s));

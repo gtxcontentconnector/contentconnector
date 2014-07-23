@@ -1,6 +1,8 @@
 package com.gentics.cr.lucene.indexer.index;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,9 +11,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRConfigFileLoader;
@@ -100,9 +102,9 @@ public final class LuceneAnalyzerFactory {
 		// Caching the analyzer instances is not possible as those do not implement Serializable
 		// TODO: cache the config (imho caching should be implemented in the config itself)
 
-		PerFieldAnalyzerWrapper analyzerWrapper = new PerFieldAnalyzerWrapper(createDefaultAnalyzer(config));
+		
 		configuredAnalyzerMap.clear();
-
+		Map<String, Analyzer> analyzerMap = new HashMap<String, Analyzer>();
 		//Load analyzer config
 		GenericConfiguration analyzerConfig = loadAnalyzerConfig(config);
 		if (analyzerConfig != null) {
@@ -116,15 +118,15 @@ public final class LuceneAnalyzerFactory {
 					String analyzerclass = analyzerconfig.getString(ANALYZER_CLASS_KEY);
 
 					Analyzer analyzerInstance = createAnalyzer(analyzerclass, analyzerconfig);
-					analyzerWrapper.addAnalyzer(fieldname, analyzerInstance);
+					analyzerMap.put(fieldname, analyzerInstance);
 					configuredAnalyzerMap.put(fieldname, analyzerInstance.getClass().getCanonicalName());
 
 					//ADD REVERSE ANALYZERS
 					if (reverseAttributes != null && reverseAttributes.contains(fieldname)) {
 						addedReverseAttributes.add(fieldname);
-
-						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer(analyzerInstance);
-						analyzerWrapper.addAnalyzer(fieldname + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer);
+						//TODO Create custom Analyzers
+						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer();
+						analyzerMap.put(fieldname + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer);
 
 						configuredAnalyzerMap.put(fieldname + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer.getClass()
 								.getCanonicalName());
@@ -135,15 +137,15 @@ public final class LuceneAnalyzerFactory {
 			if (reverseAttributes != null && reverseAttributes.size() > 0) {
 				for (String att : reverseAttributes) {
 					if (!addedReverseAttributes.contains(att)) {
-						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer(null);
-						analyzerWrapper.addAnalyzer(att + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer);
+						ReverseAnalyzer reverseAnalyzer = new ReverseAnalyzer();
+						analyzerMap.put(att + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer);
 						configuredAnalyzerMap.put(att + REVERSE_ATTRIBUTE_SUFFIX, reverseAnalyzer.getClass()
 								.getCanonicalName());
 					}
 				}
 			}
 		}
-		return analyzerWrapper;
+		return new PerFieldAnalyzerWrapper(createDefaultAnalyzer(config), analyzerMap);
 	}
 
 	/**
@@ -191,7 +193,7 @@ public final class LuceneAnalyzerFactory {
 			} catch (Exception e2) {
 				//IF SIMPLE FAILS, PROBABLY DID NOT FIND CONSTRUCTOR,
 				//TRYING WITH VERSION ADDED
-				LOGGER.error("Configured Analyzer fails in the default constructor or it does not have a default constructor.", e2);
+				LOGGER.info("Configured Analyzer fails in the default constructor or it does not have a default constructor. Trying wiht Version parameter.", e2);
 				try {
 					a = (Analyzer) Class.forName(analyzerclass).getConstructor(new Class[] { Version.class })
 							.newInstance(LuceneVersion.getVersion());
@@ -216,7 +218,7 @@ public final class LuceneAnalyzerFactory {
 		if (stopWordFile != null) {
 			//initialize Analyzer with stop words
 			try {
-				analyzer = new StandardAnalyzer(LuceneVersion.getVersion(), stopWordFile);
+				analyzer = new StandardAnalyzer(LuceneVersion.getVersion(), new BufferedReader(new FileReader(stopWordFile)));
 				return analyzer;
 			} catch (IOException ex) {
 				LOGGER.error("Could not open stop words file. " + "Will create standard " + "analyzer.", ex);

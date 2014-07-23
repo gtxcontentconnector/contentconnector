@@ -1,11 +1,14 @@
 package com.gentics.cr.lucene.util;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.util.ReaderUtil;
 
 public class CRLuceneUtil {
 
@@ -21,12 +24,15 @@ public class CRLuceneUtil {
 	 * @param reader
 	 * @return
 	 */
-	public static List<String> getFieldNames(IndexReader reader) {
-		
-		List<String> nameList = new Vector<String>();
-		for(FieldInfo info : ReaderUtil.getMergedFieldInfos(reader)) {
-			nameList.add(info.name);
+	public static Set<String> getFieldNames(IndexReader reader) {
+		Set<String> nameSet = new TreeSet<String>();
+		for(AtomicReaderContext aRC : reader.leaves()) {
+			AtomicReader aReader = aRC.reader();
+			for(FieldInfo info : aReader.getFieldInfos()) {
+				nameSet.add(info.name);
+			}
 		}
-		return nameList;
+		
+		return nameSet;
 	}
 }

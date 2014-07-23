@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -106,54 +107,23 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 		if (sReopenUpdate != null) {
 			autocompletereopenupdate = Boolean.parseBoolean(sReopenUpdate);
 		}
-
-		if (!useAutocompleteIndexExtension) {
-			try {
-				// CHECK AND REMOVE LOCKING
-				autocompleteLocation.forceRemoveLock();
-				// REINDEX
-				reIndex();
-			} catch (IOException e) {
-				log.error("Could not create autocomplete index.", e);
-			}
-			EventManager.getInstance().register(this);
-		}
 	}
 
-	/**
-	 * from version 2.0.0 the {@link AutocompleteIndexExtension} is used for all
-	 * Index related tasks and the {@link Autocompleter} will only handle search
-	 * requests
-	 */
-	@Deprecated
-	public void processEvent(Event event) {
-		if (IndexingFinishedEvent.INDEXING_FINISHED_EVENT_TYPE.equals(event.getType())) {
-			IndexLocation il = (IndexLocation) event.getData();
-			if (!reindexStrategy.skipReIndex(il)) {
-				try {
-					reIndex();
-				} catch (IOException e) {
-					log.error("Could not reindex autocomplete index.", e);
-				}
-			}
-		}
-	}
+	
 
 	public Collection<CRResolvableBean> suggestWords(CRRequest request) throws IOException {
 		ArrayList<CRResolvableBean> result = new ArrayList<CRResolvableBean>();
 		String term = request.getRequestFilter();
 		// get the top 5 terms for query
 
-		if (autocompletereopenupdate || useAutocompleteIndexExtension) {
-			checkForUpdate();
-		}
+		
 
 		IndexAccessor ia = autocompleteLocation.getAccessor();
 		IndexSearcher autoCompleteSearcher = ia.getPrioritizedSearcher();
-		IndexReader autoCompleteReader = ia.getReader(false);
+		IndexReader autoCompleteReader = ia.getReader();
 		try {
 			Query query = new TermQuery(new Term(GRAMMED_WORDS_FIELD, term));
-			Sort sort = new Sort(new SortField(COUNT_FIELD, SortField.LONG, true));
+			Sort sort = new Sort(new SortField(COUNT_FIELD, SortField.Type.LONG, true));
 			TopDocs docs = autoCompleteSearcher.search(query, null, 5, sort);
 			int id = 1;
 			for (ScoreDoc doc : docs.scoreDocs) {
@@ -165,120 +135,24 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 			}
 		} finally {
 			ia.release(autoCompleteSearcher);
-			ia.release(autoCompleteReader, false);
+			ia.release(autoCompleteReader);
 		}
 
 		return result;
 	}
 
 	private void checkForUpdate() {
-
-		// Use the old checkForUpdate logic for backward compatibility if the
-		// AutocompleteIndexExtension is not used
-		if (!useAutocompleteIndexExtension) {
-			IndexAccessor ia = source.getAccessor();
-			boolean reopened = false;
-			try {
-				IndexReader reader = ia.getReader(false);
-				Directory dir = reader.directory();
-				try {
-					if (dir.fileExists("reopen")) {
-						long lastupdate = dir.fileModified("reopen");
-						if (lastupdate != lastupdatestored) {
-							reopened = true;
-							lastupdatestored = lastupdate;
-						}
-					}
-				} finally {
-					ia.release(reader, false);
-				}
-				if (reopened) {
-
-					reIndex();
-
-				}
-			} catch (IOException e) {
-				log.debug("Could not reIndex autocomplete index.", e);
-			}
-		} else {
-			// the new checkForUpdate Logic only calls reopenCheck on the
-			// IndexLocation
-			IndexAccessor ia = autocompleteLocation.getAccessor();
-			autocompleteLocation.reopenCheck(ia, null);
-		}
+		// the new checkForUpdate Logic only calls reopenCheck on the
+		// IndexLocation
+		IndexAccessor ia = autocompleteLocation.getAccessor();
+		autocompleteLocation.reopenCheck(ia, null);
+		
 	}
 
-	/**
-	 * from version 2.0.0 the {@link AutocompleteIndexExtension} is used for all
-	 * Index related tasks and the {@link Autocompleter} will only handle search
-	 * requests
-	 */
-	@Deprecated
-	private synchronized void reIndex() throws IOException {
-		UseCase ucReIndex = MonitorFactory.startUseCase("reIndex()");
-		// build a dictionary (from the spell package)
-		log.debug("Starting to reindex autocomplete index.");
-		IndexAccessor sia = this.source.getAccessor();
-		IndexReader sourceReader = sia.getReader(false);
-		LuceneDictionary dict = new LuceneDictionary(sourceReader, this.autocompletefield);
-		IndexAccessor aia = this.autocompleteLocation.getAccessor();
-		// IndexReader reader = aia.getReader(false);
-		IndexWriter writer = aia.getWriter();
-
-		try {
-			writer.setMergeFactor(300);
-			writer.setMaxBufferedDocs(150);
-			// go through every word, storing the original word (incl. n-grams)
-			// and the number of times it occurs
-			// CREATE WORD LIST FROM SOURCE INDEX
-			Map<String, Integer> wordsMap = new HashMap<String, Integer>();
-			Iterator<String> iter = (Iterator<String>) dict.getWordsIterator();
-			while (iter.hasNext()) {
-				String word = iter.next();
-				int len = word.length();
-				if (len < 3) {
-					continue; // too short we bail but "too long" is fine...
-				}
-				if (wordsMap.containsKey(word)) {
-					throw new IllegalStateException("Lucene returned a bad word list");
-				} else {
-					// use the number of documents this word appears in
-					wordsMap.put(word, sourceReader.docFreq(new Term(autocompletefield, word)));
-				}
-			}
-			// DELETE OLD OBJECTS FROM INDEX
-			writer.deleteAll();
-
-			// UPDATE DOCUMENTS IN AUTOCOMPLETE INDEX
-			for (String word : wordsMap.keySet()) {
-				// ok index the word
-				Document doc = new Document();
-				doc.add(new Field(SOURCE_WORD_FIELD, word, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS)); // orig term
-				doc.add(new Field(GRAMMED_WORDS_FIELD, word, Field.Store.YES, Field.Index.ANALYZED)); // grammed
-				doc.add(new Field(COUNT_FIELD, Integer.toString(wordsMap.get(word)), Field.Store.YES,
-						Field.Index.NOT_ANALYZED_NO_NORMS)); // count
-				writer.addDocument(doc);
-			}
-			writer.optimize();
-		} finally {
-
-			sia.release(sourceReader, false);
-			// close writer
-
-			aia.release(writer);
-			// aia.release(reader,false);
-		}
-		autocompleteLocation.createReopenFile();
-		log.debug("Finished reindexing autocomplete index.");
-		ucReIndex.stop();
-	}
+	
 
 	public void finalize() {
 		autocompleteLocation.stop();
-		if (!useAutocompleteIndexExtension) {
-			source.stop();
-			EventManager.getInstance().unregister(this);
-		}
 	}
 
 	/**
@@ -307,6 +181,11 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 			}
 		}
 		return new ReIndexNoSkipStrategy(config);
+	}
+	@Override
+	public void processEvent(Event event) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

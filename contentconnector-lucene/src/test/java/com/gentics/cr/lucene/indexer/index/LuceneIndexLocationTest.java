@@ -43,6 +43,7 @@ public class LuceneIndexLocationTest extends AbstractLuceneTest {
 	public void testLuceneSingleIndexLocation() {
 		LuceneIndexLocation singleLoc1 = LuceneIndexLocation.getIndexLocation(singleConfig1);
 		IndexAccessor ia1 = singleLoc1.getAccessor();
+		
 
 		LuceneIndexLocation singleLoc2 = LuceneIndexLocation.getIndexLocation(singleConfig2);
 		IndexAccessor ia2 = singleLoc2.getAccessor();

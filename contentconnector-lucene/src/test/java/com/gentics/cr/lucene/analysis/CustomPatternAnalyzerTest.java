@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Test;
@@ -17,8 +18,8 @@ public class CustomPatternAnalyzerTest {
 		GenericConfiguration config = new GenericConfiguration();
 		config.set("pattern", "\\s+");
 		config.set("lowercase", "false");
-		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
-		
+		Analyzer a = new CustomPatternAnalyzer(config);
+	
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
 		CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
 

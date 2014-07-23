@@ -84,8 +84,8 @@ public class PhraseBolder extends ContentHighlighter implements Formatter {
 			Highlighter highlighter = new Highlighter(this, new QueryScorer(parsedQuery));
 			highlighter.setTextFragmenter(new WordCountFragmenter(getFragmentSize()));
 
-			TokenStream tokenStream = analyzer.tokenStream(this.getHighlightAttribute(), new StringReader(attribute));
 			try {
+				TokenStream tokenStream = analyzer.tokenStream(this.getHighlightAttribute(), new StringReader(attribute));
 				UseCase ucFragments = MonitorFactory.startUseCase("Highlight.PhraseBolder.highlight()#getFragments");
 				TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, attribute, true, getMaxFragments());
 				ucFragments.stop();

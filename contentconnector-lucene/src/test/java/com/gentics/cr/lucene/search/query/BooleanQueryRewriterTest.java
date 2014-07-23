@@ -6,10 +6,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 
 import com.gentics.cr.CRRequest;
@@ -77,7 +76,7 @@ public class BooleanQueryRewriterTest extends AbstractLuceneTest {
 
 	}
 
-	public void testReplaceTerm() throws ParseException, CorruptIndexException, IOException {
+	public void testReplaceTerm() throws CorruptIndexException, IOException, ParseException {
 		Query orginalQuery = parser.parse("word1 | word2");
 		Query newQuery = BooleanQueryRewriter.replaceTerm(orginalQuery, new Term(SimpleLucene.CONTENT_ATTRIBUTE,
 				"word1"), new Term(SimpleLucene.CONTENT_ATTRIBUTE, "word3"));
