@@ -11,7 +11,7 @@
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
 		<node.version>2.0.5-SNAPSHOT</node.version>
 		<portalnode.version>4.6.1-SNAPSHOT</portalnode.version>
-		<org.apache.tika.version>1.4</org.apache.tika.version>
+		<org.apache.tika.version>1.3</org.apache.tika.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</connection>
