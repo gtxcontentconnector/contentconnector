@@ -108,7 +108,7 @@ public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.I
 	 */
 	public LuceneIndexLocation(CRConfig config) {
 		super(config);
-		accessorToken = IndexAccessorFactory.getInstance().registerConsumer();
+		accessorToken = IndexAccessorFactory.getInstance().registerConsumer(config.getName());
 		name = config.getName();
 	}
 

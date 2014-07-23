@@ -107,6 +107,8 @@ public class DefaultIndexAccessorTest {
 		IndexSearcher searcher = accessor.getSearcher(reader);
 
 		accessor.release(searcher);
+		accessor.release(reader);
+		assertEquals("Reader has not returned",0,accessor.readingReadersOut());
 	}
 
 	@Test
@@ -119,7 +121,8 @@ public class DefaultIndexAccessorTest {
 		IndexReader reader = accessor.getReader();
 		assertNotNull(reader);
 		IndexSearcher searcher = accessor.getSearcher();
-
+		accessor.release(reader);
+		assertEquals("Reader has not returned",0,accessor.readingReadersOut());
 		accessor.release(searcher);
 	}
 
@@ -137,7 +140,8 @@ public class DefaultIndexAccessorTest {
 		IndexSearcher searcher2 = accessor.getSearcher();
 
 		assertEquals(searcher, searcher2);
-
+		accessor.release(reader);
+		assertEquals("Reader has not returned",0,accessor.readingReadersOut());
 		accessor.release(searcher);
 		accessor.release(searcher2);
 	}

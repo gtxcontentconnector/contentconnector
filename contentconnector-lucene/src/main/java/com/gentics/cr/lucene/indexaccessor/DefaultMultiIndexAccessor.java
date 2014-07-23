@@ -209,11 +209,11 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 				IndexAccessor accessor = multiReaderAccessors.get(r);
 				if (accessor != null) {
 					accessor.release(r);
-					multiReaderAccessors.remove(r);
+					//multiReaderAccessors.remove(r);
 				}
 			}
 		}
-		subReaderList.remove(reader);
+		//subReaderList.remove(reader);
 	}
 
 	public void release(IndexWriter writer) {

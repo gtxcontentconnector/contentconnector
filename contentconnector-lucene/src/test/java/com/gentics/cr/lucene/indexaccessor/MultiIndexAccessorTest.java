@@ -75,9 +75,9 @@ public class MultiIndexAccessorTest {
 		IndexReader readingReader1 = accessor.getReader();
 		readingReader1.close();
 		accessor.release(readingReader1);
-		assertEquals(0, accessor.writingReadersUseCount());
+		assertEquals(0, accessor.readingReadersOut());
 		accessor.close();
-		assertEquals(0, accessor.writingReadersUseCount());
+		assertEquals(0, accessor.readingReadersOut());
 	}
 
 	@Test
@@ -90,7 +90,8 @@ public class MultiIndexAccessorTest {
 		IndexSearcher searcher = accessor.getSearcher(reader);
 
 		accessor.release(searcher);
-		accessor.close();
+		accessor.release(reader);
+		assertEquals("Reader has not returned",0,accessor.readingReadersOut());
 	}
 
 	@Test
@@ -104,7 +105,8 @@ public class MultiIndexAccessorTest {
 		IndexSearcher searcher = accessor.getSearcher();
 		assertNotNull(searcher);
 		accessor.release(searcher);
-		
+		accessor.release(reader);
+		assertEquals("Reader has not returned",0,accessor.readingReadersOut());
 		accessor.close();
 	}
 	

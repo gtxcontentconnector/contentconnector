@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.gentics.cr.CRConfigFileLoader;
+import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
@@ -84,13 +85,9 @@ public class DeleteIndexTest {
 	@Test
 	public void testDelete() throws IOException {
 		LuceneIndexLocation indexLoc = index();
-		
 		assertEquals("Doc count did not match.", 10, indexLoc.getDocCount());
-		
 		clearIndex(indexLoc);
-		
 		assertEquals("Doc count did not match.", 0, indexLoc.getDocCount());
-		
 		indexLoc.finalize();
 	}
 

@@ -171,18 +171,19 @@ class DefaultIndexAccessor implements IndexAccessor {
 	 * @see com.mhs.indexaccessor.IndexAccessor#close()
 	 */
 	public synchronized void close() {
-
+		
 		if (closed) {
 			return;
 		}
 		closed = true;
+		LOGGER.debug("Waiting to close index accessor: "+readingReaderUseCount+","+searcherUseCount+","+writingReaderUseCount+","+writerUseCount+","+numReopening + " - " + this.directory);
 		while (readingReaderUseCount > 0 || searcherUseCount > 0 || writingReaderUseCount > 0 || writerUseCount > 0 || numReopening > 0) {
 			try {
+				LOGGER.debug("Waiting to close index accessor: "+readingReaderUseCount+","+searcherUseCount+","+writingReaderUseCount+","+writerUseCount+","+numReopening + " - " + this.directory);
 				wait();
 			} catch (InterruptedException e) {
 			}
 		}
-
 		closeCachedReadingReader();
 		closeCachedSearchers();
 		closeCachedWritingReader();
@@ -708,6 +709,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	@Override
 	protected void finalize() throws Throwable {
+		
 		close();
 		super.finalize();
 	}

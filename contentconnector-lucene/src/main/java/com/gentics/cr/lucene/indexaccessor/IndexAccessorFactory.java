@@ -87,8 +87,8 @@ public class IndexAccessorFactory {
 		// prevent instantiation.
 	}
 
-	public synchronized IndexAccessorToken registerConsumer() {
-		IndexAccessorToken token = new IndexAccessorToken();
+	public synchronized IndexAccessorToken registerConsumer(String name) {
+		IndexAccessorToken token = new IndexAccessorToken(name);
 		LOGGER.debug("Adding Consumer: " + token);
 		this.consumer.add(token);
 		return token;
@@ -96,7 +96,7 @@ public class IndexAccessorFactory {
 
 	public synchronized void releaseConsumer(final IndexAccessorToken token) {
 		this.consumer.remove(token);
-		LOGGER.debug("Releasing Consumer: " + token + ", Size: " + consumer.size());
+		LOGGER.debug("Releasing Consumer: " + token.getName() + ", Size: " + consumer.size());
 		if (this.consumer.size() == 0) {
 			close();
 		}
