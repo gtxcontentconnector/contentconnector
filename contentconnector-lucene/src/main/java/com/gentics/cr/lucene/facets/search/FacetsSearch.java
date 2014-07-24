@@ -125,7 +125,7 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 		LabelAndValue[] lavs = facetNode.labelValues;
 		if (facetNode.childCount > 0) {
 			Map<String, Number> subnodes = new HashMap<String,Number>();
-			for (int i = 0; i<facetNode.childCount; i++) {
+			for (int i = 0; i<lavs.length; i++) {
 				subnodes.put(lavs[i].label, lavs[i].value);
 			}
 			if (subnodes.size() > 0) {
