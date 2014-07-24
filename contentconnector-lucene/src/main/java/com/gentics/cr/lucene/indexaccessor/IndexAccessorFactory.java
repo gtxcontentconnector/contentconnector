@@ -26,10 +26,12 @@ import java.util.logging.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.Version;
 
 /**
  * An IndexAccessorFactory allows the sharing of IndexAccessors and
@@ -85,8 +87,8 @@ public class IndexAccessorFactory {
 		// prevent instantiation.
 	}
 
-	public synchronized IndexAccessorToken registerConsumer() {
-		IndexAccessorToken token = new IndexAccessorToken();
+	public synchronized IndexAccessorToken registerConsumer(String name) {
+		IndexAccessorToken token = new IndexAccessorToken(name);
 		LOGGER.debug("Adding Consumer: " + token);
 		this.consumer.add(token);
 		return token;
@@ -94,7 +96,7 @@ public class IndexAccessorFactory {
 
 	public synchronized void releaseConsumer(final IndexAccessorToken token) {
 		this.consumer.remove(token);
-		LOGGER.debug("Releasing Consumer: " + token + ", Size: " + consumer.size());
+		LOGGER.debug("Releasing Consumer: " + token.getName() + ", Size: " + consumer.size());
 		if (this.consumer.size() == 0) {
 			close();
 		}
@@ -149,7 +151,8 @@ public class IndexAccessorFactory {
 		accessor.open();
 
 		if (dir.listAll().length == 0) {
-			IndexWriter indexWriter = new IndexWriter(dir, null, true, IndexWriter.MaxFieldLength.UNLIMITED);
+			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyzer);
+			IndexWriter indexWriter = new IndexWriter(dir, config);
 			indexWriter.close();
 		}
 

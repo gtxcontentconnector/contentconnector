@@ -2,15 +2,20 @@ package com.gentics.cr.lucene.indexer.index;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.store.Directory;
 
 import com.gentics.api.lib.resolving.Resolvable;
@@ -34,6 +39,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	LinkedHashMap<String, Integer> docs;
 	Iterator<String> docIT;
 	Vector<String> checkedDocuments;
+	String idField;
 	private static final Logger log = Logger.getLogger(LuceneIndexUpdateChecker.class);
 
 	/**
@@ -50,14 +56,19 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	public LuceneIndexUpdateChecker(final LuceneIndexLocation indexLocation, final String termKey, final String termValue,
 		final String idAttribute) {
 		this.indexLocation = indexLocation;
+		this.idField = idAttribute;
 		indexAccessor = indexLocation.getAccessor();
 		IndexReader reader = null;
 		try {
-			reader = indexAccessor.getReader(true);
-
-			TermDocs termDocs = reader.termDocs(new Term(termKey, termValue));
+			reader = indexAccessor.getReader();
+			Term term = new Term(termKey, termValue);
+			Map<String, Integer> docMap = new HashMap<String, Integer>();
+			for (AtomicReaderContext rc : reader.leaves()) {
+				fillDocs(rc, docMap, term);
+			}
+			
 			log.debug("Fetching sorted documents from index...");
-			docs = fetchSortedDocs(termDocs, reader, idAttribute);
+			docs = toSortedMap(docMap);
 			log.debug("Fetched sorted docs from index");
 			docIT = docs.keySet().iterator();
 
@@ -69,7 +80,27 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		} finally {
 			if (indexAccessor != null && reader != null) {
 				log.debug("Closing down indexreader with write permissions (LuceneIndexUpdateChecker instantiation failed)");
-				indexAccessor.release(reader, true);
+				indexAccessor.release(reader);
+			}
+		}
+	}
+	
+	/**
+	 * Fetch documents from atomic readers.
+	 * @param rc atomic reader context
+	 * @param docMap documents to fetch
+	 * @param term term to search documents by
+	 * @throws IOException in case of low level IO error
+	 */
+	private void fillDocs(AtomicReaderContext rc, Map<String, Integer> docMap, Term term) throws IOException {
+		AtomicReader reader = rc.reader();
+		DocsEnum termDocs = reader.termDocsEnum(term);
+		int d;
+		if (termDocs != null) {
+			while((d = termDocs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+				Document doc = reader.document(d);
+				String docID = doc.get(this.idField);
+				docMap.put(docID, rc.docBase + d);
 			}
 		}
 	}
@@ -93,7 +124,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 			Integer documentId = docs.get(identifyer);
 			IndexReader reader = null;
 			try {
-				reader = indexAccessor.getReader(readerWithWritePermissions);
+				reader = indexAccessor.getReader();
 				Document document = reader.document(documentId);
 				checkedDocuments.add(identifyer);
 				Object documentUpdateTimestamp = null;
@@ -102,7 +133,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				} catch (NumberFormatException e) {
 					log.debug("Got an error getting the document for " + identifyer + " from index", e);
 				}
-				indexAccessor.release(reader, readerWithWritePermissions);
+				indexAccessor.release(reader);
 				//Use strings to compare the attributes
 				if (documentUpdateTimestamp != null && !(documentUpdateTimestamp instanceof String)) {
 					documentUpdateTimestamp = documentUpdateTimestamp.toString();
@@ -124,7 +155,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				return true;
 			} finally {
 				if (indexAccessor != null) {
-					indexAccessor.release(reader, readerWithWritePermissions);
+					indexAccessor.release(reader);
 					log.debug("Released reader with write permission: " + readerWithWritePermissions + " at thread: "
 							+ Thread.currentThread().getName() + " - threadid: " + Thread.currentThread().getId());
 				}
@@ -138,8 +169,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	@Override
 	public void deleteStaleObjects() {
 		log.debug(checkedDocuments.size() + " objects checked, " + docs.size() + " objects already in the index.");
-		IndexReader writeReader = null;
-		boolean readerNeedsWrite = true;
+		IndexWriter writeReader = null;
 		UseCase deleteStale = MonitorFactory.startUseCase("LuceneIndexUpdateChecker.deleteStaleObjects(" + indexLocation.getName() + ")");
 		try {
 			boolean objectsDeleted = false;
@@ -147,9 +177,9 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 				if (!checkedDocuments.contains(contentId)) {
 					log.debug("Object " + contentId + " wasn't checked in the last run. So i will delete it.");
 					if (writeReader == null) {
-						writeReader = indexAccessor.getReader(readerNeedsWrite);
+						writeReader = indexAccessor.getWriter();
 					}
-					writeReader.deleteDocument(docs.get(contentId));
+					writeReader.deleteDocuments(new Term(this.idField,contentId));
 					objectsDeleted = true;
 				}
 			}
@@ -161,7 +191,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		} finally {
 			//always release writeReader it blocks other threads if you don't 
 			if (writeReader != null) {
-				indexAccessor.release(writeReader, readerNeedsWrite);
+				indexAccessor.release(writeReader);
 			}
 			log.debug("Finished cleaning stale documents");
 			deleteStale.stop();
@@ -169,20 +199,17 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 		checkedDocuments.clear();
 	}
 
-	private LinkedHashMap<String, Integer> fetchSortedDocs(TermDocs termDocs, IndexReader reader, String idAttribute) throws IOException {
-		LinkedHashMap<String, Integer> tmp = new LinkedHashMap<String, Integer>();
-
-		while (termDocs.next()) {
-			Document doc = reader.document(termDocs.doc());
-			String docID = doc.get(idAttribute);
-			tmp.put(docID, termDocs.doc());
-		}
-
-		LinkedHashMap<String, Integer> ret = new LinkedHashMap<String, Integer>(tmp.size());
-		Vector<String> v = new Vector<String>(tmp.keySet());
+	/**
+	 * Sorts the given map by its keys.
+	 * @param map map to sort.
+	 * @return sorted map
+	 */
+	private LinkedHashMap<String, Integer> toSortedMap(Map<String, Integer> map) {
+		LinkedHashMap<String, Integer> ret = new LinkedHashMap<String, Integer>(map.size());
+		Vector<String> v = new Vector<String>(map.keySet());
 		Collections.sort(v);
 		for (String id : v) {
-			ret.put(id, tmp.get(id));
+			ret.put(id, map.get(id));
 		}
 		return ret;
 	}

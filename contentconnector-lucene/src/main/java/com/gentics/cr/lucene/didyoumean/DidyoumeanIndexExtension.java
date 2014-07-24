@@ -347,7 +347,7 @@ public class DidyoumeanIndexExtension extends AbstractIndexExtension implements 
 						if (ts != null && ts.length > 0) {
 							Term[] suggestedTerms = new Term[ts.length];
 							for (int i = 0; i < ts.length; i++) {
-								suggestedTerms[i] = term.createTerm(ts[i]);
+								suggestedTerms[i] = new Term(term.field(),ts[i]);
 							}
 							result.put(term, suggestedTerms);
 						}

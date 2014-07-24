@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 
 /**
  * An IndexAccessor coordinates access to Writers, Readers, and Searchers in a
@@ -55,14 +55,11 @@ public interface IndexAccessor {
 	void close();
 
 	/**
-	 * Returns an IndexReader. Indicate whether the IndexReader is intended for
-	 * read only purposes with the write flag. The read/write restriction must be
-	 * honored by the caller to ensure defined behavior.
+	 * Returns an IndexReader. 
 	 * 
-	 * @param write
 	 * @throws IOException
 	 */
-	IndexReader getReader(boolean write) throws IOException;
+	IndexReader getReader() throws IOException;
 
 	/**
 	 * Fetches a double checked Searcher that has been checked for the presence of a reopen file
@@ -128,10 +125,10 @@ public interface IndexAccessor {
 	int readingReadersOut();
 
 	/**
-	 * @param reader
-	 * @param write
+	 * Release an IndexReader instance if it is not used any longer.
+	 * @param reader the Reader that should be released.
 	 */
-	void release(IndexReader reader, boolean write);
+	void release(IndexReader reader);
 
 	/**
 	 * @param writer

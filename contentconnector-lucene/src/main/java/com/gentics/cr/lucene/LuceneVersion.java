@@ -15,6 +15,6 @@ public class LuceneVersion {
 	 * Returns the current Lucene Version used in this implementation.
 	 */
 	public static Version getVersion() {
-		return Version.LUCENE_35;
+		return Version.LUCENE_4_9;
 	}
 }

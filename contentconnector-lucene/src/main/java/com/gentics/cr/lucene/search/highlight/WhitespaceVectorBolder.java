@@ -7,8 +7,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
 import org.apache.lucene.search.vectorhighlight.FieldQuery;
+import org.apache.lucene.search.vectorhighlight.ScoreOrderFragmentsBuilder;
+import org.apache.lucene.search.vectorhighlight.SimpleBoundaryScanner;
 import org.apache.lucene.search.vectorhighlight.SimpleFragListBuilder;
-import org.apache.lucene.search.vectorhighlight.WhitespaceFragmentsBuilder;
 
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
@@ -57,8 +58,8 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 		StringBuilder result = new StringBuilder();
 		if (fieldName != null && parsedQuery != null) {
 			FastVectorHighlighter highlighter = new FastVectorHighlighter(true, true, new SimpleFragListBuilder(),
-					new WhitespaceFragmentsBuilder(new String[] { getHighlightPrefix() },
-							new String[] { getHighlightPostfix() }));
+					new ScoreOrderFragmentsBuilder(new String[] { getHighlightPrefix() },
+							new String[] { getHighlightPostfix() }, new SimpleBoundaryScanner()));
 			FieldQuery fieldQuery = highlighter.getFieldQuery(parsedQuery);
 			//highlighter.setTextFragmenter(new WordCountFragmenter(fragmentSize));
 

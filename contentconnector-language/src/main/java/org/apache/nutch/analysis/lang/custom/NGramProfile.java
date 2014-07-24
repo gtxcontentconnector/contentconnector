@@ -121,7 +121,7 @@ public class NGramProfile {
 	 * @param t is the Token to be added
 	 */
 	public void add(Token t) {
-		add(new StringBuffer().append(SEPARATOR).append(t.term()).append(SEPARATOR));
+		add(new StringBuffer().append(SEPARATOR).append(t.buffer()).append(SEPARATOR));
 	}
 
 	/**

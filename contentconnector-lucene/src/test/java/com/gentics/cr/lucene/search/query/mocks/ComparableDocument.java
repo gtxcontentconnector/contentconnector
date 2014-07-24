@@ -1,8 +1,7 @@
 package com.gentics.cr.lucene.search.query.mocks;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexableField;
 
 public class ComparableDocument {
 
@@ -25,8 +24,8 @@ public class ComparableDocument {
 	public boolean equals(Object obj) {
 		if (obj instanceof ComparableDocument) {
 			Document givenDocument = ((ComparableDocument) obj).getDocument();
-			for (Fieldable field : givenDocument.getFields()) {
-				Field myField = document.getField(field.name());
+			for (IndexableField field : givenDocument.getFields()) {
+				IndexableField myField = document.getField(field.name());
 				//TODO: check binary or not stored fields to.
 				if (myField == null || !field.stringValue().equals(myField.stringValue())) {
 					return false;

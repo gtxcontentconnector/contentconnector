@@ -95,12 +95,12 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 		IndexReader reader = null;
 		int count = 0;
 		try {
-			reader = indexAccessor.getReader(false);
+			reader = indexAccessor.getReader();
 			count = reader.numDocs();
 		} catch (IOException ex) {
 			log.error("IOX happened during test of index. " + ex.getMessage());
 		} finally {
-			indexAccessor.release(reader, false);
+			indexAccessor.release(reader);
 		}
 
 		return count;
@@ -200,19 +200,9 @@ public class LuceneMultiIndexLocation extends LuceneIndexLocation {
 
 	@Override
 	public boolean isOptimized() {
-		boolean ret = false;
-		IndexAccessor indexAccessor = this.getAccessor();
-		IndexReader reader = null;
-		try {
-			reader = indexAccessor.getReader(false);
-			ret = reader.isOptimized();
-		} catch (IOException ex) {
-			log.error("IOException happened during test of index. ", ex);
-		} finally {
-			indexAccessor.release(reader, false);
-		}
-
-		return ret;
+		//Optimize is bad for you and has been removed in Lucene 4.0
+		//We now let lucene handle all the magic
+		return true;
 	}
 
 	@Override

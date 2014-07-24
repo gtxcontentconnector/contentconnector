@@ -51,6 +51,7 @@ public class CRLuceneDeleteJob extends AbstractUpdateCheckerJob {
 			try {
 				writer = ia.getWriter();
 				writer.deleteAll();
+				writer.commit();
 				if (ta != null) {
 					ta.clearTaxonomy();
 				}

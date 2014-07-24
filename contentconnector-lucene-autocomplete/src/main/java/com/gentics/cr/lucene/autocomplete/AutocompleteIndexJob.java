@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.autocomplete;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -12,8 +11,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spell.LuceneDictionary;
+import org.apache.lucene.search.suggest.InputIterator;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.BytesRefIterator;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -67,20 +66,19 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 		String autocompletefield = this.autocompleter.getAutocompletefield();
 
 		IndexAccessor sia = source.getAccessor();
-		IndexReader sourceReader = sia.getReader(false);
+		IndexReader sourceReader = sia.getReader();
 		LuceneDictionary dict = new LuceneDictionary(sourceReader, autocompletefield);
 		IndexAccessor aia = autocompleteLocation.getAccessor();
 		// IndexReader reader = aia.getReader(false);
 		IndexWriter writer = aia.getWriter();
 
 		try {
-			writer.setMergeFactor(300);
-			writer.setMaxBufferedDocs(150);
 			// go through every word, storing the original word (incl. n-grams)
 			// and the number of times it occurs
 			// CREATE WORD LIST FROM SOURCE INDEX
 			Map<String, Integer> wordsMap = new HashMap<String, Integer>();
-			BytesRefIterator iter = dict.getWordsIterator();
+			InputIterator iter = dict.getEntryIterator();
+			
 			BytesRef ref = iter.next();
 			while (ref != null) {
 				String word = ref.utf8ToString();
@@ -110,11 +108,10 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 						Field.Index.NOT_ANALYZED_NO_NORMS)); // count
 				writer.addDocument(doc);
 			}
-			writer.optimize();
 			autocompleteLocation.createReopenFile();
 		} finally {
 
-			sia.release(sourceReader, false);
+			sia.release(sourceReader);
 			// close writer
 
 			aia.release(writer);

@@ -1,7 +1,5 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
-import java.io.IOException;
-
 import org.apache.lucene.index.IndexWriter;
 
 import com.gentics.cr.CRResolvableBean;
@@ -28,7 +26,6 @@ public class AlterIndexTransformer extends AbstractLuceneMonitoringTransformer {
 
 	@Override
 	public void processBean(CRResolvableBean bean) {
-		System.out.println("NOTHING");
 
 	}
 
@@ -39,13 +36,6 @@ public class AlterIndexTransformer extends AbstractLuceneMonitoringTransformer {
 	}
 
 	public void processBean(CRResolvableBean bean, IndexWriter writer) throws CRException {
-
-		try {
-			System.out.println(writer.numDocs());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 	}
 
