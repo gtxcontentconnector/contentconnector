@@ -65,6 +65,7 @@ public class BasicUmlautAnalyzerTest {
 		}
 		tokenStream.end();
 		tokenStream.close();
+		a.close();
 	}
 	
 }

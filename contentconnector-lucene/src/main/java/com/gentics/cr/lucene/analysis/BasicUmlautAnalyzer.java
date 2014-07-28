@@ -13,7 +13,6 @@ import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.analysis.util.CharacterUtils;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.lucene.LuceneVersion;
@@ -72,7 +71,6 @@ public final class BasicUmlautAnalyzer extends Analyzer {
 	
 	private class UmlautFilter extends TokenFilter {
 		Version luceneVersion;
-		private final CharacterUtils charUtils;
 		private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
 		/**
@@ -83,7 +81,6 @@ public final class BasicUmlautAnalyzer extends Analyzer {
 		protected UmlautFilter(Version matchVersion, TokenStream input) {
 			super(input);
 			luceneVersion = matchVersion;
-			charUtils = CharacterUtils.getInstance(luceneVersion);
 		}
 
 		@Override
