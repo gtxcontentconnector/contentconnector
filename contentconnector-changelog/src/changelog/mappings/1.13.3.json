@@ -4,5 +4,7 @@
   "changeLogEntryFileNames": [
     "4943.note"
   ],
-  "genericProperties": {}
+  "genericProperties": {
+    "unreleased": true
+  }
 }

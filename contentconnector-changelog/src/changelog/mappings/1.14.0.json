@@ -4,5 +4,7 @@
   "changeLogEntryFileNames": [
     "4942.enhancement"
   ],
-  "genericProperties": {}
+  "genericProperties": {
+    "unreleased": true
+  }
 }
