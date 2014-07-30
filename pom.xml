@@ -8,8 +8,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
-		<node.version>2.0.4</node.version>
-		<portalnode.version>4.6.0</portalnode.version>
+		<node.version>1.21.19</node.version>
 		<org.apache.tika.version>1.3</org.apache.tika.version>
 	</properties>
 	<scm>
@@ -73,11 +72,6 @@
 				<groupId>com.gentics</groupId>
 				<artifactId>contentconnector-json</artifactId>
 				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<artifactId>portalnode-lib</artifactId>
-				<groupId>com.gentics</groupId>
-				<version>${portalnode.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.gentics</groupId>
@@ -183,10 +177,10 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.plugin.version}</version>
 				<configuration>
-					<compilerVersion>1.7</compilerVersion>
+					<compilerVersion>1.6</compilerVersion>
 					<encoding>UTF-8</encoding>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
