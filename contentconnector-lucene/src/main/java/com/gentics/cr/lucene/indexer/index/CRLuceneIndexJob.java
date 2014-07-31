@@ -198,6 +198,11 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	public static final String TIMESTAMP_ATTR_KEY = "updateattribute";
 
 	/**
+	 * Key to configure if the indexWriter should commit after each slice.
+	 * TRUE = commit after each slice, otherwise commit at the end.
+	 */
+	private static final String SLICE_COMMIT_KEY = "slicecommit";
+	/**
 	 * Constant for 1000.
 	 */
 	private static final int ONE_THOUSAND = 1000;
@@ -408,6 +413,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						// clear the slice and reset the counter
 						slice.clear();
 						sliceCounter = 0;
+					}
+					if (config.getBoolean(SLICE_COMMIT_KEY, false)) {
+						//If configured we will commit on each slice in order to keep the index updated
+						//NOTE: Indexing will take longer
+						indexWriter.commit();
+						indexLocation.createReopenFile();
 					}
 				}
 

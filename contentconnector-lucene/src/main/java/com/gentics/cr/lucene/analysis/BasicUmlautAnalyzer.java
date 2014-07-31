@@ -69,8 +69,12 @@ public final class BasicUmlautAnalyzer extends Analyzer {
 		return new TokenStreamComponents(source, result);
 	}
 	
+	/**
+	 * Filter implementation for converting umlauts into their 2-character representation.
+	 * @author christopher
+	 *
+	 */
 	private class UmlautFilter extends TokenFilter {
-		Version luceneVersion;
 		private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
 
 		/**
@@ -80,7 +84,6 @@ public final class BasicUmlautAnalyzer extends Analyzer {
 		 */
 		protected UmlautFilter(Version matchVersion, TokenStream input) {
 			super(input);
-			luceneVersion = matchVersion;
 		}
 
 		@Override
