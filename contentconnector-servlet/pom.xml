@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.13.4-SNAPSHOT</version>
+		<version>1.15.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>contentconnector-servlet</artifactId>
 	<packaging>jar</packaging>
