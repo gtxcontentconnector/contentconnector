@@ -5,8 +5,8 @@ import java.io.InputStream;
 import com.gentics.api.lib.datasource.WriteableDatasource;
 import com.gentics.lib.datasource.CNDatasource;
 import com.gentics.lib.datasource.mccr.MCCRDatasource;
-import com.gentics.portalnode.genericmodules.admin.ObjectManagementException;
-import com.gentics.portalnode.genericmodules.admin.ObjectManagementManager;
+import com.gentics.lib.datasource.object.ObjectManagementException;
+import com.gentics.lib.datasource.object.ObjectManagementManager;
 
 /**
  * ATTENTION!
@@ -19,7 +19,7 @@ public final class GenticsCRHelper {
 	 * Private Construtor.
 	 */
 	private GenticsCRHelper() { }
-	
+
 	/**
 	 * This method can import datatypes from an xml
 	 * file into a contentrepository.
@@ -31,7 +31,7 @@ public final class GenticsCRHelper {
 	public static void importObjectTypes(WriteableDatasource ds) throws Exception {
 		importObjectTypes(ds, GenticsCRHelper.class.getResourceAsStream("dsstructure.xml"));
 	}
-	
+
 	/**
 	 * This method can import datatypes from an xml
 	 * file into a contentrepository.
@@ -43,7 +43,7 @@ public final class GenticsCRHelper {
 	public static void importObjectTypes(MCCRDatasource ds) throws Exception {
 		importObjectTypes(ds, GenticsCRHelper.class.getResourceAsStream("dsstructure.xml"));
 	}
-	
+
 	/**
 	 * Import the object types
 	 * @param ds datasource
@@ -52,7 +52,7 @@ public final class GenticsCRHelper {
 	public static void importObjectTypes(MCCRDatasource ds, InputStream stream) throws ObjectManagementException {
 		ObjectManagementManager.importTypes(ds, stream);
 	}
-	
+
 	/**
 	 * This method can import datatypes from an xml
 	 * file into a contentrepository.

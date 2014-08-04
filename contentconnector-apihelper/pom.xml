@@ -6,7 +6,7 @@
 		<version>1.16.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>contentconnector-apihelper</artifactId>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -20,6 +20,10 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<artifactId>portalnode-lib</artifactId>
+			<groupId>com.gentics</groupId>
+		</dependency>
 		<!-- The node lib must be added since the maven resolvement of portalnode-lib
 			transitive dependencies does not work due to the portalnode/pom.xml node-lib
 			property. -->
