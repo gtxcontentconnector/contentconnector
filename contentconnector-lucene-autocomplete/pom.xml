@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.15.0-SNAPSHOT</version>
+		<version>1.16.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>contentconnector-lucene-autocomplete</artifactId>
 	<build>
