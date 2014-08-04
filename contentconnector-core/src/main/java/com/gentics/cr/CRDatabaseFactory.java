@@ -6,9 +6,9 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.etc.ObjectTransformer;
+import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
-import com.gentics.cr.portalnode.PortalNodeInteractor;
 import com.gentics.cr.util.CRUtil;
 
 /**
@@ -132,7 +132,12 @@ public final class CRDatabaseFactory {
 		if (dsHandle != null && dsHandle.size() != 0) {
 			if (dsHandle.containsKey("portalnodedb")) {
 				String key = (String) dsHandle.get("portalnodedb");
-				ds = PortalNodeInteractor.getPortalnodeDatasource(key);
+				try {
+					ds = PortalConnectorFactory.createDatasource(key);
+				} catch (NodeException e) {
+					log.error("Error while setting up datasource for key {" + key + "}", e);
+					return null;
+				}
 			} else if (dsProps != null && dsProps.size() != 0) {
 				boolean mccr = ObjectTransformer.getBoolean(dsProps.get("mccr"), false);
 				if (mccr) {
@@ -140,7 +145,7 @@ public final class CRDatabaseFactory {
 				} else {
 					ds = PortalConnectorFactory.createWriteableDatasource(dsHandle, dsProps);
 				}
-				
+
 			} else {
 				ds = PortalConnectorFactory.createWriteableDatasource(dsHandle);
 			}
