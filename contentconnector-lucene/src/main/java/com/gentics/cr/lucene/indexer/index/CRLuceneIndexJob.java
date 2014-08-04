@@ -682,6 +682,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				fieldType.setTokenized(true);
 				fieldType.setStoreTermVectors(storeVectors);
 				fieldType.setStoreTermVectorPositions(storeVectors);
+				fieldType.setStoreTermVectorOffsets(storeVectors);
 			    
 				
 				if (value instanceof String || value instanceof Number || value instanceof Date) {
