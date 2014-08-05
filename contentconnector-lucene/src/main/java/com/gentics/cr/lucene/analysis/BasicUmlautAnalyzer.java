@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.analysis;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -24,7 +25,10 @@ import com.gentics.cr.lucene.LuceneVersion;
  *
  */
 public final class BasicUmlautAnalyzer extends Analyzer {
-
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOG = Logger.getLogger(BasicUmlautAnalyzer.class);
 	/**
 	 * Stop word set.
 	 */
@@ -89,29 +93,32 @@ public final class BasicUmlautAnalyzer extends Analyzer {
 		@Override
 		public boolean incrementToken() throws IOException {
 			if (input.incrementToken()) {
-				
 				char[] buffer = termAtt.buffer();
 				int length = termAtt.length();
-				for (int i = 0; i < length;i++) {
-					final char c = buffer[i];
-					switch(c) {
-						case 'ß':
-							i = replace(new char[]{'s','z'},i,buffer,termAtt,length);
-							length = termAtt.length();
-							break;
-						case 'ä':
-							i = replace(new char[]{'a','e'},i,buffer,termAtt,length);
-							length = termAtt.length();
-							break;
-						case 'ö':
-							i = replace(new char[]{'o','e'},i,buffer,termAtt,length);
-							length = termAtt.length();
-							break;
-						case 'ü':
-							i = replace(new char[]{'u','e'},i,buffer,termAtt,length);
-							length = termAtt.length();
-							break;
+				try {
+					for (int i = 0; i < length;i++) {
+						final char c = buffer[i];
+						switch(c) {
+							case 'ß':
+								i = replace(new char[]{'s','z'},i,buffer,termAtt,length);
+								length = termAtt.length();
+								break;
+							case 'ä':
+								i = replace(new char[]{'a','e'},i,buffer,termAtt,length);
+								length = termAtt.length();
+								break;
+							case 'ö':
+								i = replace(new char[]{'o','e'},i,buffer,termAtt,length);
+								length = termAtt.length();
+								break;
+							case 'ü':
+								i = replace(new char[]{'u','e'},i,buffer,termAtt,length);
+								length = termAtt.length();
+								break;
+						}
 					}
+				} catch (Exception e) {
+					LOG.error("Error while analyzing token ("+new String(buffer)+").",e);
 				}
 				return true;
 			} else {

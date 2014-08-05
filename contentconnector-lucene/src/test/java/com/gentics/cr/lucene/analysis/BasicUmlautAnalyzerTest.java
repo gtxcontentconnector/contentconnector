@@ -52,6 +52,11 @@ public class BasicUmlautAnalyzerTest {
 		testToken("", new String[]{""});
 	}
 	
+	@Test
+	public void testSpecial4() throws IOException {
+		testToken("alles gute", new String[]{"alles", "gute"});
+	}
+	
 	private void testToken(String in, String[] expected) throws IOException {
 		Analyzer a = new BasicUmlautAnalyzer();
 		
