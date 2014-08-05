@@ -57,6 +57,16 @@ public class BasicUmlautAnalyzerTest {
 		testToken("alles gute", new String[]{"alles", "gute"});
 	}
 	
+	@Test
+	public void testSpecial5() throws IOException {
+		testToken("unternehmenspräsentation", new String[]{"unternehmenspraesentation"});
+	}
+	
+	@Test
+	public void testSpecial6() throws IOException {
+		testToken("asdf loesadfjloesadjfloesadjfloeksadjkfsoödjföls_ asdf", new String[]{"asdf","loesadfjloesadjfloesadjfloeksadjkfsooedjfoels_","asdf"});
+	}
+	
 	private void testToken(String in, String[] expected) throws IOException {
 		Analyzer a = new BasicUmlautAnalyzer();
 		
