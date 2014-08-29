@@ -1,8 +1,0 @@
-Various API changes
-
-The Portal.Node dependency was removed from the Gentics Content.Connector dependencies. The following classes have been moved to Gentics Portal.Node lib (com.gentics:portalnode-lib) in oder to remove the PN dependency:
-
-* com.gentics.cr.template.PortalNodeTemplateManager
-* com.gentics.cr.util.PluggableActionCaller
-
-The PortalNodeInteractor class was removed. Please use the PortalConnectorFactory in order to create datasources.
