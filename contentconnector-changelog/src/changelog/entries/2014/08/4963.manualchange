@@ -1,0 +1,3 @@
+The com.gentics.cr.XMLRequestProcessor was removed.
+
+The class was removed in order to simplify the inherited dependencies. You may add your own implementation which you can base upon this "revision":https://github.com/gtxcontentconnector/contentconnector/blob/1f419f9f2fe7759c634057e3b5b9b07205540835/contentconnector-core/src/main/java/com/gentics/cr/XMLRequestProcessor.java

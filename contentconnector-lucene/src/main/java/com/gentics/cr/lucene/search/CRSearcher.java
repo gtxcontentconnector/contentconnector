@@ -462,6 +462,7 @@ public class CRSearcher {
 				result.put(RESULT_QUERY_KEY, parsedQuery);
 				Filter filter = null;
 				if (filterQuery != null) {
+					log.debug("Using filter query: " + filterQuery);
 					Query parsedFilterQuery = parser.parse(filterQuery);
 					parsedFilterQuery = searcher.rewrite(parsedFilterQuery);
 					filter = new QueryWrapperFilter(parsedFilterQuery);
