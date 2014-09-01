@@ -1,0 +1,3 @@
+JDK compliance update
+
+Due to the updated node and apache lucene dependency it is now mandatory to use JDK 1.7.
