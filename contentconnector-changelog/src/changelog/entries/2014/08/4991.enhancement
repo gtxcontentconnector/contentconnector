@@ -1,0 +1,2 @@
+Updated Apache Lucene to 4.9.0. In order to use the new Lucene version, it is recommended to re-index every configured index with the new version.
+Please check your analyzer.properties configuration, as the package names of some analyzers may have changed in the lucene packages.
