@@ -40,6 +40,8 @@ import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.IReIndexStrategy;
 import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.BytesRefIterator;
 
 /**
  * This class can be used to build an autocomplete index over an existing lucene
@@ -232,9 +234,10 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 			// and the number of times it occurs
 			// CREATE WORD LIST FROM SOURCE INDEX
 			Map<String, Integer> wordsMap = new HashMap<String, Integer>();
-			Iterator<String> iter = (Iterator<String>) dict.getWordsIterator();
-			while (iter.hasNext()) {
-				String word = iter.next();
+                        BytesRefIterator iter = dict.getWordsIterator();
+                        BytesRef ref;
+			while ((ref = iter.next()) != null) {
+				String word = ref.utf8ToString();
 				int len = word.length();
 				if (len < 3) {
 					continue; // too short we bail but "too long" is fine...
