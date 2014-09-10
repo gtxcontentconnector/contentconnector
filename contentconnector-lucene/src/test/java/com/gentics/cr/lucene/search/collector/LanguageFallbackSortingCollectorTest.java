@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import junit.framework.Assert;
 
@@ -31,7 +32,7 @@ import com.gentics.cr.lucene.search.LuceneRequestProcessor;
 import com.gentics.cr.lucene.search.LuceneRequestProcessorTest;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 
-public class LanguageFallbackCollectorTest {
+public class LanguageFallbackSortingCollectorTest {
 	private static CRConfigUtil config = null;
 	private static RequestProcessor rp=null;
 	private static LuceneIndexLocation location=null;
@@ -39,7 +40,7 @@ public class LanguageFallbackCollectorTest {
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException, IOException {
 		EnvironmentConfiguration.loadEnvironmentProperties();
-		config = new CRConfigStreamLoader("languagefallbacksearch", LuceneRequestProcessorTest.class.getResourceAsStream("languagefallbacksearch.properties"));
+		config = new CRConfigStreamLoader("languagesortingfallbacksearch", LuceneRequestProcessorTest.class.getResourceAsStream("languagesortingfallbacksearch.properties"));
 		rp = config.getNewRequestProcessorInstance(1);
 		CRConfigUtil rpConfig = config.getRequestProcessorConfig(1);
 		location = LuceneIndexLocation.getIndexLocation(rpConfig);
@@ -63,7 +64,7 @@ public class LanguageFallbackCollectorTest {
 		addDoc(accessor, "content:tree", "category:cars", "contentid:10007.6","languagesetit:10007.6","languagecode:de");
 		addDoc(accessor, "content:potatoe", "category:plants", "contentid:10007.7","languagesetit:10007.7","languagecode:en");
 		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.8","languagesetit:10007.8","languagecode:en");
-		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.81","languagesetit:10007.8","languagecode:es");
+		addDoc(accessor, "content:aflower", "category:plants", "contentid:10007.81","languagesetit:10007.8","languagecode:es");
 		addDoc(accessor, "content:tree", "category:plants", "contentid:10007.9");
 		
 		DidyoumeanIndexExtension dymProvider = ((LuceneRequestProcessor) rp).getCRSearcher().getDYMProvider();
@@ -99,7 +100,91 @@ public class LanguageFallbackCollectorTest {
 		}	
 	}
 	
+	@Test
+	public void simpleFallbackFromRequestStringTest() throws CRException {
+		testLanguageFallbackRequest("es,en");
+	}
 	
+	@Test
+	public void simpleFallbackFromRequestArrayTest() throws CRException {
+		testLanguageFallbackRequest(new String[]{"es", "en"});
+	}
+	
+	
+	public void testLanguageFallbackRequest(Object fallbackprio) throws CRException {
+		CRRequest request = new CRRequest();
+		request.set("languagefallbackpriority", fallbackprio);
+		request.setRequestFilter("content:saab");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		Assert.assertEquals("The Search did not find all items.", 1, objects.size());
+		for(CRResolvableBean bean : objects) {
+			Assert.assertEquals("Object was not in the desired language", "es", bean.get("languagecode"));
+		}	
+	}
+	
+	@Test
+	public void sortedPageTest() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("category:cars");
+		request.setSortArray(new String[]{"languagesetit:asc"});
+		request.setStartString("3");
+		request.setCountString("3");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		Assert.assertEquals("The Search did not find all items.", 3, objects.size());
+		Iterator<CRResolvableBean> iter = objects.iterator();
+		Assert.assertEquals("Wrong item.","10007.4",iter.next().get("languagesetit"));
+		Assert.assertEquals("Wrong item.","10007.5",iter.next().get("languagesetit"));
+		Assert.assertEquals("Wrong item.","10007.6",iter.next().get("languagesetit"));
+	}
+	
+	@Test
+	public void sortedASCSearchTest1() throws CRException {
+		testSorting("category:cars", "content", false);
+	}
+	
+	@Test
+	public void sortedDESCSearchTest1() throws CRException {
+		testSorting("category:cars", "content", true);
+	}
+	
+	@Test
+	public void sortedASCSearchTest2() throws CRException {
+		testSorting("category:plants", "content", false);
+	}
+	
+	@Test
+	public void sortedDESCSearchTest2() throws CRException {
+		testSorting("category:plants", "content", true);
+	}
+	
+	private void testSorting(String query, String sortfield, boolean reverse) throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter(query);
+		String[] sorting;
+		if (reverse) {
+			sorting = new String[]{sortfield+":desc"};
+		} else {
+			sorting = new String[]{sortfield+":asc"};
+		}
+		request.setSortArray(sorting);
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		String last = null;
+		Assert.assertEquals("No results found.",  true, objects.size() > 0);
+		int count = 0;
+		for(CRResolvableBean bean : objects) {
+			boolean sorted = false;
+			if (last != null) {
+				if (reverse) {
+					sorted = last.compareTo(bean.getString(sortfield)) >= 0;
+				} else {
+					sorted = last.compareTo(bean.getString(sortfield)) <= 0;
+				}
+				Assert.assertEquals("Object was not correct order. ("+last+":"+bean.getString(sortfield)+") on "+count+" element.", true, sorted);
+			}
+			last = bean.getString(sortfield);
+			count ++;
+		}
+	}
 	
 	@Test
 	public void sortedByScoreSearchTest() throws CRException {
@@ -154,10 +239,10 @@ public class LanguageFallbackCollectorTest {
 		CRResolvableBean metabean = objects.iterator().next();
 		Assert.assertNotNull(metabean);
 		Object collector = metabean.get(CRSearcher.RESULT_COLLECTOR_KEY);
-		Assert.assertEquals("Collector was not the expected one (LanguageFallbackTopDocsCollecto!="+collector.getClass().getName()+")", true, collector instanceof LanguageFallbackTopDocsCollector);
+		Assert.assertEquals("Collector was not the expected one (LanguageFallbackTopDocsCollecto!="+collector.getClass().getName()+")", true, collector instanceof LanguageFallbackSortingTopDocsCollector);
 		Assert.assertEquals("The Search did not find all items.", 4, objects.size());
 		Assert.assertEquals("Hitcount did not match the expected value.", 3, metabean.getInteger("totalhits", 0));
-		
+		Assert.assertEquals("We did not find the other languages.",true,((LanguageFallbackSortingTopDocsCollector)collector).getOtherLanguages().contains("es"));
 	}
 	
 	@Test

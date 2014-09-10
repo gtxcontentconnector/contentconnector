@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.BinaryDocValues;
 import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Scorer;
@@ -21,8 +23,8 @@ public class LanguageFallbackTopDocsCollector extends
 	Scorer scorer;
 	private Map<String, LanguageScoreDoc> foundItems;
 	
-	String docLanguageSetIds[] = null;
-	String docLanguages[] = null;
+	BinaryDocValues docLanguageSetIds = null;
+	BinaryDocValues docLanguages = null;
 	
 	public LanguageFallbackTopDocsCollector(final IndexSearcher searcher, final int numHits, final GenericConfiguration config) throws IOException {
 		 super(new LanguageHitQueue(numHits, true));
@@ -52,13 +54,13 @@ public class LanguageFallbackTopDocsCollector extends
 		assert !Float.isNaN(score);
 		
 		//check fallback
-		String languageSetIdentifyer = this.docLanguageSetIds[doc];
+		String languageSetIdentifyer = this.docLanguageSetIds.get(doc).utf8ToString();//this.docLanguageSetIds[doc];
 		if (languageSetIdentifyer != null) {
 			LanguageScoreDoc found = foundItems.get(languageSetIdentifyer);
 			if (found != null) {
 				//DO FALLBACK and if not better return
-				if (isBetterLanguage(found.langCode, this.docLanguages[doc])) {
-					found.langCode = this.docLanguages[doc];
+				if (isBetterLanguage(found.langCode, this.docLanguages.get(doc).utf8ToString())) {
+					found.langCode = this.docLanguages.get(doc).utf8ToString();
 					found.doc = doc + docBase;
 					found.score = score;
 				}
@@ -66,11 +68,11 @@ public class LanguageFallbackTopDocsCollector extends
 			} else {
 				totalHits++;
 				if (score <= pqTop.score) {
-					foundItems.put(languageSetIdentifyer, new LanguageScoreDoc(doc + docBase, score, this.docLanguages[doc]));
+					foundItems.put(languageSetIdentifyer, new LanguageScoreDoc(doc + docBase, score, this.docLanguages.get(doc).utf8ToString()));
 					return;
 				} else {
 					pqTop.doc = doc + docBase;
-					pqTop.langCode = this.docLanguages[doc];
+					pqTop.langCode = this.docLanguages.get(doc).utf8ToString();
 					pqTop.score = score;
 					foundItems.put(languageSetIdentifyer, pqTop);
 					pqTop = pq.updateTop();
@@ -97,16 +99,16 @@ public class LanguageFallbackTopDocsCollector extends
 	}
 
 	@Override
-	public void setNextReader(IndexReader reader, int base)
-			throws IOException {
-		this.docLanguageSetIds = FieldCache.DEFAULT.getStrings(reader, "languagesetit");
-		this.docLanguages = FieldCache.DEFAULT.getStrings(reader, "languagecode");
-		this.docBase = base;
+	public boolean acceptsDocsOutOfOrder() {
+		return false;
 	}
 
 	@Override
-	public boolean acceptsDocsOutOfOrder() {
-		return false;
+	public void setNextReader(AtomicReaderContext arg0) throws IOException {
+		AtomicReader reader = arg0.reader();
+		this.docLanguageSetIds = FieldCache.DEFAULT.getTerms(reader, "languagesetit", false);
+		this.docLanguages = FieldCache.DEFAULT.getTerms(reader, "languagecode", false);
+		this.docBase = arg0.docBase;
 	}
 
 }

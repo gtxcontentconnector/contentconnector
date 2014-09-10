@@ -17,12 +17,17 @@ package com.gentics.cr.lucene.search.collector;
  * limitations under the License.
  */
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.PriorityQueue;
 
-final class LanguageHitQueue extends PriorityQueue<LanguageScoreDoc> {
-
-  private boolean prePopulate;
-
+final class LanguageSortingHitQueue extends PriorityQueue<LanguageSortingScoreDoc> {
+	private SortField[] sorts;
+	private boolean doSortFields = true;
   /**
    * Creates a new instance with <code>size</code> elements. If
    * <code>prePopulate</code> is set to true, the queue will pre-populate itself
@@ -62,24 +67,79 @@ final class LanguageHitQueue extends PriorityQueue<LanguageScoreDoc> {
    *          specifies whether to pre-populate the queue with sentinel values.
    * @see #getSentinelObject()
    */
-  LanguageHitQueue(int size, boolean prePopulate) {
+  LanguageSortingHitQueue(int size, Sort sort, boolean prePopulate) {
 	super(size,prePopulate);
+	if (sort == null) {
+		this.doSortFields = false;
+	} else {
+		this.sorts = sort.getSort();
+	}
   }
 
   // Returns null if prePopulate is false.
   @Override
-  protected LanguageScoreDoc getSentinelObject() {
+  protected LanguageSortingScoreDoc getSentinelObject() {
     // Always set the doc Id to MAX_VALUE so that it won't be favored by
     // lessThan. This generally should not happen since if score is not NEG_INF,
     // TopScoreDocCollector will always add the object to the queue.
-    return new LanguageScoreDoc(Integer.MAX_VALUE, Float.NEGATIVE_INFINITY, null);
+    return new LanguageSortingScoreDoc(Integer.MAX_VALUE, Float.NEGATIVE_INFINITY, null, null , true);
   }
   
   @Override
-  protected final boolean lessThan(LanguageScoreDoc hitA, LanguageScoreDoc hitB) {
-    if (hitA.score == hitB.score)
+  protected final boolean lessThan(LanguageSortingScoreDoc hitA, LanguageSortingScoreDoc hitB) {
+	if (hitA.sentinel) {
+		return true;
+	} else if (doSortFields && hitA.sortvalue != null && hitB.sortvalue != null) {
+    	return compare(hitA.sortvalue, hitB.sortvalue, 0) > 0;
+    } else if (hitA.score == hitB.score) {
       return hitA.doc > hitB.doc; 
-    else
-      return hitA.score < hitB.score;
+  	}
+    return hitA.score < hitB.score;
+  }
+  
+  public String toString() {
+	StringBuilder sb = new StringBuilder();
+	Object[] heap = this.getHeapArray();
+	for (Object o : heap) {
+		if (o instanceof LanguageSortingScoreDoc) {
+			LanguageSortingScoreDoc sd = (LanguageSortingScoreDoc) o;
+			if (sd.sortvalue!=null) {
+				sb.append("{("+sd.sortvalue.toString()+")");
+				for (Entry<String, BytesRef> e : sd.sortvalue.entrySet()) {
+					sb.append(e.getValue().utf8ToString());
+				}
+				sb.append("}");
+			}
+		}
+	}
+	  return sb.toString();
+  }
+  
+  private final int compare(HashMap<String,BytesRef> sortvalueA, HashMap<String,BytesRef> sortvalueB, int sortpos) {
+	  if (sortpos >= this.sorts.length) {
+		  return 0;
+	  }
+	  SortField sf = this.sorts[sortpos];
+	  if (sf == null) {
+		  return 0;
+	  }
+	  BytesRef refA = sortvalueA.get(sf.getField());
+	  BytesRef refB = sortvalueB.get(sf.getField());
+	  int ret = 0;
+	  if (refA == null) {
+		  return -1;
+	  } else  if (refB == null) {
+		  return 1;
+	  } else {
+		  ret = sf.getBytesComparator().compare(refA, refB);
+	  }
+	  
+	  if (ret == 0) {
+		  return compare(sortvalueA, sortvalueB, sortpos + 1);
+	  }
+	  if (sf.getReverse()) {
+		  ret *= -1;
+	  }
+	  return ret;
   }
 }

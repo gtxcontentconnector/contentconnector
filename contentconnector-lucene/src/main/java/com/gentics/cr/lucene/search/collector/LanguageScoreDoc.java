@@ -2,6 +2,11 @@ package com.gentics.cr.lucene.search.collector;
 
 import org.apache.lucene.search.ScoreDoc;
 
+/**
+ * Documentcontainer for language fallback.
+ * @author christopher
+ *
+ */
 public class LanguageScoreDoc extends ScoreDoc {
 
 	public String langCode;
