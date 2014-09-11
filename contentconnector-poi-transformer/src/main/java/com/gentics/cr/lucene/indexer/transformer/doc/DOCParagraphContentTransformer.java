@@ -13,7 +13,8 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
 /**
- * 
+ * Contenttransformer that converts MS Word files into text using
+ * the Paragraph API of the Apache POI package.
  * Last changed: $Date$
  * @version $Revision$
  * @author $Author$
@@ -87,7 +88,6 @@ public class DOCParagraphContentTransformer extends ContentTransformer {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 
 	}
 }

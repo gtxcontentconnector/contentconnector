@@ -1,1 +1,1 @@
--Added a custom Transformer (DOCParagraphContentTransformer) that will transform word documents prettier
+-Added a custom Transformer (DOCParagraphContentTransformer) that will transform word documents using the paragraph API of the Apache POI package and therefore leave out meta attributes such as DOCPROPERTY

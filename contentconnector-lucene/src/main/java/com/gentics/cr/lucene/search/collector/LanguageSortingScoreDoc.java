@@ -16,12 +16,25 @@ public class LanguageSortingScoreDoc extends ScoreDoc {
 	public boolean sentinel;
 	public HashMap<String, BytesRef> sortvalue;
 	
+	/**
+	 * Alias for constructor.
+	 * @param doc
+	 * @param score
+	 * @param language
+	 * @param sortvalue
+	 */
 	public LanguageSortingScoreDoc(int doc, float score, String language, HashMap<String, BytesRef> sortvalue) {
-		super(doc, score);
-		this.langCode = language;
-		this.sentinel = false;
+		this(doc,score,language,sortvalue,false);
 	}
 	
+	/**
+	 * Constructor.
+	 * @param doc
+	 * @param score
+	 * @param language
+	 * @param sortvalue
+	 * @param sentinel
+	 */
 	public LanguageSortingScoreDoc(int doc, float score, String language, HashMap<String, BytesRef> sortvalue, boolean sentinel) {
 		super(doc, score);
 		this.langCode = language;
