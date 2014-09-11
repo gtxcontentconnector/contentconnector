@@ -1,0 +1,1 @@
+-Added a custom Transformer (DOCParagraphContentTransformer) that will transform word documents prettier
