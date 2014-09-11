@@ -33,6 +33,8 @@ public class LanguageFallbackSortingTopDocsCollector extends
 
 	private static final Logger LOG = Logger.getLogger(LanguageFallbackSortingTopDocsCollector.class);
 	private static final String LANGUAGE_PRIORITY_KEY="languagefallbackpriority";
+	private static final String LANGUAGE_FIELD_KEY="languagefield";
+	private static final String LANGUAGESET_FIELD_KEY ="languagesetfield";
 	LanguageSortingScoreDoc pqTop;
 	int docBase = 0;
 	Scorer scorer;
@@ -45,6 +47,9 @@ public class LanguageFallbackSortingTopDocsCollector extends
 	
 	BinaryDocValues docLanguageSetIds = null;
 	BinaryDocValues docLanguages = null;
+	
+	private String languagefield = "language";
+	private String languagesetfield = "languagesetid";
 	//sortvalues field cache
 	private Map<String, BinaryDocValues> sortValues = null;
 	
@@ -76,6 +81,8 @@ public class LanguageFallbackSortingTopDocsCollector extends
 		pqTop = pq.top();
 		languagepriority = createLanguagePriorityList(request,config);
 		otherLanguages = new HashSet<String>();
+		this.languagefield = config.getString(LANGUAGE_FIELD_KEY, languagefield);
+		this.languagesetfield = config.getString(LANGUAGESET_FIELD_KEY, languagesetfield);
 	}
 	
 	/**
@@ -117,6 +124,13 @@ public class LanguageFallbackSortingTopDocsCollector extends
 		this(request, null, searcher, numHits, config);
 	}
 	
+	/**
+	 * Determine if target language is better than source language
+	 * by comparing their position in the language priority list.
+	 * @param source
+	 * @param target
+	 * @return
+	 */
 	private boolean isBetterLanguage(String source, String target) {
 		if (source == null && target == null) {
 			return false;
@@ -231,8 +245,8 @@ public class LanguageFallbackSortingTopDocsCollector extends
 	@Override
 	public void setNextReader(AtomicReaderContext arg0) throws IOException {
 		AtomicReader reader = arg0.reader();
-		this.docLanguageSetIds = FieldCache.DEFAULT.getTerms(reader, "languagesetit", false);
-		this.docLanguages = FieldCache.DEFAULT.getTerms(reader, "languagecode", false);
+		this.docLanguageSetIds = FieldCache.DEFAULT.getTerms(reader, languagesetfield, false);
+		this.docLanguages = FieldCache.DEFAULT.getTerms(reader, languagefield, false);
 		if (doSortvalues) {
 			this.sortValues = new HashMap<String, BinaryDocValues>();
 			for (String field : sortfields) {

@@ -63,6 +63,8 @@ final class LanguageSortingHitQueue extends PriorityQueue<LanguageSortingScoreDo
    * 
    * @param size
    *          the requested size of this queue.
+   * @param sort 
+   *          Sorting
    * @param prePopulate
    *          specifies whether to pre-populate the queue with sentinel values.
    * @see #getSentinelObject()
