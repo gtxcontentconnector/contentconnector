@@ -73,6 +73,21 @@ public class LuceneRequestProcessorTest {
 		}
 	}
 	
+	@Test
+	public void sortedSearchTest() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("category:plants");
+		request.setSortArray(new String[]{"content:asc"});
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		String last = null;
+		for(CRResolvableBean bean : objects) {
+			if (last != null) {
+				Assert.assertEquals("Object was not correct order.", true, last.compareTo(bean.getString("content")) <= 0);
+			}
+			last = bean.getString("content");
+		}
+	}
+	
 	
 	@Test
 	public void testSimpleFilterSearch() throws CRException {

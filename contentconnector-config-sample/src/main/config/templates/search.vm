@@ -66,6 +66,10 @@
 ## had to pass originalquery and change it in paging links
 ##set($originalquery = $request.parameters.query)
 #set($originalquery = $metaresolvable.query)
+#set($facets = $metaresolvable.facetsList.get("0").subnodes)
+#foreach($facet in $facets)
+	$facet.name $facet.count
+#end
 #set($metaquery = $metaresolvable.query)
 #if($metaresolvable.suggestions && $metaresolvable.suggestions.size() > 0)
 	Did you mean
@@ -98,7 +102,7 @@
 	#end
 	<li>
 			
-			<h4><a class="title highlight" href="content$resolvable.pub_dir$resolvable.filename">$resolvable.name</a></h4>
+			<h4><a class="title highlight" href="content$resolvable.pub_dir$resolvable.filename">$resolvable.name</a> [$!resolvable.languagecode]</h4>
 			#set($content = "$!{resolvable.content}$!{resolvable.binarycontent}")
 ##if you are limiting the output size, be sure to not cut html-tags in two -> and configure the highlighter to have max the output you want
 			#if (false && $content.length() > 1300)
