@@ -21,15 +21,8 @@ public class CustomPatternAnalyzerTest {
 		Analyzer a = new CustomPatternAnalyzer(config);
 	
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-
-		tokenStream.incrementToken();
-		String t2 = charTermAttribute.toString();
-		tokenStream.incrementToken();
-		String t3 = charTermAttribute.toString();
+		BasicAnalyzerTest.assertTokenStreamContents(tokenStream, new String[]{"Text","Whitespaces"});
 		
-		assertEquals("Second Token did not match!", "Text", t2);
-		assertEquals("Third Token did not match!", "Whitespaces", t3);
 		
 	}
 	
@@ -41,15 +34,8 @@ public class CustomPatternAnalyzerTest {
 		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
 		
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-
-		tokenStream.incrementToken();
-		String t2 = charTermAttribute.toString();
-		tokenStream.incrementToken();
-		String t3 = charTermAttribute.toString();
+		BasicAnalyzerTest.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
 		
-		assertEquals("Second Token did not match!", "text", t2);
-		assertEquals("Third Token did not match!", "whitespaces", t3);
 		
 	}
 	
@@ -60,15 +46,8 @@ public class CustomPatternAnalyzerTest {
 		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
 		
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-
-		tokenStream.incrementToken();
-		String t2 = charTermAttribute.toString();
-		tokenStream.incrementToken();
-		String t3 = charTermAttribute.toString();
+		BasicAnalyzerTest.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
 		
-		assertEquals("Second Token did not match!", "text", t2);
-		assertEquals("Third Token did not match!", "whitespaces", t3);
 		
 	}
 }
