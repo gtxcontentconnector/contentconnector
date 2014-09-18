@@ -1,0 +1,1 @@
+Fixed a bug in KeywordListAnalyzer where it would not produce any tokens.
