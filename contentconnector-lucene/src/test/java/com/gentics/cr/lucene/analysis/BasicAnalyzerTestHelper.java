@@ -14,13 +14,33 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
-
-public class BasicAnalyzerTest {
-	
+/**
+ * Provides methods to test Analyzers.
+ * @author christopher
+ *
+ */
+public class BasicAnalyzerTestHelper {
+	/**
+	 * Alias to check the contents of a TokenStream.
+	 * @param ts TokenStream
+	 * @param output expected Output
+	 * @throws IOException in case of error
+	 */
 	public static void assertTokenStreamContents(TokenStream ts, String[] output) throws IOException {
 		assertTokenStreamContents(ts, output, null, null, null, null, null);
 	}
 	
+	/**
+	 * Check the contents of a TokenStream
+	 * @param ts TokenStream
+	 * @param output expected Output
+	 * @param startOffsets startOffsets
+	 * @param endOffsets end Offsets
+	 * @param types Types
+	 * @param posIncrements position increments
+	 * @param finalOffset final Offsets
+	 * @throws IOException in case of error.
+	 */
 	public static void assertTokenStreamContents(TokenStream ts, String[] output, int startOffsets[], int endOffsets[], String types[], int posIncrements[], Integer finalOffset) throws IOException {
 	    assertNotNull(output);
 	    CheckClearAttributesAttribute checkClearAtt = ts.addAttribute(CheckClearAttributesAttribute.class);
@@ -89,13 +109,25 @@ public class BasicAnalyzerTest {
 	    ts.close();
 	  }
 	
+	/**
+	 * Helper to check if ClearAttributes was called.
+	 * @author christopher
+	 *
+	 */
 	public static interface CheckClearAttributesAttribute extends Attribute {
 	    boolean getAndResetClearCalled();
 	  }
 
+	/**
+	 * Impl to check if clear Attribute was called.
+	 * @author christopher
+	 *
+	 */
 	  public static final class CheckClearAttributesAttributeImpl extends AttributeImpl implements CheckClearAttributesAttribute {
 	    private boolean clearCalled = false;
-	    
+	    /**
+	     * Check if clear was called.
+	     */
 	    public boolean getAndResetClearCalled() {
 	      try {
 	        return clearCalled;

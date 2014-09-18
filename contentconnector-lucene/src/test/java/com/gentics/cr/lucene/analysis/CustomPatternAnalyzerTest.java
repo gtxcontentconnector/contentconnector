@@ -21,7 +21,7 @@ public class CustomPatternAnalyzerTest {
 		Analyzer a = new CustomPatternAnalyzer(config);
 	
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		BasicAnalyzerTest.assertTokenStreamContents(tokenStream, new String[]{"Text","Whitespaces"});
+		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"Text","Whitespaces"});
 		
 		
 	}
@@ -34,7 +34,7 @@ public class CustomPatternAnalyzerTest {
 		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
 		
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		BasicAnalyzerTest.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
+		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
 		
 		
 	}
@@ -46,7 +46,7 @@ public class CustomPatternAnalyzerTest {
 		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
 		
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		BasicAnalyzerTest.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
+		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
 		
 		
 	}
