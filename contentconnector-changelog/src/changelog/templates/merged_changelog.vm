@@ -53,8 +53,9 @@
 		<div class="wrapper">
 			<div id="mainCol">
 				<div class="manual"></div>
-				#foreach($changelog in $changelogs)
-				<h2>Gentics Content.Connector $changelog.version</h2>
+				#foreach($changelog in $changelogs)##
+#set($unreleased = $changelog.getGenericProperties().get("unreleased"))##
+				<h2>Gentics Content.Connector $changelog.version#if($unreleased) (Unreleased)#end</h2>
 				<hr />
 					#foreach($entry in $changelog.getChangelogEntries())
 						#set($html = $entry.getHTML())

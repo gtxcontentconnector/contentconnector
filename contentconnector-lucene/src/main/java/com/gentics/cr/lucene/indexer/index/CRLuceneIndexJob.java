@@ -706,6 +706,12 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 						newDoc.add(revField);
 					}
 				}
+			} else {
+				// the attribute is not filled (any more)
+				if (filled) {
+					// attribute was in index, so we need to remove it
+					newDoc.removeField(attributeName);
+				}
 			}
 		}
 		if (taxoDocBuilder.useFacets()) {
