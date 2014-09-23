@@ -41,6 +41,8 @@ import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.IReIndexStrategy;
 import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.BytesRefIterator;
 
 /**
  * This class can be used to build an autocomplete index over an existing lucene
@@ -148,8 +150,6 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 		autocompleteLocation.reopenCheck(ia, null);
 		
 	}
-
-	
 
 	public void finalize() {
 		autocompleteLocation.stop();

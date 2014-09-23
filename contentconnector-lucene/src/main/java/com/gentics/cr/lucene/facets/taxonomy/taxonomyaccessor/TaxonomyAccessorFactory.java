@@ -17,7 +17,7 @@ import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
 /**
  * An TaxonomyAccessorFactory allows the sharing of {@link TaxonomyAccessor} 
  * across threads.
- *
+ * TODO: fix shared access to instances of {@link TaxonomyAccessor}
  * $Date$
  * @version $Revision$
  * @author Sebastian Vogel <s.vogel@gentics.com>
