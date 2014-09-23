@@ -1,0 +1,3 @@
+When using the CRLuceneIndexJob to index objects from a Content Repository in a lucene index,
+attributes were not removed from the index if they had been removed from the objects.
+This has been fixed now.
