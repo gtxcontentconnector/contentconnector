@@ -1,6 +1,9 @@
 {
   "version": "1.16.1",
   "date": "23.09.2014",
-  "changeLogEntryFileNames": [],
+  "changeLogEntryFileNames": [
+    "5024.RT58446.bugfix",
+    "5022.RT58458.bugfix"
+  ],
   "genericProperties": {}
 }
