@@ -31,7 +31,7 @@ public class CharacterCountPhraseBolderTest extends AbstractBolderTest {
 	@Override
 	public void overwriteConfig(GenericConfiguration config) {
 		config.set("fragments", "1");
-		config.set("fragmentsize", "24");
+		config.set("fragmentsize", "30");
 	}
 	
 	/**
