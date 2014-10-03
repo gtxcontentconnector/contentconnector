@@ -29,10 +29,14 @@ import com.gentics.cr.lucene.search.CRMetaResolvableBean;
 public class FacetsSearch implements FacetsSearchConfigKeys {
 
 	private static Logger log = Logger.getLogger(FacetsSearch.class);
+	
+	private static final String LIST_NULL_VALUES_KEY = "listnullvalues";
+	private static final String LABEL_KEY = "label";
 
 	private boolean facetdisplayordinal = false;
 	private boolean usefacets = false;
 	private boolean facetdisplaypath = false;
+	private boolean listnullvalues = false;
 	private int facetnumbercategories = DEFAULT_FACET_NUMBER_OF_CATEGORIES;
 
 	/**
@@ -54,6 +58,8 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 				facetnumbercategories = subconf.getInteger(
 						FACET_NUMBER_OF_CATEGORIES_KEY,
 						DEFAULT_FACET_NUMBER_OF_CATEGORIES);
+				
+				listnullvalues = subconf.getBoolean(LIST_NULL_VALUES_KEY, listnullvalues);
 			}
 			log.debug("Facets enabled");
 		} else {
@@ -86,9 +92,9 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 				config.setIndexFieldName(mapping.getCategory(), mapping.getAttribute());
 				Facets tFacet = new FastTaxonomyFacetCounts(mapping.getAttribute(),taReader,config,facetsCollector);
 				FacetResult result = tFacet.getTopChildren(facetnumbercategories, mapping.getCategory());
-				if (result != null) {
+				if (result != null || listnullvalues) {
 					facetResultNodes.put(String.valueOf(i),
-							buildFacetsResultTree(result));
+								buildFacetsResultTree(mapping, result));
 					i++;
 				}
 			}
@@ -105,34 +111,48 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 	 * the maximum number of facet result nodes per query is defined via the
 	 * properties or via the DEFAULT_FACET_NUMBER_OF_CATEGORIES variable
 	 * 
+	 * @param mapping The mapping for the current facet
+	 * 
 	 * @param facetResultNodes
 	 *            a list of facet result nodes
 	 * @return a tree-like map of categories including their sub categories and
 	 *         the number of results to each category (and sub category)
 	 * @author Sebastian Vogel <s.vogel@gentics.com>
 	 */
-	private Map<String, Object> buildFacetsResultTree(FacetResult facetNode) {
+	private Map<String, Object> buildFacetsResultTree(TaxonomyMapping mapping, FacetResult facetNode) {
 		Map<String, Object> facetsResultNode = new HashMap<String, Object>();
-		String[] path = facetNode.path;
-		String categoryName = facetNode.dim;
-		facetsResultNode.put(RESULT_FACETS_CATEGORY_NAME_KEY, categoryName);
-		facetsResultNode.put(RESULT_FACETS_TOTAL_COUNT_KEY,
-				String.valueOf(facetNode.value));
-
-		if (facetdisplaypath) {
-			facetsResultNode.put(RESULT_FACETS_PATH_KEY, path);
-		}
-		LabelAndValue[] lavs = facetNode.labelValues;
-		if (facetNode.childCount > 0) {
-			Map<String, Number> subnodes = new HashMap<String,Number>();
-			for (int i = 0; i<lavs.length; i++) {
-				subnodes.put(lavs[i].label, lavs[i].value);
+		if (facetNode != null) {
+			String[] path = facetNode.path;
+			String categoryName = facetNode.dim;
+			
+			facetsResultNode.put(RESULT_FACETS_CATEGORY_NAME_KEY, categoryName);
+			facetsResultNode.put(RESULT_FACETS_TOTAL_COUNT_KEY,
+					String.valueOf(facetNode.value));
+	
+			if (facetdisplaypath) {
+				facetsResultNode.put(RESULT_FACETS_PATH_KEY, path);
 			}
-			if (subnodes.size() > 0) {
-				facetsResultNode.put(RESULT_FACETS_SUBNODES_KEY, subnodes);
+			LabelAndValue[] lavs = facetNode.labelValues;
+			if (facetNode.childCount > 0) {
+				Map<String, Number> subnodes = new HashMap<String,Number>();
+				for (int i = 0; i<lavs.length; i++) {
+					subnodes.put(lavs[i].label, lavs[i].value);
+				}
+				if (subnodes.size() > 0) {
+					facetsResultNode.put(RESULT_FACETS_SUBNODES_KEY, subnodes);
+				}
 			}
+		} else if (listnullvalues){
+			facetsResultNode.put(RESULT_FACETS_TOTAL_COUNT_KEY,
+					String.valueOf(0));
+			facetsResultNode.put(RESULT_FACETS_CATEGORY_NAME_KEY,
+					mapping.getCategory());
 		}
-
+		String label = mapping.getLabel();
+		if (label != null && !"".equals(label)) {
+			facetsResultNode.put(LABEL_KEY,
+					label);
+		}
 		return facetsResultNode;
 	}
 

@@ -20,8 +20,11 @@ import com.gentics.cr.configuration.GenericConfiguration;
  */
 public class TaxonomyMapping implements TaxonomyConfigKeys {
 
+	private static final String LABLE_KEY = "label";
+	
 	private String category;
 	private String attribute;
+	private String label;
 
 	/**
 	 * Log4j logger for error and debug messages.
@@ -34,10 +37,20 @@ public class TaxonomyMapping implements TaxonomyConfigKeys {
 	 * 
 	 * @param category
 	 * @param attribute
+	 * @param label
 	 */
-	public TaxonomyMapping(String category, String attribute) {
+	public TaxonomyMapping(String category, String attribute, String label) {
 		this.category = category;
 		this.attribute = attribute;
+		this.label = label;
+	}
+	
+	/**
+	 * returns the label for the mapping
+	 * @return label
+	 */
+	public String getLabel() {
+		return label;
 	}
 
 	/**
@@ -83,8 +96,9 @@ public class TaxonomyMapping implements TaxonomyConfigKeys {
 							FACET_CONFIG_MAPPINGS_CATEGORY_KEY, "");
 					String attribute = mapConf.getString(
 							FACET_CONFIG_MAPPINGS_ATTRIBUTE_KEY, "");
+					String label = mapConf.getString(LABLE_KEY, "");
 					if ((category != null && !"".equals(category)) && (attribute != null && !"".equals(attribute))) {
-						mappings.add(new TaxonomyMapping(category, attribute));
+						mappings.add(new TaxonomyMapping(category, attribute, label));
 						LOGGER.debug("Added new Taxnonomy Mapping for the category: "
 								+ category + " and the attribute: " + attribute);
 					}
