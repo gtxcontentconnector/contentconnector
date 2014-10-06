@@ -98,7 +98,7 @@ public class IndexingAndFacetTest {
 	public void testIndexing() {
 		LuceneIndexLocation indexLoc = index();
 		
-		assertEquals("Doc count did not match.", 10, indexLoc.getDocCount());
+		assertEquals("Doc count did not match.", 13, indexLoc.getDocCount());
 		indexLoc.finalize();
 	}
 	
@@ -128,6 +128,22 @@ public class IndexingAndFacetTest {
 		Map<String,Object> subnodes = (Map<String,Object>) facet0.get("subnodes");
 		assertEquals("Expected count did not match",5,subnodes.get("cat1"));
 		assertEquals("Expected count did not match",5,subnodes.get("cat2"));
+		
+		CRRequest request2 = new CRRequest();
+		request2.set("metaresolvable", true);
+		request2.setRequestFilter("content:other");
+		
+		ret = rp.getObjects(request2);
+		
+		metaresolvable = ret.iterator().next();
+		
+		assertEquals("Hits do not match", 3, metaresolvable.get("hits"));
+		
+		facets = (Map<String,Object>) metaresolvable.get("facetsList");
+		assertNotNull("Facets was null", facets);
+		facet0 = (Map<String,Object>) facets.get("0");
+		assertEquals("Resultcount did not match", "0", facet0.get("count"));
+		
 		rp.finalize();
 		indexLoc.finalize();
 	}
