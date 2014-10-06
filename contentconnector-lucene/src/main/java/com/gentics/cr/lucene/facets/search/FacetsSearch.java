@@ -30,9 +30,6 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 
 	private static Logger log = Logger.getLogger(FacetsSearch.class);
 	
-	private static final String LIST_NULL_VALUES_KEY = "listnullvalues";
-	private static final String LABEL_KEY = "label";
-
 	private boolean facetdisplayordinal = false;
 	private boolean usefacets = false;
 	private boolean facetdisplaypath = false;

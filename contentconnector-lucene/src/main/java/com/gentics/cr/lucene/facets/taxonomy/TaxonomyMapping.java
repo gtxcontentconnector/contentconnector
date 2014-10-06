@@ -20,7 +20,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
  */
 public class TaxonomyMapping implements TaxonomyConfigKeys {
 
-	private static final String LABLE_KEY = "label";
+	
 	
 	private String category;
 	private String attribute;
@@ -96,7 +96,7 @@ public class TaxonomyMapping implements TaxonomyConfigKeys {
 							FACET_CONFIG_MAPPINGS_CATEGORY_KEY, "");
 					String attribute = mapConf.getString(
 							FACET_CONFIG_MAPPINGS_ATTRIBUTE_KEY, "");
-					String label = mapConf.getString(LABLE_KEY, "");
+					String label = mapConf.getString(LABEL_KEY, "");
 					if ((category != null && !"".equals(category)) && (attribute != null && !"".equals(attribute))) {
 						mappings.add(new TaxonomyMapping(category, attribute, label));
 						LOGGER.debug("Added new Taxnonomy Mapping for the category: "
