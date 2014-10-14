@@ -31,6 +31,9 @@ public class DummyIndextestRequestProcessor extends RequestProcessor {
 		result.add(createBean("10007.8", "content content test", "cat2", "tac4", System.currentTimeMillis()));
 		result.add(createBean("10007.9", "content content test", "cat2", "tac5", System.currentTimeMillis()));
 		result.add(createBean("10007.10", "content content test", "cat2", "tac5", System.currentTimeMillis()));
+		result.add(createBean("10007.11", "other", null, "tac5", System.currentTimeMillis()));
+		result.add(createBean("10007.12", "other", null, "tac5", System.currentTimeMillis()));
+		result.add(createBean("10007.13", "other", null, "tac5", System.currentTimeMillis()));
 		
 		return result;
 	}
