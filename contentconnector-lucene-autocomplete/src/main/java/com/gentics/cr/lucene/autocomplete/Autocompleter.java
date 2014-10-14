@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -34,12 +33,17 @@ import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.IReIndexStrategy;
 import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
+import java.io.StringReader;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.BytesRefIterator;
 
@@ -63,6 +67,8 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 	@Deprecated
 	private LuceneIndexLocation source;
 	private LuceneIndexLocation autocompleteLocation;
+        
+        private final Analyzer analyzer;
 
 	private String autocompletefield = "content";
 
@@ -96,8 +102,8 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 		autocompleteLocation = LuceneIndexLocation
 				.getIndexLocation(new CRConfigUtil(autoConf, AUTOCOMPLETE_INDEX_KEY));
 		autocompleteLocation.registerDirectoriesSpecial();
+                this.analyzer = LuceneAnalyzerFactory.createAnalyzer(autoConf);
 		String s_autofield = config.getString(AUTOCOMPLETE_FIELD_KEY);
-
 		if (!useAutocompleteIndexExtension) {
 			reindexStrategy = initReindexStrategy(config);
 		}
@@ -153,8 +159,25 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 		IndexAccessor ia = autocompleteLocation.getAccessor();
 		IndexSearcher autoCompleteSearcher = ia.getPrioritizedSearcher();
 		IndexReader autoCompleteReader = ia.getReader(false);
+                
+                // analyze the search term
+                String analyzedTerm = null;
+                TokenStream stream  = analyzer.tokenStream(GRAMMED_WORDS_FIELD, new StringReader(term));
+                CharTermAttribute streamTerm = stream.addAttribute(CharTermAttribute.class);
+                stream.reset();
+                // get the last token from the stream
+                while(stream.incrementToken()) {
+                    analyzedTerm = streamTerm.toString();
+                }
+                stream.end();
+                stream.close();
+                // if the analyzer could not find a term use the original term for search
+                if(analyzedTerm == null) {
+                    analyzedTerm = term;
+                }
+                
 		try {
-			Query query = new TermQuery(new Term(GRAMMED_WORDS_FIELD, term));
+			Query query = new TermQuery(new Term(GRAMMED_WORDS_FIELD, analyzedTerm));
 			Sort sort = new Sort(new SortField(COUNT_FIELD, SortField.LONG, true));
 			TopDocs docs = autoCompleteSearcher.search(query, null, 5, sort);
 			int id = 1;
