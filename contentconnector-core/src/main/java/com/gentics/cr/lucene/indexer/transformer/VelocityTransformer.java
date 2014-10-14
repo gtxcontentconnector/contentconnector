@@ -263,7 +263,7 @@ public class VelocityTransformer extends ContentTransformer {
 					bean.set(targetAttribute, output);
 				}
 			}
-		} catch (CRException e) {
+		} catch (Exception e) {
 			logger.error("Error while rendering template " + configName + " - " + TRANSFORMER_TEMPLATE_KEY
 					+ " for bean " + bean.getContentid(), e);
 		}

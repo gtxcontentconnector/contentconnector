@@ -168,7 +168,11 @@ public class PlinkProcessor {
 					}
 				}
 
-				link = myTemplateEngine.render("link", this.config.getPlinkTemplate());
+				try {
+					link = myTemplateEngine.render("link", this.config.getPlinkTemplate());
+				} catch (Exception e) {
+					throw new CRException(e);
+				}
 
 			} catch (DatasourceNotAvailableException e) {
 				CRException ex = new CRException(e);

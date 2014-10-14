@@ -187,7 +187,16 @@ public class VelocityContentRepository extends ContentRepository {
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding", encoding);
 			templateManager.put("tools", tools);
-			String output = templateManager.render(template.getKey(), template.getSource());
+			String output = null;
+			try {
+				output = templateManager.render(template.getKey(), template.getSource());
+			} catch (Exception e) {
+				throw new CRException(e);
+			}
+			if (output == null) {
+				throw new CRException("Could not render template for key {"
+						+ template.getKey() + "}");
+			}
 			stream.write(getHeader().getBytes());
 			stream.write(output.getBytes(encoding));
 			stream.write(getFooter().getBytes());

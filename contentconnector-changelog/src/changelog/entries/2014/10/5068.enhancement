@@ -1,0 +1,8 @@
+Dependency management: The portalnode-lib dependency was removed from the Gentics Content.Connector
+
+* The ITemplateManager interface was moved to node-lib and will be available starting from version 2.0.13.
+* The ITemplateManager interface in node-lib was updated. The render method will no longer throw CRException. Instead a normal Exception will be thrown.
+* The PortalNodeTemplateManager class was moved to portalnode-lib and can still be used when manually adding the portalnode-lib dependency.
+* The PluggableActionCaller class was moved to portalnode-lib.
+* The PortalNodeInteractor class is no longer interfacing directly with portalnode. Instead the PortalConnectorFactory class is used for datasource creation.
+* Various portalnode-lib dependencies were removed in various pom.xml files.

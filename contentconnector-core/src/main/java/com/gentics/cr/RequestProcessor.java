@@ -330,7 +330,11 @@ public abstract class RequestProcessor {
 								myTemplateManager.put(entry.getKey(), entry.getValue());
 							}
 						}
-						s = myTemplateManager.render("attribute", s);
+						try {
+							s = myTemplateManager.render("attribute", s);
+						} catch (Exception e) {
+							throw new CRException(e);
+						}
 					}
 				} else if (o.getClass() == Integer.class) {
 					s = ((Integer) o).toString();

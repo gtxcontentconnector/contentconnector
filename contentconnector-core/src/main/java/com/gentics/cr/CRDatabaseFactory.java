@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.etc.ObjectTransformer;
+import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.portalnode.PortalNodeInteractor;
@@ -124,6 +125,7 @@ public final class CRDatabaseFactory {
 	 * requestProcessorConfig.
 	 * @param requestProcessorConfig containing the datasource config
 	 * @return Datasource if correctly configured, otherwise null
+	 * @throws NodeException
 	 */
 	public static Datasource getDatasource(final CRConfigUtil requestProcessorConfig) {
 		Datasource ds = null;
@@ -140,7 +142,7 @@ public final class CRDatabaseFactory {
 				} else {
 					ds = PortalConnectorFactory.createWriteableDatasource(dsHandle, dsProps);
 				}
-				
+
 			} else {
 				ds = PortalConnectorFactory.createWriteableDatasource(dsHandle);
 			}

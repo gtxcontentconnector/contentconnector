@@ -122,7 +122,7 @@ public class VelocitySearchServlet extends HttpServlet {
 		try {
 			this.vtl.put("query", query);
 			parsedquery = this.vtl.render("query", this.querytemplate);
-		} catch (CRException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			parsedquery = "content:" + query;
 		}
