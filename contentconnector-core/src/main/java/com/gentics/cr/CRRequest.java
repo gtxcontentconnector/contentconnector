@@ -703,6 +703,26 @@ public class CRRequest implements Cloneable, Serializable {
 	public Object get(final String key) {
 		return params.get(key);
 	}
+        
+        /**
+	 * Gets a parameter using the given key. If the parameter was not found
+         * in the parameter map of the CRRequest itself this method will try to 
+         * retrieve the parameter from the underlying request wrapper
+	 * 
+	 * @param key
+	 *            name of the parameter to get
+         * @param fallback
+         *            true if the parameter should be retrieved from the request wrapper if it was not found
+	 * @return value of the parameter, <code>null</code> in case parameter was
+	 *         not set before.
+	 */
+	public Object get(final String key, final Boolean fallback) {
+            Object value = get(key);
+            if(fallback && value == null && getRequestWrapper() != null) {
+                value = getRequestWrapper().getParameter(key);
+            }
+            return value;
+	}
 
 	/**
 	 * @return hashcode of the current CRRequest.

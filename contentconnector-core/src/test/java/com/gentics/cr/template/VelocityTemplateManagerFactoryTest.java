@@ -2,6 +2,8 @@ package com.gentics.cr.template;
 
 import com.gentics.cr.conf.gentics.ConfigDirectory;
 import com.gentics.cr.exceptions.CRException;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.jcs.JCS;
@@ -54,7 +56,14 @@ public class VelocityTemplateManagerFactoryTest {
 
     
     private String getMacroPath() {
-	return folder.newFolder("templates").getAbsolutePath() + "/";
+        File file;
+        try {
+            file = folder.newFolder("templates");
+        } catch (IOException ex) {
+            // catch IOException wich is thrown when templates folder already exists
+            file = new File(folder.getRoot(), "templates");
+        }
+        return file.getAbsolutePath() + "/";
     }
 
     /**

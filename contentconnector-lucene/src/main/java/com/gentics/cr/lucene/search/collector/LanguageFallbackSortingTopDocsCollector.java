@@ -94,7 +94,7 @@ public class LanguageFallbackSortingTopDocsCollector extends
 	 */
 	private ArrayList<String> createLanguagePriorityList(final CRRequest request, final GenericConfiguration config) {
 		ArrayList<String> langPrio = new ArrayList<String>();
-		Object o = request.get(LANGUAGE_PRIORITY_KEY);
+                Object o = request.get(LANGUAGE_PRIORITY_KEY, true);
 		if (o != null) {
 			if (o instanceof String) {
 				langPrio.addAll(Arrays.asList(((String)o).split(",")));

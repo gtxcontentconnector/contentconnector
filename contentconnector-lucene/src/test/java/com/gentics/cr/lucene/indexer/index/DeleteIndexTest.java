@@ -85,7 +85,7 @@ public class DeleteIndexTest {
 	@Test
 	public void testDelete() throws IOException {
 		LuceneIndexLocation indexLoc = index();
-		assertEquals("Doc count did not match.", 10, indexLoc.getDocCount());
+		assertEquals("Doc count did not match.", DummyIndextestRequestProcessor.INDEX_ELEMENT_COUNT, indexLoc.getDocCount());
 		clearIndex(indexLoc);
 		assertEquals("Doc count did not match.", 0, indexLoc.getDocCount());
 		indexLoc.finalize();

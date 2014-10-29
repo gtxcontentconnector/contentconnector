@@ -1,7 +1,9 @@
 package com.gentics.cr.lucene.search.highlight;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
@@ -24,6 +26,8 @@ import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
  *
  */
 public abstract class AbstractBolderTest extends AbstractLuceneTest {
+	
+	private final static Logger LOGGER = Logger.getLogger(AbstractBolderTest.class);
 
 	public AbstractBolderTest(String name) {
 		super(name);
@@ -49,9 +53,33 @@ public abstract class AbstractBolderTest extends AbstractLuceneTest {
 		config.set("rule", "1==1");
 		config.set("fragments", "2");
 		config.set("fragmentsize", "24");
-
+		overwriteConfig(config);
 		parser = new QueryParser(LuceneVersion.getVersion(), SimpleLucene.CONTENT_ATTRIBUTE, new StandardAnalyzer(
 				LuceneVersion.getVersion(), CharArraySet.EMPTY_SET));
+	}
+	
+	/**
+	 * Possibility for individual tests to overwrite the config
+	 * @param config
+	 */
+	public abstract void overwriteConfig(GenericConfiguration config);
+	
+	/**
+	 * Create the highlighter
+	 * @return
+	 */
+	public ContentHighlighter getHighlighter() {
+		ContentHighlighter t = null;
+		try {
+			t = (ContentHighlighter) Class.forName(getBolderClass())
+					.getConstructor(new Class[] { GenericConfiguration.class }).newInstance(config);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException
+				| ClassNotFoundException e) {
+			LOGGER.error(e);
+		}
+		return t;
 	}
 
 	/**
@@ -61,7 +89,7 @@ public abstract class AbstractBolderTest extends AbstractLuceneTest {
 	 * @throws IOException in case of a low level IO error
 	 */
 	public void testHighlighting() throws ParseException, CorruptIndexException, IOException {
-		AdvancedContentHighlighter advancedHighlighter = new WhitespaceVectorBolder(config);
+		ContentHighlighter highligther = getHighlighter();
 		IndexReader reader = lucene.getReader();
 		//CONFIGURE MAX CLAUSES
 		BooleanQuery.setMaxClauseCount(BooleanQuery.getMaxClauseCount());
@@ -76,7 +104,12 @@ public abstract class AbstractBolderTest extends AbstractLuceneTest {
 		IndexSearcher searcher = lucene.getSearcher();
 		parsedQuery = searcher.rewrite(parsedQuery);
 		Document d = reader.document(0);
-		String highlighted = advancedHighlighter.highlight(parsedQuery, reader, 0, SimpleLucene.CONTENT_ATTRIBUTE);
+		String highlighted;
+		if (highligther instanceof AdvancedContentHighlighter) {
+			highlighted = ((AdvancedContentHighlighter)highligther).highlight(parsedQuery, reader, 0, SimpleLucene.CONTENT_ATTRIBUTE);
+		} else {
+			highlighted = highligther.highlight(d.get(SimpleLucene.CONTENT_ATTRIBUTE), parsedQuery);
+		}
 		System.out.println(highlighted);
 		assertEquals("Could not properly highlight", "<b>this</b> word9 <b>the</b> word1 <b>tat</b>", highlighted);
 	}
