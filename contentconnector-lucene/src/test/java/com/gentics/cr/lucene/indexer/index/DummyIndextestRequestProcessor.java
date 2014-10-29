@@ -15,6 +15,8 @@ public class DummyIndextestRequestProcessor extends RequestProcessor {
 		super(config);
 		// TODO Auto-generated constructor stub
 	}
+        
+        public static final int INDEX_ELEMENT_COUNT = 13;
 
 	@Override
 	public Collection<CRResolvableBean> getObjects(CRRequest request,
@@ -34,7 +36,8 @@ public class DummyIndextestRequestProcessor extends RequestProcessor {
 		result.add(createBean("10007.11", "other", null, "tac5", System.currentTimeMillis()));
 		result.add(createBean("10007.12", "other", null, "tac5", System.currentTimeMillis()));
 		result.add(createBean("10007.13", "other", null, "tac5", System.currentTimeMillis()));
-		
+		// dont' forget to update the index element count when adding new beans
+                
 		return result;
 	}
 	
