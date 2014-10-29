@@ -24,9 +24,7 @@ public class CRRequestTest {
     }
 
     /**
-     * Test the getter for request parameters. Make sure that the new getter
-     * logic which falls back to the servlet request does not change the 
-     * existing logic.
+     * Test the getter for request parameters without a request wrapper in the CRRequest. 
      */
     @Test
     public void testGetParameter() {
@@ -37,17 +35,30 @@ public class CRRequestTest {
                 "When no parameters and no request wrapper is set, a call to get with fallback=true should not throw an exception", 
                 req.get(key, Boolean.TRUE)
         );
+    }
+    /**
+     * Test the getter for request parameters with an empty request wrapper in the CRRequest. 
+     */
+    @Test
+    public void testGetParameterWithEmptyServletRequest() {
+        String key = "foo";
         // test request with empty request paramters
-        req = createTestRequest(new HashMap<String, String>());
+        CRRequest req = createTestRequest(new HashMap<String, String>());
         assertNull("Null should be returned if no parameter is set", req.get(key));
-        assertNull("Null should be returned if no parameter is set and fallback=true", req.get(key, Boolean.FALSE));
+        assertNull("Null should be returned if no parameter is set and fallback=false", req.get(key, Boolean.FALSE));
         req.set(key, "bar");
         assertEquals("If a parameter is set in the CRRequest, the value should be returned", "bar", req.get(key));
-        
+    }
+    /**
+     * Test the getter for request parameters with an filled request wrapper in the CRRequest. 
+     */
+    @Test
+    public void testGetParameterWithFilledServletRequest() { 
+        String key = "foo";
         // test request with parameters in the servlet request
         HashMap<String, String> servletParams = new HashMap<>();
         servletParams.put(key, "servletBar");
-        req = createTestRequest(servletParams);
+        CRRequest req = createTestRequest(servletParams);
         assertNull(
                 "Null should be returned when get is called with a single argument and the parameter is only set in the servlet request", 
                 req.get(key)
@@ -63,7 +74,7 @@ public class CRRequestTest {
         );
         req.set(key, "bar");
         assertNotEquals(
-                "If the parameter is set in both requests and get is called with a single argument, the value should be different from the one stored in the servlet reques", 
+                "If the parameter is set in both requests and get is called with a single argument, the value should be different from the one stored in the servlet request", 
                 "servletBar",
                 req.get(key)
         );
