@@ -1,0 +1,3 @@
+When searching the autocompleter for terms with special characters, the query
+was not parsed correctly and no results where shown for many words containing
+special characters like umlaute. 
