@@ -1,0 +1,1 @@
+This change implements a new RequestProcessor (HTTPClientAllParamsRequestProcessor) which will forward all custom parameters (but not the default parameters) set in the CRRequest.
