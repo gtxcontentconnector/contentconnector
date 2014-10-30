@@ -1,0 +1,1 @@
+For the LanguageFallbackCollector a new parameter needs to be fowrwarded with the request processor. Instead of hardcoding this one parameter this change implements a new RequestProcessor (HTTPClientAllParamsRequestProcessor) which will forward all custom parameters set in the CRRequest.

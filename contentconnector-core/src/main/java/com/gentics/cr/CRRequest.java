@@ -20,6 +20,9 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.RequestWrapper;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 
@@ -58,7 +61,89 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * key for storing the attribute array.
 	 */
-	private static final String ATTRIBUTE_ARRAY_KEY = "attributeArray";
+	public static final String ATTRIBUTE_ARRAY_KEY = "attributeArray";
+        /**
+         * Key for storing the start parameter.
+         */
+        public static final String START_KEY = "start";
+        /**
+         * Key for storing the count parameter.
+         */
+        public static final String COUNT_KEY = "count";
+        /**
+         * Key for storing the sorting parameter.
+         */
+        public static final String SORTING_KEY = "sorting";
+        /**
+         * Key for storing the request parameter.
+         * @deprecated 
+         */
+        public static final String REQUEST_KEY = "request";
+        /**
+         * Key for storing the request wrapper parameter.
+         */
+        public static final String REQUEST_WRAPPER_KEY = "requestWrapper";
+        /**
+         * Key for storing the response parameter.
+         */
+        public static final String RESPONSE_KEY = "response";
+        /**
+         * Key for storing the request filter parameter.
+         */
+        public static final String REQUEST_FILTER_KEY = "requestFilter";
+        /**
+         * Key for storing the sort array parameter.
+         */
+        public static final String SORT_ARRAY_KEY = "sortArray";
+        /**
+         * Key for storing the plink attribute array parameter.
+         */
+        public static final String PLINK_ATTRIBUTE_ARRAY_KEY = "plinkAttributeArray";
+        /**
+         * Key for storing the child filter parameter.
+         */
+        public static final String CHILD_FILTER_KEY = "childFilter";
+        /**
+         * Key for storing the do replace plinks parameter.
+         */
+        public static final String DO_REPLACE_PLINKS_KEY = "doreplaceplinks";
+        /**
+         * Key for storing the do velocity parameter.
+         */
+        public static final String DO_VELOCITY_KEY = "dovelocity";
+        /**
+         * Key for storing the url parameter.
+         */
+        public static final String URL_KEY = "url";
+        /**
+         * Key for storing the encoding parameter.
+         */
+        public static final String ENCODING_KEY = "encoding";
+        /**
+         * Key for storing the contentid parameter.
+         */
+        public static final String CONTENTID_KEY = "contentid";
+        /**
+         * An array of all parameters that are set per default in the CRRequest.
+         */
+        public static final String[] DEFAULT_ATTRIBUTES = new String[]{
+            REQUEST_KEY,
+            REQUEST_WRAPPER_KEY,
+            RESPONSE_KEY,
+            REQUEST_FILTER_KEY,
+            START_KEY,
+            COUNT_KEY,
+            SORT_ARRAY_KEY,
+            ATTRIBUTE_ARRAY_KEY,
+            PLINK_ATTRIBUTE_ARRAY_KEY,
+            CHILD_FILTER_KEY,
+            SORTING_KEY,
+            DO_REPLACE_PLINKS_KEY,
+            DO_VELOCITY_KEY,
+            URL_KEY,
+            ENCODING_KEY,
+            CONTENTID_KEY
+        };
 
 	/**
 	 * parameter to define a prefix for host relative urls (if not set, links
@@ -148,7 +233,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 */
 	@Deprecated
 	public Object getRequest() {
-		return this.get("request");
+		return this.get(REQUEST_KEY);
 	}
 
 	/**
@@ -157,7 +242,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return the requestWrapper
 	 */
 	public RequestWrapper getRequestWrapper() {
-		return (RequestWrapper) this.get("requestWrapper");
+		return (RequestWrapper) this.get(REQUEST_WRAPPER_KEY);
 	}
 
 	/**
@@ -166,7 +251,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return response
 	 */
 	public Object getResponse() {
-		return this.get("response");
+		return this.get(RESPONSE_KEY);
 	}
 
 	/**
@@ -178,7 +263,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 */
 	@Deprecated
 	public final void setRequest(final Object request) {
-		this.set("request", request);
+		this.set(REQUEST_KEY, request);
 	}
 
 	/**
@@ -189,8 +274,8 @@ public class CRRequest implements Cloneable, Serializable {
 	 *            {@link PortletRequest}
 	 */
 	public final void setRequest(final RequestWrapper requestWrapper) {
-		this.set("requestWrapper", requestWrapper);
-		this.set("request", requestWrapper.getRequest());
+		this.set(REQUEST_WRAPPER_KEY, requestWrapper);
+		this.set(REQUEST_KEY, requestWrapper.getRequest());
 	}
 
 	/**
@@ -199,7 +284,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param response
 	 */
 	public void setResponse(Object response) {
-		this.set("response", response);
+		this.set(RESPONSE_KEY, response);
 	}
 
 	/**
@@ -221,7 +306,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param requestFilter
 	 */
 	public void setRequestFilter(String requestFilter) {
-		this.set("requestFilter", requestFilter);
+		this.set(REQUEST_FILTER_KEY, requestFilter);
 	}
 
 	/**
@@ -232,7 +317,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return requestFilter
 	 */
 	public String getRequestFilter() {
-		return (String) this.get("requestFilter");
+		return (String) this.get(REQUEST_FILTER_KEY);
 	}
 
 	/**
@@ -242,7 +327,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param startString
 	 */
 	public void setStartString(String startString) {
-		this.set("start", ObjectTransformer.getInteger(startString, 0));
+		this.set(START_KEY, ObjectTransformer.getInteger(startString, 0));
 	}
 
 	/**
@@ -252,7 +337,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return start number
 	 */
 	public String getStartString() {
-		Integer start = (Integer) this.get("start");
+		Integer start = (Integer) this.get(START_KEY);
 		if (start != null) {
 			return (start.toString());
 		} else {
@@ -267,7 +352,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param countString
 	 */
 	public void setCountString(String countString) {
-		this.set("count", ObjectTransformer.getInteger(countString, -1));
+		this.set(COUNT_KEY, ObjectTransformer.getInteger(countString, -1));
 	}
 
 	/**
@@ -277,7 +362,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return countString
 	 */
 	public String getCountString() {
-		Integer count = (Integer) this.get("count");
+		Integer count = (Integer) this.get(COUNT_KEY);
 		if (count != null) {
 			return (count.toString());
 		} else {
@@ -293,7 +378,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param sortArray
 	 */
 	public void setSortArray(String[] sortArray) {
-		this.set("sortArray", sortArray);
+		this.set(SORT_ARRAY_KEY, sortArray);
 	}
 
 	/**
@@ -304,7 +389,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return sortArray
 	 */
 	public String[] getSortArray() {
-		return (String[]) this.get("sortArray");
+		return (String[]) this.get(SORT_ARRAY_KEY);
 	}
 
 	/**
@@ -314,7 +399,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param attributeArray array to use for prefilling
 	 */
 	public void setAttributeArray(final String[] attributeArray) {
-		this.set("attributeArray", attributeArray);
+		this.set(ATTRIBUTE_ARRAY_KEY, attributeArray);
 	}
 
 	/**
@@ -340,7 +425,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param plinkAttributeArray
 	 */
 	public void setPlinkAttributeArray(String[] plinkAttributeArray) {
-		this.set("plinkAttributeArray", plinkAttributeArray);
+		this.set(PLINK_ATTRIBUTE_ARRAY_KEY, plinkAttributeArray);
 	}
 
 	/**
@@ -350,7 +435,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 *         plinks are to be replaced
 	 */
 	public String[] getPlinkAttributeArray() {
-		return (String[]) this.get("plinkAttributeArray");
+		return (String[]) this.get(PLINK_ATTRIBUTE_ARRAY_KEY);
 	}
 
 	/**
@@ -361,7 +446,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param childFilter
 	 */
 	public void setChildFilter(String childFilter) {
-		this.set("childFilter", childFilter);
+		this.set(CHILD_FILTER_KEY, childFilter);
 	}
 
 	/**
@@ -373,7 +458,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 */
 	public String getChildFilter() {
 
-		return (String) this.get("childFilter");
+		return (String) this.get(CHILD_FILTER_KEY);
 	}
 
 	/**
@@ -403,7 +488,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return start
 	 */
 	public Integer getStart() {
-		Integer start = (Integer) this.get("start");
+		Integer start = (Integer) this.get(START_KEY);
 		if (start == null) {
 			return (new Integer(0));
 		}
@@ -417,7 +502,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return count
 	 */
 	public Integer getCount() {
-		Integer count = (Integer) this.get("count");
+		Integer count = (Integer) this.get(COUNT_KEY);
 		if (count == null) {
 			return (new Integer(-1));
 		}
@@ -429,7 +514,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param sorting
 	 */
 	public void setSorting(Sorting[] sorting) {
-		this.set("sorting", sorting);
+		this.set(SORTING_KEY, sorting);
 	}
 
 	/**
@@ -438,7 +523,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return sorting
 	 */
 	public Sorting[] getSorting() {
-		Sorting[] sorting = (Sorting[]) this.get("sorting");
+		Sorting[] sorting = (Sorting[]) this.get(SORTING_KEY);
 		if (sorting != null) {
 			return sorting;
 		}
@@ -539,7 +624,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param doreplaceplinks true if plinks should be replaced
 	 */
 	public final void setDoReplacePlinks(final boolean doreplaceplinks) {
-		this.set("doreplaceplinks", new Boolean(doreplaceplinks));
+		this.set(DO_REPLACE_PLINKS_KEY, new Boolean(doreplaceplinks));
 
 	}
 
@@ -549,7 +634,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return boolean doreplaceplinks
 	 */
 	public final boolean getDoReplacePlinks() {
-		Boolean doR = (Boolean) this.get("doreplaceplinks");
+		Boolean doR = (Boolean) this.get(DO_REPLACE_PLINKS_KEY);
 		if (doR == null) {
 			return (false);
 		}
@@ -562,7 +647,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param dovelocity
 	 */
 	public void setDoVelocity(boolean dovelocity) {
-		this.set("dovelocity", new Boolean(dovelocity));
+		this.set(DO_VELOCITY_KEY, new Boolean(dovelocity));
 
 	}
 
@@ -572,7 +657,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return dovelocity
 	 */
 	public boolean getDoVelocity() {
-		Boolean doV = (Boolean) this.get("dovelocity");
+		Boolean doV = (Boolean) this.get(DO_VELOCITY_KEY);
 		if (doV == null) {
 			return (false);
 		}
@@ -586,7 +671,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param url
 	 */
 	public void setUrl(String url) {
-		this.set("url", url);
+		this.set(URL_KEY, url);
 
 	}
 
@@ -597,7 +682,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return URL
 	 */
 	public String getUrl() {
-		return (String) this.get("url");
+		return (String) this.get(URL_KEY);
 	}
 
 	/**
@@ -607,7 +692,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param encoding
 	 */
 	public void setEncoding(String encoding) {
-		this.set("encoding", encoding);
+		this.set(ENCODING_KEY, encoding);
 	}
 
 	/**
@@ -630,7 +715,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return encoding
 	 */
 	public String getEncoding() {
-		String encoding = (String) this.get("encoding");
+		String encoding = (String) this.get(ENCODING_KEY);
 		if (encoding != null && !encoding.equals("")) {
 			return encoding;
 		} else {
@@ -645,7 +730,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @param contentid
 	 */
 	public void setContentid(final String contentid) {
-		this.set("contentid", contentid);
+		this.set(CONTENTID_KEY, contentid);
 	}
 
 	/**
@@ -655,7 +740,7 @@ public class CRRequest implements Cloneable, Serializable {
 	 * @return contentid
 	 */
 	public String getContentid() {
-		return (String) this.get("contentid");
+		return (String) this.get(CONTENTID_KEY);
 	}
 
 	/**
@@ -723,6 +808,10 @@ public class CRRequest implements Cloneable, Serializable {
             }
             return value;
 	}
+        
+        public Set<String> getParameterKeys() {
+            return params.keySet();
+        }
 
 	/**
 	 * @return hashcode of the current CRRequest.

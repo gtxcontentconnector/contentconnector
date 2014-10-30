@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
@@ -23,12 +22,31 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * based on com.gentics.cr.http.HTTPClientRequestProcessor.
  */
 public abstract class AbstractHTTPClientRequestProcessor extends RequestProcessor {
-
+        
+        protected static final String REQUEST_FILTER_KEY = "filter";
+        protected static final String REQUEST_ATTRIBUTES_KEY = "attributes";
+        protected static final String REQUEST_TYPE_KEY = "type";
+        protected static final String REQUEST_TYPE_VALUE_JAVA_BIN = "JavaBIN";
+        /** 
+         * List of attributes this RequestProcessor sets per default on each url request. 
+         */
+        protected static final List<String> DEFAULT_URL_ATTRIBUTES = Arrays.asList(new String []{
+            REQUEST_FILTER_KEY,
+            REQUEST_ATTRIBUTES_KEY,
+            REQUEST_TYPE_KEY,
+            CRRequest.COUNT_KEY,
+            CRRequest.START_KEY,
+            CRRequest.SORTING_KEY,
+            RequestProcessor.META_RESOLVABLE_KEY,
+            RequestProcessor.HIGHLIGHT_QUERY_KEY
+        });
 	private static Logger log = Logger.getLogger(AbstractHTTPClientRequestProcessor.class);
 	protected String name = null;
 
@@ -96,7 +114,7 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
 				log.error("Request failed: " + method.getStatusLine());
 			}
 
-			Collection<CRResolvableBean> result = new Vector<CRResolvableBean>();
+			Collection<CRResolvableBean> result = new ArrayList<>();
 			ObjectInputStream objstream = new ObjectInputStream(method.getResponseBodyAsStream());
 			Object responseObject;
 			try {
@@ -140,16 +158,32 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
 
 	protected String buildGetUrlString(CRRequest request) {
 		GetUrlBuilder urlBuilder = new GetUrlBuilder(this.path);
-
-		urlBuilder.append("filter", request.getRequestFilter());
-		urlBuilder.appendArray("attributes", request.getAttributeArray());
-		urlBuilder.append(request, "count");
-		urlBuilder.append(request, "start");
-		urlBuilder.appendArray("sorting", request.getSortArray());
-		urlBuilder.appendSkipFalse(request, RequestProcessor.META_RESOLVABLE_KEY);
-		urlBuilder.appendSkipNull(request, RequestProcessor.HIGHLIGHT_QUERY_KEY);
-		urlBuilder.append("type", "JavaBIN");
-
+                // set the default url parameters
+                for(String key : DEFAULT_URL_ATTRIBUTES) {
+                    switch (key) {
+                        case REQUEST_FILTER_KEY:
+                            urlBuilder.append(key, request.getRequestFilter());
+                            break;
+                        case REQUEST_ATTRIBUTES_KEY:
+                            urlBuilder.appendArray(key, request.getAttributeArray());
+                            break;
+                        case CRRequest.SORTING_KEY:
+                            urlBuilder.appendArray(key, request.getSortArray());
+                            break;
+                        case RequestProcessor.META_RESOLVABLE_KEY:
+                            urlBuilder.appendSkipFalse(request, key);
+                            break;
+                        case RequestProcessor.HIGHLIGHT_QUERY_KEY:
+                            urlBuilder.appendSkipNull(request, key);
+                            break;
+                        case REQUEST_TYPE_KEY: 
+                            urlBuilder.append(key, REQUEST_TYPE_VALUE_JAVA_BIN);
+                            break;
+                        default:
+                            urlBuilder.append(request, key);
+                            break;
+                    }
+                }
 		appendCustomGetParam(urlBuilder, request);
 
 		return urlBuilder.toString();
