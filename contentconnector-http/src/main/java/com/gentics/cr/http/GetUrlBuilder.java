@@ -72,7 +72,37 @@ public class GetUrlBuilder {
 		appendSkipFalse(key, req.get(key));
 		return this;
 	}
-
+        /**
+         * Appends a parameter to the url, only if the object is not an empty
+         * string. (To test if the object is an empty string the values to string
+         * method is called and the returned string is trimmed)
+         * 
+         * @param req the CRRequest that contains the parameter
+         * @param key the key with which the parameter value was stored
+         * @return the object it was called on
+         */
+        public GetUrlBuilder appendSkipEmpty(CRRequest req, String key) {
+		appendSkipEmpty(key, req.get(key));
+		return this;
+	}
+        /**
+         * Appends a parameter to the url, only if the object is not an empty
+         * string. (To test if the object is an empty string the values toString
+         * method is called and the returned string is trimmed)
+         * 
+         * @param key the key with which the parameter value was stored
+         * @param value the value to be used in the request
+         * @return the object it was called on
+         */
+        public GetUrlBuilder appendSkipEmpty(String key, Object value) {
+		if (value != null) {
+                    String stringValue = value.toString().trim();
+                    if(!stringValue.isEmpty()) {
+                        append(key, value);
+                    }
+		}
+		return this;
+	}
 	public GetUrlBuilder appendArray(String key, String[] valueArray) {
 		if (valueArray != null) {
 			for (String value : valueArray) {

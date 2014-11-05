@@ -1,0 +1,1 @@
+In some cases the new lucene LanguageFallbackSortingTopDocsCollector ignored the fallbackpriority parameter. This has been fixed, the request parameter "languagefallbackpriority" will now be used regardless if the request was created via the Java API or the REST API.
