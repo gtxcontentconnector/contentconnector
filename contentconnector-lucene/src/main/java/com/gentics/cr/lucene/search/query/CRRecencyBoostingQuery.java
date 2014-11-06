@@ -8,7 +8,7 @@ import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.queries.CustomScoreProvider;
 import org.apache.lucene.queries.CustomScoreQuery;
 import org.apache.lucene.search.FieldCache;
-import org.apache.lucene.search.FieldCache.Ints;
+import org.apache.lucene.search.FieldCache.Longs;
 import org.apache.lucene.search.Query;
 
 /**
@@ -78,7 +78,7 @@ public class CRRecencyBoostingQuery extends CustomScoreQuery {
 		/**
 		 * Array of the actual fields in the entry
 		 */
-		private final Ints publishDay;
+		private final Longs publishDay;
 		
 		/**
 		 * Initialize the RecencyBooster for the above class with the IndexReader
@@ -87,7 +87,7 @@ public class CRRecencyBoostingQuery extends CustomScoreQuery {
 		 */
 		public RecencyBooster(AtomicReader r) throws IOException {
 			super(r.getContext());
-			publishDay = FieldCache.DEFAULT.getInts(r, timestampField, false);
+			publishDay = FieldCache.DEFAULT.getLongs(r, timestampField, false);
 		}
 
 		/**
