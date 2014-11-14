@@ -150,6 +150,9 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 	public Collection<CRResolvableBean> suggestWords(CRRequest request) throws IOException {
 		ArrayList<CRResolvableBean> result = new ArrayList<CRResolvableBean>();
 		String term = request.getRequestFilter();
+		if (term == null || term.isEmpty()) {
+			return result;
+		}
 		// get the top 5 terms for query
 
 		if (autocompletereopenupdate || useAutocompleteIndexExtension) {
