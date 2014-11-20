@@ -78,7 +78,7 @@ public class CRRecencyBoostingQuery extends CustomScoreQuery {
 		/**
 		 * Array of the actual fields in the entry
 		 */
-		private final int[] publishDay;
+		private final long[] publishDay;
 		
 		/**
 		 * Initialize the RecencyBooster for the above class with the IndexReader
@@ -87,7 +87,7 @@ public class CRRecencyBoostingQuery extends CustomScoreQuery {
 		 */
 		public RecencyBooster(IndexReader r) throws IOException {
 			super(r);
-			publishDay = FieldCache.DEFAULT.getInts(r, timestampField);
+			publishDay = FieldCache.DEFAULT.getLongs(r, timestampField);
 		}
 
 		/**
