@@ -7,7 +7,7 @@
 }
 
 #header {
-	background: #77afd4 url(../images/guide-bg.jpg) no-repeat top right;
+	background: #0096DC;
 }
 
 #header .nav .index, #header .nav .index a, #guides {
@@ -51,3 +51,4 @@ hr {
 a, #subCol .chapters a, #mainCol a, #subCol a, #feature a {
 	color: #77afd4;
 }
+
