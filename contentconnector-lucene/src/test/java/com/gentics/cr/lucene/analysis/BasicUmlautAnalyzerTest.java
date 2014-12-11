@@ -1,15 +1,19 @@
 package com.gentics.cr.lucene.analysis;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.BaseTokenStreamTestCase;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Test;
 
-public class BasicUmlautAnalyzerTest {
+public class BasicUmlautAnalyzerTest extends BaseTokenStreamTestCase{
+	
+	static {
+        //static block gets inherited too
+        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+    }
+	
 	
 	@Test
 	public void testSimpleSentence() throws IOException {
@@ -47,10 +51,6 @@ public class BasicUmlautAnalyzerTest {
 		testToken("ößäü", new String[]{"oeszaeue"});
 	}
 	
-	@Test
-	public void testSpecial3() throws IOException {
-		testToken("", new String[]{""});
-	}
 	
 	@Test
 	public void testSpecial4() throws IOException {
@@ -71,16 +71,28 @@ public class BasicUmlautAnalyzerTest {
 		Analyzer a = new BasicUmlautAnalyzer();
 		
 		TokenStream tokenStream = a.tokenStream("test", in);
-		CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-		tokenStream.reset();
-		for (String ex : expected) {
-			tokenStream.incrementToken();
-			String t1 = charTermAttribute.toString();
-			assertEquals("Token did not match!", ex, t1);
-		}
+		assertTokenStreamContents(tokenStream, expected);
 		tokenStream.end();
 		tokenStream.close();
 		a.close();
 	}
+	
+	@Test
+	public void testReuse() throws IOException {
+		Analyzer a = new BasicUmlautAnalyzer();
+		
+		TokenStream tokenStream = a.tokenStream("test", "ößäü");
+		assertTokenStreamContents(tokenStream, new String[]{"oeszaeue"});
+		tokenStream.end();
+		tokenStream.close();
+		
+		TokenStream tokenStream1 = a.tokenStream("test", "testing äöa");
+		assertTokenStreamContents(tokenStream1, new String[]{"testing", "aeoea"});
+		tokenStream1.end();
+		tokenStream1.close();
+		
+		a.close();
+	}
+	
 	
 }

@@ -1,17 +1,20 @@
 package com.gentics.cr.lucene.analysis;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.BaseTokenStreamTestCase;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Test;
 
 import com.gentics.cr.configuration.GenericConfiguration;
 
-public class CustomPatternAnalyzerTest {
+public class CustomPatternAnalyzerTest extends BaseTokenStreamTestCase{
+	
+	static {
+        //static block gets inherited too
+        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+    }
 	
 	@Test
 	public void testLowercaseFalse() throws IOException {
@@ -21,7 +24,7 @@ public class CustomPatternAnalyzerTest {
 		Analyzer a = new CustomPatternAnalyzer(config);
 	
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"Text","Whitespaces"});
+		assertTokenStreamContents(tokenStream, new String[]{"Text","Whitespaces"});
 		
 		
 	}
@@ -34,7 +37,7 @@ public class CustomPatternAnalyzerTest {
 		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
 		
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
+		assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
 		
 		
 	}
@@ -46,8 +49,42 @@ public class CustomPatternAnalyzerTest {
 		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
 		
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
+		assertTokenStreamContents(tokenStream, new String[]{"text","whitespaces"});
 		
+		
+	}
+	
+	@Test
+	public void testCustomLowercaseSetting() throws IOException {
+		GenericConfiguration config = new GenericConfiguration();
+		config.set("pattern", "[;]+");
+		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
+		
+		TokenStream stream = a.tokenStream("test", "this is;a Text;with Whitespaces");
+		
+		assertTokenStreamContents(stream, new String[] {
+	    	  "this is","a text","with whitespaces"
+	    });
+		
+		TokenStream tokenStream1 = a.tokenStream("test", "this hugo;a Text;with fafa");
+		assertTokenStreamContents(tokenStream1, new String[]{
+				"this hugo","a text","with fafa"}
+		);
+		
+		//a = new CustomPatternAnalyzer(config);
+		//TokenStream tokenStream1 = a.tokenStream("test", "this hugo;a Text;with fafa");
+		//BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream1, new String[]{"this hugo","a text","with fafa"});
+		
+		/*
+		assertTokenStreamContents(
+		      myKeywordAnalyzer.tokenStream("my_keyword_field", new StringReader("ISO8859-1 and all that jazz")), new String[] {
+		      "ISO8859-1 and all that jazz"
+		   });
+		 
+		   assertAnalyzesTo(myKeywordAnalyzer, "ISO8859-1 and all that jazz", new String[] {
+		      "ISO8859-1 and all that jazz" // a single token output as expected from the KeywordAnalyzer
+		   });
+		  */
 		
 	}
 }

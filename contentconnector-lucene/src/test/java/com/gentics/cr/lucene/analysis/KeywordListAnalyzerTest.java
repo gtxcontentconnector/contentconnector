@@ -3,6 +3,7 @@ package com.gentics.cr.lucene.analysis;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.BaseTokenStreamTestCase;
 import org.apache.lucene.analysis.TokenStream;
 import org.junit.Test;
 /**
@@ -10,9 +11,12 @@ import org.junit.Test;
  * @author christopher
  *
  */
-public class KeywordListAnalyzerTest {
+public class KeywordListAnalyzerTest extends BaseTokenStreamTestCase{
 	
-	
+	static {
+        //static block gets inherited too
+        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+    }
 	/**
 	 * Test for a single Token / single Line.
 	 * @throws IOException
@@ -21,7 +25,7 @@ public class KeywordListAnalyzerTest {
 	public void testSingleToken() throws IOException {
 		Analyzer a = new KeywordListAnalyzer();
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text with Whitespaces");
-		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"this is a Text with Whitespaces"});
+		assertTokenStreamContents(tokenStream, new String[]{"this is a Text with Whitespaces"});
 		tokenStream.close();
 	}
 	
@@ -33,7 +37,7 @@ public class KeywordListAnalyzerTest {
 	public void testTokenList() throws IOException {
 		Analyzer a = new KeywordListAnalyzer();
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text\n with Whitespaces");
-		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"this is a Text"," with Whitespaces"});
+		assertTokenStreamContents(tokenStream, new String[]{"this is a Text"," with Whitespaces"});
 		tokenStream.close();
 	}
 	
@@ -45,10 +49,11 @@ public class KeywordListAnalyzerTest {
 	public void testreUseAnalyzerTokenList() throws IOException {
 		Analyzer a = new KeywordListAnalyzer();
 		TokenStream tokenStream = a.tokenStream("test", "this is a Text\n with Whitespaces");
-		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"this is a Text"," with Whitespaces"});
+		assertTokenStreamContents(tokenStream, new String[]{"this is a Text"," with Whitespaces"});
 		tokenStream.close();
+		
 		tokenStream = a.tokenStream("test", "this be a Text\n with Whitespaces");
-		BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream, new String[]{"this be a Text"," with Whitespaces"});
+		assertTokenStreamContents(tokenStream, new String[]{"this be a Text"," with Whitespaces"});
 		tokenStream.close();
 	}
 	
