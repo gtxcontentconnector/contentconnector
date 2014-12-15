@@ -70,21 +70,5 @@ public class CustomPatternAnalyzerTest extends BaseTokenStreamTestCase{
 		assertTokenStreamContents(tokenStream1, new String[]{
 				"this hugo","a text","with fafa"}
 		);
-		
-		//a = new CustomPatternAnalyzer(config);
-		//TokenStream tokenStream1 = a.tokenStream("test", "this hugo;a Text;with fafa");
-		//BasicAnalyzerTestHelper.assertTokenStreamContents(tokenStream1, new String[]{"this hugo","a text","with fafa"});
-		
-		/*
-		assertTokenStreamContents(
-		      myKeywordAnalyzer.tokenStream("my_keyword_field", new StringReader("ISO8859-1 and all that jazz")), new String[] {
-		      "ISO8859-1 and all that jazz"
-		   });
-		 
-		   assertAnalyzesTo(myKeywordAnalyzer, "ISO8859-1 and all that jazz", new String[] {
-		      "ISO8859-1 and all that jazz" // a single token output as expected from the KeywordAnalyzer
-		   });
-		  */
-		
 	}
 }
