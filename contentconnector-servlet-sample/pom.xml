@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.17.1-SNAPSHOT</version>
+		<version>1.17.1</version>
 	</parent>
 	<artifactId>contentconnector-servlet-sample</artifactId>
 	<packaging>war</packaging>
