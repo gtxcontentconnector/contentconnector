@@ -1,1 +1,1 @@
-Fixed a bug in lucene analyzer, that analyzer can handle more than one string. Analyzer must get reset before using it.
+CustomPatternAnalyzer would stop working after processing the first string.
