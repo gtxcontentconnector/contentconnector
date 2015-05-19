@@ -1,7 +1,9 @@
 package com.gentics.cr.lucene.indexaccessor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +12,15 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
@@ -180,4 +186,51 @@ public class DefaultIndexAccessorTest {
 		assertEquals(accessor.readingReadersOut(), 0);
 	}
 
+	@Test(expected=AlreadyClosedException.class)
+	public void testChangeWhileSearcherInUse() throws IOException {
+		factory.createAccessor(ramdir, analyzer);
+		IndexAccessor accessor = factory.getAccessor(ramdir);
+
+		// get and release a searcher (so that it is cached)
+		IndexSearcher usedSearcher = accessor.getSearcher();
+
+		// change the index by adding a new document
+		IndexWriter writer = accessor.getWriter();
+		writer.addDocument(new Document());
+		writer.commit();
+		accessor.release(writer);
+
+		IndexSearcher searcher = accessor.getSearcher();
+		assertTrue("Searcher instances should be the same", usedSearcher == searcher);
+
+		// get a prioritized searcher. This will close the indexReader in the other searcher
+		accessor.getPrioritizedSearcher();
+
+		// use the searcher, which is expected to fail (indexReader was closed)
+		searcher.search(new TermQuery(new Term("id", "one")), 1);
+	}
+
+	@Test
+	public void testChangeWhilePrioSearcherInUse() throws IOException {
+		factory.createAccessor(ramdir, analyzer);
+		IndexAccessor accessor = factory.getAccessor(ramdir);
+
+		// get and release a searcher (so that it is cached)
+		IndexSearcher usedSearcher = accessor.getSearcher();
+
+		// change the index by adding a new document
+		IndexWriter writer = accessor.getWriter();
+		writer.addDocument(new Document());
+		writer.commit();
+		accessor.release(writer);
+
+		IndexSearcher searcher = accessor.getPrioritizedSearcher();
+		assertFalse("Should get a new searcher instance", usedSearcher == searcher);
+
+		// get a prioritized searcher. This will close the indexReader in the other searcher
+		accessor.getPrioritizedSearcher();
+
+		// use the searcher, which is expected to fail (indexReader was closed)
+		searcher.search(new TermQuery(new Term("id", "one")), 1);
+	}
 }
