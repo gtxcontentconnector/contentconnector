@@ -1,0 +1,4 @@
+Search queries containing the characters '&', '|' or '~' returned unexpected results when
+using the CRQueryParser and inherited classes because those characters where always 
+replaced with 'AND', 'OR' and 'NOT'. This has been fixed: if those characters are 
+escaped (using backslash '\') they won't be replaced anymore.
