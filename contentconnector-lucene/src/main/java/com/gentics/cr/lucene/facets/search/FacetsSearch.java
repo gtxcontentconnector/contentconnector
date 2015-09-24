@@ -84,7 +84,11 @@ public class FacetsSearch implements FacetsSearchConfigKeys {
 		    FacetsConfig config = new FacetsConfig();
 		    
 			int i = 0;
-		    Collection<TaxonomyMapping> mappings = taAccessor.getTaxonomyMappings();
+			Collection<TaxonomyMapping> mappings = taAccessor.getTaxonomyMappings();
+			if (mappings == null || mappings.size() == 0) {
+				log.warn("Facet search is activated, but no facet results will be available "
+						+ "in response because mapping in facetconfig is missing");
+			}
 			for (TaxonomyMapping mapping:mappings) {
 				config.setIndexFieldName(mapping.getCategory(), mapping.getAttribute());
 				Facets tFacet = new FastTaxonomyFacetCounts(mapping.getAttribute(),taReader,config,facetsCollector);
