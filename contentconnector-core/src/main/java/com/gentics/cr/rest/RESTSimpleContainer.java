@@ -15,6 +15,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.ContentRepositoryConfig;
 import com.gentics.cr.util.response.IResponseTypeSetter;
@@ -139,7 +140,11 @@ public class RESTSimpleContainer {
 			//CRException is passed down from methods that want to post
 			//the occured error to the client
 			cr.respondWithError((OutputStream) stream, ex, debug);
-			LOG.error(ex.getMessage(), ex);
+			if (ex.getErrorType() == ERRORTYPE.NO_DATA_FOUND) {
+				LOG.info(ex.getMessage(), ex);
+			} else {
+				LOG.error(ex.getMessage(), ex);
+			}
 		} catch (Exception ex) {
 			CRException crex = new CRException(ex);
 			LOG.error("Exception occured", crex);
