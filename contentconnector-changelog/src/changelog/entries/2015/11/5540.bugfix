@@ -1,0 +1,2 @@
+add missing StaticFacetCategoryTransformer class. It is used
+as a transformer to set a static value for an attribute.
