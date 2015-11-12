@@ -73,9 +73,9 @@ public class AutocompleteTest {
 	@Test
 	public void testSingleAutocomplete() throws CRException, IOException {
             HashMap<String, Integer> shouldContain = new HashMap<String, Integer>();
-            shouldContain.put("audi", 1);
+            shouldContain.put("saab", 1);
 
-            Collection<CRResolvableBean> objects = retrieveSuggestions("a");
+            Collection<CRResolvableBean> objects = retrieveSuggestions("sa");
             checkResolveableCollection(objects, 1, shouldContain);
 	}
 	
@@ -89,6 +89,19 @@ public class AutocompleteTest {
             checkResolveableCollection(objects, 2, shouldContain);
 	}
         
+	@Test
+	public void testLowerCaseAndStopwords() throws CRException, IOException {
+		HashMap<String, Integer> shouldContain = new HashMap<String, Integer>();
+		shouldContain.put("audi", 1);
+
+		//test lower case filter
+		Collection<CRResolvableBean> objects = retrieveSuggestions("AU");
+		checkResolveableCollection(objects, 1, shouldContain);
+
+		//test stopword list ("a" is in the stopwords)
+		objects = retrieveSuggestions("a");
+		Assert.assertEquals(0, objects.size());
+	}
         
         /**
          * Tests if the search term is parsed correctly and if words containing

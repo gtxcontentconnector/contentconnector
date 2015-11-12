@@ -36,7 +36,7 @@ public final class AutocompleteAnalyzer extends Analyzer {
 		Tokenizer result = new StandardTokenizer(LuceneVersion.getVersion(), reader);
 		TokenFilter filter = new StandardFilter(LuceneVersion.getVersion(), result);
 		filter = new LowerCaseFilter(LuceneVersion.getVersion(), filter);
-		filter = new ASCIIFoldingFilter(result);
+		filter = new ASCIIFoldingFilter(filter);
 		filter = new StopFilter(LuceneVersion.getVersion(),filter, ENGLISH_STOP_WORDS);
 		filter = new EdgeNGramTokenFilter(LuceneVersion.getVersion(), filter, EdgeNGramTokenFilter.Side.FRONT, 1, 20);
 		return new TokenStreamComponents(result, filter);
