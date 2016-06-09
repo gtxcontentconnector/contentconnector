@@ -64,4 +64,3 @@ jcs.region.gentics-cr-velocitytemplates.cacheattributes.MaxObjects=100
 # jcs.auxiliary.DC.attributes=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes
 # jcs.auxiliary.DC.attributes.DiskPath=${java.io.tmpdir}/jcs
 
-#com.gentics.cr.useportalcaches=true

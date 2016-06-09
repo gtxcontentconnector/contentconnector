@@ -164,18 +164,9 @@ public class CRUtil {
 	}
 
 	/**
-	 * FIXME copied from com.gentics.lib.etc.StringUtils - move it to API ?
-	 * Resolve system properties encoded in the string as ${property.name}
-	 * @param string string holding encoded system properties
-	 * @return string with the system properties resolved
+	 * Normalizes the portalnode confpath.(Expands "file:// " and "classpath://" urls to absolute file system paths)
 	 */
-	public static String resolveSystemProperties(final String string) {
-		// avoid NPE here
-		if (string == null) {
-			return null;
-		} else if (string.startsWith(DONOTRESOLVE_MARKER)) {
-			return string.replaceAll("^" + DONOTRESOLVE_MARKER, "");
-		}
+	public static void normalizeConfpath() {
 		String confpath = System.getProperty(PORTALNODE_CONFPATH);
 		//init com.gentics.portalnode.confpath if it isn't set
 		if (confpath == null || confpath.equals("")) {
@@ -187,7 +178,7 @@ public class CRUtil {
 			try {
 				confFile = new File(new URI(confpath));
 			} catch (URISyntaxException e) {
-				String message = "Could not convert PORTALNODE_CONFPATH (" + confpath + ") to an absolutePath"; 
+				String message = "Could not convert PORTALNODE_CONFPATH (" + confpath + ") to an absolutePath";
 				LOGGER.error(message, e);
 				throw new ConfpathConfigurationException(message, e);
 			}
@@ -207,6 +198,23 @@ public class CRUtil {
 			}
 			System.setProperty(PORTALNODE_CONFPATH, confFile.getAbsolutePath());
 		}
+	}
+
+	/**
+	 * FIXME copied from com.gentics.lib.etc.StringUtils - move it to API ?
+	 * Resolve system properties encoded in the string as ${property.name}
+	 * @param string string holding encoded system properties
+	 * @return string with the system properties resolved
+	 */
+	public static String resolveSystemProperties(final String string) {
+		// avoid NPE here
+		if (string == null) {
+			return null;
+		} else if (string.startsWith(DONOTRESOLVE_MARKER)) {
+			return string.replaceAll("^" + DONOTRESOLVE_MARKER, "");
+		}
+		// ensure that the confpath system property is normalized before resolving system properties
+		normalizeConfpath();
 		String result = CRUtilResolver.resolveSystemProperties(string);
 		result = CRUtilResolver.resolveContentConnectorProperties(result);
 		return result;

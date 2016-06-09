@@ -44,23 +44,6 @@ public final class EnvironmentConfiguration {
 	private static String loggerFallbackPath = "defaultconfiguration/nodelog.properties";
 
 	/**
-	 * Path to the jcs configuration file.
-	 */
-	private static String cacheFilePath = configurationPath + "/cache.ccf";
-	
-	/**
-	 * Path to the fallback jcs configuration file.
-	 */
-	private static String cacheFallbackPath = "defaultconfiguration/cache.ccf";
-	
-
-	/**
-	 * Configuration key if we should use the same caches as Gentics
-	 * Portal.Node.
-	 */
-	private static final String USE_PORTAL_CACHE_KEY = "com.gentics.cr.useportalcaches";
-
-	/**
 	 * Default log4j logger.
 	 */
 	private static Logger log;
@@ -103,7 +86,7 @@ public final class EnvironmentConfiguration {
 	 */
 	public static void loadEnvironmentProperties() {
 		loadLoggerProperties();
-		loadCacheProperties();
+		CRUtil.normalizeConfpath();
 	}
 
 	/**
@@ -170,70 +153,6 @@ public final class EnvironmentConfiguration {
 	}
 
 	/**
-	 * Load Property file for JCS cache.
-	 */
-	public static void loadCacheProperties() {
-		String confpath = CRUtil.resolveSystemProperties(cacheFilePath);
-		StringBuilder errorMessage = new StringBuilder("Could not load cache configuration. Perhaps you are missing the file cache.ccf in ")
-				.append(confpath).append("!");
-		logDebug("Loading cache configuration from " + confpath);
-		try {
-			InputStream stream = new FileInputStream(confpath);
-			loadCacheProperties(stream);
-		} catch (NullPointerException e) {
-			if (!cacheInitFailed) {
-				logError(errorMessage.toString());
-				cacheInitFailed = true;
-			}
-			loadCacheFallbackProperties();
-		} catch (FileNotFoundException e) {
-			if (!cacheInitFailed) {
-				logError(errorMessage.toString());
-				cacheInitFailed = true;
-			}
-			loadCacheFallbackProperties();
-		} catch (IOException e) {
-			if (!cacheInitFailed) {
-				logError(errorMessage.toString());
-				cacheInitFailed = true;
-			}
-			loadCacheFallbackProperties();
-		}
-	}
-	
-	/**
-	 * Load cache fallback.
-	 */
-	private static void loadCacheFallbackProperties() {
-		InputStream stream = EnvironmentConfiguration.class.getResourceAsStream(cacheFallbackPath);
-		try {
-			loadCacheProperties(stream);
-			cacheInitFallback = true;
-			log.debug("Loaded cache fallback configuration");
-		} catch (IOException e) {
-			System.out.println("Could not load cache fallback configuration.");
-		}
-	}
-
-	/**
-	 * Load cache configuration from an InputStream.
-	 * @param is
-	 * @throws IOException
-	 */
-	private static void loadCacheProperties(InputStream is)
-			throws IOException{
-		//LOAD CACHE CONFIGURATION
-		Properties cacheProps = new Properties();
-		cacheProps.load(is);
-		if (cacheProps.containsKey(USE_PORTAL_CACHE_KEY) && Boolean.parseBoolean(cacheProps.getProperty(USE_PORTAL_CACHE_KEY))) {
-			logDebug("Will not initialize ContentConnector Cache - Using the " + "cache configured by portalnode instead.");
-		} else {
-			CompositeCacheManager cManager = CompositeCacheManager.getUnconfiguredInstance();
-			cManager.configure(cacheProps);
-		}
-	}
-
-	/**
 	 * detect if log4j was initialized properly.
 	 * @return true if we got an log4j logger false otherwise
 	 */
@@ -295,7 +214,6 @@ public final class EnvironmentConfiguration {
 		configurationPath = configLocation;
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, configLocation);
 		loggerFilePath = configurationPath + "/nodelog.properties";
-		cacheFilePath = configurationPath + "/cache.ccf";
 	}
 
 	/**
@@ -303,34 +221,5 @@ public final class EnvironmentConfiguration {
 	 */
 	public static String getConfigPath() {
 		return configurationPath;
-	}
-
-	/**
-	 * @return the current cache file path.
-	 */
-	public static String getCacheFilePath() {
-		return cacheFilePath;
-	}
-
-	/**
-	 * set a new cache file path where the jcs cache.ccf is located.
-	 * @param newCacheFilePath - path for the jcs cache configuration file
-	 */
-	public static void setCacheFilePath(final String newCacheFilePath) {
-		cacheFilePath = newCacheFilePath;
-	}
-	
-	/**
-	 * @return <code>true</code> if the cache init has not (yet) failed, otherwhise false.
-	 */
-	public static boolean getCacheState() {
-		return !cacheInitFailed;
-	}
-	
-	/**
-	 * @return <code>true</code> if the cache init has failed and we loaded the default/fallback configuration.
-	 */
-	public static boolean isCacheFallbackLoaded() {
-		return cacheInitFallback;
 	}
 }

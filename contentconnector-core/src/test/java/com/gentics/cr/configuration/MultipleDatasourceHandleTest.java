@@ -30,10 +30,7 @@ public class MultipleDatasourceHandleTest {
 		confPath = new File(this.getClass().getResource("nodelog.properties")
 				.toURI()).getParentFile().getAbsolutePath();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
-		EnvironmentConfiguration.setCacheFilePath("${"
-				+ CRUtil.PORTALNODE_CONFPATH + "}/cache.ccf");
 		EnvironmentConfiguration.loadLoggerProperties();
-		EnvironmentConfiguration.loadCacheProperties();
 	}
 
 	@Test
