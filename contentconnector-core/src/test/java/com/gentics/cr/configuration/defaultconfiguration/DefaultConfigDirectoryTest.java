@@ -15,6 +15,5 @@ public class DefaultConfigDirectoryTest {
 		DefaultConfigDirectory.useThis();
 		EnvironmentConfiguration.loadLoggerProperties();
 		assertTrue("Logger initialization has failed.", EnvironmentConfiguration.isLoggerFallbackLoaded() || EnvironmentConfiguration.getLoggerState());
-		assertTrue("Cache initialization has failed.", EnvironmentConfiguration.isCacheFallbackLoaded() || EnvironmentConfiguration.getCacheState());
 	}
 }

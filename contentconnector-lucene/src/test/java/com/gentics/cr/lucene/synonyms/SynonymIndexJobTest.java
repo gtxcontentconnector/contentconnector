@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.gentics.cr.CRConfig;
@@ -29,14 +30,11 @@ public class SynonymIndexJobTest {
 	private IndexLocation singleLoc1;
 	private CRConfig config2;
 
-	@Before
-	public void setup() throws URISyntaxException {
-		String confPath = null;
-		confPath = new File(this.getClass().getResource("indexer.properties").toURI()).getParentFile().getAbsolutePath();
-		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
-		EnvironmentConfiguration.setCacheFilePath("${" + CRUtil.PORTALNODE_CONFPATH + "}/cache.ccf");
-		EnvironmentConfiguration.loadLoggerProperties();
-		EnvironmentConfiguration.loadCacheProperties();
+	@BeforeClass
+	public static void setup() throws URISyntaxException {
+		String confPath = new File(SynonymIndexJobTest.class.getResource("indexer.properties").toURI()).getParentFile().getAbsolutePath();
+		EnvironmentConfiguration.setConfigPath(confPath);
+		EnvironmentConfiguration.loadEnvironmentProperties();
 	}
 
 	@Before
