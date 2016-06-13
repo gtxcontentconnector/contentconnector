@@ -1,11 +1,10 @@
 package com.gentics.cr.rendering.image;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
-import org.apache.log4j.Logger;
-
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.lib.image.GenticsImageResizer;
+import org.apache.log4j.Logger;
 
 /**
  * Image resizer class.
@@ -53,19 +52,18 @@ public final class ImageResizer {
 	/**
 	 * JCS cache instance.
 	 */
-	private static JCS imageCache;
+	private static PortalCache imageCache;
 
 	/**
 	 * Init the JCS Cache.
 	 * @return initialized cache
 	 */
-	private static JCS initCache() {
-		JCS cache = null;
+	private static PortalCache initCache() {
+		PortalCache cache = null;
 		try {
-
-			cache = JCS.getInstance(IMAGE_CACHE_REGION);
+			cache = PortalCache.getCache(IMAGE_CACHE_REGION);
 			log.debug("Using cache zone " + IMAGE_CACHE_REGION + " for image resizing");
-		} catch (final CacheException e) {
+		} catch (final PortalCacheException e) {
 			log.warn("Could not initialize Cache for PlinkProcessor.");
 		}
 		return cache;
@@ -144,13 +142,16 @@ public final class ImageResizer {
 				imageCache = initCache();
 			}
 			Object cacheObject = null;
-			cacheObject = imageCache.get(cacheKey);
+			try {
+				cacheObject = imageCache.get(cacheKey);
+			} catch (PortalCacheException e) {}
+
 			// if an object was found in the cache we'll use it
 			if (null == cacheObject) {
 				binary = resizeImage(bean, maxw, maxh);
 				try {
 					imageCache.put(cacheKey, binary);
-				} catch (final CacheException e) {
+				} catch (final PortalCacheException e) {
 					log.warn("could not put object into cache", e);
 				}
 			} else {

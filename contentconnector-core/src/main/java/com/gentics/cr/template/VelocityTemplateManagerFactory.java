@@ -1,5 +1,7 @@
 package com.gentics.cr.template;
 
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
 import com.gentics.cr.exceptions.CRException;
 
 import java.io.File;
@@ -8,8 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
@@ -49,7 +49,7 @@ public class VelocityTemplateManagerFactory {
 
 	private static boolean configured = false;
 
-	private static JCS cache;
+	private static PortalCache cache;
 	
 	/**
 	 * Get a configured VelocityTemplateManager.
@@ -134,11 +134,11 @@ public class VelocityTemplateManagerFactory {
 		}
 		if (cache == null) {
 		    try {
-			    cache = JCS.getInstance(VELOCITY_TEMPLATE_CACHEZONE_KEY);
+			    cache = PortalCache.getCache(VELOCITY_TEMPLATE_CACHEZONE_KEY);
 			    if (log.isDebugEnabled()) {
-				log.debug("Initialized cache zone for \"" + VELOCITY_TEMPLATE_CACHEZONE_KEY + "\".");
+					log.debug("Initialized cache zone for \"" + VELOCITY_TEMPLATE_CACHEZONE_KEY + "\".");
 			    }
-		    } catch (CacheException e) {
+		    } catch (PortalCacheException e) {
 			    log.warn("Could not initialize Cache for Velocity templates.", e);
 		    }
 		}
@@ -150,7 +150,10 @@ public class VelocityTemplateManagerFactory {
 		String cacheKey = null;
 		if (cache != null) {
 			cacheKey = VelocityTemplateManagerFactory.createCacheKey(name, source, encoding);
-			Object obj = cache.get(cacheKey);
+			Object obj = null;
+			try {
+				obj = cache.get(cacheKey);
+			} catch (PortalCacheException e) {}
 			// check if obj is really a template wrapper to avoid cast exceptions when two caches accidentally 
 			// use the same cache zone
 			if (obj instanceof VelocityTemplateWrapper) {
@@ -168,7 +171,10 @@ public class VelocityTemplateManagerFactory {
 				// recheck cache after entering the synchronized area. For threads
 				// that were waiting the cache may now be filled.
 				if (cache != null) {
-					Object obj = cache.get(cacheKey);
+					Object obj = null;
+					try {
+						obj = cache.get(cacheKey);
+					} catch (PortalCacheException e) {}
 					if (obj != null && obj instanceof VelocityTemplateWrapper) {
 					    wrapper = (VelocityTemplateWrapper) obj;
 					    if (source.equals(wrapper.getSource())) {
@@ -201,7 +207,7 @@ public class VelocityTemplateManagerFactory {
 				if (cache != null) {
 					try {
 						cache.put(cacheKey, wrapper);
-					} catch (CacheException e) {
+					} catch (PortalCacheException e) {
 						log.warn("Could not put Velocity Template to cache.", e);
 					}
 				}

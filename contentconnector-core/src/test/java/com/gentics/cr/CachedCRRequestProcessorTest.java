@@ -1,21 +1,19 @@
 package com.gentics.cr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.cr.exceptions.CRException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.jcs.JCS;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.gentics.api.lib.resolving.Resolvable;
-import com.gentics.cr.exceptions.CRException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class CachedCRRequestProcessorTest extends RequestProcessorTest {
 
@@ -86,11 +84,7 @@ public class CachedCRRequestProcessorTest extends RequestProcessorTest {
 		RequestProcessor processor = getRequestProcessor();
 		CRResolvableBean content = processor.getContent(request);
 		assertNotNull("Content should not be null.", content);
-		
-		JCS cache = processor.getCache();
-		
-		String regionName = cache.getStatistics().getRegionName();
-		assertEquals("Region name was not correct.","gentics-cr-" + configname + "-crcontent", regionName );
+		assertEquals("Region name was not correct.","gentics-cr-" + configname + "-crcontent", processor.getCacheRegionKey() );
 	}
 	
 	private void testAttributeArray(CRResolvableBean bean, String[] expectedAttributes) {

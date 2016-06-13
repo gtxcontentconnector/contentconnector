@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.jcs.JCS;
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -77,11 +76,7 @@ public abstract class AbsrtactSQLRequestProcessorTest extends RequestProcessorTe
 		RequestProcessor processor = getRequestProcessor();
 		CRResolvableBean content = processor.getContent(request);
 		assertNotNull("Content should not be null.", content);
-		
-		JCS cache = processor.getCache();
-		
-		String regionName = cache.getStatistics().getRegionName();
-		assertEquals("Region name was not correct.","gentics-cr-" + configname + "-crcontent", regionName );
+		assertEquals("Region name was not correct.","gentics-cr-" + configname + "-crcontent", processor.getCacheRegionKey());
 	}
 	
 	private void testAttributeArray(CRResolvableBean bean, String[] expectedAttributes) {
