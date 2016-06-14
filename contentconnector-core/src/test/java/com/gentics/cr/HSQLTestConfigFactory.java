@@ -1,6 +1,7 @@
 package com.gentics.cr;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.gentics.DefaultTestConfiguration;
@@ -20,7 +21,7 @@ public class HSQLTestConfigFactory {
 	 * @return
 	 * @throws URISyntaxException 
 	 */
-	public static final CRConfigUtil getDefaultHSQLConfiguration(Class testClazz) throws URISyntaxException {
+	public static final CRConfigUtil getDefaultHSQLConfiguration(Class testClazz) throws URISyntaxException, IOException {
 		return getDefaultHSQLConfiguration("mytestdatasource" + testClazz.toString());
 	}
 	
@@ -32,8 +33,8 @@ public class HSQLTestConfigFactory {
 	 * @return
 	 * @throws URISyntaxException 
 	 */
-	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName, boolean cache) throws URISyntaxException {
-		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").getFile()).getAbsolutePath());
+	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName, boolean cache) throws URISyntaxException, IOException {
+		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.getTempConfigDirectory().getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 
 		CRConfigUtil config = new CRConfigUtil();
@@ -68,7 +69,7 @@ public class HSQLTestConfigFactory {
 	 * @return
 	 * @throws URISyntaxException 
 	 */
-	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName) throws URISyntaxException {
+	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName) throws URISyntaxException, IOException {
 		return getDefaultHSQLConfiguration(dsName, false);
 	}
 

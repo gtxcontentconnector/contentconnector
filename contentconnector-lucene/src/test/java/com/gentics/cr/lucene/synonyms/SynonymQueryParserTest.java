@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.gentics.DefaultTestConfiguration;
 import junit.framework.Assert;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -39,8 +40,8 @@ public class SynonymQueryParserTest {
 	private CRConfig config2;
 
 	@BeforeClass
-	public static void setup() throws URISyntaxException {
-		String confPath = new File(SynonymQueryParserTest.class.getResource("indexer.properties").toURI()).getParentFile().getAbsolutePath();
+	public static void setup() throws URISyntaxException, IOException {
+		String confPath = DefaultTestConfiguration.getTempConfigDirectory().getAbsolutePath();
 		EnvironmentConfiguration.setConfigPath(confPath);
 		EnvironmentConfiguration.loadEnvironmentProperties();
 	}

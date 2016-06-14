@@ -70,6 +70,12 @@
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-core</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>com.gentics</groupId>
+            <artifactId>contentconnector-testutils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-servlet</artifactId>

@@ -1,6 +1,7 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import junit.framework.Assert;
@@ -16,8 +17,8 @@ import com.gentics.cr.util.CRUtil;
 public class AbstractTransformerTest {
 
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
-		EnvironmentConfiguration.setConfigPath(new File(DefaultTestConfiguration.class.getResource("conf/gentics").getFile()).getAbsolutePath());
+	public static void setUp() throws CRException, URISyntaxException, IOException {
+		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.getTempConfigDirectory().getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 	}
 	
