@@ -2,6 +2,7 @@ package com.gentics.cr;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.junit.BeforeClass;
@@ -14,7 +15,7 @@ public class StaticRPContainerTest{
 	private static CRConfigUtil config;
 
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws CRException, URISyntaxException, IOException {
 		config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(StaticRPContainerTest.class.getName(), true);
 		
 	}

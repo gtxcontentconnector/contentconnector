@@ -5,8 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.junit.After;
-import org.junit.AfterClass;
+import com.gentics.DefaultTestConfiguration;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,7 +17,6 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.configuration.GenericConfigurationFileLoader;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
-import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.indexing.IndexLocation;
 
 /**
@@ -33,8 +31,8 @@ public class SynonymIndexDeleteJobTest {
 	private CRConfig config2;
 
 	@BeforeClass
-	public static void setup() throws URISyntaxException {
-		String confPath = new File(SynonymIndexDeleteJobTest.class.getResource("indexer.properties").toURI()).getParentFile().getAbsolutePath();
+	public static void setup() throws URISyntaxException, IOException {
+		String confPath = DefaultTestConfiguration.createTempConfigDirectory().getAbsolutePath();
 		EnvironmentConfiguration.setConfigPath(confPath);
 		EnvironmentConfiguration.loadEnvironmentProperties();
 	}

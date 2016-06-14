@@ -1,5 +1,6 @@
 package com.gentics.cr;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.junit.BeforeClass;
@@ -11,7 +12,7 @@ public class PooledSQLRequestProcessorTest extends AbsrtactSQLRequestProcessorTe
 	private static RequestProcessor rp;
 	
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws CRException, URISyntaxException, IOException {
 		CRConfigUtil config = initConfigurationAndTest(PooledSQLRequestProcessorTest.class);
 		rp = new PooledSQLRequestProcessor(config.getRequestProcessorConfig(1));
 	}

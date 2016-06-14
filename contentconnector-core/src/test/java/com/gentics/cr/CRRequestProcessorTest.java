@@ -6,6 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ public class CRRequestProcessorTest extends RequestProcessorTest {
 	private static String [] attributes2 = {"filename", "category"};
 
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws CRException, URISyntaxException, IOException {
 		configname = CRRequestProcessorTest.class.getName() + ".RP.1";
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorTest.class.getName(), true);
 		requestProcessor = new CRRequestProcessor(config.getRequestProcessorConfig(1));

@@ -2,6 +2,7 @@ package com.gentics.cr;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,7 +25,7 @@ public class CMSPageLanguageFallbackRequestProcessorTest extends
 	private static String [] page_attributes = {"name", "content", "lang", "contentid_de", "contentid_en"};
 
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws CRException, URISyntaxException, IOException {
 
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CMSPageLanguageFallbackRequestProcessorTest.class.getName(), true);
 

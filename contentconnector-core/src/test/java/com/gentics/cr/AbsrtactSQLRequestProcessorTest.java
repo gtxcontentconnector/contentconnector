@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,7 +23,7 @@ public abstract class AbsrtactSQLRequestProcessorTest extends RequestProcessorTe
 	private static String configname;
 	
 
-	protected static CRConfigUtil initConfigurationAndTest(Class<? extends AbsrtactSQLRequestProcessorTest> clazz) throws CRException, URISyntaxException {
+	protected static CRConfigUtil initConfigurationAndTest(Class<? extends AbsrtactSQLRequestProcessorTest> clazz) throws CRException, URISyntaxException, IOException {
 		configname = clazz.getSimpleName() + ".RP.1";
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(clazz.getSimpleName(), true);
 
