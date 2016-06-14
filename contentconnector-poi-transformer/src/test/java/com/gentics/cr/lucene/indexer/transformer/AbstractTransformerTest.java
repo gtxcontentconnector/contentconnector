@@ -1,6 +1,5 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -18,7 +17,7 @@ public class AbstractTransformerTest {
 
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException, IOException {
-		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.getTempConfigDirectory().getAbsolutePath());
+		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.createTempConfigDirectory().getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 	}
 	

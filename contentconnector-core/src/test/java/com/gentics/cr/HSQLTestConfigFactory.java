@@ -1,6 +1,5 @@
 package com.gentics.cr;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -34,7 +33,7 @@ public class HSQLTestConfigFactory {
 	 * @throws URISyntaxException 
 	 */
 	public static final CRConfigUtil getDefaultHSQLConfiguration(String dsName, boolean cache) throws URISyntaxException, IOException {
-		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.getTempConfigDirectory().getAbsolutePath());
+		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.createTempConfigDirectory().getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 
 		CRConfigUtil config = new CRConfigUtil();

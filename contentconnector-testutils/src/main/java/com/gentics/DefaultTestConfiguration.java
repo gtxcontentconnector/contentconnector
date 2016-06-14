@@ -19,7 +19,7 @@ public class DefaultTestConfiguration {
 	 *
 	 * @return the temporary directory which will be removed after shutdown
 	 */
-	public static File getTempConfigDirectory() throws IOException {
+	public static File createTempConfigDirectory() throws IOException {
 		// create temp dir
 		final File tmpDir = Files.createTempDirectory(new File("./target").toPath(), "TestConfig").toAbsolutePath().toFile();
 		// create all necessary subfolders inside of it

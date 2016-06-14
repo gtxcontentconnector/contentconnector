@@ -1,7 +1,5 @@
 package com.gentics.cr.analytics.language.test;
 
-import java.io.File;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +20,7 @@ public class LanguageIdentifyerTest {
 
 	@Before
 	public void init() throws Exception {
-		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.getTempConfigDirectory().getAbsolutePath());
+		EnvironmentConfiguration.setConfigPath(DefaultTestConfiguration.createTempConfigDirectory().getAbsolutePath());
 		EnvironmentConfiguration.loadEnvironmentProperties();
 		bean = new CRResolvableBean();
 

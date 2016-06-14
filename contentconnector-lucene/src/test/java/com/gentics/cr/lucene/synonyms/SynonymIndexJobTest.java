@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.gentics.DefaultTestConfiguration;
-import com.gentics.cr.configuration.defaultconfiguration.DefaultConfigDirectory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,7 +17,6 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.configuration.GenericConfigurationFileLoader;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
-import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.indexing.IndexLocation;
 
 /**
@@ -34,7 +32,7 @@ public class SynonymIndexJobTest {
 
 	@BeforeClass
 	public static void setup() throws URISyntaxException, IOException {
-		String confPath = DefaultTestConfiguration.getTempConfigDirectory().getAbsolutePath();
+		String confPath = DefaultTestConfiguration.createTempConfigDirectory().getAbsolutePath();
 		EnvironmentConfiguration.setConfigPath(confPath);
 		EnvironmentConfiguration.loadEnvironmentProperties();
 	}
