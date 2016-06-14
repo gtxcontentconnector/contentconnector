@@ -39,6 +39,7 @@ public class DefaultTestConfiguration {
 				try {
 					FileUtils.deleteDirectory(tmpDir);
 				} catch (IOException e) {
+					// do nothing on exception since we are inside of the shutdown hook already
 					;
 				}
 			}
