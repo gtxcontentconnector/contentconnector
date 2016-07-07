@@ -1,0 +1,1 @@
+When using a collector in the result of a query with result type JSON, a ClassCastException was thrown, which has been fixed now.
