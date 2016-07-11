@@ -236,10 +236,13 @@ public class JSONContentRepository extends ContentRepository {
 			value = bValue.toString();
 		} else if (bValue instanceof Date) {
 			value = Long.toString(((Date) bValue).getTime());
-		} else {
+		} else if (bValue instanceof byte[]) {
 			byte[] bs = (byte[]) bValue;
 			value = new String(bs);
-
+		} else if (bValue != null) {
+			value = bValue.toString();
+		} else {
+			value = null;
 		}
 		return value;
 	}
