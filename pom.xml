@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gentics</groupId>
 	<artifactId>contentconnector</artifactId>
-	<version>2.0.9-SNAPSHOT</version>
+	<version>2.0.9</version>
 	<packaging>pom</packaging>
 	<name>contentconnector</name>
 	<properties>
@@ -17,7 +17,7 @@
 		<connection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</connection>
 		<developerConnection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</developerConnection>
 		<url>https://github.com/gtxcontentconnector/contentconnector</url>
-		<tag>HEAD</tag>
+		<tag>contentconnector-2.0.9</tag>
 	</scm>
 
 	<licenses>
