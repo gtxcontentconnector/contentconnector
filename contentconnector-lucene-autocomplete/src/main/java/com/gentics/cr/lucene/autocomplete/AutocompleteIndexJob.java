@@ -2,6 +2,7 @@ package com.gentics.cr.lucene.autocomplete;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -18,6 +19,7 @@ import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
+import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
@@ -67,33 +69,45 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 
 		IndexAccessor sia = source.getAccessor();
 		IndexReader sourceReader = sia.getReader();
-		LuceneDictionary dict = new LuceneDictionary(sourceReader, autocompletefield);
 		IndexAccessor aia = autocompleteLocation.getAccessor();
 		// IndexReader reader = aia.getReader(false);
 		IndexWriter writer = aia.getWriter();
+		
+		Map<String, Integer> wordsMap = new HashMap<String, Integer>();
+
+		//split autocompleteField by , to use more than one field for autocompletion
+		List<String> autocompletefields = IndexerUtil.getListFromString(autocompletefield, ",");
+	
 
 		try {
-			// go through every word, storing the original word (incl. n-grams)
-			// and the number of times it occurs
-			// CREATE WORD LIST FROM SOURCE INDEX
-			Map<String, Integer> wordsMap = new HashMap<String, Integer>();
-			InputIterator iter = dict.getEntryIterator();
-			
-			BytesRef ref = iter.next();
-			while (ref != null) {
-				String word = ref.utf8ToString();
-				int len = word.length();
-				if (len < 3) {
+			//go through every configured autocompleteField
+			for (String autoField : autocompletefields){				
+				// go through every word, storing the original word (incl. n-grams)
+				// and the number of times it occurs
+				// CREATE WORD LIST FROM SOURCE INDEX
+				
+				LuceneDictionary dict = new LuceneDictionary(sourceReader, autoField);			
+				InputIterator iter = dict.getEntryIterator();
+
+				BytesRef ref = iter.next();
+				while (ref != null) {
+					String word = ref.utf8ToString();
+					int len = word.length();
+					if (len < 3) {
+						ref = iter.next();
+						continue; // too short we bail but "too long" is fine...
+					}
+					
+					int wordCount = sourceReader.docFreq(new Term(autoField, word));
+					//if there is already an entry for this word, we add current count to existing cound
+					if (wordsMap.containsKey(word)) {
+						wordsMap.put(word,(wordsMap.get(word)+wordCount));
+					} else {
+						// use the number of documents this word appears in
+						wordsMap.put(word, wordCount);
+					}
 					ref = iter.next();
-					continue; // too short we bail but "too long" is fine...
 				}
-				if (wordsMap.containsKey(word)) {
-					throw new IllegalStateException("Lucene returned a bad word list");
-				} else {
-					// use the number of documents this word appears in
-					wordsMap.put(word, sourceReader.docFreq(new Term(autocompletefield, word)));
-				}
-				ref = iter.next();
 			}
 			// DELETE OLD OBJECTS FROM INDEX
 			writer.deleteAll();
