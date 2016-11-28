@@ -44,7 +44,8 @@ public class CSVRequestProcessor extends RequestProcessor {
 	/**
 	 * initialize a new {@link CSVRequestProcessor}
 	 * 
-	 * @param config - configuration of the request processor. Contains the separator value of the CSV data
+	 * @param config - configuration of the request processor
+	 * contains the path of CSV file and separator of the data
 	 * @throws CRException - if the config wasn't valid.
 	 */
 	public CSVRequestProcessor(CRConfig config) throws CRException {
@@ -76,9 +77,9 @@ public class CSVRequestProcessor extends RequestProcessor {
 
 			BufferedReader br = null;
 			String line;
-
-			String csvFile = config.getString("file");
-			String separator = config.getString("separator");
+			
+			String csvFile = config.getString("file");// name of csv file
+			String separator = config.getString("separator");// separator 
 
 			int count = 0;
 
