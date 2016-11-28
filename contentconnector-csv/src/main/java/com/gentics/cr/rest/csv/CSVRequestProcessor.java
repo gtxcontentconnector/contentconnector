@@ -9,7 +9,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
@@ -76,34 +81,31 @@ public class CSVRequestProcessor extends RequestProcessor {
 			objects = new Vector<CRResolvableBean>();
 
 			BufferedReader br = null;
-			String line;
 			
 			String csvFile = config.getString("file");// name of csv file
-			String separator = config.getString("separator");// separator 
-
-			int count = 0;
+			String s = config.getString("separator");			
+			char separator = (s == null) ? ',' : s.charAt(0);// separator 
+			
+			String es = config.getString("escape");
+			char escape = (es == null) ? '\\' : es.charAt(0);
 
 			if (csvFile != null) {
 				try {
 					br = new BufferedReader(new FileReader(csvFile));
-					while ((line = br.readLine()) != null) {
-						if (count == 0) {
-							attributes = line.split(separator);
-						} else { // other rows
-							CRResolvableBean bean = new CRResolvableBean();
-
-							String[] data = line.split(separator);
-							if (data.length > 1) {
-								int i = 0;
-								for (String d : data) {
-									bean.set(attributes[i], d);
-									i++;
-								}
-								objects.add(bean);
-							}
+					Iterable<CSVRecord> records = CSVFormat.DEFAULT
+							.withFirstRecordAsHeader()
+							.withDelimiter(separator)
+							.withEscape(escape)
+							.withTrim()
+							.parse(new FileReader(csvFile));
+					
+					for (CSVRecord record : records) {
+						CRResolvableBean bean = new CRResolvableBean();
+						for(String key: record.toMap().keySet()) {							
+							bean.set(key, record.toMap().get(key));
 						}
-						count++;
-					}
+						objects.add(bean);
+					}										
 				} catch (FileNotFoundException fe) {
 					throw new CRException("Cannot find the given CSV file.", fe);
 				} catch (IOException ie) {

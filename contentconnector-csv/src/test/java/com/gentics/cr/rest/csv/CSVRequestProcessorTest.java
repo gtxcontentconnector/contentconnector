@@ -34,11 +34,21 @@ public class CSVRequestProcessorTest extends TestCase {
 	public void testGetObjects() throws CRException {
 		Collection<CRResolvableBean> result = requestProcessor.getObjects(request);
 
-		assertEquals("Didn't return enough items", 3, result.size());
+		assertEquals("Didn't return enough items", 6, result.size());
 		for (CRResolvableBean bean : result) {
-			String id = (String) bean.get("id");
-			assertEquals("Attribute string was not the String equal to the id of object " + id, id.toString(), bean.get("string"));
-			assertEquals("Attribute value was not the set value: value " + id, "value " + id.toString(), bean.get("value"));
+			Integer id = Integer.valueOf((String) bean.get("id"));
+				
+			if(id == 4) {
+				assertEquals("Attribute value was not the set value: value " + id, "value ;" + id.toString(), bean.get("value"));
+			} else {
+				assertEquals("Attribute value was not the set value: value " + id, "value " + id.toString(), bean.get("value"));
+			}
+			
+			if(id == 6) {
+				assertEquals("Attribute string should be a trimmed empty string", "", bean.get("string"));
+			} else {
+				assertEquals("Attribute string was not the String equal to the id of object " + id, id.toString(), bean.get("string"));
+			}
 		}
 	}
 }
