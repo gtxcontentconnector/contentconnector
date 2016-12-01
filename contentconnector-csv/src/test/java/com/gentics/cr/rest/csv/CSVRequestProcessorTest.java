@@ -1,11 +1,14 @@
 package com.gentics.cr.rest.csv;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigFileLoader;
@@ -15,13 +18,14 @@ import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRUtil;
 
-public class CSVRequestProcessorTest extends TestCase {
+public class CSVRequestProcessorTest {
 
 	RequestProcessor requestProcessor;
 	CRRequest request;
 	CRConfig config;
 
-	protected void setUp() throws MalformedURLException, URISyntaxException,
+	@Before
+	public void setUp() throws MalformedURLException, URISyntaxException,
 			CRException {
 		String confpath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().getAbsolutePath();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confpath);
@@ -31,6 +35,7 @@ public class CSVRequestProcessorTest extends TestCase {
 		request = new CRRequest();
 	}
 
+	@Test
 	public void testGetObjects() throws CRException {
 		Collection<CRResolvableBean> result = requestProcessor.getObjects(request);
 

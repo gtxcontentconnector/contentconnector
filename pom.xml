@@ -35,6 +35,7 @@
 		<module>contentconnector-apihelper</module>
 		<module>contentconnector-config-sample</module>
 		<module>contentconnector-http</module>
+		<module>contentconnector-csv</module>
 		<module>contentconnector-json</module>
 		<module>contentconnector-jtidy</module>
 		<module>contentconnector-language</module>
