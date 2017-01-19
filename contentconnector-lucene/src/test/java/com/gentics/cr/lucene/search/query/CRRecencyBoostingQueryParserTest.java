@@ -65,7 +65,7 @@ public class CRRecencyBoostingQueryParserTest extends AbstractLuceneTest {
 			"node_id:2")));
 		/* 1 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word2 word9",
-			"updatetimestamp:1349042400",
+			"updatetimestamp:134904240000",
 			"node_id:8"))); // 01.10.2012 00:00:00
 		/* 2 */documents.add(new ComparableDocument(lucene.add(
 			SimpleLucene.CONTENT_ATTRIBUTE + ":word3",

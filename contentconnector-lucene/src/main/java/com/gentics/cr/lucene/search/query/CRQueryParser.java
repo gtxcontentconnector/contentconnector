@@ -219,12 +219,18 @@ public class CRQueryParser extends QueryParser {
 
 	/**
 	 * Helper method to replace search parameters from boolean mnoGoSearch query
-	 * into their lucene compatible parameters.
+	 * into their lucene compatible parameters. 
+	 * <p>This method will replace <br>
+	 * '&' with ' AND ' <br>
+	 * '|' with ' OR ' <br>
+	 * '~' with ' NOT ' <br>
+	 * but leave escaped characters (using backslash '\') untouched
+	 * 
 	 * @param mnoGoSearchQuery query with mnoGoSearch Syntax in it.
 	 * @return query with mnoGoSearch syntax replaced for lucene
 	 */
 	protected String replaceBooleanMnoGoSearchQuery(final String mnoGoSearchQuery) {
-		String luceneQuery = mnoGoSearchQuery.replaceAll(" ?\\| ?", " OR ").replaceAll(" ?& ?", " AND ").replace('\'', '"');
+		String luceneQuery = mnoGoSearchQuery.replaceAll("(^|([^\\\\\\s]{1})|\\s)\\| ?", "$2 OR ").replaceAll("(^|([^\\\\\\s]{1})|\\s)& ?", "$2 AND ").replace('\'', '"');
 		luceneQuery = luceneQuery.replaceAll(" ~([a-zA-Z0-9üöäÜÖÄß]+)", " NOT $1");
 		return luceneQuery;
 	}

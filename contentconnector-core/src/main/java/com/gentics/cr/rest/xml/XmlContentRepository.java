@@ -19,6 +19,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,6 +42,17 @@ public class XmlContentRepository extends ContentRepository {
 	 * Serial id.
 	 */
 	private static final long serialVersionUID = -6929053170765114770L;
+
+
+	/**
+	 * Facets List key.
+	 */
+	public static final String FACETS_LIST_KEY = "facetsList";
+
+	/**
+	 * Binary content key.
+	 */
+	public static final String BINARY_CONTENT_KEY = "binarycontent";
 
 	/**
 	 * the root element in the xml code.
@@ -234,7 +246,7 @@ public class XmlContentRepository extends ContentRepository {
 					Object bValue = crBean.getAttrMap().get(entry);
 					String value = "";
 					if (bValue != null) {
-						if (!entry.equals("binarycontent") && (bValue.getClass().isArray() || bValue.getClass() == ArrayList.class)) {
+						if (!BINARY_CONTENT_KEY.equals(entry) && (bValue.getClass().isArray() || bValue.getClass() == ArrayList.class)) {
 							Object[] arr;
 							if (bValue.getClass() == ArrayList.class) {
 								arr = ((ArrayList<Object>) bValue).toArray();
@@ -301,7 +313,7 @@ public class XmlContentRepository extends ContentRepository {
 	 */
 	private void valueToNode(final Document d, final Element attrElement, final String entry, final Object bValue) {
 		String value = "";
-		if (entry.equals("binarycontent")) {
+		if (BINARY_CONTENT_KEY.equals(entry)) {
 			try {
 				value = new String((byte[]) bValue);
 			} catch (ClassCastException x) {
@@ -315,6 +327,13 @@ public class XmlContentRepository extends ContentRepository {
 		} else {
 			if (bValue instanceof String) {
 				value = (String) bValue;
+			} else if (FACETS_LIST_KEY.equals(entry) && bValue instanceof Map<?, ?>) {
+				/*
+				 * Facets lists need special treatment because the keys of the list are numeric values which cannot be
+				 * converted to XML-elements. Therefore currently the facets list is converted to a JSONObject and
+				 * stored in the the CDATA section of the element.
+				 */
+				value = (new JSONObject((Map<?, ?>) bValue)).toString();
 			} else if (bValue instanceof Map<?, ?>) {
 				Map<?, ?> map = (Map<?, ?>) bValue;
 				for (Entry<?, ?> e : map.entrySet()) {

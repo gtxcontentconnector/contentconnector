@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.gentics.cr.conf.gentics.ConfigDirectory;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.gentics.cr.CRConfigUtil;
@@ -16,6 +18,10 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 
 public class HTMLContentTransformerTest {
+	@Before
+	public void init() throws URISyntaxException {
+		ConfigDirectory.useThis();
+	}
 
 	@Test
 	public void testContentAttribute() throws URISyntaxException, IOException, CRException {

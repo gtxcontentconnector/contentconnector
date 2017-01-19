@@ -132,7 +132,7 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
                 
                 // analyze the search term
                 String analyzedTerm = null;
-                TokenStream stream  = analyzer.tokenStream(GRAMMED_WORDS_FIELD, new StringReader(term));
+                TokenStream stream  = analyzer.tokenStream(GRAMMED_WORDS_FIELD, new StringReader(term));            
                 CharTermAttribute streamTerm = stream.addAttribute(CharTermAttribute.class);
                 stream.reset();
                 // get the last token from the stream
@@ -141,9 +141,9 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
                 }
                 stream.end();
                 stream.close();
-                // if the analyzer could not find a term use the original term for search
+                // if the analyzer don't return any term, skip search because term is not valid
                 if(analyzedTerm == null) {
-                    analyzedTerm = term;
+                    return result;
                 }
                 
 		try {

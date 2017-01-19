@@ -1,5 +1,6 @@
 package com.gentics.cr;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -64,7 +65,7 @@ public class CRRequestProcessorNavigationTest extends RequestProcessorTest {
 	 *             the uRI syntax exception
 	 */
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws CRException, URISyntaxException, IOException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(CRRequestProcessorNavigationTest.class
 				.getName());
 		

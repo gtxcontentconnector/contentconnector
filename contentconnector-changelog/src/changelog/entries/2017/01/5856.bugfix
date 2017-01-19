@@ -1,0 +1,1 @@
+Updated the dependency node to 2.0.45 in order to fix the initialization of the JSC caches not being synchronized. This caused exceptions like a NPE.

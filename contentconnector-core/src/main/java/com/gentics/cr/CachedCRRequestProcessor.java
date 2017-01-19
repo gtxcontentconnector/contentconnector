@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
@@ -38,7 +38,7 @@ public class CachedCRRequestProcessor extends RequestProcessor {
 	/**
 	 * JCS cache for our results.
 	 */
-	private static JCS resultCache;
+	private static PortalCache resultCache;
 
 	/**
 	 * Map with base {@link Resolvable}s for the filter.
@@ -240,7 +240,12 @@ public class CachedCRRequestProcessor extends RequestProcessor {
 	 */
 	private Collection<Resolvable> getCachedResult(final String cacheKey) {
 		initCache();
-		Object cacheResultObject = resultCache.get(cacheKey);
+		Object cacheResultObject = null;
+		try {
+			cacheResultObject = resultCache.get(cacheKey);
+		} catch (PortalCacheException e) {
+		   ;
+		}
 		if (cacheResultObject != null) {
 			return toResolvableCollection(cacheResultObject);
 		} else {
@@ -257,7 +262,7 @@ public class CachedCRRequestProcessor extends RequestProcessor {
 		initCache();
 		try {
 			resultCache.put(cacheKey, result);
-		} catch (CacheException e) {
+		} catch (PortalCacheException e) {
 			logger.error("Cannot save the result in cache", e);
 		}
 	}
@@ -268,8 +273,8 @@ public class CachedCRRequestProcessor extends RequestProcessor {
 	private void initCache() {
 		if (resultCache == null) {
 			try {
-				resultCache = JCS.getInstance("gentics-cr-CRRequestProcessor-results");
-			} catch (CacheException e) {
+				resultCache = PortalCache.getCache("gentics-cr-CRRequestProcessor-results");
+			} catch (PortalCacheException e) {
 				logger.error("Cannot initialize the result cache", e);
 			}
 		}

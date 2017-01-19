@@ -1,0 +1,1 @@
+Fixed rarely occurring bug when using CRRecencyBoostingQuery and having elements with big timestamps

@@ -3,6 +3,8 @@ package com.gentics.cr.lucene.search.query;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
@@ -77,6 +79,28 @@ public class CRQueryParserTest extends AbstractLuceneTest {
 	}
 
 	public void testReplaceBooleanMnoGoSearchQuery() throws ParseException, CorruptIndexException, IOException {
+		String[] escapedQueries = new String[]{
+			"word1 \\& word9", "word1\\&word9", "word1\\& \\&word9",
+			"word1 \\| word9", "word1\\|word9", "word1\\| \\|word9",
+			" \\~Text"
+		};
+		for (String escapedQuery : escapedQueries) {
+			assertEquals("Escaped special chars '&', '|' and '~ should never be replaced", escapedQuery, parser.replaceBooleanMnoGoSearchQuery(escapedQuery));
+		}
+
+		Map<String, String> unescapedQueries = new HashMap<>();
+		unescapedQueries.put("word1 & word9", "word1 AND word9");
+		unescapedQueries.put("word1&word9", "word1 AND word9");
+		unescapedQueries.put("word1 | word9", "word1 OR word9");
+		unescapedQueries.put("word1|word9", "word1 OR word9");
+		unescapedQueries.put(" ~word0123456789üöäÜÖÄß", " NOT word0123456789üöäÜÖÄß");
+		for (String unescapedQuery : unescapedQueries.keySet()) {
+			assertEquals(
+				"Special chars '&', '|' and '~' should be replaced with ' AND ', ' OR ' or ' NOT ' for query: " + unescapedQuery,
+				unescapedQueries.get(unescapedQuery),
+				parser.replaceBooleanMnoGoSearchQuery(unescapedQuery)
+			);
+		}
 
 		Collection<ComparableDocument> matchedDocuments = wrapComparable(lucene.find(parser.parse("word1 | word2")));
 		containsAll(matchedDocuments, new ComparableDocument[] { documents.get(0), documents.get(1) });

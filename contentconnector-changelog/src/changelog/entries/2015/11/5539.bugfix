@@ -1,0 +1,3 @@
+Fixed bug when using autocomplete feature with stopwords. 
+Now uppercase searchTerms get automatically converted to lowercase 
+and if the searchTerm is an stopword the result will be empty.

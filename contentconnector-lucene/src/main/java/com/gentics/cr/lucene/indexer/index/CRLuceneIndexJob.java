@@ -345,7 +345,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					indexAccessor = ((LuceneIndexLocation) indexLocation).getAccessor();
 					indexWriter = indexAccessor.getWriter();
 					indexReader = indexAccessor.getReader();
-					indexSearcher = indexAccessor.getSearcher();
+					indexSearcher = indexAccessor.getPrioritizedSearcher();
 					taxoDocBuilder = new TaxonomyDocumentBuilder((LuceneIndexLocation) indexLocation);
 				} else {
 					log.error("IndexLocation is not created for Lucene. " + "Using the " + CRLuceneIndexJob.class.getName()

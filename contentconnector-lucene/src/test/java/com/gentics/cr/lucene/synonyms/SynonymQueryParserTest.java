@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.gentics.DefaultTestConfiguration;
 import junit.framework.Assert;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -12,6 +13,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.gentics.cr.CRConfig;
@@ -23,7 +25,6 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.search.query.SynonymQueryParser;
-import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.indexing.IndexLocation;
 
 /**
@@ -37,14 +38,11 @@ public class SynonymQueryParserTest {
 	private IndexLocation singleLoc1;
 	private CRConfig config2;
 
-	@Before
-	public void setup() throws URISyntaxException {
-		String confPath = null;
-		confPath = new File(this.getClass().getResource("indexer.properties").toURI()).getParentFile().getAbsolutePath();
-		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
-		EnvironmentConfiguration.setCacheFilePath("${" + CRUtil.PORTALNODE_CONFPATH + "}/cache.ccf");
-		EnvironmentConfiguration.loadLoggerProperties();
-		EnvironmentConfiguration.loadCacheProperties();
+	@BeforeClass
+	public static void setup() throws URISyntaxException, IOException {
+		String confPath = DefaultTestConfiguration.createTempConfigDirectory().getAbsolutePath();
+		EnvironmentConfiguration.setConfigPath(confPath);
+		EnvironmentConfiguration.loadEnvironmentProperties();
 	}
 
 	@Before

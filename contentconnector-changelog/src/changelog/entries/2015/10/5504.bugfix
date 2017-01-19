@@ -1,0 +1,2 @@
+When fetching search results containing facets and using the XmlContentRepository (type=xml) an error was thrown
+because the facets results where not parsed correctly to the XML-Response. This has been fixed.
