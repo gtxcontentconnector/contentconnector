@@ -41,6 +41,7 @@
 		<module>contentconnector-language</module>
 		<module>contentconnector-lucene</module>
 		<module>contentconnector-lucene-autocomplete</module>
+		<module>contentconnector-navcache</module>
 		<module>contentconnector-poi-transformer</module>
 		<module>contentconnector-portlet</module>
 		<module>contentconnector-servlet</module>

@@ -1,0 +1,1 @@
+Added the NavigationCache from Gentics Portlet.Suite as a new Maven module, which provides the ability to cache navigation beans of CR requests.
