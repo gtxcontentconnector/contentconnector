@@ -128,7 +128,7 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 
 		IndexAccessor ia = autocompleteLocation.getAccessor();
 		IndexSearcher autoCompleteSearcher = ia.getPrioritizedSearcher();
-		IndexReader autoCompleteReader = ia.getReader();
+		IndexReader autoCompleteReader = autoCompleteSearcher.getIndexReader();
                 
                 // analyze the search term
                 String analyzedTerm = null;
@@ -160,7 +160,6 @@ public class Autocompleter implements IEventReceiver, AutocompleteConfigurationK
 			}
 		} finally {
 			ia.release(autoCompleteSearcher);
-			ia.release(autoCompleteReader);
 		}
 
 		return result;
