@@ -1,6 +1,7 @@
 package com.gentics.cr.cache.test;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -142,6 +143,19 @@ public class NavigationCacheTest extends RequestProcessorTest {
 		Collection<CRResolvableBean> refreshedNavigationObject = NavigationCache.get().getCachedNavigationObject(requestProcessor, crRequest);
 		assertNotNull("There should be something in the cache", refreshedNavigationObject);
 		assertFalse("The cached object must be identical to the fetched object", navigationObject == refreshedNavigationObject);
+	}
+
+	/**
+	 * Test navigation cache keys
+	 */
+	@Test
+	public void testNavigationCacheKey() {
+		assertEquals("Check cache keys for equal CRRequests", NavigationCache.getCacheKey(requestProcessor, getNavigationRequest()),
+				NavigationCache.getCacheKey(requestProcessor, getNavigationRequest()));
+		assertFalse(
+				"Check cache keys for different CRRequests",
+				NavigationCache.getCacheKey(requestProcessor, getNavigationRequest()).equals(
+						NavigationCache.getCacheKey(requestProcessor, getOtherNavigationRequest())));
 	}
 
 	/*

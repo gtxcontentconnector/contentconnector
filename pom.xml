@@ -79,6 +79,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-navcache</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gentics</groupId>
 				<artifactId>contentconnector-testutils</artifactId>
 				<version>${project.version}</version>
 				<scope>test</scope>

@@ -1,5 +1,6 @@
 package com.gentics.cr.cache;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,8 +14,8 @@ import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheAttributes;
 import com.gentics.api.lib.cache.PortalCacheException;
 import com.gentics.cr.CRConfig;
-import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRRequest;
+import com.gentics.cr.CRRequest.DEFAULT_ATTRIBUTES;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 
@@ -42,9 +43,6 @@ public class NavigationCache {
 	/** Key for the cache zone. */
 	public static final String CACHEZONE_KEY = "gentics-cr-navigation";
 
-	/** The Constant PROPERTY_FILENAME. */
-	private static final String PROPERTY_FILENAME = "navigationcache";
-
 	/** The instance. */
 	private static NavigationCache instance;
 
@@ -60,17 +58,13 @@ public class NavigationCache {
 	/** The cached keys. */
 	private Set<String> cachedKeys = new HashSet<String>();
 
-	/** The cr conf. */
-	private CRConfig crConf;
-
 	/**
 	 * Instantiates a new navigation cache.
+	 * @param crConf configuration
 	 */
-	private NavigationCache() {
+	private NavigationCache(CRConfig crConf) {
 
 		log.debug("Initializing new " + this.getClass().getSimpleName() + " instance ..");
-
-		crConf = new CRConfigFileLoader(PROPERTY_FILENAME, null);
 
 		// read configuration
 		if (crConf != null) {
@@ -114,15 +108,25 @@ public class NavigationCache {
 
 	/**
 	 * Gets the Navigation Cache instance.
-	 * 
+	 *
 	 * @return the navigation cache
 	 */
 	public static NavigationCache get() {
+		return get(null);
+	}
+
+	/**
+	 * Gets the Navigation Cache instance.
+	 *
+	 * @param config
+	 * @return the navigation cache
+	 */
+	public static NavigationCache get(CRConfig config) {
 		if (instance == null) {
 			// performance, thread safe
 			synchronized (NavigationCache.class) {
 				if (instance == null) {
-					instance = new NavigationCache();
+					instance = new NavigationCache(config);
 				}
 			}
 		}
@@ -224,9 +228,33 @@ public class NavigationCache {
 	 *
 	 * @return the cache key
 	 */
-	private static String getCacheKey(RequestProcessor requestProcessor, CRRequest request) {
+	public static String getCacheKey(RequestProcessor requestProcessor, CRRequest request) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format("%08x", request.hashCode()));
+		int h = 0;
+		// we use all attributes (but not request and request_wrapper, since they will change too often).
+		// arrays will be transformed to lists
+		for (DEFAULT_ATTRIBUTES attr : CRRequest.DEFAULT_ATTRIBUTES.values()) {
+			switch (attr) {
+			case REQUEST:
+			case REQUEST_WRAPPER:
+				break;
+			default:
+				Object value = request.get(attr.toString());
+				if (value != null) {
+					if (value instanceof Object[]) {
+						Object[] valueArray = (Object[])value;
+						if (valueArray.length > 0) {
+							value = Arrays.asList(valueArray);
+						} else {
+							value = 0;
+						}
+					}
+					h += value.hashCode();
+				}
+				break;
+			}
+		}
+		builder.append(String.format("%08x", h));
 
 		// Include rp datasource id into cachekey
 		if (requestProcessor.getConfig() != null && requestProcessor.getConfig().getDatasource() != null) {

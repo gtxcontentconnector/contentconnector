@@ -70,6 +70,10 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>com.gentics</groupId>
+			<artifactId>contentconnector-navcache</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
