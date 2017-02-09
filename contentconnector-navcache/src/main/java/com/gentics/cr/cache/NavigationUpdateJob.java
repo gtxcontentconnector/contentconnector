@@ -28,12 +28,6 @@ public class NavigationUpdateJob extends TimerTask {
 	/** The req. */
 	private CRRequest req;
 
-	/** The start folder. */
-	private String startFolder;
-
-	/** The childfilter. */
-	private String childfilter;
-
 	/** The cache. */
 	private PortalCache cache;
 
@@ -45,24 +39,17 @@ public class NavigationUpdateJob extends TimerTask {
 
 	/**
 	 * Instantiates a new navigation update job.
-	 *
-	 * @param startFolder the start folder
-	 * @param childfilter the childfilter
 	 * @param cacheKey the cache key
 	 * @param rp the rp
 	 * @param req the req
 	 * @param cache the cache
 	 */
-	public NavigationUpdateJob(String startFolder, String childfilter, String cacheKey, RequestProcessor rp,
-			CRRequest req, PortalCache cache) {
+	public NavigationUpdateJob(String cacheKey, RequestProcessor rp, CRRequest req, PortalCache cache) {
 
 		log.debug("Initializing new " + this.getClass().getSimpleName() + " instance ..");
-		log.debug("For navigation object with startfolder: " + startFolder + ", childfilter: " + childfilter);
 
 		this.rp = rp;
 		this.req = req;
-		this.startFolder = startFolder;
-		this.childfilter = childfilter;
 		this.cacheKey = cacheKey;
 		this.cache = cache;
 	}
@@ -76,33 +63,24 @@ public class NavigationUpdateJob extends TimerTask {
 
 			if (log.isDebugEnabled()) {
 				watch.reset();
-				log.debug("Fetching and refreshing cache for navigation object, startfolder: " + startFolder
-						+ ", childfilter: " + childfilter);
+				log.debug("Fetching and refreshing cache for navigation object");
 				watch.start();
 			}
 
 			// fetch the navigation object and put it into the configured cache
-			CRResolvableBean crBean = null;
-			Collection<CRResolvableBean> crBeanCollection;
+			Collection<CRResolvableBean> crBeanCollection = null;
 
 			try {
 				// get the navigation object
 				crBeanCollection = rp.getNavigation(req);
 
-				if (crBeanCollection.size() > 0) {
-					crBean = crBeanCollection.iterator().next();
-
-					// update the bean in the cache
-					cache.put(cacheKey, crBean);
-				} else {
-					log.error("Navigation is empty for startfolder {" + startFolder + "} and childfilter {" + childfilter + "}");
-					cache.put(cacheKey, NavigationCache.CACHED_NULL);
-				}
+				// update the cache
+				cache.put(cacheKey, crBeanCollection);
 
 			} catch (CRException e1) {
 				log.error("Error while fetching navigation object!", e1);
 			} catch (PortalCacheException e) {
-				log.error("Error while putting object '" + crBean + "' into cache!", e);
+				log.error("Error while putting object '" + crBeanCollection + "' into cache!", e);
 			}
 
 			if (log.isDebugEnabled()) {

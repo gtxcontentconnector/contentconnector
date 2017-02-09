@@ -69,6 +69,22 @@ public abstract class RequestProcessorTest {
 	}
 
 	/**
+	 * Get another navigation request
+	 * @return navigation request
+	 */
+	protected CRRequest getOtherNavigationRequest() {
+		CRRequest req = new CRRequest();
+
+		req.setRequestFilter("object.obj_type == " + FOLDER_TYPE + " AND object.folder_id == " + rootFolderContentId);
+		req.setChildFilter("object.obj_type == " + FOLDER_TYPE + " AND true");
+		// sort by randomly added values
+		req.setSorting(new Sorting[] {new Sorting("test2", 1)});
+		req.setAttributeArray(attributes);
+
+		return req;
+	}
+
+	/**
 	 * creates and persists a folder with specified parent folder and name.
 	 * 
 	 * @param parentFolder

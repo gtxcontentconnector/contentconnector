@@ -1,12 +1,12 @@
 package com.gentics.cr.cache;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.cache.PortalCache;
@@ -31,7 +31,7 @@ public class NavigationCache {
 	private static final Logger log = Logger.getLogger(NavigationCache.class);
 
 	/** The min schedule time. */
-	private static int MIN_SCHEDULE_TIME = 60;
+	public static int MIN_SCHEDULE_TIME = 60;
 
 	/** The seconds before cache. */
 	private static int SECONDS_BEFORE_CACHE = 30;
@@ -131,17 +131,14 @@ public class NavigationCache {
 
 	/**
 	 * Gets the cached navigation object.
-	 * 
-	 * @param startFolder
-	 *            the start folder
-	 * @param childFilter
-	 *            the child filter
 	 * @param requestProcessor
 	 *            the request processor
+	 * @param request request
+	 * 
 	 * @return the cached navigation object
 	 */
-	public CRResolvableBean getCachedNavigationObject(String startFolder, String childFilter, RequestProcessor requestProcessor) {
-		return getCachedNavigationObject(getCacheKey(startFolder, childFilter, requestProcessor));
+	public Collection<CRResolvableBean> getCachedNavigationObject(RequestProcessor requestProcessor, CRRequest request) {
+		return getCachedNavigationObject(getCacheKey(requestProcessor, request));
 	}
 
 	/**
@@ -151,9 +148,10 @@ public class NavigationCache {
 	 *            the cache key
 	 * @return the cached navigation object
 	 */
-	private CRResolvableBean getCachedNavigationObject(String cacheKey) {
+	@SuppressWarnings("unchecked")
+	private Collection<CRResolvableBean> getCachedNavigationObject(String cacheKey) {
 
-		CRResolvableBean crBean = null;
+		Collection<CRResolvableBean> crBeanCollection = null;
 
 		if (cache != null) {
 			Object obj = null;
@@ -164,11 +162,11 @@ public class NavigationCache {
 			}
 
 			if (obj != null) {
-				if (obj instanceof CRResolvableBean) {
+				if (obj instanceof Collection<?>) {
 
-					crBean = (CRResolvableBean) obj;
+					crBeanCollection = (Collection<CRResolvableBean>) obj;
 					if (log.isDebugEnabled()) {
-						log.debug("Loaded from cache: " + crBean);
+						log.debug("Loaded from cache: " + crBeanCollection);
 					}
 				} else {
 					log.error("Not the right collection in cache!! " + obj.toString());
@@ -176,85 +174,59 @@ public class NavigationCache {
 			}
 		}
 
-		return crBean;
+		return crBeanCollection;
 	}
 
 	/**
 	 * Fetch and cache navigation object.
-	 * 
-	 * @param startFolder
-	 *            the start folder
-	 * @param childfilter
-	 *            the childfilter
 	 * @param requestProcessor
 	 *            the request processor
 	 * @param req
-	 *            the req
-	 * @return the cR resolvable bean
+	 *            the request
+	 * 
+	 * @return collection of resolvable beans
 	 */
-	public synchronized CRResolvableBean fetchAndCacheNavigationObject(String startFolder, String childfilter,
-			RequestProcessor requestProcessor, CRRequest req) {
+	public synchronized Collection<CRResolvableBean> fetchAndCacheNavigationObject(RequestProcessor requestProcessor, CRRequest req) {
 
-		String cacheKey = getCacheKey(startFolder, childfilter, requestProcessor);
-		CRResolvableBean crBean = getCachedNavigationObject(cacheKey);
+		String cacheKey = getCacheKey(requestProcessor, req);
+		Collection<CRResolvableBean> crBeanCollection = getCachedNavigationObject(cacheKey);
 
-		if (crBean != null) {
+		if (crBeanCollection != null) {
 			log.info("Thread was waiting until synchronized fetch and caching was done");
 			// do nothing and return crBean early
-			return crBean;
+			return crBeanCollection;
 		}
 
 		if (cachedKeys.contains(cacheKey)) {
-			log.error("Request for navigation object that should be in cache! This should not happen, check parameters! "
-					+ "startfolder: " + startFolder + ", childfilter: " + childfilter);
+			log.error("Request for navigation object that should be in cache! This should not happen, check parameters!");
 			// avoid double job generation
 			return null;
 		}
 
 		// first generate a new update job for this navigation object
-		NavigationUpdateJob job = new NavigationUpdateJob(startFolder, childfilter, cacheKey, requestProcessor, req, cache);
+		NavigationUpdateJob job = new NavigationUpdateJob(cacheKey, requestProcessor, req, cache);
 		// run it the first time so now it will be in cache
 		job.run();
 		// fetch the object from cache
-		crBean = getCachedNavigationObject(startFolder, childfilter, requestProcessor);
+		crBeanCollection = getCachedNavigationObject(cacheKey);
 		// schedule task for periodical execution
 		scheduler.scheduleWithFixedDelay(job, scheduleTime, scheduleTime, TimeUnit.SECONDS);
 		// remember this cache key to check for double jobs
 		cachedKeys.add(cacheKey);
 
-		return crBean;
+		return crBeanCollection;
 	}
 
 	/**
-	 * Gets the cache key.
-	 * 
-	 * @param startFolder
-	 *            the start folder
-	 * @param childFilter
-	 *            the child filter
-	 * @param request processor
-	 *            the request processor
+	 * Gets the cache key. The cache key is constructed from the hash code of the request and the datasource ID from the request processor
+	 * @param requestProcessor request processor
+	 * @param request request
+	 *
 	 * @return the cache key
 	 */
-	private static String getCacheKey(String startFolder, String childFilter, RequestProcessor requestProcessor) {
-
-
-
-		if (StringUtils.isEmpty(startFolder) && StringUtils.isEmpty(childFilter)) {
-			throw new IllegalArgumentException("At least one String input has to have a value!");
-		}
-
+	private static String getCacheKey(RequestProcessor requestProcessor, CRRequest request) {
 		StringBuilder builder = new StringBuilder();
-
-		if (!StringUtils.isEmpty(startFolder)) {
-			String startFolderHexCode = String.format("%08x", startFolder.hashCode());
-			builder.append(startFolderHexCode);
-		}
-
-		if (!StringUtils.isEmpty(childFilter)) {
-			String childFilterHashCode = String.format("%08x", childFilter.hashCode());
-			builder.append(childFilterHashCode);
-		}
+		builder.append(String.format("%08x", request.hashCode()));
 
 		// Include rp datasource id into cachekey
 		if (requestProcessor.getConfig() != null && requestProcessor.getConfig().getDatasource() != null) {

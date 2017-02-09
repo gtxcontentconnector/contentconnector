@@ -1,8 +1,17 @@
 package com.gentics.cr.cache.test;
 
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.Collection;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -21,7 +30,9 @@ import com.gentics.cr.OptimisticNavigationRequestProcessor;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.RequestProcessorTest;
 import com.gentics.cr.cache.NavigationCache;
+import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.exceptions.CRException;
+
 
 /**
  * This test checks the functionality of building of navigation objects in the.
@@ -53,9 +64,18 @@ public class NavigationCacheTest extends RequestProcessorTest {
 	 */
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException, IOException {
+		NavigationCache.MIN_SCHEDULE_TIME = 1;
+		URL restUrl = NavigationCacheTest.class.getResource("rest/navigationcache.properties");
+		assertNotNull("Could not find resource 'rest'", restUrl);
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(NavigationCacheTest.class
 				.getName());
-		
+
+		File restFolder = new File(EnvironmentConfiguration.getConfigPath(), "rest");
+		restFolder.mkdirs();
+		try (InputStream in = NavigationCacheTest.class.getResourceAsStream("rest/navigationcache.properties")) {
+			Files.copy(in, new File(restFolder, "navigationcache.properties").toPath());
+		}
+
 		// enable node id feature
 		config.set("RP.1.usenodeidinchildrule", "true");
 
@@ -96,29 +116,32 @@ public class NavigationCacheTest extends RequestProcessorTest {
 	 * 
 	 * @throws CRException
 	 *             the cR exception
+	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testNavigationCache() throws CRException {
+	public void testNavigationCache() throws CRException, InterruptedException {
 
 		// Check that the original navigation object is not empty
 		Assert.assertFalse(CollectionUtils.isEmpty(originalNavigationObject));
 
 		CRRequest crRequest = getNavigationRequest();
 
-		CRResolvableBean crBean = null;
+		assertNull("There should not be something in the cache", NavigationCache.get().getCachedNavigationObject(requestProcessor, crRequest));
 
-		crBean = NavigationCache.get().getCachedNavigationObject(
-				"root.html", "object.obj_type==10002 AND object.navhidden != 1", requestProcessor);
+		Collection<CRResolvableBean> navigationObject = NavigationCache.get().fetchAndCacheNavigationObject(requestProcessor, crRequest);
+		assertNotNull("Fetching the navigation must return something", navigationObject);
 
-		Assert.assertNull("There should not be something in the cache", crBean);
+		Collection<CRResolvableBean> cachedNavigationObject = NavigationCache.get().getCachedNavigationObject(requestProcessor, crRequest);
+		assertNotNull("There should be something in the cache", cachedNavigationObject);
+		assertTrue("The cached object must be identical to the fetched object", navigationObject == cachedNavigationObject);
 
-		NavigationCache.get().fetchAndCacheNavigationObject(
-				"root.html", "object.obj_type==10002 AND object.navhidden != 1", requestProcessor, crRequest);
+		assertNull("Cache for other navigation request should be empty", NavigationCache.get().getCachedNavigationObject(requestProcessor, getOtherNavigationRequest()));
 
-		crBean = NavigationCache.get().getCachedNavigationObject(
-				"root.html", "object.obj_type==10002 AND object.navhidden != 1", requestProcessor);
-
-		Assert.assertNotNull("There should be something in the cache", crBean);
+		// wait until the cache is automatically refreshed, then get the cached object again (must be another object)
+		Thread.sleep(1100);
+		Collection<CRResolvableBean> refreshedNavigationObject = NavigationCache.get().getCachedNavigationObject(requestProcessor, crRequest);
+		assertNotNull("There should be something in the cache", refreshedNavigationObject);
+		assertFalse("The cached object must be identical to the fetched object", navigationObject == refreshedNavigationObject);
 	}
 
 	/*
