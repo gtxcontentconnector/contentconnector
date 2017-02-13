@@ -32,19 +32,21 @@ public class NavigationCache {
 	private static final Logger log = Logger.getLogger(NavigationCache.class);
 
 	/** The min schedule time. */
-	public static int MIN_SCHEDULE_TIME = 60;
+	private final static int MIN_SCHEDULE_TIME = 60;
 
 	/** The seconds before cache. */
-	private static int SECONDS_BEFORE_CACHE = 30;
+	private final static int SECONDS_BEFORE_CACHE = 30;
 
 	/** The cores. */
-	private static int THREADS = 2;
+	private final static int THREADS = 2;
 
 	/** Key for the cache zone. */
 	public static final String CACHEZONE_KEY = "gentics-cr-navigation";
 
-	/** The instance. */
-	private static NavigationCache instance;
+	/**
+	 * Request processor
+	 */
+	private RequestProcessor rp;
 
 	/** The cache. */
 	private PortalCache cache;
@@ -60,16 +62,23 @@ public class NavigationCache {
 
 	/**
 	 * Instantiates a new navigation cache.
+	 * @param rp request processor
 	 * @param crConf configuration
 	 */
-	private NavigationCache(CRConfig crConf) {
+	NavigationCache(RequestProcessor rp, CRConfig crConf) {
 
 		log.debug("Initializing new " + this.getClass().getSimpleName() + " instance ..");
+		this.rp = rp;
+
+		int threads = THREADS;
+		int secondsBeforeCache = SECONDS_BEFORE_CACHE;
+		int minScheduleTime = MIN_SCHEDULE_TIME;
 
 		// read configuration
 		if (crConf != null) {
-			THREADS = crConf.getInteger("threads", THREADS);
-			SECONDS_BEFORE_CACHE = crConf.getInteger("secondsbeforecache", SECONDS_BEFORE_CACHE);
+			threads = crConf.getInteger("threads", threads);
+			secondsBeforeCache = crConf.getInteger("secondsbeforecache", secondsBeforeCache);
+			minScheduleTime = crConf.getInteger("minscheduletime", minScheduleTime);
 		}
 
 		try {
@@ -88,17 +97,17 @@ public class NavigationCache {
 				int maxLifeSeconds = attributes.getMaxAge();
 				log.info("MaxlifeSeconds for cache: " + maxLifeSeconds);
 
-				int possibleScheduleTime = maxLifeSeconds - SECONDS_BEFORE_CACHE;
-				scheduleTime = (long) ((possibleScheduleTime > MIN_SCHEDULE_TIME) ? possibleScheduleTime
-						: MIN_SCHEDULE_TIME);
+				int possibleScheduleTime = maxLifeSeconds - secondsBeforeCache;
+				scheduleTime = (long) ((possibleScheduleTime > minScheduleTime) ? possibleScheduleTime
+						: minScheduleTime);
 			} else {
-				scheduleTime = new Long(MIN_SCHEDULE_TIME);
+				scheduleTime = new Long(minScheduleTime);
 			}
 
 			log.info("Computed scheduleTime: " + scheduleTime);
 
-			scheduler = Executors.newScheduledThreadPool(THREADS);
-			log.info("Initialized thread pool executor with " + THREADS + " threads in threadpool.");
+			scheduler = Executors.newScheduledThreadPool(threads);
+			log.info("Initialized thread pool executor with " + threads + " threads in threadpool.");
 		} catch (PortalCacheException e) {
 			log.error("Could not initialize the PortalCache!", e);
 		} catch (InstantiationException e) {
@@ -107,42 +116,13 @@ public class NavigationCache {
 	}
 
 	/**
-	 * Gets the Navigation Cache instance.
-	 *
-	 * @return the navigation cache
-	 */
-	public static NavigationCache get() {
-		return get(null);
-	}
-
-	/**
-	 * Gets the Navigation Cache instance.
-	 *
-	 * @param config
-	 * @return the navigation cache
-	 */
-	public static NavigationCache get(CRConfig config) {
-		if (instance == null) {
-			// performance, thread safe
-			synchronized (NavigationCache.class) {
-				if (instance == null) {
-					instance = new NavigationCache(config);
-				}
-			}
-		}
-		return instance;
-	}
-
-	/**
 	 * Gets the cached navigation object.
-	 * @param requestProcessor
-	 *            the request processor
 	 * @param request request
 	 * 
 	 * @return the cached navigation object
 	 */
-	public Collection<CRResolvableBean> getCachedNavigationObject(RequestProcessor requestProcessor, CRRequest request) {
-		return getCachedNavigationObject(getCacheKey(requestProcessor, request));
+	public Collection<CRResolvableBean> getCachedNavigationObject(CRRequest request) {
+		return getCachedNavigationObject(getCacheKey(request));
 	}
 
 	/**
@@ -190,9 +170,9 @@ public class NavigationCache {
 	 * 
 	 * @return collection of resolvable beans
 	 */
-	public synchronized Collection<CRResolvableBean> fetchAndCacheNavigationObject(RequestProcessor requestProcessor, CRRequest req) {
+	public synchronized Collection<CRResolvableBean> fetchAndCacheNavigationObject(CRRequest req) {
 
-		String cacheKey = getCacheKey(requestProcessor, req);
+		String cacheKey = getCacheKey(req);
 		Collection<CRResolvableBean> crBeanCollection = getCachedNavigationObject(cacheKey);
 
 		if (crBeanCollection != null) {
@@ -208,7 +188,7 @@ public class NavigationCache {
 		}
 
 		// first generate a new update job for this navigation object
-		NavigationUpdateJob job = new NavigationUpdateJob(cacheKey, requestProcessor, req, cache);
+		NavigationUpdateJob job = new NavigationUpdateJob(cacheKey, rp, req, cache);
 		// run it the first time so now it will be in cache
 		job.run();
 		// fetch the object from cache
@@ -228,7 +208,7 @@ public class NavigationCache {
 	 *
 	 * @return the cache key
 	 */
-	public static String getCacheKey(RequestProcessor requestProcessor, CRRequest request) {
+	public String getCacheKey(CRRequest request) {
 		StringBuilder builder = new StringBuilder();
 		int h = 0;
 		// we use all attributes (but not request and request_wrapper, since they will change too often).
@@ -257,8 +237,8 @@ public class NavigationCache {
 		builder.append(String.format("%08x", h));
 
 		// Include rp datasource id into cachekey
-		if (requestProcessor.getConfig() != null && requestProcessor.getConfig().getDatasource() != null) {
-			builder.append(requestProcessor.getConfig().getDatasource().getId());
+		if (rp.getConfig() != null && rp.getConfig().getDatasource() != null) {
+			builder.append(rp.getConfig().getDatasource().getId());
 		}
 
 		return builder.toString();
