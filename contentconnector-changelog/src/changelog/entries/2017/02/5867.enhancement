@@ -1,1 +1,5 @@
-Added the NavigationCache from Gentics Portlet.Suite as a new Maven module, which provides the ability to cache navigation beans of CR requests.
+The new maven module @contentconnector-navcache@ provides the @NavigationCacheRequestProcessor@,
+which will cache responses to navigation requests and will automatically refresh the caches before the
+cached navigations will become invalid.
+See the configuration file @navcache.properties@ in the module @contentconnector-config-sample@ for an example
+configuration.
