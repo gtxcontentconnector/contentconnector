@@ -1,0 +1,4 @@
+The request processor accessing an autocomplete index sometimes started to
+return incorrect results due to index readers that were not reopened after the
+index was modified.
+This has been fixed now.
