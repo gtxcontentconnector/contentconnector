@@ -1,0 +1,3 @@
+When beans returned from a Request Processor were missing the idattribute,
+a NullPointerException could occur. This has been fixed now, a CRException with an
+explicit error message will now be thrown.
