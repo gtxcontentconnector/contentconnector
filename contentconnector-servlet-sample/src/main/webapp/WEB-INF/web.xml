@@ -40,6 +40,10 @@
 		<servlet-class>com.gentics.cr.rest.RESTNavigation</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>navcache</servlet-name>
+		<servlet-class>com.gentics.cr.rest.RESTNavigation</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>ap</servlet-name>
 		<servlet-class>com.gentics.cr.rest.RESTServlet</servlet-class>
 	</servlet>
@@ -74,6 +78,10 @@
 	<servlet-mapping>
 		<servlet-name>nav</servlet-name>
 		<url-pattern>/nav/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>navcache</servlet-name>
+		<url-pattern>/navcache/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ap</servlet-name>

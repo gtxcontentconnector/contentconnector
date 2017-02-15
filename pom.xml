@@ -41,6 +41,7 @@
 		<module>contentconnector-language</module>
 		<module>contentconnector-lucene</module>
 		<module>contentconnector-lucene-autocomplete</module>
+		<module>contentconnector-navcache</module>
 		<module>contentconnector-poi-transformer</module>
 		<module>contentconnector-portlet</module>
 		<module>contentconnector-servlet</module>
@@ -74,6 +75,11 @@
 			<dependency>
 				<groupId>com.gentics</groupId>
 				<artifactId>contentconnector-json</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gentics</groupId>
+				<artifactId>contentconnector-navcache</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
