@@ -135,7 +135,6 @@ public class NavigationCacheTest extends RequestProcessorTest {
 		assertNull("Cache for other navigation request should be empty", navCache.getCachedNavigationObject(getOtherNavigationRequest()));
 
 		// wait until the cache is automatically refreshed, then get the cached object again (must be another object)
-		System.out.println("Waiting 2 seconds");
 		Thread.sleep(2000);
 		Collection<CRResolvableBean> refreshedNavigationObject = navCache.getCachedNavigationObject(crRequest);
 		assertNotNull("There should be something in the cache", refreshedNavigationObject);
