@@ -5,7 +5,8 @@
 		<groupId>com.gentics</groupId>
 		<version>2.1.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>contentconnector-json</artifactId>
+	<artifactId>contentconnector-navcache</artifactId>
+	<packaging>jar</packaging>
 	<build>
 		<plugins>
 			<plugin>
@@ -20,18 +21,43 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.json-lib</groupId>
-			<artifactId>json-lib</artifactId>
-			<version>2.3</version>
-			<classifier>jdk15</classifier>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<artifactId>servlet-api</artifactId>
+			<groupId>javax.servlet</groupId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.gentics</groupId>
+			<artifactId>contentconnector-testutils</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.gentics</groupId>
+			<artifactId>contentconnector-core</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+			<type>test-jar</type>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb-j5</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
