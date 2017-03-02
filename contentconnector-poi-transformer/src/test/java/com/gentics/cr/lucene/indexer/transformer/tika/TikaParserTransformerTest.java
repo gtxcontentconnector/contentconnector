@@ -64,7 +64,7 @@ public class TikaParserTransformerTest extends AbstractTransformerTest {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
 		t.processBean(bean);
-		Assert.assertEquals("Testtext ÄÖÜäüöß€\n", bean.get(BINARY_ATTRIBUTE));
+		Assert.assertEquals("Testtext ÄÖÜäüöß€", bean.get(BINARY_ATTRIBUTE).toString().trim());
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class TikaParserTransformerTest extends AbstractTransformerTest {
 		CRResolvableBean bean = new CRResolvableBean();
 		bean.set(BINARY_ATTRIBUTE, getContentFromFile(filename));
 		t.processBean(bean);
-		Assert.assertEquals("Testtext ÄÖÜäüöß€\n", bean.get(BINARY_ATTRIBUTE));
+		Assert.assertEquals("Testtext ÄÖÜäüöß€", bean.get(BINARY_ATTRIBUTE).toString().trim());
 	}
 
 	@Test
