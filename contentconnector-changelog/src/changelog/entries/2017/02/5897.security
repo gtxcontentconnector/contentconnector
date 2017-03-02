@@ -1,0 +1,1 @@
+Updated the dependencies org.apache.poi and org.apache.tika to their latest versions in order to fix the security vulnerabilities CVE-2014-3529 and CVE-2016-5000

@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
-import org.apache.poi.openxml4j.opc.Package;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
@@ -67,7 +67,7 @@ public class XLSXContentTransformer extends ContentTransformer {
 			throw new IllegalArgumentException("Parameter must be instance of byte[]");
 		}
 		try {
-			Package pkg = Package.open(is);
+			OPCPackage pkg = OPCPackage.open(is);
 
 			XSSFReader r = new XSSFReader(pkg);
 			SharedStringsTable sst = r.getSharedStringsTable();
