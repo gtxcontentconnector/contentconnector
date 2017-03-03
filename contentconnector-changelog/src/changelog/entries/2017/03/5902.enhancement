@@ -1,3 +1,3 @@
 The delimiter used in the transformer SimpleMVString to join values can now be configured.
-The previous static delimiter - a whitespace - is now the default delimiter.
+The previous static delimiter, a whitespace, is now the default delimiter.
 The use of stopwords can now be toggled in CustomPatternAnalyzer. Stopwords are enabled by default.
