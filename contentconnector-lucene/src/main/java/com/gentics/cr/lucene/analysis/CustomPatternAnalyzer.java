@@ -78,6 +78,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 	
 	private static final String LOWERCASE_KEY = "lowercase";
+	private static final String STOP_WORDS_KEY = "stopwords";
 	
 	private static final Logger LOGGER = Logger.getLogger(CustomPatternAnalyzer.class);
 
@@ -377,7 +378,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 
 	private final Pattern pattern;
 	private final boolean toLowerCase;
-	private final CharArraySet stopWords;
+	private CharArraySet stopWords;
+	private boolean stopWordsActive;
 
 	private final Version matchVersion;
 
@@ -385,6 +387,11 @@ public final class CustomPatternAnalyzer extends Analyzer {
 
 	public CustomPatternAnalyzer(GenericConfiguration config) {
 		this(Version.LUCENE_4_9, getPattern(config), config.getBoolean(LOWERCASE_KEY, true), EXTENDED_ENGLISH_STOP_WORDS);
+		stopWordsActive = (boolean) config.getBoolean(STOP_WORDS_KEY,true);
+		if (!stopWordsActive) {
+			stopWords = CharArraySet.unmodifiableSet(new CharArraySet(
+					LuceneVersion.getVersion(), Arrays.asList(), true));
+		}
 	}
 
 	private static Pattern getPattern(GenericConfiguration config) {

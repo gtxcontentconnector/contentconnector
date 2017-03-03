@@ -71,4 +71,31 @@ public class CustomPatternAnalyzerTest extends BaseTokenStreamTestCase{
 				"this hugo","a text","with fafa"}
 		);
 	}
+	
+	@Test
+	public void testHashtagDelimiterSetting() throws IOException {
+		GenericConfiguration config = new GenericConfiguration();
+		config.set("pattern", "[#]+");
+		config.set("lowercase", "false");
+		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
+		
+		TokenStream tokenStream = a.tokenStream("test", "This test-text,#has a; custom#delimiter|seperation.");
+		assertTokenStreamContents(tokenStream, new String[]{
+				"This test-text,","has a; custom","delimiter|seperation."}
+		);
+	}
+	
+	@Test
+	public void testNoStopwordsSetting() throws IOException {
+		GenericConfiguration config = new GenericConfiguration();
+		config.set("pattern", "[#]+");
+		config.set("lowercase", "false");
+		config.set("stopwords", "false");
+		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
+		
+		TokenStream tokenStream = a.tokenStream("test", "all#stopwords#above#about#are still here.");
+		assertTokenStreamContents(tokenStream, new String[]{
+				"all","stopwords","above","about","are still here."}
+		);
+	}
 }
