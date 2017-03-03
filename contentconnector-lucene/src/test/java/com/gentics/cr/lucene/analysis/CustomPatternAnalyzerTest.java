@@ -1,7 +1,6 @@
 package com.gentics.cr.lucene.analysis;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.BaseTokenStreamTestCase;
@@ -87,7 +86,7 @@ public class CustomPatternAnalyzerTest extends BaseTokenStreamTestCase{
 	}
 	
 	@Test
-	public void testNotopwordsSetting() throws IOException {
+	public void testNoStopwordsSetting() throws IOException {
 		GenericConfiguration config = new GenericConfiguration();
 		config.set("pattern", "[#]+");
 		config.set("lowercase", "false");
