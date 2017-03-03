@@ -33,8 +33,17 @@ public class SimpleMVStringTest {
 		SimpleMVString transformer = new SimpleMVString(conf);
 		
 		transformer.processBean(beanToProcess);
-		
 		Assert.assertEquals("Collection was not properly converted.", "test soc mv value ", beanToProcess.get("permissions"));
+	}
+	
+	@Test
+	public void testStringWithDelimiterCollection() {
+		conf.set("delimiter", "#");
+		SimpleMVString transformer = new SimpleMVString(conf);
+		System.out.println("test delimiter!");
+		
+		transformer.processBean(beanToProcess);
+		Assert.assertEquals("Collection was not properly converted.", "test#soc#mv#value#", beanToProcess.get("permissions"));
 	}
 	
 	@Test

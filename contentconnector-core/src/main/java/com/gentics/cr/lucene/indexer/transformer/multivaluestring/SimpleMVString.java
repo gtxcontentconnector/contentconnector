@@ -19,7 +19,10 @@ public class SimpleMVString extends ContentTransformer {
 	private static final String NULL_VALUE_KEY = "nullvalue";
 	private static final String DEFAULT_NULL_VALUE = "NULL";
 	private static final String TRANSFORMER_ATTRIBUTE_KEY = "attribute";
+	private static final String DELIMITER_KEY = "delimiter";
+	private static final String DEFAULT_DELIMITER_VALUE = " ";
 	private String attribute = "";
+	private String delimiter = " ";
 
 	/**
 	 * Create new Instance of SimpleMVString
@@ -31,6 +34,10 @@ public class SimpleMVString extends ContentTransformer {
 		NULLValue = (String) config.get(NULL_VALUE_KEY);
 		if (NULLValue == null) {
 			NULLValue = DEFAULT_NULL_VALUE;
+		}
+		delimiter = (String) config.get(DELIMITER_KEY);
+		if (delimiter == null) {
+			delimiter = DEFAULT_DELIMITER_VALUE;
 		}
 		attribute = (String) config.get(TRANSFORMER_ATTRIBUTE_KEY);
 	}
@@ -48,7 +55,7 @@ public class SimpleMVString extends ContentTransformer {
 			}
 			for (Object object : coll) {
 				if (object != null) {
-					ret.append(object.toString() + " ");
+					ret.append(object.toString() + delimiter);
 				}
 			}
 		}

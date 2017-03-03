@@ -1,6 +1,7 @@
 package com.gentics.cr.lucene.analysis;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.BaseTokenStreamTestCase;
@@ -69,6 +70,33 @@ public class CustomPatternAnalyzerTest extends BaseTokenStreamTestCase{
 		TokenStream tokenStream1 = a.tokenStream("test", "this hugo;a Text;with fafa");
 		assertTokenStreamContents(tokenStream1, new String[]{
 				"this hugo","a text","with fafa"}
+		);
+	}
+	
+	@Test
+	public void testHashtagDelimiterSetting() throws IOException {
+		GenericConfiguration config = new GenericConfiguration();
+		config.set("pattern", "[#]+");
+		config.set("lowercase", "false");
+		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
+		
+		TokenStream tokenStream = a.tokenStream("test", "This test-text,#has a; custom#delimiter|seperation.");
+		assertTokenStreamContents(tokenStream, new String[]{
+				"This test-text,","has a; custom","delimiter|seperation."}
+		);
+	}
+	
+	@Test
+	public void testNotopwordsSetting() throws IOException {
+		GenericConfiguration config = new GenericConfiguration();
+		config.set("pattern", "[#]+");
+		config.set("lowercase", "false");
+		config.set("stopwords", "false");
+		CustomPatternAnalyzer a = new CustomPatternAnalyzer(config);
+		
+		TokenStream tokenStream = a.tokenStream("test", "all#stopwords#above#about#are still here.");
+		assertTokenStreamContents(tokenStream, new String[]{
+				"all","stopwords","above","about","are still here."}
 		);
 	}
 }
