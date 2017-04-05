@@ -24,6 +24,8 @@ import java.util.Map;
  * The LDAP request processor can be used to request objects from an LDAP server.
  * It was developed to provide means to index LDAP content for the contentconnector search.
  * For available config options please see the public static properties on this class.
+ * Currently only single value ldap-attributes are supported by the LDAP request processor.
+ * When a multi value ldap-attributes is requested, only the first value will be used.
  *
  * @author Sebastian Vogel
  */
@@ -51,7 +53,7 @@ public class LDAPRequestProcessor extends RequestProcessor {
 	 */
 	public static final String LDAP_SEARCH_BASE_DN_CONFIG_KEY = "ldapsearcbbasedn";
 	/**
-	 * The LDAP id attribute config key this attribute is returned with every search (defaults to "cn")
+	 * The LDAP id attribute config key. This attribute is returned with every search (defaults to "cn")
 	 */
 	public static final String LDAP_ID_ATTRIBUTE_CONFIG_KEY = "ldapidattribute";
 
@@ -112,8 +114,12 @@ public class LDAPRequestProcessor extends RequestProcessor {
 	}
 
 	/**
-	 * Prepare the CR-request attribute for use in the LDAP search.
-	 * Add the ldapIdAttribute and remove the "contentid" attribute.
+	 * Prepare the CR-request attributes for use in the LDAP search. We need to
+	 * add the ldapIdAttribute to the request and remove the "contentid" attribute.
+	 * The contentid-attribute is removed because it is only relevant inside of the
+	 * contentconnector as identifier for the Resovleable and should not be
+	 * requested from the ldap.
+	 *
 	 * @param requestAttributes the CRRequest attributes to fetch
 	 * @return the attributes to use in the ldap search
 	 */
@@ -188,7 +194,11 @@ public class LDAPRequestProcessor extends RequestProcessor {
 	}
 
 	/**
-	 * Convert a single LDAP search result to a resolvable bean
+	 * Convert a single LDAP search result to a resolvable bean.
+	 * Currently only single value ldap-attributes are supported. When a
+	 * multi value ldap-attributes is requested, only the first value
+	 * will be used.
+	 *
 	 * @param singleResult the single search result
 	 * @return the resolvable created from the ldap search result.
 	 * @throws NamingException when the attributes of the search results could not be accessed

@@ -1,0 +1,3 @@
+Add new LDAPRequestProcessor. This RequestProcessor can be used to access LDAP entries
+via the Gentics ContentConnector. For usage in the Lucene indexer see the
+@deact_indexer.ldap.properties@ file in the config-sample.
