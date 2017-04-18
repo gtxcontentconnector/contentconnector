@@ -1,0 +1,3 @@
+The node version has been increased to 2.1.2. This node version does not use quartz for scheduling of
+datasource related background jobs. Due to a version conflict of quartz, sometimes the background jobs were
+not scheduled (without any error message), and clearing the caches due to changes in the contentrepository did not work.
