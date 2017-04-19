@@ -60,10 +60,25 @@
 			<artifactId>pdfbox</artifactId>
 			<version>${org.apache.pdfbox.version}</version>
 		</dependency>
+		<!-- Mimetype detection -->
 		<dependency>
-			<!-- Mimetype detection -->
 			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-app</artifactId>
+			<artifactId>tika-langdetect</artifactId>
+			<version>${org.apache.tika.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-serialization</artifactId>
+			<version>${org.apache.tika.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-xmp</artifactId>
+			<version>${org.apache.tika.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-batch</artifactId>
 			<version>${org.apache.tika.version}</version>
 		</dependency>
 		<dependency>
