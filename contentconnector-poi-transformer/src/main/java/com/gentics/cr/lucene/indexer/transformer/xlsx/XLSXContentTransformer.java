@@ -98,7 +98,7 @@ public class XLSXContentTransformer extends ContentTransformer {
 	}
 
 	private XMLReader fetchSheetParser(ContentHandler sst) throws SAXException {
-		XMLReader parser = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+		XMLReader parser = XMLReaderFactory.createXMLReader();
 
 		parser.setContentHandler(sst);
 		return parser;
