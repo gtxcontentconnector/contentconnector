@@ -326,12 +326,12 @@
 		<repository>
 			<id>lan.releases.staging.gcc</id>
 			<name>Gentics Releases Repository</name>
-			<url>http://artifactory.office/repository/lan.releases.staging.gcc</url>
+			<url>https://repo.gentics.com/artifactory/lan.releases.staging.gcc</url>
 		</repository>
 		<snapshotRepository>
 			<id>lan.snapshots</id>
 			<name>Gentics Snapshots Repository</name>
-			<url>http://artifactory.office/repository/lan.snapshots</url>
+			<url>https://repo.gentics.com/artifactory/lan.snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
