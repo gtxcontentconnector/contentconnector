@@ -266,7 +266,7 @@ public class CRUtil {
 	}
 
 	/**
-	 * Checks if a string is empty (null, length == 0 && equals "").
+	 * Checks if a string is empty (null, length == 0 &amp;&amp; equals "").
 	 * @param string variable to check
 	 * @return if all conditions are true.
 	 */

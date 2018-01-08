@@ -3,7 +3,7 @@ package com.gentics.cr.rest.php;
 /**
  * BadFormatException.java
  *
- * Author : Ludovic Martin <ludovic DOT martin AT laposte DOT net>
+ * Author : Ludovic Martin &lt;ludovic DOT martin AT laposte DOT net&gt;
  * This code is free for any use and modification but comes without any warranty.
  *
  * Bad format exception

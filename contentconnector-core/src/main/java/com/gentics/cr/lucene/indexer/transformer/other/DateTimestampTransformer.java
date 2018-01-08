@@ -20,7 +20,7 @@ import com.gentics.cr.util.CRUtil;
 /**
  * Transforms a date string to a timestamp int and vice versa
  * 
- * @author Sebastian Vogel <s.vogel@gentics.com>
+ * @author Sebastian Vogel
  * 
  */
 public class DateTimestampTransformer extends ContentTransformer {

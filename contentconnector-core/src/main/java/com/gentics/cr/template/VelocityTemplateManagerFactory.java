@@ -118,7 +118,7 @@ public class VelocityTemplateManagerFactory {
 	 * @param name the name of the template
 	 * @param source the velocity source-code of the template
 	 * @param encoding
-	 *            encoding as string or null => defaults to utf-8
+	 *            encoding as string or null =&gt; defaults to utf-8
 	 * @return template (either a cached one, found using the generated cache key,
 	 *         or a newly created one).
 	 * @throws com.gentics.cr.exceptions.CRException when name or source are null or when the template 

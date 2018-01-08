@@ -17,7 +17,7 @@ import com.gentics.cr.plink.PLinkStripper;
 
 /**
  * HTMLContentTransformer transformers a part/or a full html structure into
- * plain text. Plinks get stripped (replaced with empty strings). For html ->
+ * plain text. Plinks get stripped (replaced with empty strings). For html -&gt;
  * plain text conversion it uses Jsoup. It tries as good as it can but it will only strip
  * valid html.
  * 

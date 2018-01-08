@@ -37,7 +37,7 @@ public final class GenericConfigurationFileLoader {
 	 * @param config - the configuration to load the properties to
 	 * @param servletname - will be used to identify the file
 	 * 						e.g.: ${com.gentics.portalnode.confpath}
-	 * /rest/<servletname>.properties
+	 * /rest/[servletname].properties
 	 */
 	public static void loadPerServletname(final GenericConfiguration config, final String servletname) {
 		String path = CRUtil.resolveSystemProperties("${com.gentics.portalnode.confpath}/rest/" + servletname

@@ -5,7 +5,7 @@ import com.gentics.api.portalnode.connector.PLinkReplacer;
 
 /**
  *  Helper Class to be passed to PortalConnectorHelper.replacePLinks.
- *  Replaces PLinks with "" => useful for indexing
+ *  Replaces PLinks with "" =&gt; useful for indexing
  *
  * 
  * Last changed: $Date: 2009-06-22 17:49:58 +0200 (Mo, 22 Jun 2009) $

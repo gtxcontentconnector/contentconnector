@@ -268,7 +268,7 @@ public class CRRequest implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Sets the object number to start from as String e.g. "2" gets <count>
+	 * Sets the object number to start from as String e.g. "2" gets &lt;count&gt;
 	 * objects starting from object nr. 2
 	 * 
 	 * @param startString
@@ -278,7 +278,7 @@ public class CRRequest implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Gets the object number to start from as String e.g. "2" gets <count>
+	 * Gets the object number to start from as String e.g. "2" gets &lt;count&gt;
 	 * objects starting from object nr. 2
 	 * 
 	 * @return start number
@@ -294,7 +294,7 @@ public class CRRequest implements Cloneable, Serializable {
 
 	/**
 	 * Sets the number of objects to request as String e.g. "5" gets 5 objects
-	 * starting from <start>, defaults to "-1" and gets all objects
+	 * starting from &lt;start&gt;, defaults to "-1" and gets all objects
 	 * 
 	 * @param countString
 	 */
@@ -304,7 +304,7 @@ public class CRRequest implements Cloneable, Serializable {
 
 	/**
 	 * Get the number of objects to request as String e.g. "5" gets 5 objects
-	 * starting from <start>, defaults to "-1" and gets all objects
+	 * starting from &lt;start&gt;, defaults to "-1" and gets all objects
 	 * 
 	 * @return countString
 	 */
@@ -378,7 +378,7 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * Gets an array of attribute names wherein plinks are to be replaced.
 	 * 
-	 * @return plinkAttributeArray, returns null if array is not set => no
+	 * @return plinkAttributeArray, returns null if array is not set =&gt; no
 	 *         plinks are to be replaced
 	 */
 	public String[] getPlinkAttributeArray() {
@@ -388,7 +388,7 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * Sets the child filter rule that is used to fetch sub elements. This is
 	 * only to be set for getNavigation For detailed description see
-	 * <setRequestFilter>
+	 * &lt;setRequestFilter&gt;
 	 * 
 	 * @param childFilter
 	 */
@@ -399,7 +399,7 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * Gets the child filter rule that is used to fetch sub elements. This is
 	 * only to be set for getNavigation For detailed description see
-	 * <setRequestFilter>
+	 * &lt;setRequestFilter&gt;
 	 * 
 	 * @return childFilter
 	 */
@@ -410,7 +410,7 @@ public class CRRequest implements Cloneable, Serializable {
 
 	/**
 	 * Set a HashMap of objects to deploy to the filter. See
-	 * <addObjectForFilterDeployment> for detailed description.
+	 * &lt;addObjectForFilterDeployment&gt; for detailed description.
 	 * 
 	 * @param objectsToDeploy
 	 */
@@ -420,7 +420,7 @@ public class CRRequest implements Cloneable, Serializable {
 
 	/**
 	 * Get a HashMap of objects to deploy to the filter. See
-	 * <addObjectForFilterDeployment> for detailed description.
+	 * &lt;addObjectForFilterDeployment&gt; for detailed description.
 	 * 
 	 * @return objectsToDeploy
 	 */
@@ -429,7 +429,7 @@ public class CRRequest implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Gets the object number to start from as Integer e.g. 2 gets <count>
+	 * Gets the object number to start from as Integer e.g. 2 gets &lt;count&gt;
 	 * objects starting from object nr. 2
 	 * 
 	 * @return start
@@ -444,7 +444,7 @@ public class CRRequest implements Cloneable, Serializable {
 
 	/**
 	 * Get the number of objects to request as Integer e.g. 5 gets 5 objects
-	 * starting from <start>, defaults to -1 and gets all objects.
+	 * starting from &lt;start&gt;, defaults to -1 and gets all objects.
 	 * 
 	 * @return count
 	 */
@@ -519,8 +519,8 @@ public class CRRequest implements Cloneable, Serializable {
 	 * 
 	 * @param config
 	 * @param ds
-	 *            Datasource => Datasource does not have to be fetched from
-	 *            config => Faster
+	 *            Datasource =&gt; Datasource does not have to be fetched from
+	 *            config =&gt; Faster
 	 * @return DatasourceFilter
 	 * @throws ParserException
 	 * @throws ExpressionParserException

@@ -29,9 +29,9 @@ public final class BreadcrumbHelper {
 	 * {@value #DEFAULT_FOLDERATTRIBUTE} as attribute to get the parent element.
 	 * @param resolvable - resolvable to get the parents from.
 	 * @return List containing the parents in descending order:<br>
-	 * [0]  => ROOT<br>
-	 * [..] => Folders<br>
-	 * [n]  => Page<br>
+	 * [0]  =&gt; ROOT<br>
+	 * [..] =&gt; Folders<br>
+	 * [n]  =&gt; Page<br>
 	 */
 	public static List<CRResolvableBean> getParents(final CRResolvableBean resolvable) {
 		return getParents(resolvable, DEFAULT_FOLDERATTRIBUTE);
@@ -42,9 +42,9 @@ public final class BreadcrumbHelper {
 	 * @param resolvable - resolvable to get the parents from.
 	 * @param folderattribute - attribute name to get the parent of an element
 	 * @return List containing the parents in descending order:<br>
-	 * [0]  => ROOT<br>
-	 * [..] => Folders<br>
-	 * [n]  => Page<br>
+	 * [0]  =&gt; ROOT<br>
+	 * [..] =&gt; Folders<br>
+	 * [n]  =&gt; Page<br>
 	 */
 	public static List<CRResolvableBean> getParents(final CRResolvableBean resolvable, final String folderattribute) {
 		Vector<CRResolvableBean> parents = new Vector<CRResolvableBean>();

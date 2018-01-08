@@ -22,7 +22,7 @@ public interface IContentRenderer {
 
 	/**
 	 * Render Contentattribute attribute from bean into a writer.
-	 * @param writer
+	 * @param stream
 	 * @param bean
 	 * @param contentAttribute
 	 * @param doReplacePLinks

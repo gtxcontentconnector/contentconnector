@@ -122,7 +122,7 @@ public class CRResolvableBean extends AccessibleBean implements Serializable, Re
 	
 	/**
 	 * Create a new instance of CRResolvableBean.
-	 * A contentid 10001.<id> will be generated for the bean.
+	 * A contentid 10001.[id] will be generated for the bean.
 	 * @param id object id
 	 */
 	public CRResolvableBean(final int id) {

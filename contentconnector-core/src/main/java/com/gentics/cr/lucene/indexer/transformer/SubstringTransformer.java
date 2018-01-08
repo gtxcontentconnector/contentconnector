@@ -19,13 +19,13 @@ import com.gentics.cr.util.CRUtil;
  * Default configuration for indexer:
  * #SUBSTRINGER
  * # for recognizing any code in implementation before a specific substring 
- * (defaults to <!DOCTYPE declaration) 
+ * (defaults to &lt;!DOCTYPE declaration) 
  * index.AWO.CR.PAGES.transformer.0.attribute=content
  * index.AWO.CR.PAGES.transformer.0.rule=object.obj_type==10007
  * index.AWO.CR.PAGES.transformer.0.transformerclass=
  * com.gentics.cr.lucene.indexer.transformer.SubstringTransformer
  * # startindexpattern 
- * index.AWO.CR.PAGES.transformer.0.startindexpattern=<!DOCTYPE
+ * index.AWO.CR.PAGES.transformer.0.startindexpattern=&lt;!DOCTYPE
  *
  */
 public class SubstringTransformer extends ContentTransformer {
@@ -53,7 +53,7 @@ public class SubstringTransformer extends ContentTransformer {
 	/**
 	 * Create Instance of SubstringTransformer.
 	 * if the startindexpattern is not configured in the config: 
-	 * the default pattern "<!DOCTYPE" will be used
+	 * the default pattern "&lt;!DOCTYPE" will be used
 	 * @param config configuration
 	 */
 	public SubstringTransformer(final GenericConfiguration config) {

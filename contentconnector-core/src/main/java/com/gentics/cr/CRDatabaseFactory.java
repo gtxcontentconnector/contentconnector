@@ -141,7 +141,6 @@ public final class CRDatabaseFactory {
 	 * @param requestProcessorConfig
 	 *            containing the datasource config
 	 * @return Datasource if correctly configured, otherwise null
-	 * @throws NodeException
 	 */
 	public static Datasource getDatasource(
 			final CRConfigUtil requestProcessorConfig) {

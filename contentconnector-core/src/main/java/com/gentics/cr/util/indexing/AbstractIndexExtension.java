@@ -7,7 +7,7 @@ import com.gentics.cr.CRConfig;
  * Implementations should always provide a constructor with the following method signature
  * <pre>public MyIndexExtension(CRConfig config, IndexLocation callingLocation)</pre>
  *  
- * @author Sebastian Vogel <s.vogel@gentics.com> * 
+ * @author Sebastian Vogel 
  */
 public abstract class AbstractIndexExtension implements IndexExtension {
 

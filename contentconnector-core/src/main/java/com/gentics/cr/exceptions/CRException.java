@@ -188,7 +188,7 @@ public class CRException extends Exception implements Serializable {
 
 	/**
 	 * has to be called before serialization.
-	 * DEPRICATED => USE CRError to serialize an Error
+	 * DEPRICATED =&gt; USE CRError to serialize an Error
 	 */
 	public final void initStringStackForSerialization() {
 		this.stringStack = getStringStackTrace();

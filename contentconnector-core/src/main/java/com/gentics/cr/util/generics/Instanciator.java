@@ -27,7 +27,7 @@ public final class Instanciator {
 
 	/**
 	 * try to get an instance of a class with multiple parameter variations.
-	 * <br />
+	 * <br>
 	 * e.g. (myCollection.class, [ [1,2], ["1","2"] ])
 	 * @param className Name of the class to instantiate with the parameters.
 	 * @param prioritizedParameters array with arrays with parameters
@@ -49,7 +49,7 @@ public final class Instanciator {
 
 	/**
 	 * try to get an instance of a class with multiple parameter variations.
-	 * <br />
+	 * <br>
 	 * e.g. (myCollection.class, [ [1,2], ["1","2"] ])
 	 * @param clazz {@link Class} to instantiate with the parameters
 	 * @param prioritizedParameters array with arrays with parameters
@@ -109,7 +109,7 @@ public final class Instanciator {
 
 	/**
 	 * tests if the given source parameter types would match the target
-	 * parameter types.<br /> this can be used to test if a {@link Constructor}
+	 * parameter types.<br> this can be used to test if a {@link Constructor}
 	 * with the target parameters can be called with the source parameters.
 	 * @param targetParameterTypes parameters of the {@link Constructor}
 	 * @param sourceParameterTypes parameters to call the {@link Constructor}

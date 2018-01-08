@@ -3,7 +3,7 @@ package com.gentics.cr.exceptions;
  * This exception is thrown when the system property
  * com.gentics.portalnode.confpath is not configured correctly
  * 
- * @author Sebastian Vogel <s.vogel@gentics.com>
+ * @author Sebastian Vogel
  */
 public class ConfpathConfigurationException extends RuntimeException {
 	/**

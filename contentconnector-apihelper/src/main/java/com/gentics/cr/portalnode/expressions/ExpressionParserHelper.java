@@ -107,8 +107,6 @@ public final class ExpressionParserHelper {
 	 * @param expression {@link Expression} to generate the
 	 * {@link DatasourceFilter} for.
 	 * @return DatasourceFilter for the expression.
-	 * @throws ParserException when the expression cannot be parsed into an
-	 * {@link Expression}.
 	 * @throws ExpressionParserException when the expression cannot be used with
 	 * this {@link Datasource}. Gentics Portal.Node API Documentation
 	 * (http://www.gentics.com/help/topic/com.gentics.portalnode.sdk.doc/misc/doc/apijavadoc/com/gentics/api/lib/datasource/Datasource.html#createDatasourceFilter(com.gentics.api.lib.expressionparser.Expression))

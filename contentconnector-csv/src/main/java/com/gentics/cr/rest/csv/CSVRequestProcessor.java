@@ -18,7 +18,7 @@ import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 
 /**
- * Request Processor to create simple structures via CSV.<br />
+ * Request Processor to create simple structures via CSV.<br>
  * Needs a root json object that has an array of other objects in his object
  * attribute:
  * 
