@@ -40,6 +40,10 @@ public class NavigationCacheRequestProcessor extends RequestProcessor {
 			if (cached == null) {
 				cached = navigationCache.fetchAndCacheNavigationObject(request);
 			}
+			// if navigation is still empty, we just forward the call to the wrapped requestprocessor
+			if (cached == null) {
+				return wrapped.getObjects(request, doNavigation);
+			}
 			return cached;
 		} else {
 			return wrapped.getObjects(request, doNavigation);
