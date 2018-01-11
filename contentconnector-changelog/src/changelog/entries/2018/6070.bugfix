@@ -1,0 +1,2 @@
+The NavigationCacheRequestProcessor has been fixed to get the navigation synchronously,
+if it is not found in the cache, instead of returning null.
