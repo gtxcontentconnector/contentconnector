@@ -8,3 +8,7 @@ contentconnector-config-sample/src/main/config/index/
 contentconnector-changelog/src/changelog/mappings/*SNAPSHOT.json
 *.orig
 **/nb-configuration.xml
+
+# IntelliJ project files
+.idea
+*.iml
