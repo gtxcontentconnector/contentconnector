@@ -1,0 +1,5 @@
+Isolate the Velocity-runtime for the contentconnector. The contentconnector will now use
+the new-able VelocityEngine class internally instead of the Velocity class singleton.
+This ensures that the configuration of the Velocity engine in the contentconnector will
+not interfere with that of other libraries or frameworks which use (and configure) the
+singleton model.
