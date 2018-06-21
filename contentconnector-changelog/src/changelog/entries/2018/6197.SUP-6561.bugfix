@@ -1,3 +1,2 @@
-The node version has been updated to 2.3.1. This node version includes a fix for multithreaded access of
-caches for contentobjects.
-Also the version of the trove library has been updated to 2.1.0.
+Updated dependency to node-lib.
+This solves an issue where images did not get the correct filename when before beeing resized by Gentics Image Store
