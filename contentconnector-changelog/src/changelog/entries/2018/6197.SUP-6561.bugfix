@@ -1,2 +1,2 @@
 Updated dependency to node-lib.
-This solves an issue where images did not get the correct filename when before beeing resized by Gentics Image Store
+This solves an issue where images did not get the correct filename when being resized by Gentics Image Store.
