@@ -1,0 +1,2 @@
+Updated dependency to node-lib.
+This fixes a problem with background sync checking of datasource using persistent caches.
