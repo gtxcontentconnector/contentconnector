@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -16,7 +14,7 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 
 /**
- * 
+ *
  * Last changed: $Date$
  * @version $Revision$
  * @author $Author$
@@ -53,19 +51,13 @@ public class PDFContentTransformer extends ContentTransformer {
 		String contents = null;
 
 		try {
-			pdfDocument = PDDocument.load(is);
-
-			if (pdfDocument.isEncrypted()) {
-				//Just try using the default password and move on
-				pdfDocument.decrypt("");
-			}
+			pdfDocument = PDDocument.load(is, "");
+			pdfDocument.setAllSecurityToBeRemoved(true);
 
 			//create a writer where to append the text content.
 			StringWriter writer = new StringWriter();
 			if (stripper == null) {
 				stripper = new PDFTextStripper();
-			} else {
-				stripper.resetEngine();
 			}
 			stripper.writeText(pdfDocument, writer);
 
@@ -76,10 +68,6 @@ public class PDFContentTransformer extends ContentTransformer {
 			contents = writer.getBuffer().toString();
 
 		} catch (IOException e) {
-			throw new CRException(e);
-		} catch (CryptographyException e) {
-			throw new CRException(e);
-		} catch (InvalidPasswordException e) {
 			throw new CRException(e);
 		} catch (Exception e) {
 			//Catch all Exceptions happening here to not disturb the indexer
