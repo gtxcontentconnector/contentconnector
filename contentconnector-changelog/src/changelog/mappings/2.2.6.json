@@ -1,0 +1,11 @@
+{
+  "version": "2.2.6",
+  "date": "03.08.2018",
+  "changeLogEntryFileNames": [
+    "6237.SUP-6718.bugfix",
+    "6229.SUP-6717.bugfix",
+    "6197.SUP-6561.bugfix",
+    "6224.SUP-4077.bugfix"
+  ],
+  "genericProperties": {}
+}
