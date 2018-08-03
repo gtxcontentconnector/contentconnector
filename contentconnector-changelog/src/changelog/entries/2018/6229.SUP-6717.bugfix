@@ -1,0 +1,1 @@
+Fixed missing log output for Java-Erros (such as "NoClassDefFoundError") thrown inside of IndexJobs.

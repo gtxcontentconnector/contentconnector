@@ -173,6 +173,14 @@ public class IndexJobQueue {
 	private void workQueue() {
 		boolean interrupted = false;
 
+		// define an UncaughtExceptionHandler to ensure all uncaught Exceptions
+		// and Errors in the index jobs are logged.
+		final Thread.UncaughtExceptionHandler exceptionHandler = new Thread.UncaughtExceptionHandler() {
+			public void uncaughtException(Thread th, Throwable ex) {
+				LOGGER.fatal("Uncaught exception in thread: " + th.getName() , ex);
+			}
+		};
+
 		while (!interrupted && !stop) {
 			try {
 				synchronized (this.pauseMonitor) {
@@ -186,6 +194,7 @@ public class IndexJobQueue {
 					synchronized (IndexJobQueue.this) {
 						currentJI = j;
 						currentJob = new Thread(j);
+						currentJob.setUncaughtExceptionHandler(exceptionHandler);
 						currentJob.setName("Current Index Job - " + j.getIdentifyer());
 						currentJob.setDaemon(true);
 						currentJob.start();
