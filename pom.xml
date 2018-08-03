@@ -9,7 +9,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
 		<node.version>2.3.4</node.version>
-		<org.apache.tika.version>1.14</org.apache.tika.version>
+		<org.apache.tika.version>1.18</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<surefire.forkcount>8</surefire.forkcount>
 	</properties>
@@ -144,7 +144,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.12</version>
+				<version>1.16.1</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -192,7 +192,7 @@
 					<threadCount>1</threadCount>
 					<threadCountClasses>1</threadCountClasses>
 					<trimStackTrace>false</trimStackTrace>
-					<!-- // Kill the forked test if it takes more than 3h for execution. 
+					<!-- // Kill the forked test if it takes more than 3h for execution.
 						Nope, currently disabled -->
 					<forkedProcessTimeoutInSeconds>0</forkedProcessTimeoutInSeconds>
 					<jvm>${JAVA_1_7_HOME}/bin/java</jvm>
