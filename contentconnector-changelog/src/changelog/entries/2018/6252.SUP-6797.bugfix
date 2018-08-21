@@ -1,0 +1,2 @@
+Updated Apache PDFBox version to 2.0.11 to prevent OutOfMemory errors.
+
