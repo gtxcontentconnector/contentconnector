@@ -326,12 +326,12 @@
 		<repository>
 			<id>lan.releases.staging.gcc</id>
 			<name>Gentics Releases Repository</name>
-			<url>https://repo.gentics.com/artifactory/lan.releases.staging.gcc</url>
+			<url>https://repo.apa-it.at/artifactory/gtx-maven-releases-staging-gcc</url>
 		</repository>
 		<snapshotRepository>
 			<id>lan.snapshots</id>
 			<name>Gentics Snapshots Repository</name>
-			<url>https://repo.gentics.com/artifactory/lan.snapshots</url>
+			<url>https://repo.apa-it.at/artifactory/gtx-maven-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
