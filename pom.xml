@@ -8,7 +8,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
-		<node.version>2.3.8-SNAPSHOT</node.version>
+		<node.version>2.3.8-hotfix-sup-7992-SNAPSHOT</node.version>
 		<org.apache.tika.version>1.18</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<surefire.forkcount>8</surefire.forkcount>
