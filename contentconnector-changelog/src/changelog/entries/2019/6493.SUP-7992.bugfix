@@ -1,0 +1,8 @@
+Updated some dependencies in order to fix security vulnerabilities:
+
+* pdfbox to 2.0.15
+* c3p0 to 0.9.5.4
+* httpclient to 4.5.9
+* xalan to 2.7.2
+* velocity-tools to 1.4
+* node to 2.3.8
