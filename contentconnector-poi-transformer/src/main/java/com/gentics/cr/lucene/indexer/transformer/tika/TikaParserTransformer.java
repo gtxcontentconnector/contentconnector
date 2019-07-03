@@ -135,7 +135,9 @@ public class TikaParserTransformer extends ContentTransformer {
 				ParseContext context = new ParseContext();
 
 				try {
-					metadata.set(Metadata.CONTENT_TYPE, tika.detect(inputStream));
+					String mimeType = tika.detect(inputStream);
+					//mimeType = "application/vnd.ms-word.template.macroenabled.12";
+					metadata.set(Metadata.CONTENT_TYPE, mimeType);
 
 					parser.parse(inputStream, textHandler, metadata, context);
 
