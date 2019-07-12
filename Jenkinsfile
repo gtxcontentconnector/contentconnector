@@ -87,7 +87,11 @@ spec:
 
 			post {
 				always {
-					junit  "**/target/surefire-reports/*.xml"
+					script {
+						if (!Boolean.valueOf(params.release)) {
+							junit  "**/target/surefire-reports/*.xml"
+						}
+					}
 				}
 			}
 		}
