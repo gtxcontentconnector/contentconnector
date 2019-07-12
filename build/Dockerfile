@@ -49,7 +49,7 @@ RUN mkdir -p /usr/lib/jvm \
 	&& ln -s /etc/ssl/certs/java/cacerts /usr/lib/jvm/java-7-oracle/jre/lib/security/cacerts
 
 ENV JAVA_1_7_HOME /usr/lib/jvm/java-7-oracle
-ENV JAVA_1_8_HOME /usr/local/openjdk-8
+ENV JAVA_1_8_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Set the locale (needed for ruby guides)
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
