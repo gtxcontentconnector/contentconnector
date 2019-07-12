@@ -24,7 +24,7 @@
 			<password>${env.repoPassword}</password>
 		</server>
 		<server>
-			<id>lan.releases.staging.node</id>
+			<id>lan.releases.staging.gcc</id>
 			<username>${env.repoUsername}</username>
 			<password>${env.repoPassword}</password>
 		</server>
