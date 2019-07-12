@@ -201,7 +201,7 @@
 					<!-- // Kill the forked test if it takes more than 3h for execution.
 						Nope, currently disabled -->
 					<forkedProcessTimeoutInSeconds>0</forkedProcessTimeoutInSeconds>
-					<jvm>${JAVA_1_8_HOME}/bin/java</jvm>
+					<jvm>${env.JAVA_1_8_HOME}/bin/java</jvm>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -211,7 +211,7 @@
 				<configuration>
 					<verbose>true</verbose>
 					<fork>true</fork>
-					<executable>${JAVA_1_8_HOME}/bin/javac</executable>
+					<executable>${env.JAVA_1_8_HOME}/bin/javac</executable>
 					<compilerVersion>1.8</compilerVersion>
 					<encoding>UTF-8</encoding>
 					<source>1.8</source>
@@ -243,7 +243,7 @@
 							<goal>javadoc</goal>
 						</goals>
 						<configuration>
-							<javadocExecutable>${JAVA_1_8_HOME}/bin/javadoc</javadocExecutable>
+							<javadocExecutable>${env.JAVA_1_8_HOME}/bin/javadoc</javadocExecutable>
 							<additionalparam>-Xdoclint:none</additionalparam>
 						</configuration>
 						<!-- <configuration> <additionalparam>-Xdoclint:none</additionalparam> 
