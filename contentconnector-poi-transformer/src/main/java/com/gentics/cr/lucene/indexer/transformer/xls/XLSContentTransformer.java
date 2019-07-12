@@ -10,6 +10,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellType;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -68,13 +69,13 @@ public class XLSContentTransformer extends ContentTransformer {
 								for (int c = 0; c < cCount; c++) {
 									HSSFCell cell = row.getCell(c);
 									if (cell != null) {
-										int celltype = cell.getCellType();
-										if (celltype == HSSFCell.CELL_TYPE_STRING) {
+										CellType celltype = cell.getCellType();
+										if (celltype == CellType.STRING) {
 											HSSFRichTextString rts = cell.getRichStringCellValue();
 											if (rts != null) {
 												contents.append(rts.getString() + ",");
 											}
-										} else if (celltype == HSSFCell.CELL_TYPE_NUMERIC) {
+										} else if (celltype == CellType.NUMERIC) {
 											double num = cell.getNumericCellValue();
 											contents.append(num + ",");
 										}
