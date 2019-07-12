@@ -1,0 +1,48 @@
+<settings>
+	<mirrors>
+		<mirror>
+			<id>lan.internal</id>
+			<name>Gentics LAN Mirror Repository</name>
+			<url>https://repo.apa-it.at/artifactory/gtx-maven-internal/</url>
+			<mirrorOf>maven.gentics.com</mirrorOf>
+		</mirror>
+	</mirrors>
+	<servers>
+		<server>
+			<id>lan.snapshots</id>
+			<username>${env.repoUsername}</username>
+			<password>${env.repoPassword}</password>
+		</server>
+		<server>
+			<id>lan.internal</id>
+			<username>${env.repoUsername}</username>
+			<password>${env.repoPassword}</password>
+		</server>
+		<server>
+			<id>lan.releases</id>
+			<username>${env.repoUsername}</username>
+			<password>${env.repoPassword}</password>
+		</server>
+		<server>
+			<id>lan.releases.staging.node</id>
+			<username>${env.repoUsername}</username>
+			<password>${env.repoPassword}</password>
+		</server>
+	</servers>
+
+	<profiles>
+		<profile>
+			<!-- Fixes OpenJDK bug https://stackoverflow.com/questions/53010200/maven-surefire-could-not-find-forkedbooter-class/53105007 -->
+			<id>SUREFIRE-1588</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+			</properties>
+		</profile>
+	</profiles>
+	<activeProfiles>
+		<activeProfile>SUREFIRE-1588</activeProfile>
+	</activeProfiles>
+</settings>
