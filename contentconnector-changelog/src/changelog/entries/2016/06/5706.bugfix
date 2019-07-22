@@ -1,0 +1,2 @@
+Due to a race condition in the initializtion of the JCS cache in the content-connector, the PortalCache for the node-lib was intialized before the cache in the content-connector. Due to this bug the JCS cache was not intialized correctly for some request-processors. This has been fixed: the content-connector now uses the node-lib's JCS-wrapper (the PortalCache) instead of JCS directly. Switching to PortalCache ensurse that the same cache is used for all objects and that JCS is initialized only once.
+

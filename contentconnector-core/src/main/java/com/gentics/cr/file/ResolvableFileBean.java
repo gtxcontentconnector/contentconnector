@@ -285,9 +285,9 @@ public class ResolvableFileBean extends CRResolvableBean {
 
 	/**
 	 * @return the mimetype of the file. the mimetype is matched using the Tika framework (based on content and extension).
-	 * If file is null this method will return {@link com.gentics.cr.file.ResolvableFileBean#UNKOWN_MIMETYPE}
+	 * If file is null this method will return {@link com.gentics.cr.file.ResolvableFileBean#UNKNOWN_MIMETYPE}
 	 * Warning: this call may be slow as it analyses the file.
-	 * If you need better performance just use {@link com.gentics.cr.file.ResolvableFileBean#getMimeType()}
+	 * If you need better performance just use {@link com.gentics.cr.file.ResolvableFileBean#getMimetype()}
 	 * @throws IOException in case Tika detection fails.
 	 */
 	public String getDetectedMimetype() throws IOException {
@@ -300,8 +300,8 @@ public class ResolvableFileBean extends CRResolvableBean {
 
 	/**
 	 * @return mimetype of the file. the mimetype is matched using ONLY the extension.
-	 * If file is null this method will return {@link com.gentics.cr.file.ResolvableFileBean#UNKOWN_MIMETYPE}
-	 * for better mimetype detection use the slower {@link com.gentics.cr.file.ResolvableFileBean#getDetectedMimeType()}
+	 * If file is null this method will return {@link com.gentics.cr.file.ResolvableFileBean#UNKNOWN_MIMETYPE}
+	 * for better mimetype detection use the slower {@link com.gentics.cr.file.ResolvableFileBean#getDetectedMimetype()}
 	 */
 	@Override
 	public String getMimetype() {

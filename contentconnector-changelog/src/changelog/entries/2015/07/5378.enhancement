@@ -1,0 +1,4 @@
+Add possibility to define multiple database handles for one datasource.
+A Round-Robin algorithm is used to choose a handle. 
+If one handle is not available it will be removed temporarily from pool
+For configuration see: https://github.com/gtxcontentconnector/contentconnector/wiki/Configuration

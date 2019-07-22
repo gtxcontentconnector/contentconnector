@@ -2,6 +2,7 @@ package com.gentics.cr;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
@@ -17,7 +18,7 @@ public class DummyRequestProcessorTest extends RequestProcessorTest {
 	
 	
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws CRException, URISyntaxException, IOException {
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(DummyRequestProcessorTest.class.getName(), true);
 		requestProcessor = new DummyRequestProcessor(config.getRequestProcessorConfig(1));
 			

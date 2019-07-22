@@ -1,0 +1,1 @@
+-Added a custom collector class LanguageFallbackSortingCollector that is able to do a language fallback while searching and sort for string fields.

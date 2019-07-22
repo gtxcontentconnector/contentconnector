@@ -1,5 +1,7 @@
 package com.gentics.cr.lucene.facets.search;
 
+import com.gentics.cr.lucene.facets.taxonomy.TaxonomyConfigKeys;
+
 
 /**
  * contains all config keys needed for facets search
@@ -7,7 +9,7 @@ package com.gentics.cr.lucene.facets.search;
  * @author Sebastian Vogel <s.vogel@gentics.com>
  *
  */
-public interface FacetsSearchConfigKeys {
+public interface FacetsSearchConfigKeys extends TaxonomyConfigKeys{
 	/**
 	 * Indicates if Facets are enabled
 	 */

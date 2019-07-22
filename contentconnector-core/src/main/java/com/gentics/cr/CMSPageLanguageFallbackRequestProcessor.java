@@ -17,7 +17,7 @@ import com.gentics.cr.exceptions.CRException;
 
 /**
  * The CMSPageLanguageFallbackRequestProcessor will return CMS Pages (obj_type
- * 10007) with default language settings published (contentid_<lang>...) in
+ * 10007) with default language settings published (contentid_[lang]...) in
  * a predefined fallbacked manner.
  * @author Christopher
  *

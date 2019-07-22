@@ -170,7 +170,11 @@ public class FastContentRenderer implements IContentRenderer {
 						myTemplateManager.put(entry.getKey(), entry.getValue());
 					}
 				}
-				content = myTemplateManager.render("attribute", content);
+				try {
+					content = myTemplateManager.render("attribute", content);
+				} catch (Exception e) {
+					throw new CRException(e);
+				}
 			}
 
 			return content;

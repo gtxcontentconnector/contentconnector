@@ -19,8 +19,8 @@ import java.util.Map;
 
 /**
  * PHP data serializer and unserializer.
- * @author Ludovic Martin <ludovic.martin@laposte.net>
- * @author Haymo Meran <h.meran@gentics.com>
+ * @author Ludovic Martin &lt;ludovic.martin@laposte.net&gt;
+ * @author Haymo Meran &lt;h.meran@gentics.com&gt;
  *
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $

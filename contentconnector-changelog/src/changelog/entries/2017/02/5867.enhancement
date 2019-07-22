@@ -1,0 +1,5 @@
+The new maven module @contentconnector-navcache@ provides the @NavigationCacheRequestProcessor@,
+which will cache responses to navigation requests and will automatically refresh the caches before the
+cached navigations will become invalid.
+See the configuration file @navcache.properties@ in the module @contentconnector-config-sample@ for an example
+configuration.

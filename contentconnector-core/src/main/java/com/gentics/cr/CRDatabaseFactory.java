@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.etc.ObjectTransformer;
+import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.portalnode.PortalNodeInteractor;
@@ -14,9 +15,10 @@ import com.gentics.cr.util.CRUtil;
 /**
  * The datasource factory manages the gentics content repository datasources.
  * Last changed: $Date: 2010-04-01 15:24:02 +0200 (Do, 01 Apr 2010) $
+ * 
  * @version $Revision: 541 $
  * @author $Author: supnig@constantinopel.at $
- *
+ * 
  */
 public final class CRDatabaseFactory {
 	/**
@@ -41,6 +43,7 @@ public final class CRDatabaseFactory {
 
 	/**
 	 * Singleton get Instance.
+	 * 
 	 * @return returns singleton instance.
 	 */
 	private static CRDatabaseFactory getInstance() {
@@ -49,12 +52,15 @@ public final class CRDatabaseFactory {
 
 	/**
 	 * Release Datasource instance.
+	 * 
 	 * @param ds
 	 */
 	public static void releaseDatasource(Datasource ds) {
 
 		if (ds != null) {
-			log.debug("Release Datasource " + ds.toString().replaceAll("([&?])password=[^&?]*", "$1password=*****"));
+			log.debug("Release Datasource "
+					+ ds.toString().replaceAll("([&?])password=[^&?]*",
+							"$1password=*****"));
 			getInstance().releaseDS();
 			ds = null;
 		}
@@ -78,6 +84,7 @@ public final class CRDatabaseFactory {
 
 	/**
 	 * Destroys the factory if all datasources have been released.
+	 * 
 	 * @return true if the process was successful, otherwise false.
 	 */
 	private synchronized boolean destroyFactory() {
@@ -86,15 +93,17 @@ public final class CRDatabaseFactory {
 			log.debug("Factory, resources and threads have been closed.");
 			return true;
 		}
-		log.error("There are still unreleased datasources => could not destroy the" + "factory");
+		log.error("There are still unreleased datasources => could not destroy the"
+				+ "factory");
 		return false;
 	}
 
 	/**
-	 * Destroys the Factory and releases all resources and stops threads if there
-	 * are no more datasources that were not released.
+	 * Destroys the Factory and releases all resources and stops threads if
+	 * there are no more datasources that were not released.
+	 * 
 	 * @return true if there were no unreleased datasources and the factory was
-	 * destroyed
+	 *         destroyed
 	 */
 	public static boolean destroy() {
 		return getInstance().destroyFactory();
@@ -102,54 +111,86 @@ public final class CRDatabaseFactory {
 
 	/**
 	 * Clears all cache contents for the object with the given contentid.
-	 * @param datasource datasource object on that the cache clear should
-	 * 		be performed on.
-	 * @param contentId id of the object that should be removed from the cache.
+	 * 
+	 * @param datasource
+	 *            datasource object on that the cache clear should be performed
+	 *            on.
+	 * @param contentId
+	 *            id of the object that should be removed from the cache.
 	 */
-	public static void clearCache(final Datasource datasource, final String contentId) {
+	public static void clearCache(final Datasource datasource,
+			final String contentId) {
 		PortalConnectorHelper.clearCache(datasource, contentId);
 	}
 
 	/**
 	 * Clears all cache contents for the given datasource.
-	 * @param datasource datasource object on that the cache clear should
-	 * 		be performed on.
+	 * 
+	 * @param datasource
+	 *            datasource object on that the cache clear should be performed
+	 *            on.
 	 */
 	public static void clearCache(final Datasource datasource) {
 		PortalConnectorHelper.clearCache(datasource);
 	}
 
 	/**
-	 * Gets a Datasource instance that ins configured within the given
+	 * Gets a Datasource instance that is configured within the given
 	 * requestProcessorConfig.
-	 * @param requestProcessorConfig containing the datasource config
+	 * 
+	 * @param requestProcessorConfig
+	 *            containing the datasource config
 	 * @return Datasource if correctly configured, otherwise null
 	 */
-	public static Datasource getDatasource(final CRConfigUtil requestProcessorConfig) {
+	public static Datasource getDatasource(
+			final CRConfigUtil requestProcessorConfig) {
 		Datasource ds = null;
-		Properties dsHandle = requestProcessorConfig.getDatasourceHandleProperties();
+		Properties dsHandle = requestProcessorConfig
+				.getDatasourceHandleProperties();
 		Properties dsProps = requestProcessorConfig.getDatasourceProperties();
-		if (dsHandle != null && dsHandle.size() != 0) {
-			if (dsHandle.containsKey("portalnodedb")) {
-				String key = (String) dsHandle.get("portalnodedb");
-				ds = PortalNodeInteractor.getPortalnodeDatasource(key);
-			} else if (dsProps != null && dsProps.size() != 0) {
-				boolean mccr = ObjectTransformer.getBoolean(dsProps.get("mccr"), false);
-				if (mccr) {
-					ds = PortalConnectorFactory.createWritableMultichannellingDatasource(CRUtil.propertiesToMap(dsHandle), CRUtil.propertiesToMap(dsProps));
-				} else {
-					ds = PortalConnectorFactory.createWriteableDatasource(dsHandle, dsProps);
-				}
-				
-			} else {
-				ds = PortalConnectorFactory.createWriteableDatasource(dsHandle);
-			}
-			log.debug("Datasource created for " + requestProcessorConfig.getName());
-			if (ds != null) {
-				getInstance().accquireDS();
+
+		// if a separatly configured datasource is defined for this
+		// requestProcessor, just fetch the ds by id
+		String dsName = requestProcessorConfig.getDatasourceName();
+		if (dsName != null && dsName != "") {
+			try {
+				ds = PortalConnectorFactory.createDatasource(dsName);
+				log.debug("Datasource fetched for "
+						+ requestProcessorConfig.getName());
+			} catch (NodeException e) {
+				log.error("Error while fetching datasource", e);
 			}
 		} else {
-			log.debug("No Datasource created for " + requestProcessorConfig.getName());
+			if (dsHandle != null && dsHandle.size() != 0) {
+				if (dsHandle.containsKey("portalnodedb")) {
+					String key = (String) dsHandle.get("portalnodedb");
+					ds = PortalNodeInteractor.getPortalnodeDatasource(key);
+				} else if (dsProps != null && dsProps.size() != 0) {
+					boolean mccr = ObjectTransformer.getBoolean(
+							dsProps.get("mccr"), false);
+					if (mccr) {
+						ds = PortalConnectorFactory
+								.createWritableMultichannellingDatasource(
+										CRUtil.propertiesToMap(dsHandle),
+										CRUtil.propertiesToMap(dsProps));
+					} else {
+						ds = PortalConnectorFactory.createWriteableDatasource(
+								dsHandle, dsProps);
+					}
+
+				} else {
+					ds = PortalConnectorFactory
+							.createWriteableDatasource(dsHandle);
+				}
+				log.debug("Datasource created for "
+						+ requestProcessorConfig.getName());
+				if (ds != null) {
+					getInstance().accquireDS();
+				}
+			} else {
+				log.debug("No Datasource created for "
+						+ requestProcessorConfig.getName());
+			}
 		}
 		return ds;
 	}

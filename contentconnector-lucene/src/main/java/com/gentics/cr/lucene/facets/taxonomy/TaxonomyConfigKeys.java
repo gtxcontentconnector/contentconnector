@@ -17,4 +17,6 @@ public interface TaxonomyConfigKeys {
 	public static final String FACET_CONFIG_MAPPINGS_KEY = "mappings";
 	public static final String FACET_CONFIG_MAPPINGS_CATEGORY_KEY = "category";
 	public static final String FACET_CONFIG_MAPPINGS_ATTRIBUTE_KEY = "attribute";
+	public static final String LABEL_KEY = "label";
+	public static final String LIST_NULL_VALUES_KEY = "listnullvalues";
 }

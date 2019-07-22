@@ -1,19 +1,20 @@
 package com.gentics.cr.portalnode;
 
+import org.apache.log4j.Logger;
+
 import com.gentics.api.lib.datasource.Datasource;
-import com.gentics.api.portalnode.portlet.GenticsPortlet;
-import com.gentics.api.portalnode.templateengine.TemplateProcessor;
+import com.gentics.api.lib.exception.NodeException;
+import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.lib.image.GenticsImageResizer;
-import com.gentics.portalnode.portal.Portal;
 
 /**
  * 
- * Last changed: $Date: 2009-06-26 15:48:16 +0200 (Fr, 26 Jun 2009) $
- * @version $Revision: 105 $
  * @author $Author: supnig@constantinopel.at $
  *
  */
 public class PortalNodeInteractor {
+
+	private final static Logger LOG = Logger.getLogger(PortalNodeInteractor.class);
 
 	/**
 	 * Get a configured Instance of Datasource from a running Portal.Node Instance.
@@ -21,18 +22,12 @@ public class PortalNodeInteractor {
 	 * @return get a new datasource instance created by createDatasource called on Portal#getCurrentPortal().
 	 */
 	public static Datasource getPortalnodeDatasource(final String key) {
-		return (Portal.getCurrentPortal().createDatasource(key));
-	}
-
-	/**
-	 * Get a TemplateProcessor from a running Portal.Node Instance.
-	 * @param portlet
-	 * @return TemplateProcessor used by the provided portlet
-	 */
-	@SuppressWarnings("deprecation")
-	public static TemplateProcessor getPortletTemplateProcessor(final GenticsPortlet portlet) {
-		//TODO Get not depricated method from DEV
-		return (portlet.getTemplateProcessor(null, null));
+		try {
+			return PortalConnectorFactory.createDatasource(key);
+		} catch (NodeException e) {
+			LOG.error("Could not create datasource for key {" + key + "}", e);
+		}
+		return null;
 	}
 
 	/**
@@ -43,7 +38,9 @@ public class PortalNodeInteractor {
 	 * @param imageType - the image type e.g. png
 	 * @return resized image (resized by GenticsImageResizer) as byte array.
 	 */
-	public static byte[] resizeImage(final byte[] binary, final int width, final int height, final String imageType) {
-		return GenticsImageResizer.resize(binary, Math.max(width, 0), Math.max(height, 0), imageType);
+	public static byte[] resizeImage(final byte[] binary, final int width,
+			final int height, final String imageType) {
+		return GenticsImageResizer.resize(binary, Math.max(width, 0),
+				Math.max(height, 0), imageType);
 	}
 }

@@ -104,6 +104,13 @@ class DefaultIndexAccessor implements IndexAccessor {
 
 	/**
 	 * cache for searchers.
+	 * 
+	 * The implementation of searchers should be changed:
+	 * <ol>
+	 * <li>For every searcher, there should be a usage count</li>
+	 * <li>If the reader for a searcher is reopened, create a new searcher (which is given to callers)</li>
+	 * <li>Close the old readers once the last caller released it</li>
+	 * </ol>
 	 */
 	protected final Map<Similarity, IndexSearcher> cachedSearchers;
 

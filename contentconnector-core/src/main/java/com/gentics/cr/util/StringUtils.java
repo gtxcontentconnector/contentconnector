@@ -250,7 +250,7 @@ public final class StringUtils {
 	 * @param folderPubDir - folder name to convert.
 	 * @return CMS compatible folder name.
 	 * <ul>
-	 * <li>"&" is converted into "und"</li>
+	 * <li>"&amp;" is converted into "und"</li>
 	 * <li>"ß" is converted into "ss"</li>
 	 * <li>"ä" is converted into "ae"</li>
 	 * <li>"Ä" is converted into "Ae"</li>

@@ -1,0 +1,1 @@
+Sometimes an indexing job failed with "org.apache.lucene.store.AlreadyClosedException: this IndexReader is closed".

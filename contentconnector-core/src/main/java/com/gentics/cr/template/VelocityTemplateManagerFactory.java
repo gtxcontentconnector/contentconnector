@@ -1,5 +1,7 @@
 package com.gentics.cr.template;
 
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
 import com.gentics.cr.exceptions.CRException;
 
 import java.io.File;
@@ -8,10 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
 import org.apache.velocity.Template;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
@@ -23,37 +23,37 @@ import org.apache.log4j.Logger;
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
- * 
+ *
  * @version $Revision: 545 $
  * @author $Author: supnig@constantinopel.at $
- * 
+ *
  */
 public class VelocityTemplateManagerFactory {
 
 	private static final String DEFAULT_ENCODING = CharEncoding.UTF_8;
-	
+
 	private static final String CACHE_KEY_SEPARATOR = "|";
-	
+
 	private static final String VELOCITYMACRO_FILENAME = "velocitymacros.vm";
-	
+
 	/** The message for the exception when the template name is null */
 	public static final String EXCEPTION_MESSAGE_NAME_NULL = "Template name cannot be null";
-	
+
 	/** The message for the exception when the template source is null */
 	public static final String EXCEPTION_MESSAGE_SOURCE_NULL = "Template source cannot be null";
-	
+
 	/** The cache zone key for the velocity template cache zone */
 	public static final String VELOCITY_TEMPLATE_CACHEZONE_KEY = "gentics-cr-velocitytemplates";
-    
+
 	private static Logger log = Logger.getLogger(VelocityTemplateManagerFactory.class);
 
-	private static boolean configured = false;
+	private static VelocityEngine velocityEngine;
 
-	private static JCS cache;
-	
+	private static PortalCache cache;
+
 	/**
 	 * Get a configured VelocityTemplateManager.
-	 * 
+	 *
 	 * @param encoding if null defaults to utf-8
 	 * @param macropath
 	 * @return {@link com.gentics.cr.template.VelocityTemplateManagerFactory #getConfiguredVelocityTemplateManagerInstance(String, String, String)}
@@ -67,7 +67,7 @@ public class VelocityTemplateManagerFactory {
 
 	/**
 	 * Get a configured VelocityTemplateManager.
-	 * 
+	 *
 	 * @param encoding if null defaults to utf-8
 	 * @param macropath
 	 * @param propFile
@@ -81,22 +81,20 @@ public class VelocityTemplateManagerFactory {
 		if (encoding == null) {
 			encoding = DEFAULT_ENCODING;
 		}
-		if (!configured) {
-			configure(encoding, macropath, propFile);
-			configured = true;
+		if (velocityEngine == null) {
+			configureVelocityEngine(encoding, macropath, propFile);
 		}
 		return (new VelocityTemplateManager(encoding));
-
 	}
 
 	/**
-	 * Creates a unique cache key which is used to store templates in cache. To create the cash key the name, the 
+	 * Creates a unique cache key which is used to store templates in cache. To create the cash key the name, the
 	 * hash-code of the source and the encoding are concatenated using a separator.
-	 * 
+	 *
 	 * @param name the name of the template
 	 * @param source the velocity source-code of the template
 	 * @param encoding encoding as string
-	 * @return the cache key 
+	 * @return the cache key
 	 */
 	public static String createCacheKey(String name, String source, String encoding) {
 		StringBuilder cacheKey = new StringBuilder();
@@ -107,21 +105,21 @@ public class VelocityTemplateManagerFactory {
 			.append(encoding);
 		return cacheKey.toString();
 	}
-	
+
 	/**
 	 * Create a Velocity template with the given name and source and store it into JCS cache. If a template with a
 	 * was found in the cache, the cached template will be returned instead of a newly created.
 	 * <p>
-	 * to generate the cache key the method {@link #createCacheKey(java.lang.String, java.lang.String, java.lang.String)} 
+	 * to generate the cache key the method {@link #createCacheKey(java.lang.String, java.lang.String, java.lang.String)}
 	 * is used
-	 * 
+	 *
 	 * @param name the name of the template
 	 * @param source the velocity source-code of the template
 	 * @param encoding
-	 *            encoding as string or null => defaults to utf-8
+	 *            encoding as string or null =&gt; defaults to utf-8
 	 * @return template (either a cached one, found using the generated cache key,
 	 *         or a newly created one).
-	 * @throws com.gentics.cr.exceptions.CRException when name or source are null or when the template 
+	 * @throws com.gentics.cr.exceptions.CRException when name or source are null or when the template
 	 *		could not be created
 	 */
 	public static Template getTemplate(String name, String source, String encoding) throws CRException {
@@ -134,30 +132,33 @@ public class VelocityTemplateManagerFactory {
 		}
 		if (cache == null) {
 		    try {
-			    cache = JCS.getInstance(VELOCITY_TEMPLATE_CACHEZONE_KEY);
+			    cache = PortalCache.getCache(VELOCITY_TEMPLATE_CACHEZONE_KEY);
 			    if (log.isDebugEnabled()) {
-				log.debug("Initialized cache zone for \"" + VELOCITY_TEMPLATE_CACHEZONE_KEY + "\".");
+					log.debug("Initialized cache zone for \"" + VELOCITY_TEMPLATE_CACHEZONE_KEY + "\".");
 			    }
-		    } catch (CacheException e) {
+		    } catch (PortalCacheException e) {
 			    log.warn("Could not initialize Cache for Velocity templates.", e);
 		    }
 		}
 		if (encoding == null) {
 			encoding = DEFAULT_ENCODING;
 		}
-		
+
 		VelocityTemplateWrapper wrapper = null;
 		String cacheKey = null;
 		if (cache != null) {
 			cacheKey = VelocityTemplateManagerFactory.createCacheKey(name, source, encoding);
-			Object obj = cache.get(cacheKey);
-			// check if obj is really a template wrapper to avoid cast exceptions when two caches accidentally 
+			Object obj = null;
+			try {
+				obj = cache.get(cacheKey);
+			} catch (PortalCacheException e) {}
+			// check if obj is really a template wrapper to avoid cast exceptions when two caches accidentally
 			// use the same cache zone
 			if (obj instanceof VelocityTemplateWrapper) {
 			    wrapper = (VelocityTemplateWrapper) obj;
 			}
 		}
-		// the cache key is built using String.hashCode() - there could be collisions so make sure that 
+		// the cache key is built using String.hashCode() - there could be collisions so make sure that
 		// the source of the cached template matches the current source
 		if (wrapper == null || !source.equals(wrapper.getSource())) {
 
@@ -168,7 +169,10 @@ public class VelocityTemplateManagerFactory {
 				// recheck cache after entering the synchronized area. For threads
 				// that were waiting the cache may now be filled.
 				if (cache != null) {
-					Object obj = cache.get(cacheKey);
+					Object obj = null;
+					try {
+						obj = cache.get(cacheKey);
+					} catch (PortalCacheException e) {}
 					if (obj != null && obj instanceof VelocityTemplateWrapper) {
 					    wrapper = (VelocityTemplateWrapper) obj;
 					    if (source.equals(wrapper.getSource())) {
@@ -188,34 +192,27 @@ public class VelocityTemplateManagerFactory {
 				rep.putStringResource(name, source);
 
 				try {
-
-					wrapper = new VelocityTemplateWrapper(Velocity.getTemplate(name), source);
-
+					wrapper = new VelocityTemplateWrapper(velocityEngine.getTemplate(name), source);
 				} catch (Exception e) {
 					log.error("Could not create Velocity Template.", e);
 					throw new CRException(e);
 				} finally {
 				    rep.removeStringResource(name);
 				}
-				
+
 				if (cache != null) {
 					try {
 						cache.put(cacheKey, wrapper);
-					} catch (CacheException e) {
+					} catch (PortalCacheException e) {
 						log.warn("Could not put Velocity Template to cache.", e);
 					}
 				}
 			}
 		}
-		if (wrapper == null) {
-		    String message = "Could not create Velocity Template with name \"" + name + "\"";
-		    log.error(message);
-		    throw new CRException(message);
-		}
-		return (wrapper.getTemplate());
+		return wrapper.getTemplate();
 	}
 
-	private static void configure(String encoding, String macropath, String propFile) throws Exception {
+	private static void configureVelocityEngine(String encoding, String macropath, String propFile) throws Exception {
 		Properties props = new Properties();
 
 		// no file with properties given, set default properties
@@ -260,9 +257,9 @@ public class VelocityTemplateManagerFactory {
 			if (!props.containsKey("file.resource.loader.path")) {
 				props.setProperty("file.resource.loader.path", macropath);
 			}
-			// This property, which has possible values of true or false, 
-			// determines whether Velocimacros can be defined in regular 
-			// templates. The default, true, allows template designers to 
+			// This property, which has possible values of true or false,
+			// determines whether Velocimacros can be defined in regular
+			// templates. The default, true, allows template designers to
 			// define Velocimacros in the templates themselves.
 			if (!props.containsKey("velocimacro.permissions.allow.inline")) {
 			    props.setProperty("velocimacro.permissions.allow.inline", "true");
@@ -302,6 +299,6 @@ public class VelocityTemplateManagerFactory {
 
 		props.put("input.encoding", encoding);
 		props.put("output.encoding", encoding);
-		Velocity.init(props);
+		velocityEngine = new VelocityEngine(props);
 	}
 }

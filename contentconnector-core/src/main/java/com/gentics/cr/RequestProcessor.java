@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.etc.ObjectTransformer;
@@ -43,7 +43,18 @@ public abstract class RequestProcessor {
 
 	private static Logger log = Logger.getLogger(RequestProcessor.class);
 
-	private JCS cache;
+	private PortalCache cache;
+
+	private String cacheRegionKey = null;
+
+	/**
+	 * If the contentcache is activated in the config, the cache region key will be returned.
+	 * When contentcache is not active this method returns null.
+	 * @return the cache region key or null when contentcache is not active
+	 */
+	public String getCacheRegionKey() {
+		return cacheRegionKey;
+	}
 
 	/**
 	 * KEY to store switch for metaresolvable in request.
@@ -74,7 +85,6 @@ public abstract class RequestProcessor {
 	 * be initialized.
 	 */
 	public RequestProcessor(final CRConfig config) throws CRException {
-
 		this.config = config;
 		this.plinkProc = new PlinkProcessor(config);
 
@@ -89,10 +99,11 @@ public abstract class RequestProcessor {
 		}
 
 		if (config.getBoolean(CONTENTCACHE_KEY, true)) {
+			this.cacheRegionKey = "gentics-cr-" + config.getName() + "-crcontent";
 			try {
-				cache = JCS.getInstance("gentics-cr-" + config.getName() + "-crcontent");
+				cache = PortalCache.getCache(this.cacheRegionKey);
 				log.debug("Initialized cache zone for \"" + config.getName() + "-crcontent\".");
-			} catch (CacheException e) {
+			} catch (PortalCacheException e) {
 				log.warn("Could not initialize Cache for PlinkProcessor.");
 				throw new CRException(e);
 			}
@@ -112,7 +123,7 @@ public abstract class RequestProcessor {
 	 * Get the cache region of the request processor.
 	 * @return
 	 */
-	public JCS getCache() {
+	public PortalCache getCache() {
 		return cache;
 	}
 
@@ -261,7 +272,12 @@ public abstract class RequestProcessor {
 
 			// load element from cache
 			if (cache != null) {
-				Object obj = cache.get(contentid);
+				Object obj = null;
+				try {
+					obj = cache.get(contentid);
+				} catch (PortalCacheException e) {
+					;
+				}
 				if (obj != null) {
 					if (obj instanceof CRResolvableBean) {
 						crBean = (CRResolvableBean) obj;
@@ -330,7 +346,11 @@ public abstract class RequestProcessor {
 								myTemplateManager.put(entry.getKey(), entry.getValue());
 							}
 						}
-						s = myTemplateManager.render("attribute", s);
+						try {
+							s = myTemplateManager.render("attribute", s);
+						} catch (Exception e) {
+							throw new CRException(e);
+						}
 					}
 				} else if (o.getClass() == Integer.class) {
 					s = ((Integer) o).toString();
@@ -345,7 +365,7 @@ public abstract class RequestProcessor {
 					if (cache != null) {
 						cache.put(contentid, crBean);
 					}
-				} catch (CacheException e) {
+				} catch (PortalCacheException e) {
 					log.warn("Could not add crBean object " + crBean.getContentid() + " to cache", e);
 					throw new CRException(e);
 				}

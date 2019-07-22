@@ -26,9 +26,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenFilter;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.core.StopFilter;
@@ -78,6 +78,9 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 	
 	private static final String LOWERCASE_KEY = "lowercase";
+	private static final String STOP_WORDS_KEY = "stopwords";
+	
+	private static final Logger LOGGER = Logger.getLogger(CustomPatternAnalyzer.class);
 
 	private static final CharArraySet EXTENDED_ENGLISH_STOP_WORDS = CharArraySet.unmodifiableSet(new CharArraySet(
 			LuceneVersion.getVersion(), Arrays.asList(
@@ -375,7 +378,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 
 	private final Pattern pattern;
 	private final boolean toLowerCase;
-	private final CharArraySet stopWords;
+	private CharArraySet stopWords;
+	private boolean stopWordsActive;
 
 	private final Version matchVersion;
 
@@ -383,6 +387,11 @@ public final class CustomPatternAnalyzer extends Analyzer {
 
 	public CustomPatternAnalyzer(GenericConfiguration config) {
 		this(Version.LUCENE_4_9, getPattern(config), config.getBoolean(LOWERCASE_KEY, true), EXTENDED_ENGLISH_STOP_WORDS);
+		stopWordsActive = (boolean) config.getBoolean(STOP_WORDS_KEY,true);
+		if (!stopWordsActive) {
+			stopWords = CharArraySet.unmodifiableSet(new CharArraySet(
+					LuceneVersion.getVersion(), Arrays.asList(), true));
+		}
 	}
 
 	private static Pattern getPattern(GenericConfiguration config) {
@@ -429,43 +438,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		this.stopWords = stopWords;
 		this.matchVersion = matchVersion;
 	}
-
-	/**
-	 * Creates a token stream that tokenizes the given string into token terms
-	 * (aka words).
-	 * 
-	 * @param fieldName
-	 *            the name of the field to tokenize (currently ignored).
-	 * @param text
-	 *            the string to tokenize
-	 * @return a TokenStreamComponents instance
-	 */
-	public TokenStreamComponents tokenStreamComponents(Reader reader, String fieldName, String text) {
-		// Ideally the Analyzer superclass should have a method with the same signature, 
-		// with a default impl that simply delegates to the StringReader flavour. 
-		if (text == null)
-			throw new IllegalArgumentException("text must not be null");
-
-		Tokenizer stream=null;
-		TokenFilter filter=null;
-		if (pattern == NON_WORD_PATTERN) { // fast path
-			stream = new FastStringTokenizer(reader, text, true, toLowerCase, stopWords);
-		} else if (pattern == WHITESPACE_PATTERN) { // fast path
-			stream = new FastStringTokenizer(reader, text, false, toLowerCase, stopWords);
-		} else {
-			stream = new PatternTokenizer(reader, text, pattern, toLowerCase);
-			if (stopWords != null) {
-				filter = new StopFilter(matchVersion, stream, stopWords);
-			}
-		}
-		if (filter != null) {
-			return new TokenStreamComponents(stream, filter);
-		}
-		return new TokenStreamComponents(stream);
-	}
-
 	
-
+	
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * 
@@ -519,38 +493,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		return p1 == p2 || (p1.flags() == p2.flags() && p1.pattern().equals(p2.pattern()));
 	}
 
-	/**
-	 * Reads until end-of-stream and returns all read chars, finally closes the stream.
-	 * 
-	 * @param input the input stream
-	 * @throws IOException if an I/O error occurs while reading the stream
-	 */
-	private static String toString(Reader input) throws IOException {
-		try {
-			int len = 256;
-			char[] buffer = new char[len];
-			char[] output = new char[len];
-
-			len = 0;
-			int n;
-			while ((n = input.read(buffer)) >= 0) {
-				if (len + n > output.length) { // grow capacity
-					char[] tmp = new char[Math.max(output.length << 1, len + n)];
-					System.arraycopy(output, 0, tmp, 0, len);
-					System.arraycopy(buffer, 0, tmp, len, n);
-					buffer = output; // use larger buffer for future larger bulk reads
-					output = tmp;
-				} else {
-					System.arraycopy(buffer, 0, output, len, n);
-				}
-				len += n;
-			}
-
-			return new String(output, 0, len);
-		} finally {
-			input.close();
-		}
-	}
+	
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Nested classes:
@@ -560,8 +503,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	 * as one might think - kudos to the Sun regex developers.
 	 */
 	private static final class PatternTokenizer extends Tokenizer {
-
-		private final String str;
+		private Pattern pattern;
+		private String str;
 		private final boolean toLowerCase;
 		private Matcher matcher;
 		private int pos = 0;
@@ -575,12 +518,53 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		 * @param str content
 		 * @param pattern pattern to search for
 		 * @param toLowerCase true if tokens should be lower case
+		 * @throws IOException 
 		 */
-		public PatternTokenizer(Reader reader, String str, Pattern pattern, boolean toLowerCase) {
+		public PatternTokenizer(Reader reader, Pattern pattern, boolean toLowerCase) throws IOException {
 			super(reader);
-			this.str = str;
-			this.matcher = pattern.matcher(str);
+			this.pattern = pattern;
 			this.toLowerCase = toLowerCase;
+		}
+		
+		@Override
+		public void reset() throws IOException {
+			super.reset();
+			this.str = toString(this.input);
+			this.matcher = this.pattern.matcher(this.str);
+			this.pos = 0;
+		}
+		
+		/**
+		 * Reads until end-of-stream and returns all read chars, finally closes the stream.
+		 * 
+		 * @param input the input stream
+		 * @throws IOException if an I/O error occurs while reading the stream
+		 */
+		private static String toString(Reader input) throws IOException {
+			try {
+				int len = 256;
+				char[] buffer = new char[len];
+				char[] output = new char[len];
+
+				len = 0;
+				int n;
+				while ((n = input.read(buffer)) >= 0) {
+					if (len + n > output.length) { // grow capacity
+						char[] tmp = new char[Math.max(output.length << 1, len + n)];
+						System.arraycopy(output, 0, tmp, 0, len);
+						System.arraycopy(buffer, 0, tmp, len, n);
+						buffer = output; // use larger buffer for future larger bulk reads
+						output = tmp;
+					} else {
+						System.arraycopy(buffer, 0, output, len, n);
+					}
+					len += n;
+				}
+
+				return new String(output, 0, len);
+			} finally {
+				input.close();
+			}
 		}
 
 		@Override
@@ -614,7 +598,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		}
 
 		@Override
-		public final void end() {
+		public final void end() throws IOException {
+			super.end();
 			// set final offset
 			final int finalOffset = str.length();
 			this.offsetAtt.setOffset(finalOffset, finalOffset);
@@ -706,7 +691,8 @@ public final class CustomPatternAnalyzer extends Analyzer {
 		}
 
 		@Override
-		public final void end() {
+		public final void end() throws IOException {
+			super.end();
 			// set final offset
 			final int finalOffset = str.length();
 			this.offsetAtt.setOffset(finalOffset, finalOffset);
@@ -756,16 +742,25 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	 */
 	@Override
 	protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-		if (reader instanceof FastStringReader) { // fast path
-			return tokenStreamComponents(reader,fieldName, ((FastStringReader) reader).getString());
-		}
-
+		
+		Tokenizer stream=null;
+		TokenFilter filter=null;
+		
 		try {
-			String text = toString(reader);
-			return tokenStreamComponents(reader,fieldName, text);
+			stream = new PatternTokenizer(reader, pattern, toLowerCase);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			LOGGER.error(e);
 		}
+		if (stopWords != null) {
+			filter = new StopFilter(matchVersion, stream, stopWords);
+		}
+		
+		return new TokenStreamComponents(stream, filter) {
+			@Override
+			protected void setReader(final Reader reader) throws IOException {
+				super.setReader(reader);
+			}
+		};
 	}
 
 }

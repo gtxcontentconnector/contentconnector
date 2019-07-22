@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.16.2-SNAPSHOT</version>
+		<version>2.2.11-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>contentconnector-lucene</artifactId>
@@ -25,6 +25,12 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 		</dependency>
+		<dependency>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-test-framework</artifactId>
+          <version>${lucene.version}</version>
+          <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
@@ -64,6 +70,12 @@
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-core</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>com.gentics</groupId>
+            <artifactId>contentconnector-testutils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-servlet</artifactId>

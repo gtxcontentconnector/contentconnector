@@ -1,5 +1,6 @@
 package com.gentics.cr;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.junit.BeforeClass;
@@ -11,7 +12,7 @@ public class SQLRequestProcessorTest extends AbsrtactSQLRequestProcessorTest {
 	private static RequestProcessor rp;
 	
 	@BeforeClass
-	public static void setUp() throws CRException, URISyntaxException {
+	public static void setUp() throws CRException, URISyntaxException, IOException {
 		CRConfigUtil config = initConfigurationAndTest(SQLRequestProcessorTest.class);
 		rp = new SQLRequestProcessor(config.getRequestProcessorConfig(1));
 	}

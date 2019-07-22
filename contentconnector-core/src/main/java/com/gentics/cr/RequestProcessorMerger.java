@@ -43,8 +43,11 @@ public class RequestProcessorMerger {
 			String key = "";
 			if (id instanceof String) {
 				key = (String) id;
-			} else {
+			} else if (id != null) {
 				key = id.toString();
+			} else {
+				throw new CRException(String.format("Found object with no value for idattribute '%s'. Object contains keys %s", idAttribute, crBean
+						.getAttrMap().keySet()));
 			}
 			if (first) {
 				first = false;
@@ -71,8 +74,10 @@ public class RequestProcessorMerger {
 			String key = "";
 			if (keyObject instanceof String) {
 				key = (String) keyObject;
-			} else {
+			} else if (keyObject != null) {
 				key = keyObject.toString();
+			} else {
+				throw new CRException(String.format("Found object with no value for idattribute '%s'. Object contains keys %s", idAttribute, resBean.getAttrMap().keySet()));
 			}
 			CRResolvableBean finishedBean = resultMap.get(key);
 			if (finishedBean != null) {

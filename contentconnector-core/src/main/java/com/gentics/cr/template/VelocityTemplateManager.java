@@ -7,12 +7,8 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
 
 import com.gentics.cr.exceptions.CRException;
-import java.io.IOException;
-import org.apache.velocity.exception.MethodInvocationException;
 
 /**
  * 

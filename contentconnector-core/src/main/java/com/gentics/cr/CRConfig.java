@@ -124,7 +124,7 @@ public abstract class CRConfig extends GenericConfiguration {
 
 	/**
 	 * Returns if the Application is running in portal.node compatibility mode
-	 * => Velocity turned off.
+	 * =&gt; Velocity turned off.
 	 * @return boolean Portal.Node Compatibility Mode
 	 */
 	public abstract boolean getPortalNodeCompMode();
@@ -180,7 +180,7 @@ public abstract class CRConfig extends GenericConfiguration {
 	/**
 	 * Defines if the BinaryContainer translates contentidurls eg:
 	 * /ContentRepository/pcr_bin/90033.305/Quicklinks.png to
-	 * "/ContentRepository/pcr_bin?contentid=90033.305&contentdisposition=
+	 * "/ContentRepository/pcr_bin?contentid=90033.305&amp;contentdisposition=
 	 * Quicklinks.png".
 	 * @return <code>true</code> if contentidurls are translated.
 	 */

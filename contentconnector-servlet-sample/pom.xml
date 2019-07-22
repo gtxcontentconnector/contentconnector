@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.16.2-SNAPSHOT</version>
+		<version>2.2.11-SNAPSHOT</version>
 	</parent>
 	<artifactId>contentconnector-servlet-sample</artifactId>
 	<packaging>war</packaging>
@@ -51,6 +51,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.gentics</groupId>
+			<artifactId>contentconnector-csv</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.gentics</groupId>
 			<artifactId>contentconnector-language</artifactId>
 		</dependency>
 		<dependency>
@@ -63,6 +68,10 @@
 					<artifactId>jsp-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.gentics</groupId>
+			<artifactId>contentconnector-navcache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>

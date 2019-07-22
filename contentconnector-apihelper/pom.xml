@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>contentconnector</artifactId>
 		<groupId>com.gentics</groupId>
-		<version>1.16.2-SNAPSHOT</version>
+		<version>2.2.11-SNAPSHOT</version>
 	</parent>
 	<artifactId>contentconnector-apihelper</artifactId>
 
@@ -20,13 +20,6 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<artifactId>portalnode-lib</artifactId>
-			<groupId>com.gentics</groupId>
-		</dependency>
-		<!-- The node lib must be added since the maven resolvement of portalnode-lib
-			transitive dependencies does not work due to the portalnode/pom.xml node-lib
-			property. -->
 		<dependency>
 			<artifactId>node-lib</artifactId>
 			<groupId>com.gentics</groupId>

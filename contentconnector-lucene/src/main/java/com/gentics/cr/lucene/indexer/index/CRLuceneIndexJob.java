@@ -180,7 +180,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	private static final String STORE_VECTORS_KEY = "storeVectors";
 
 	/**
-	 * Configuration key to define the size of a single batch 
+	 * Configuration key to define the size of a single batch
 	 * to index the files.
 	 * e.g. 100 means 100 files are indexes at once.
 	 */
@@ -232,7 +232,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	private HashMap<String, Float> boostvalue = new HashMap<String, Float>();
 
 	/**
-	 * Fills the boostvalue map with the according 
+	 * Fills the boostvalue map with the according
 	 * values from "boostedattributes".
 	 * @param booststring booststring.
 	 */
@@ -269,7 +269,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		IndexWriter indexWriter = null;
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
-		
+
 		TaxonomyDocumentBuilder taxoDocBuilder = null;
 		LuceneIndexUpdateChecker luceneIndexUpdateChecker = null;
 		boolean finishedIndexJobSuccessfull = false;
@@ -345,7 +345,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 					indexAccessor = ((LuceneIndexLocation) indexLocation).getAccessor();
 					indexWriter = indexAccessor.getWriter();
 					indexReader = indexAccessor.getReader();
-					indexSearcher = indexAccessor.getSearcher();
+					indexSearcher = indexAccessor.getPrioritizedSearcher();
 					taxoDocBuilder = new TaxonomyDocumentBuilder((LuceneIndexLocation) indexLocation);
 				} else {
 					log.error("IndexLocation is not created for Lucene. " + "Using the " + CRLuceneIndexJob.class.getName()
@@ -384,14 +384,13 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				int sliceCounter = 0;
 
 				status.setCurrentStatusString("Starting to index slices.");
-				boolean interrupted = Thread.currentThread().isInterrupted();
 				for (Iterator<CRResolvableBean> iterator = objectsToIndex.iterator(); iterator.hasNext();) {
 					CRResolvableBean obj = iterator.next();
 					slice.add(obj);
 					iterator.remove();
 					sliceCounter++;
 					if (Thread.currentThread().isInterrupted()) {
-						interrupted = true;
+						log.info("Thread was interrupted - stop indexing.");
 						break;
 					}
 					if (sliceCounter == crBatchSize) {
@@ -490,7 +489,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	 * Index a single slice.
 	 * @param crid TODO javadoc
 	 * @param indexWriter TODO javadoc
-	 * @param indexReader 
+	 * @param indexReader
 	 * @param slice TODO javadoc
 	 * @param attributes TODO javadoc
 	 * @param rp TODO javadoc
@@ -524,7 +523,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				UseCase bcase = MonitorFactory.startUseCase("indexSlice(" + crid + ").indexBean");
 				try {
 					//CALL PRE INDEX PROCESSORS/TRANSFORMERS
-					//TODO This could be optimized for multicore servers with 
+					//TODO This could be optimized for multicore servers with
 					//a map/reduce algorithm
 					if (transformerlist != null) {
 						for (ContentTransformer transformer : transformerlist) {
@@ -587,7 +586,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			BooleanQuery query = new BooleanQuery();
 			query.add(idQuery, Occur.MUST);
 			query.add(crQuery, Occur.MUST);
-			
+
 			TopDocs docs = indexSearcher.search(query, 1);
 			for (ScoreDoc scoreDoc : docs.scoreDocs) {
 				return indexSearcher.doc(scoreDoc.doc);
@@ -630,7 +629,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				docboostvalue = getFloat(boostingValue, 1f);
 			}
 		}
-		
+
 		String crID = (String) config.getName();
 		if (crID != null) {
 			newDoc.removeFields(CR_FIELD_KEY);
@@ -655,9 +654,9 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			}
 		}
 
-		
 
-		
+
+
 		for (Entry<String, Boolean> entry : attributes.entrySet()) {
 			String attributeName = (String) entry.getKey();
 			boolean filled = (newDoc.get(attributeName) != null);
@@ -672,7 +671,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 			}else if (idAttribute.equalsIgnoreCase(attributeName) && !filled) {
 				newDoc.add(new StringField(idAttribute, value.toString(), Store.YES));
 			} else if (value != null) {
-				
+
 				if (filled) {
 					newDoc.removeField(attributeName);
 				}
@@ -683,15 +682,15 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 				fieldType.setStoreTermVectors(storeVectors);
 				fieldType.setStoreTermVectorPositions(storeVectors);
 				fieldType.setStoreTermVectorOffsets(storeVectors);
-			    
-				
+
+
 				if (value instanceof String || value instanceof Number || value instanceof Date) {
 					Field f = new Field(attributeName, value.toString(), fieldType);
 					Float boostValue = boostvalue.get(attributeName);
 					float fieldboostvalue = 1f;
 					if (boostValue != null) {
 						fieldboostvalue = boostValue;
-						
+
 					}
 					f.setBoost(fieldboostvalue * docboostvalue);
 					newDoc.add(f);
@@ -724,7 +723,7 @@ public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 		return newDoc;
 	}
 
-	
+
 	private float getFloat(String string, float defaultvalue) {
 		float ret = defaultvalue;
 		try {

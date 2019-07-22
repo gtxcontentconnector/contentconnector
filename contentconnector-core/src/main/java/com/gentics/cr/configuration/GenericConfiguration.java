@@ -258,15 +258,15 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 
 	/**
 	 * Gets the property to the given key. &nbsp;- will resolve sub properties
-	 * like "conf1.A.1.1" to<br />
-	 * &nbsp;&nbsp;this config<br />
-	 * &nbsp;&nbsp;&nbsp;-config config1<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;-config A<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
-	 * &nbsp;- will resolve properties like "conf1" to <br />
-	 * &nbsp;&nbsp;this config<br />
-	 * &nbsp;&nbsp;&nbsp;-property config1<br />
+	 * like "conf1.A.1.1" to<br>
+	 * &nbsp;&nbsp;this config<br>
+	 * &nbsp;&nbsp;&nbsp;-config config1<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;-config A<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br>
+	 * &nbsp;- will resolve properties like "conf1" to <br>
+	 * &nbsp;&nbsp;this config<br>
+	 * &nbsp;&nbsp;&nbsp;-property config1<br>
 	 * 
 	 * @param resolvingKey to resolve the desired object
 	 * @return property value as string or a GenericConfiguration object if key
@@ -295,16 +295,16 @@ public class GenericConfiguration extends AccessibleBean implements Serializable
 	}
 
 	/**
-	 * Sets the property value to the given key.<br />
-	 * &nbsp;- will resolve sub properties like "conf1.A.1.1" to<br />
-	 * &nbsp;&nbsp;this config<br />
-	 * &nbsp;&nbsp;&nbsp;-config config1<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;-config A<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br />
-	 * &nbsp;- will resolve properties like "conf1" to<br />
-	 * &nbsp;&nbsp;this config<br />
-	 * &nbsp;&nbsp;&nbsp;-property config1<br />
+	 * Sets the property value to the given key.<br>
+	 * &nbsp;- will resolve sub properties like "conf1.A.1.1" to<br>
+	 * &nbsp;&nbsp;this config<br>
+	 * &nbsp;&nbsp;&nbsp;-config config1<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;-config A<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-config 1<br>
+	 * &nbsp;- will resolve properties like "conf1" to<br>
+	 * &nbsp;&nbsp;this config<br>
+	 * &nbsp;&nbsp;&nbsp;-property config1<br>
 	 * 
 	 * @param resolvingKey
 	 *            Property key as string

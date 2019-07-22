@@ -63,8 +63,11 @@ public class SimpleRenderer {
 
 			// Initialize Velocity Context
 			ITemplateManager myTemplateManager = conf.getTemplateManager();
-
-			source = myTemplateManager.render("attribute", source);
+			try {
+				source = myTemplateManager.render("attribute", source);
+			} catch (Exception e) {
+				throw new CRException(e);
+			}
 		}
 		return source;
 	}

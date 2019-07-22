@@ -1,5 +1,20 @@
 package com.gentics.cr.rest.velocity;
 
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
+import com.gentics.cr.CRConfigUtil;
+import com.gentics.cr.CRError;
+import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.cr.exceptions.CRException;
+import com.gentics.cr.rest.ContentRepository;
+import com.gentics.cr.template.FileTemplate;
+import com.gentics.cr.template.ITemplate;
+import com.gentics.cr.template.ITemplateManager;
+import com.gentics.cr.util.StringUtils;
+import com.gentics.cr.util.velocity.VelocityTools;
+import org.apache.log4j.Logger;
+import org.apache.velocity.tools.generic.EscapeTool;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,22 +27,6 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
-import org.apache.log4j.Logger;
-import org.apache.velocity.tools.generic.EscapeTool;
-
-import com.gentics.cr.CRConfigUtil;
-import com.gentics.cr.CRError;
-import com.gentics.cr.configuration.GenericConfiguration;
-import com.gentics.cr.exceptions.CRException;
-import com.gentics.cr.rest.ContentRepository;
-import com.gentics.cr.template.FileTemplate;
-import com.gentics.cr.template.ITemplate;
-import com.gentics.cr.template.ITemplateManager;
-import com.gentics.cr.util.StringUtils;
-import com.gentics.cr.util.velocity.VelocityTools;
 
 /**
  * VelocityContentRepository allows you to render the result of the
@@ -187,7 +186,16 @@ public class VelocityContentRepository extends ContentRepository {
 			String encoding = this.getResponseEncoding();
 			templateManager.put("encoding", encoding);
 			templateManager.put("tools", tools);
-			String output = templateManager.render(template.getKey(), template.getSource());
+			String output = null;
+			try {
+				output = templateManager.render(template.getKey(), template.getSource());
+			} catch (Exception e) {
+				throw new CRException(e);
+			}
+			if (output == null) {
+				throw new CRException("Could not render template for key {"
+						+ template.getKey() + "}");
+			}
 			stream.write(getHeader().getBytes());
 			stream.write(output.getBytes(encoding));
 			stream.write(getFooter().getBytes());
@@ -247,9 +255,12 @@ public class VelocityContentRepository extends ContentRepository {
 			String framePlaceholder = config.getString(FRAMEPLACEHOLDER_KEY);
 			if (framePath != null && !framePath.equals("") && framePlaceholder != null && !framePlaceholder.equals("")) {
 				try {
-					JCS cache = JCS.getInstance(VelocityContentRepository.class.getSimpleName() + ".famecache");
-					footer = (String) cache.get(framePath + FOOTER_CACHE_KEY_SUFFIX);
-					header = (String) cache.get(framePath + HEADER_CACHE_KEY_SUFFIX);
+					PortalCache cache = PortalCache.getCache(VelocityContentRepository.class.getSimpleName() + ".famecache");
+					try {
+						footer = (String) cache.get(framePath + FOOTER_CACHE_KEY_SUFFIX);
+						header = (String) cache.get(framePath + HEADER_CACHE_KEY_SUFFIX);
+					} catch (PortalCacheException e) {}
+
 					if (header == null || footer == null) {
 						URL frameURL = new URL(framePath);
 						URLConnection conn = frameURL.openConnection();
@@ -264,13 +275,12 @@ public class VelocityContentRepository extends ContentRepository {
 						}
 						cache.put(framePath + HEADER_CACHE_KEY_SUFFIX, header);
 						cache.put(framePath + FOOTER_CACHE_KEY_SUFFIX, footer);
-
 					}
 				} catch (MalformedURLException e) {
 					logger.error("Error reading frame source " + framePath, e);
 				} catch (IOException e) {
 					logger.error("Error reading frame source " + framePath, e);
-				} catch (CacheException e) {
+				} catch (PortalCacheException e) {
 					logger.error("Cannot initalize frame cache.", e);
 				}
 			}

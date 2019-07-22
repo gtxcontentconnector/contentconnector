@@ -7,8 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
 import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
@@ -39,7 +39,7 @@ public class PlinkProcessor {
 
 	private static Logger log = Logger.getLogger(PlinkProcessor.class);
 
-	private static JCS plinkCache;
+	private static PortalCache plinkCache;
 
 	/**
 	 * configuration key to enable (default) or disable the JCS cache for resolving PLinks.
@@ -77,10 +77,10 @@ public class PlinkProcessor {
 				} else {
 					log.error("Attention i'm using a shared plinkcache because i'm missing my config or the config name.");
 				}
-				plinkCache = JCS.getInstance("gentics-cr-" + configName + "-plinks");
+				plinkCache = PortalCache.getCache("gentics-cr-" + configName + "-plinks");
 				log.debug("Initialized cache zone for \"" + configName + "-plinks\".");
 
-			} catch (CacheException e) {
+			} catch (PortalCacheException e) {
 
 				log.warn("Could not initialize Cache for PlinkProcessor.");
 
@@ -137,7 +137,11 @@ public class PlinkProcessor {
 
 		// load link from cache
 		if (plinkCache != null) {
-			link = (String) plinkCache.get(cacheKey);
+			try {
+				link = (String) plinkCache.get(cacheKey);
+			} catch (PortalCacheException e) {
+				;
+			}
 		}
 
 		// no cache object so try to prepare a link
@@ -168,7 +172,11 @@ public class PlinkProcessor {
 					}
 				}
 
-				link = myTemplateEngine.render("link", this.config.getPlinkTemplate());
+				try {
+					link = myTemplateEngine.render("link", this.config.getPlinkTemplate());
+				} catch (Exception e) {
+					throw new CRException(e);
+				}
 
 			} catch (DatasourceNotAvailableException e) {
 				CRException ex = new CRException(e);
@@ -203,7 +211,7 @@ public class PlinkProcessor {
 				plinkCache.put(cacheKey, link);
 			}
 
-		} catch (CacheException e) {
+		} catch (PortalCacheException e) {
 
 			log.warn("Could not add link to object " + contentid + " to cache");
 		}

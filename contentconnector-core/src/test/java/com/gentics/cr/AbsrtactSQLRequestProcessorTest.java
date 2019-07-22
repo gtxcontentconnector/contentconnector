@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.jcs.JCS;
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public abstract class AbsrtactSQLRequestProcessorTest extends RequestProcessorTe
 	private static String configname;
 	
 
-	protected static CRConfigUtil initConfigurationAndTest(Class<? extends AbsrtactSQLRequestProcessorTest> clazz) throws CRException, URISyntaxException {
+	protected static CRConfigUtil initConfigurationAndTest(Class<? extends AbsrtactSQLRequestProcessorTest> clazz) throws CRException, URISyntaxException, IOException {
 		configname = clazz.getSimpleName() + ".RP.1";
 		CRConfigUtil config = HSQLTestConfigFactory.getDefaultHSQLConfiguration(clazz.getSimpleName(), true);
 
@@ -77,11 +77,7 @@ public abstract class AbsrtactSQLRequestProcessorTest extends RequestProcessorTe
 		RequestProcessor processor = getRequestProcessor();
 		CRResolvableBean content = processor.getContent(request);
 		assertNotNull("Content should not be null.", content);
-		
-		JCS cache = processor.getCache();
-		
-		String regionName = cache.getStatistics().getRegionName();
-		assertEquals("Region name was not correct.","gentics-cr-" + configname + "-crcontent", regionName );
+		assertEquals("Region name was not correct.","gentics-cr-" + configname + "-crcontent", processor.getCacheRegionKey());
 	}
 	
 	private void testAttributeArray(CRResolvableBean bean, String[] expectedAttributes) {
