@@ -33,6 +33,7 @@ public class AutocompleteTest {
 	private static RequestProcessor rp=null;
 	private static LuceneIndexLocation location=null;
 	private static Autocompleter autocompleter = null;
+	private static Autocompleter autocompleter2 = null;
         
 	@BeforeClass
 	public static void setUp() throws CRException, URISyntaxException, IOException {
@@ -62,7 +63,16 @@ public class AutocompleteTest {
 		AutocompleteIndexExtension autoExtension = new AutocompleteIndexExtension(rpConfig, location);
 		AutocompleteIndexJob aIJ = new AutocompleteIndexJob(autoConfig, location, autoExtension);
 		aIJ.run();
-                autocompleter = new Autocompleter(rpConfig);
+		autocompleter = new Autocompleter(rpConfig);
+        
+		//initalize a second autocompleter to test autocomplete with multiple Fields
+		rpConfig = autoConfig.getRequestProcessorConfig(2);
+    	
+		autoExtension = new AutocompleteIndexExtension(rpConfig, location);
+		aIJ = new AutocompleteIndexJob(autoConfig, location, autoExtension);
+		aIJ.run();
+		
+		autocompleter2 = new Autocompleter(rpConfig);
 	}
 	
 	@Test
@@ -75,7 +85,7 @@ public class AutocompleteTest {
             HashMap<String, Integer> shouldContain = new HashMap<String, Integer>();
             shouldContain.put("saab", 1);
 
-            Collection<CRResolvableBean> objects = retrieveSuggestions("sa");
+            Collection<CRResolvableBean> objects = retrieveSuggestions("sa", autocompleter);
             checkResolveableCollection(objects, 1, shouldContain);
 	}
 	
@@ -85,8 +95,19 @@ public class AutocompleteTest {
             shouldContain.put("potatoe", 1);
             shouldContain.put("pagani", 1);
 
-            Collection<CRResolvableBean> objects = retrieveSuggestions("p");
+            Collection<CRResolvableBean> objects = retrieveSuggestions("p", autocompleter);
             checkResolveableCollection(objects, 2, shouldContain);
+	}
+	
+	@Test
+	public void testMultiAutocomplete2() throws CRException, IOException {
+            HashMap<String, Integer> shouldContain = new HashMap<String, Integer>();
+            shouldContain.put("potatoe", 1);
+            shouldContain.put("pagani", 1);
+            shouldContain.put("plants", 3);
+            //test with autocompleter2 (2 autocomplet indexed fields)
+            Collection<CRResolvableBean> objects = retrieveSuggestions("p", autocompleter2);
+            checkResolveableCollection(objects, 3, shouldContain);
 	}
         
 	@Test
@@ -95,11 +116,11 @@ public class AutocompleteTest {
 		shouldContain.put("audi", 1);
 
 		//test lower case filter
-		Collection<CRResolvableBean> objects = retrieveSuggestions("AU");
+		Collection<CRResolvableBean> objects = retrieveSuggestions("AU", autocompleter);
 		checkResolveableCollection(objects, 1, shouldContain);
 
 		//test stopword list ("a" is in the stopwords)
-		objects = retrieveSuggestions("a");
+		objects = retrieveSuggestions("a", autocompleter);
 		Assert.assertEquals(0, objects.size());
 	}
         
@@ -114,18 +135,18 @@ public class AutocompleteTest {
             shouldContain.put("schön", 1); // there is only 1 documents containing "schön" 
             
             // test if words with special characters are found by ASCII equivalent ('o' == 'ö')
-            Collection<CRResolvableBean> suggestedWords = retrieveSuggestions("scho");
+            Collection<CRResolvableBean> suggestedWords = retrieveSuggestions("scho", autocompleter);
             checkResolveableCollection(suggestedWords, 2, shouldContain);
             
             // test if words with special chars are found (including words with the ASCII equivalent of the special char)
-            suggestedWords = retrieveSuggestions("schö");
+            suggestedWords = retrieveSuggestions("schö", autocompleter);
             checkResolveableCollection(suggestedWords, 2, shouldContain);
             
             // test if only the last word is used for suggestions (ignore is in the index but should not be in the collection)
-            suggestedWords = retrieveSuggestions("ignore scho");
+            suggestedWords = retrieveSuggestions("ignore scho", autocompleter);
             checkResolveableCollection(suggestedWords, 2, shouldContain);
             // check if "ignore" is really in the index
-            suggestedWords = retrieveSuggestions("ignore");
+            suggestedWords = retrieveSuggestions("ignore", autocompleter);
             shouldContain = new HashMap<String, Integer>();
             shouldContain.put("ignore", 1);
             checkResolveableCollection(suggestedWords, 1, shouldContain);
@@ -163,7 +184,7 @@ public class AutocompleteTest {
          * @return the resolveables the autocompleter found for this term
          * @throws IOException 
          */
-	private Collection<CRResolvableBean> retrieveSuggestions(String term) throws IOException {
+	private Collection<CRResolvableBean> retrieveSuggestions(String term, Autocompleter autocompleter) throws IOException {
             CRRequest request = new CRRequest();
             request.setRequestFilter(term);
             return autocompleter.suggestWords(request);
