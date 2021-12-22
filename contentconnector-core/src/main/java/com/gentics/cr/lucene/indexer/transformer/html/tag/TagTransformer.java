@@ -7,8 +7,6 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.EvaluableExpression;
 import com.gentics.api.lib.expressionparser.ExpressionEvaluator;
@@ -20,6 +18,7 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.portalnode.expressions.ExpressionParserHelper;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Add new attributes to certain html tags.
@@ -100,7 +99,7 @@ public class TagTransformer extends ContentTransformer {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static Logger logger = Logger.getLogger(TagTransformer.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(TagTransformer.class);
 
 	/**
 	 * Creates instance of TagTransformer.

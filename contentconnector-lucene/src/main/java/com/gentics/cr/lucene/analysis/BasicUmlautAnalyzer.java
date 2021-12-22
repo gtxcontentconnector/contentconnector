@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.analysis;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -17,6 +16,7 @@ import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Analyzer that does all the standard tokenizing and filtering and converts
@@ -28,7 +28,7 @@ public final class BasicUmlautAnalyzer extends Analyzer {
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOG = Logger.getLogger(BasicUmlautAnalyzer.class);
+	private static final NodeLogger LOG = NodeLogger.getNodeLogger(BasicUmlautAnalyzer.class);
 	/**
 	 * Stop word set.
 	 */

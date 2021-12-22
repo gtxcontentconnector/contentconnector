@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.search.highlight;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
@@ -20,6 +19,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.AbstractLuceneTest;
 import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
+import com.gentics.lib.log.NodeLogger;
 /**
  * Abstract test class for all highlighters.
  * @author christopher
@@ -27,7 +27,7 @@ import com.gentics.cr.lucene.search.query.mocks.SimpleLucene;
  */
 public abstract class AbstractBolderTest extends AbstractLuceneTest {
 	
-	private final static Logger LOGGER = Logger.getLogger(AbstractBolderTest.class);
+	private final static NodeLogger LOGGER = NodeLogger.getNodeLogger(AbstractBolderTest.class);
 
 	public AbstractBolderTest(String name) {
 		super(name);

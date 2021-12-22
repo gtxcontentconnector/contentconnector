@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockFactory;
@@ -12,6 +11,7 @@ import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.util.generics.Instanciator;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Creates and caches directories.
@@ -22,7 +22,7 @@ public final class LuceneDirectoryFactory {
 	/**
 	 * Logger.
 	 */
-	protected static final Logger LOG = Logger.getLogger(LuceneDirectoryFactory.class);
+	protected static final NodeLogger LOG = NodeLogger.getNodeLogger(LuceneDirectoryFactory.class);
 	/**
 	 * Key that determines if a directory should be created in memory.
 	 */

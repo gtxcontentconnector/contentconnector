@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.didyoumean;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.spell.CustomSpellChecker;
 import org.apache.lucene.search.spell.LuceneDictionary;
@@ -17,6 +16,7 @@ import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This job is used to re-index (or newly index) the didyoumean-index.
@@ -29,7 +29,7 @@ public class DidyoumeanIndexJob extends AbstractUpdateCheckerJob {
 		super(updateCheckerConfig, indexLoc, null);
 
 		this.identifyer = identifyer.concat(":reIndex");
-		log = Logger.getLogger(DidyoumeanIndexJob.class);
+		log = NodeLogger.getNodeLogger(DidyoumeanIndexJob.class);
 		this.didyoumean = didyoumean;
 	}
 

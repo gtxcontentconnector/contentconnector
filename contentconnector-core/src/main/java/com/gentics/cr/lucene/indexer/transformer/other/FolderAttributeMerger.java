@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Merge the contentattributes from the provided folder (folderattributes) to the targetattribute.
@@ -35,7 +34,7 @@ public class FolderAttributeMerger extends ContentTransformer {
 	/**
 	 * log4j logger.
 	 */
-	private static Logger logger = Logger.getLogger(FolderAttributeMerger.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(FolderAttributeMerger.class);
 
 	/**
 	 * Creates instance of FolderAttributeMerger.

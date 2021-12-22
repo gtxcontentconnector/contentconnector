@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -13,6 +12,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 
 import com.gentics.cr.CRRequest;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * CRQueryParser allows you to use mnoGoSearch Queries and searching in
@@ -47,7 +47,7 @@ public class CRQueryParser extends QueryParser {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(CRQueryParser.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(CRQueryParser.class);
 
 	/**
 	 * initialize a CRQeryParser with multiple search attributes.
@@ -235,7 +235,7 @@ public class CRQueryParser extends QueryParser {
 		return luceneQuery;
 	}
 
-	protected static Logger getLogger() {
+	protected static NodeLogger getLogger() {
 		return LOGGER;
 	}
 

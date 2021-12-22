@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRServletConfig;
 import com.gentics.cr.monitoring.MonitorFactory;
@@ -20,6 +18,7 @@ import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
 import com.gentics.cr.util.RequestBeanWrapper;
 import com.gentics.cr.util.response.ServletResponseTypeSetter;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * @author haymo
@@ -33,7 +32,7 @@ public class RESTServlet extends HttpServlet {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static Logger log = Logger.getLogger(RESTServlet.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(RESTServlet.class);
 	/**
 	 * Configuration for the Servlet.
 	 */

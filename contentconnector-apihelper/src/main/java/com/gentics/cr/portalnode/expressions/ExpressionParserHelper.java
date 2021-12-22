@@ -1,7 +1,5 @@
 package com.gentics.cr.portalnode.expressions;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
@@ -10,6 +8,7 @@ import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Resolvable;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Helper Class for accessing ExpressionParser methods.
@@ -21,7 +20,7 @@ public final class ExpressionParserHelper {
 	/**
 	 * Log4j logger for error and debug messages
 	 */
-	private static Logger logger = Logger.getLogger(ExpressionParserHelper.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(ExpressionParserHelper.class);
 
 	/**
 	 * {@link ExpressionParser} instance from Gentics Portal.Node API.

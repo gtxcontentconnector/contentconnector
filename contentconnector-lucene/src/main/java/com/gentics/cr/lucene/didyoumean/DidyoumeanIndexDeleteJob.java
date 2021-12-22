@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.didyoumean;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.spell.CustomSpellChecker;
 
 import com.gentics.cr.CRConfig;
@@ -10,6 +9,7 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This job is used to clear a lucene didyoumean index.
@@ -31,7 +31,7 @@ public class DidyoumeanIndexDeleteJob extends AbstractUpdateCheckerJob {
 	public DidyoumeanIndexDeleteJob(final CRConfig config, final IndexLocation indexLoc,
 		DidyoumeanIndexExtension didyoumean) {
 		super(config, indexLoc, null);
-		log = Logger.getLogger(DidyoumeanIndexDeleteJob.class);
+		log = NodeLogger.getNodeLogger(DidyoumeanIndexDeleteJob.class);
 
 		this.identifyer = identifyer.concat(":clear");
 		this.didyoumean = didyoumean;

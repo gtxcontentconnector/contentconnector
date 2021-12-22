@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.search.highlight;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
@@ -14,6 +13,7 @@ import org.apache.lucene.search.vectorhighlight.SimpleFragListBuilder;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * WhitespaceVectorBolder.
@@ -27,7 +27,7 @@ public class WhitespaceVectorBolder extends AdvancedContentHighlighter {
 	/**
 		 * Log4j logger for error and debug messages.
 		 */
-	private static final Logger LOGGER = Logger.getLogger(WhitespaceVectorBolder.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(WhitespaceVectorBolder.class);
 	/**
 	 * default value for max frequents.
 	 */

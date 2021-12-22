@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.facet.taxonomy.TaxonomyReader;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
@@ -21,6 +20,7 @@ import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * provides the default implementation for the {@link TaxonomyAccessor}
@@ -38,8 +38,8 @@ public class DefaultTaxonomyAccessor implements TaxonomyAccessor {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger
-			.getLogger(DefaultTaxonomyAccessor.class);
+	private static final NodeLogger LOGGER = NodeLogger
+			.getNodeLogger(DefaultTaxonomyAccessor.class);
 
 	// TODO: needed?
 	private static final int POOL_SIZE = 10;

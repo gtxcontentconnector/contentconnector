@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-//import org.apache.lucene.index.IndexWriter;
-
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.Expression;
 import com.gentics.api.lib.expressionparser.ExpressionEvaluator;
@@ -18,6 +15,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -27,7 +25,7 @@ import com.gentics.cr.monitoring.UseCase;
  *
  */
 public abstract class ContentTransformer {
-	protected static final Logger LOGGER = Logger.getLogger(ContentTransformer.class);
+	protected static final NodeLogger LOGGER = NodeLogger.getNodeLogger(ContentTransformer.class);
 	private static ExpressionEvaluator evaluator = new ExpressionEvaluator();
 	private Expression expr;
 	private String rule;
@@ -65,7 +63,7 @@ public abstract class ContentTransformer {
 		}
 	}
 
-	public static Logger getLogger() {
+	public static NodeLogger getLogger() {
 		return LOGGER;
 	}
 

@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.exception.ParserException;
@@ -15,6 +13,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.ArrayHelper;
 import com.gentics.cr.util.RequestWrapper;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This RequestProcessor fetches the active path from a child element
@@ -35,8 +34,8 @@ public class CRActivePathRequestProcessor extends RequestProcessor {
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOG = Logger
-			.getLogger(CRActivePathRequestProcessor.class);
+	private static final NodeLogger LOG = NodeLogger
+			.getNodeLogger(CRActivePathRequestProcessor.class);
 
 
 	/**

@@ -2,8 +2,6 @@ package com.gentics.cr.lucene.autocomplete;
 
 import java.lang.reflect.Constructor;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -18,6 +16,7 @@ import com.gentics.cr.util.indexing.IReIndexStrategy;
 import com.gentics.cr.util.indexing.IndexExtension;
 import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This {@link IndexExtension} creates and maintains an autocomplete-index. The
@@ -29,7 +28,7 @@ import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
  */
 public class AutocompleteIndexExtension extends AbstractIndexExtension implements IEventReceiver,
 		AutocompleteConfigurationKeys {
-	protected static final Logger log = Logger.getLogger(AutocompleteIndexExtension.class);
+	protected static final NodeLogger log = NodeLogger.getNodeLogger(AutocompleteIndexExtension.class);
 
 	private static final String REINDEX_JOB = "reIndex";
 	private static final String CLEAR_JOB = "clearAutocompleteIndex";

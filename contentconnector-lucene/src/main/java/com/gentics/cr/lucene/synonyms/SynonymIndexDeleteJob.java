@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.synonyms;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 
 import com.gentics.cr.CRConfig;
@@ -11,6 +10,7 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This job is used to clear a lucene synonym index.
@@ -34,7 +34,7 @@ public class SynonymIndexDeleteJob extends AbstractUpdateCheckerJob {
 	public SynonymIndexDeleteJob(final CRConfig config, final IndexLocation indexLoc,
 			SynonymIndexExtension synonym) {
 		super(config, indexLoc, null);
-		log = Logger.getLogger(SynonymIndexDeleteJob.class);
+		log = NodeLogger.getNodeLogger(SynonymIndexDeleteJob.class);
 
 		this.identifyer = identifyer.concat(":clear");
 		this.synonym = synonym;

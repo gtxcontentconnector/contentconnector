@@ -27,8 +27,12 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 		<dependency>
 			<!-- POIFS (OLE2 Filesystem), HPSF (OLE2 Property Set), HSSF (Excel XLS)  -->
@@ -58,7 +62,6 @@
 			<!-- PDF Parsing -->
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
-			<version>${org.apache.pdfbox.version}</version>
 		</dependency>
 		<!-- Mimetype detection -->
 		<dependency>

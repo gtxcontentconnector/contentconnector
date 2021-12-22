@@ -4,11 +4,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.rest.ContentRepository;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Reads contentrepository config and returns the appropriate type.
@@ -36,7 +35,7 @@ public class ContentRepositoryConfig {
 	/**
 	 * Log4j logger.
 	 */
-	private static Logger logger = Logger.getLogger(ContentRepositoryConfig.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(ContentRepositoryConfig.class);
 
 	/**
 	 * Configuration providing the parameters of the contentrepository.

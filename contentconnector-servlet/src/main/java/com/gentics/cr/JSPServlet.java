@@ -10,13 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.PlinkProcessor;
 import com.gentics.cr.plink.PlinkReplacer;
 import com.gentics.cr.rendering.ContentRenderer;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -31,7 +30,7 @@ public class JSPServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -8607594484139295241L;
-	private static Logger log = Logger.getLogger(JSPServlet.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(JSPServlet.class);
 	private CRServletConfig crConf;
 	private ContentRenderer renderer;
 	private PlinkProcessor pproc;

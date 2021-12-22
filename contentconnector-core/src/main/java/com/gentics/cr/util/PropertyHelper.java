@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Helper class to initialize {@link Properties} from various objects.
@@ -17,7 +17,7 @@ public final class PropertyHelper {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static Logger logger = Logger.getLogger(PropertyHelper.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(PropertyHelper.class);
 
 	/**
 	 * private constructor to prevent instantiation.

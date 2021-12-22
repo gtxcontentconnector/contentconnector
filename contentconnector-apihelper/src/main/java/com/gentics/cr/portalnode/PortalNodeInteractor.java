@@ -1,11 +1,10 @@
 package com.gentics.cr.portalnode;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.exception.NodeException;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.lib.image.GenticsImageResizer;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -14,7 +13,7 @@ import com.gentics.lib.image.GenticsImageResizer;
  */
 public class PortalNodeInteractor {
 
-	private final static Logger LOG = Logger.getLogger(PortalNodeInteractor.class);
+	private final static NodeLogger LOG = NodeLogger.getNodeLogger(PortalNodeInteractor.class);
 
 	/**
 	 * Get a configured Instance of Datasource from a running Portal.Node Instance.

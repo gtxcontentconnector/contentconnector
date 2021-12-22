@@ -5,17 +5,16 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Map.Entry;
-
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.configuration.ConfigurationSettings;
 import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.RegexFileFilter;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Loads a configuration from a given file.
@@ -36,7 +35,7 @@ public class CRConfigFileLoader extends CRConfigUtil {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static Logger log = Logger.getLogger(CRConfigFileLoader.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(CRConfigFileLoader.class);
 	/**
 	 * webapproot for resolving in property values.
 	 */

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -22,6 +21,7 @@ import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.DummyIndexLocation;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Update the files in a directory.
@@ -33,7 +33,7 @@ public class FileSystemUpdateJob extends AbstractUpdateCheckerJob {
 	/**
 	 * log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(FileSystemUpdateJob.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(FileSystemUpdateJob.class);
 	
 	/**
 	 * directory to put the files in.

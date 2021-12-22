@@ -13,11 +13,10 @@ import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -31,7 +30,7 @@ public class HTMLEditorKitStripper extends ContentTransformer {
 	/**
 	 * Log4j logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(HTMLEditorKitStripper.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(HTMLEditorKitStripper.class);
 
 	/**
 	 * Create new instance of HTMLEditorKitStripper.

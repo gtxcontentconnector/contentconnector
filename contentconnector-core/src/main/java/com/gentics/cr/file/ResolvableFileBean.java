@@ -10,12 +10,11 @@ import java.util.Vector;
 
 import javax.activation.MimetypesFileTypeMap;
 
-import org.apache.log4j.Logger;
-
 import org.apache.tika.Tika;
 
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.util.StringUtils;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * ResolvableFileBean is used to wrap a File into a {@link CRResolvableBean}.
@@ -27,7 +26,7 @@ public class ResolvableFileBean extends CRResolvableBean {
 	/**
 	 * Log4 logger for error messages.
 	 */
-	private static Logger logger = Logger.getLogger(ResolvableFileBean.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(ResolvableFileBean.class);
 
 	/**
 	 * Generated serial version uid.

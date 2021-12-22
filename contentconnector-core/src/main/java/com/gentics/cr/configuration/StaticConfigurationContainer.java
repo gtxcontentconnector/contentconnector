@@ -2,9 +2,8 @@ package com.gentics.cr.configuration;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfigFileLoader;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Class that acts as configuration container.
@@ -18,7 +17,7 @@ public final class StaticConfigurationContainer {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(StaticConfigurationContainer.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(StaticConfigurationContainer.class);
 	/**
 	 * Cache for parsed configs.
 	 */
@@ -84,7 +83,7 @@ public final class StaticConfigurationContainer {
 			createConfMap();
 		}
 		if (log == null) {
-			log = Logger.getLogger(StaticConfigurationContainer.class);
+			log = NodeLogger.getNodeLogger(StaticConfigurationContainer.class);
 		}
 	}
 	

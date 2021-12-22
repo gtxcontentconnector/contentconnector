@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +18,7 @@ import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 public class CleanupTextTransformerTest {
 
@@ -32,7 +32,7 @@ public class CleanupTextTransformerTest {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static Logger logger = Logger.getLogger(CleanupTextTransformerTest.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(CleanupTextTransformerTest.class);
 
 	private static final String CONTENT_ATTRIBUTE = "content";
 

@@ -1,25 +1,23 @@
 package com.gentics.cr.template;
 
-import com.gentics.api.lib.cache.PortalCache;
-import com.gentics.api.lib.cache.PortalCacheException;
-import com.gentics.cr.exceptions.CRException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.lang.CharEncoding;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
 
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.api.lib.cache.PortalCacheException;
+import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRUtil;
-import org.apache.commons.lang.CharEncoding;
-
-import org.apache.log4j.Logger;
+import com.gentics.lib.log.NodeLogger;
 /**
  * 
  * Last changed: $Date: 2010-04-01 15:25:54 +0200 (Do, 01 Apr 2010) $
@@ -45,7 +43,7 @@ public class VelocityTemplateManagerFactory {
 	/** The cache zone key for the velocity template cache zone */
 	public static final String VELOCITY_TEMPLATE_CACHEZONE_KEY = "gentics-cr-velocitytemplates";
 
-	private static Logger log = Logger.getLogger(VelocityTemplateManagerFactory.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(VelocityTemplateManagerFactory.class);
 
 	private static VelocityEngine velocityEngine;
 

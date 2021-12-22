@@ -10,8 +10,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.portalnode.connector.PLinkReplacer;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
@@ -19,6 +17,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.rendering.ContentRenderer;
 import com.gentics.cr.rendering.contentprocessor.ContentPostProcesser;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Implementation of a tag that renders content with plink replacing and velocity.
@@ -36,7 +35,7 @@ public class RenderContentTag extends TagSupport {
 	/**
 	 * log4j logger.
 	 */
-	private Logger logger = Logger.getLogger("com.gentics.cr.rendering");
+	private NodeLogger logger = NodeLogger.getNodeLogger("com.gentics.cr.rendering");
 
 	/**
 	 * Name of the render request attribute for the instance of {@link ContentRenderer}.

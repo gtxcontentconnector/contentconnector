@@ -13,12 +13,11 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.generics.Lists;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * {@link AbstractSQLRequestProcessor} fetches data from a mysql table
@@ -26,7 +25,7 @@ import com.gentics.cr.util.generics.Lists;
  *
  */
 public abstract class AbstractSQLRequestProcessor extends RequestProcessor {
-	private static Logger logger = Logger.getLogger(AbstractSQLRequestProcessor.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(AbstractSQLRequestProcessor.class);
 
 	/**
 	 * configuration key for the table name.

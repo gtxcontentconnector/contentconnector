@@ -4,11 +4,11 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class VelocityTemplateManager implements ITemplateManager {
 	/**
 	 * Log4j Logger.
 	 */
-	private static final Logger log = Logger.getLogger(VelocityTemplateManager.class);
+	private static final NodeLogger log = NodeLogger.getNodeLogger(VelocityTemplateManager.class);
 	private final String encoding;
 	private HashMap<String, Object> objectstoput;
 

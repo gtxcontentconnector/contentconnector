@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.search.query;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.queries.CustomScoreProvider;
@@ -10,6 +9,8 @@ import org.apache.lucene.queries.CustomScoreQuery;
 import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.FieldCache.Longs;
 import org.apache.lucene.search.Query;
+
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * CRRecencyBoostingQueryParser needs this query to boost the newest entries.
@@ -43,7 +44,7 @@ public class CRRecencyBoostingQuery extends CustomScoreQuery {
 	/**
 	 * Logger for Console.
 	 */
-	protected static final Logger LOGGER = Logger.getLogger(CRRecencyBoostingQuery.class);
+	protected static final NodeLogger LOGGER = NodeLogger.getNodeLogger(CRRecencyBoostingQuery.class);
 
 
 	/**

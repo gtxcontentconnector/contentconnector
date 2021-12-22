@@ -1,7 +1,12 @@
 package com.gentics.cr;
 
-import com.gentics.cr.exceptions.CRException;
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -12,13 +17,9 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+
+import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * The LDAP request processor can be used to request objects from an LDAP server.
@@ -30,7 +31,7 @@ import java.util.Map;
  * @author Sebastian Vogel
  */
 public class LDAPRequestProcessor extends RequestProcessor {
-	private static final Logger logger = Logger.getLogger(LDAPRequestProcessor.class);
+	private static final NodeLogger logger = NodeLogger.getNodeLogger(LDAPRequestProcessor.class);
 
 	/**
 	 * The ldap server host name config key

@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRResolvableBean;
@@ -25,6 +24,7 @@ import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.template.StringTemplate;
 import com.gentics.cr.util.velocity.VelocityTools;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * can be used in one of two ways:<br>
@@ -108,7 +108,7 @@ public class VelocityTransformer extends ContentTransformer {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static Logger logger = Logger.getLogger(VelocityTransformer.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(VelocityTransformer.class);
 
 	/**
 	 * Configuration for the VelocityTransformer.

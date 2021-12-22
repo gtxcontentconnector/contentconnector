@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.TimerTask;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheException;
@@ -13,6 +12,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * The Class NavigationUpdateJob.
@@ -20,7 +20,7 @@ import com.gentics.cr.exceptions.CRException;
 public class NavigationUpdateJob extends TimerTask {
 
 	/** The Constant log. */
-	private static final Logger log = Logger.getLogger(NavigationUpdateJob.class);
+	private static final NodeLogger log = NodeLogger.getNodeLogger(NavigationUpdateJob.class);
 
 	/** The rp. */
 	private RequestProcessor rp;

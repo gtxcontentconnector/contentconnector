@@ -8,8 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheAttributes;
 import com.gentics.api.lib.cache.PortalCacheException;
@@ -18,6 +16,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRRequest.DEFAULT_ATTRIBUTES;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * The Class NavigationCache.
@@ -29,7 +28,7 @@ public class NavigationCache {
 	public final static CRResolvableBean CACHED_NULL = new CRResolvableBean();
 
 	/** The Constant log. */
-	private static final Logger log = Logger.getLogger(NavigationCache.class);
+	private static final NodeLogger log = NodeLogger.getNodeLogger(NavigationCache.class);
 
 	/** The min schedule time. */
 	private final static int MIN_SCHEDULE_TIME = 60;

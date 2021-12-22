@@ -4,15 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.lucene.indexer.index.LockedIndexException;
@@ -23,9 +21,10 @@ import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.servlet.VelocityServlet;
 import com.gentics.cr.util.file.ArchiverUtil;
 import com.gentics.cr.util.indexing.IndexController;
+import com.gentics.cr.util.indexing.IndexExtension;
 import com.gentics.cr.util.indexing.IndexJobQueue;
 import com.gentics.cr.util.indexing.IndexLocation;
-import com.gentics.cr.util.indexing.IndexExtension;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * @author Christopher Supnig
@@ -33,7 +32,7 @@ import com.gentics.cr.util.indexing.IndexExtension;
 public class IndexJobServlet extends VelocityServlet {
 
 	private static final long serialVersionUID = 0002L;
-	private static final Logger LOGGER = Logger.getLogger(IndexJobServlet.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(IndexJobServlet.class);
 	protected IndexController indexer;
 
 	public void init(final ServletConfig config) throws ServletException {

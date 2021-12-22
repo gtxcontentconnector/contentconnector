@@ -2,8 +2,6 @@ package com.gentics.cr.lucene.indexer.transformer;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.EvaluableExpression;
 import com.gentics.api.lib.expressionparser.ExpressionEvaluator;
@@ -14,6 +12,7 @@ import com.gentics.api.lib.resolving.PropertyResolver;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Last changed: $Date: 2011-05-13 10:40:00 +0200 (Fr, 13 May 2011) $
@@ -28,7 +27,7 @@ public class EvalExpressionParserTransformer extends ContentTransformer {
 	private String providedExpression = "";
 	private String evaluatedTarget = "expressionresult";
 
-	private static Logger LOGGER = Logger.getLogger(EvalExpressionParserTransformer.class);
+	private static NodeLogger LOGGER = NodeLogger.getNodeLogger(EvalExpressionParserTransformer.class);
 
 	/**
 	 * Create Instance of EvalExpressionParserTransformer.

@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.Tokenizer;
@@ -39,6 +38,7 @@ import org.apache.lucene.util.Version;
 
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Efficient Lucene analyzer/tokenizer that preferably operates on a String rather than a
@@ -80,7 +80,7 @@ public final class CustomPatternAnalyzer extends Analyzer {
 	private static final String LOWERCASE_KEY = "lowercase";
 	private static final String STOP_WORDS_KEY = "stopwords";
 	
-	private static final Logger LOGGER = Logger.getLogger(CustomPatternAnalyzer.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(CustomPatternAnalyzer.class);
 
 	private static final CharArraySet EXTENDED_ENGLISH_STOP_WORDS = CharArraySet.unmodifiableSet(new CharArraySet(
 			LuceneVersion.getVersion(), Arrays.asList(

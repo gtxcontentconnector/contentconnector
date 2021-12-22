@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.exception.ParserException;
@@ -15,6 +13,7 @@ import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.ArrayHelper;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -25,7 +24,7 @@ import com.gentics.cr.util.ArrayHelper;
  */
 public class CRRequestProcessor extends RequestProcessor {
 
-	private static Logger logger = Logger.getLogger(CRRequestProcessor.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(CRRequestProcessor.class);
 
 	private HashMap<String, Resolvable> resolvables = null;
 

@@ -8,10 +8,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -19,13 +15,17 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 /**
  * This Class can be used to request CRResolvableBeans from the Twitter Search API
@@ -51,7 +51,7 @@ import com.gentics.cr.exceptions.CRException;
  *
  */
 public class TwitterJSONRequestProcessor extends RequestProcessor {
-	private static Logger log = Logger.getLogger(TwitterJSONRequestProcessor.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(TwitterJSONRequestProcessor.class);
 	private static final String TWITTER_SEARCH_URL_KEY = "searchurl";
 	private static final String TWITTER_DEFAULT_SEARCH_URL = "http://search.twitter.com/search.json";
 

@@ -23,7 +23,6 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.LogManager;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -32,6 +31,8 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
+
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * An IndexAccessorFactory allows the sharing of IndexAccessors and
@@ -47,7 +48,7 @@ public class IndexAccessorFactory {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(IndexAccessorFactory.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(IndexAccessorFactory.class);
 
 	/**
 	 * Holds an single instance of {@link IndexAccessorFactory} to give it to

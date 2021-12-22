@@ -1,18 +1,16 @@
 package com.gentics.cr.lucene.autocomplete;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -21,8 +19,6 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.spell.LuceneDictionary;
-import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -30,23 +26,13 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.events.Event;
-import com.gentics.cr.events.EventManager;
 import com.gentics.cr.events.IEventReceiver;
-import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
-import com.gentics.cr.monitoring.MonitorFactory;
-import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.IReIndexStrategy;
-import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
-import java.io.StringReader;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.BytesRefIterator;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This class can be used to build an autocomplete index over an existing lucene
@@ -64,7 +50,7 @@ import org.apache.lucene.util.BytesRefIterator;
  */
 public class Autocompleter implements IEventReceiver, AutocompleteConfigurationKeys {
 
-	protected static final Logger log = Logger.getLogger(Autocompleter.class);
+	protected static final NodeLogger log = NodeLogger.getNodeLogger(Autocompleter.class);
 	@Deprecated
 	private LuceneIndexLocation source;
 	private LuceneIndexLocation autocompleteLocation;

@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -19,6 +18,7 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessorToken;
 import com.gentics.cr.lucene.information.SpecialDirectoryRegistry;
 import com.gentics.cr.util.Constants;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -31,7 +31,7 @@ import com.gentics.cr.util.indexing.IndexLocation;
 
 public abstract class LuceneIndexLocation extends com.gentics.cr.util.indexing.IndexLocation {
 	// STATIC MEMBERS
-	protected static final Logger log = Logger.getLogger(LuceneIndexLocation.class);
+	protected static final NodeLogger log = NodeLogger.getNodeLogger(LuceneIndexLocation.class);
 
 	protected String name = null;
 

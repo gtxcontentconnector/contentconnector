@@ -4,7 +4,7 @@ import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheException;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.lib.image.GenticsImageResizer;
-import org.apache.log4j.Logger;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Image resizer class.
@@ -24,7 +24,7 @@ public final class ImageResizer {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(ImageResizer.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(ImageResizer.class);
 	/**
 	 * cache region.
 	 */

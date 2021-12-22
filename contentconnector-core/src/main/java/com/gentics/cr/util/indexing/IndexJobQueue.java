@@ -3,9 +3,8 @@ package com.gentics.cr.util.indexing;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfig;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * JobQueue worker class.
@@ -19,7 +18,7 @@ public class IndexJobQueue {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(IndexJobQueue.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(IndexJobQueue.class);
 
 	/**
 	 * Miliseconds in a second.

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -21,6 +20,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.lucene.analysis.ReverseAnalyzer;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * TODO javadoc.
@@ -40,7 +40,7 @@ public final class LuceneAnalyzerFactory {
 	/**
 	 * Log4j Logger for error and debug messages.
 	 */
-	protected static final Logger LOGGER = Logger.getLogger(LuceneAnalyzerFactory.class);
+	protected static final NodeLogger LOGGER = NodeLogger.getNodeLogger(LuceneAnalyzerFactory.class);
 
 	/**
 	 * Stop word config key.

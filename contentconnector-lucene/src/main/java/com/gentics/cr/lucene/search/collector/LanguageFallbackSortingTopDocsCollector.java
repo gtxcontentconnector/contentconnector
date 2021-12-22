@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.BinaryDocValues;
@@ -22,6 +21,7 @@ import org.apache.lucene.util.BytesRef;
 
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Collector class for language fallback and sorting
@@ -31,7 +31,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 public class LanguageFallbackSortingTopDocsCollector extends
 		TopDocsCollector<LanguageSortingScoreDoc> {
 
-	private static final Logger LOG = Logger.getLogger(LanguageFallbackSortingTopDocsCollector.class);
+	private static final NodeLogger LOG = NodeLogger.getNodeLogger(LanguageFallbackSortingTopDocsCollector.class);
 	private static final String LANGUAGE_PRIORITY_KEY="languagefallbackpriority";
 	private static final String LANGUAGE_FIELD_KEY="languagefield";
 	private static final String LANGUAGESET_FIELD_KEY ="languagesetfield";

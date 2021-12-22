@@ -5,11 +5,10 @@ import java.io.InputStream;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.configuration.EnvironmentConfiguration;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Loads a configuration from a given file.
@@ -26,7 +25,7 @@ public class CRConfigStreamLoader extends CRConfigUtil {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static Logger log = Logger.getLogger(CRConfigStreamLoader.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(CRConfigStreamLoader.class);
 	
 	/**
 	 * Load config from String with subdir.

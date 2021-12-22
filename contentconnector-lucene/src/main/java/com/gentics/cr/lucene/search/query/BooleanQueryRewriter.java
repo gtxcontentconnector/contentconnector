@@ -3,19 +3,20 @@ package com.gentics.cr.lucene.search.query;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
+import com.gentics.lib.log.NodeLogger;
+
 public class BooleanQueryRewriter {
 
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(BooleanQueryRewriter.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(BooleanQueryRewriter.class);
 
 	/**
 	 * private constructor to prevents generating an instance.

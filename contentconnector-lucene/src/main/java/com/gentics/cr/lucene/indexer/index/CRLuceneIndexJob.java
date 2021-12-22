@@ -1,7 +1,6 @@
 package com.gentics.cr.lucene.indexer.index;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,13 +11,11 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
-import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -41,9 +38,7 @@ import com.gentics.cr.events.EventManager;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.lucene.events.IndexingFinishedEvent;
 import com.gentics.cr.lucene.facets.taxonomy.TaxonomyDocumentBuilder;
-import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
 import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.DefaultTaxonomyAccessor;
-import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.IndexerUtil;
 import com.gentics.cr.lucene.indexer.transformer.AbstractLuceneMonitoringTransformer;
@@ -52,6 +47,7 @@ import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * CRLuceneIndexJob handles the indexing of a Gentics ContentRepository into
@@ -63,9 +59,9 @@ import com.gentics.cr.util.indexing.IndexLocation;
  */
 public class CRLuceneIndexJob extends AbstractUpdateCheckerJob {
 	/**
-	 * static log4j {@link Logger} to log errors and debug.
+	 * static log4j {@link NodeLogger} to log errors and debug.
 	 */
-	private static final Logger LOG = Logger.getLogger(CRLuceneIndexJob.class);
+	private static final NodeLogger LOG = NodeLogger.getNodeLogger(CRLuceneIndexJob.class);
 
 	/**
 	 * Name of class to use for IndexLocation, must extend

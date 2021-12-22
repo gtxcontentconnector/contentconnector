@@ -6,13 +6,13 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.LogManager;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.AlreadyClosedException;
 import org.apache.lucene.store.Directory;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * An TaxonomyAccessorFactory allows the sharing of {@link TaxonomyAccessor} 
@@ -29,8 +29,8 @@ public class TaxonomyAccessorFactory {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static Logger logger = Logger
-			.getLogger(TaxonomyAccessorFactory.class);
+	private static NodeLogger logger = NodeLogger
+			.getNodeLogger(TaxonomyAccessorFactory.class);
 
 	/**
 	 * Holds an single instance of {@link TaxonomyAccessorFactory} to give it to

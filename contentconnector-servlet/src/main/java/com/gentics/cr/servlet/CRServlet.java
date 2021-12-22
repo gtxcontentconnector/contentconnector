@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRServletConfig;
 import com.gentics.cr.rest.RESTBinaryContainer;
@@ -19,6 +17,7 @@ import com.gentics.cr.util.BeanWrapper;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.HttpSessionWrapper;
 import com.gentics.cr.util.response.ServletResponseTypeSetter;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * @author haymo
@@ -32,13 +31,13 @@ public class CRServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -6943138512221124880L;
-	private Logger log;
+	private NodeLogger log;
 	private RESTBinaryContainer container;
 
 	public void init(ServletConfig config) throws ServletException {
 
 		super.init(config);
-		this.log = Logger.getLogger("com.gentics.cr");
+		this.log = NodeLogger.getNodeLogger("com.gentics.cr");
 		CRServletConfig crConf = new CRServletConfig(config);
 		container = new RESTBinaryContainer(crConf);
 

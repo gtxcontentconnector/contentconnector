@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
@@ -23,6 +22,7 @@ import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This job is used to re-index (or newly index) the autocomplete-index 
@@ -39,7 +39,7 @@ public class AutocompleteIndexJob extends AbstractUpdateCheckerJob implements Au
 		super(updateCheckerConfig, indexLoc, null);
 
 		this.identifyer = identifyer.concat(":reIndex");
-		log = Logger.getLogger(AutocompleteIndexJob.class);
+		log = NodeLogger.getNodeLogger(AutocompleteIndexJob.class);
 		this.autocompleter = autocompleter;
 	}
 

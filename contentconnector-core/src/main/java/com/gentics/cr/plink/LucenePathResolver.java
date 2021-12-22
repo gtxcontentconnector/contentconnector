@@ -2,8 +2,6 @@ package com.gentics.cr.plink;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.datasource.DatasourceNotAvailableException;
@@ -22,6 +20,7 @@ import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.indexing.IndexController;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This class is used to resolve URLs to objects an vice versa.
@@ -103,7 +102,7 @@ public class LucenePathResolver {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(LucenePathResolver.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(LucenePathResolver.class);
 	/**
 	 * IndexConfigKey.
 	 */

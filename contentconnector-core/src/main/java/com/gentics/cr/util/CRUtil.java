@@ -17,13 +17,13 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.ConfpathConfigurationException;
 import com.gentics.cr.util.resolver.CRUtilResolver;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -53,7 +53,7 @@ public class CRUtil {
 	/**
 	 * Log4J Logger for debugging purposes.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(CRUtil.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(CRUtil.class);
 	
 	/**
 	 * File protocol handler.

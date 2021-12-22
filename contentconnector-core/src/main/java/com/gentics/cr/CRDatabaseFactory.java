@@ -2,8 +2,6 @@ package com.gentics.cr;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.lib.exception.NodeException;
@@ -11,6 +9,7 @@ import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
 import com.gentics.cr.portalnode.PortalNodeInteractor;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * The datasource factory manages the gentics content repository datasources.
@@ -30,7 +29,7 @@ public final class CRDatabaseFactory {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(CRDatabaseFactory.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(CRDatabaseFactory.class);
 	/**
 	 * Static instance.
 	 */

@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
@@ -20,6 +18,7 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.exceptions.WrongOrderException;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This class is designed as an UpdateChecker for a ContentRepository. It checks
@@ -33,7 +32,7 @@ public abstract class AbstractUpdateCheckerJob implements Runnable {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	protected static Logger log = Logger.getLogger(AbstractUpdateCheckerJob.class);
+	protected static NodeLogger log = NodeLogger.getNodeLogger(AbstractUpdateCheckerJob.class);
 
 	/**
 	 * Name of class to use for IndexLocation, must extend

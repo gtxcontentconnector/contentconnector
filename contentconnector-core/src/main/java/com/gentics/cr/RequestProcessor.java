@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheException;
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorHelper;
@@ -21,6 +19,7 @@ import com.gentics.cr.plink.PathResolver;
 import com.gentics.cr.plink.PlinkProcessor;
 import com.gentics.cr.plink.PlinkReplacer;
 import com.gentics.cr.template.ITemplateManager;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -41,7 +40,7 @@ public abstract class RequestProcessor {
 
 	protected PlinkProcessor plinkProc = null;
 
-	private static Logger log = Logger.getLogger(RequestProcessor.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(RequestProcessor.class);
 
 	private PortalCache cache;
 

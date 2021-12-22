@@ -4,14 +4,13 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.plink.LucenePathResolver;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Converts links within the provided content to plinks.
@@ -27,7 +26,7 @@ public class LinkToPlinkTransformer extends ContentTransformer {
 	/**
 	 * Log4j logger.
 	 */
-	private static Logger log = Logger.getLogger(LinkToPlinkTransformer.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(LinkToPlinkTransformer.class);
 	
 	/**
 	 * Config identifier to set the attribute for content parsing.

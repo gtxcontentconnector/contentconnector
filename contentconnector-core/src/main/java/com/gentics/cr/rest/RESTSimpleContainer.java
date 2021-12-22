@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
@@ -19,6 +17,7 @@ import com.gentics.cr.exceptions.CRException.ERRORTYPE;
 import com.gentics.cr.util.CRRequestBuilder;
 import com.gentics.cr.util.ContentRepositoryConfig;
 import com.gentics.cr.util.response.IResponseTypeSetter;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Processes simple rest requests.
@@ -44,7 +43,7 @@ public class RESTSimpleContainer {
 	/**
 	 * Logger instance.
 	 */
-	private static final Logger LOG = Logger.getLogger(RESTSimpleContainer.class);
+	private static final NodeLogger LOG = NodeLogger.getNodeLogger(RESTSimpleContainer.class);
 	/**
 	 * Configuration.
 	 */

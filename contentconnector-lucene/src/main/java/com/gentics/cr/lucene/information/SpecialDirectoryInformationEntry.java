@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -13,6 +12,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 
 import com.gentics.cr.util.Constants;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Information entry for a special directory such as the DYM or 
@@ -24,7 +24,7 @@ public class SpecialDirectoryInformationEntry {
 	/**
 	 * Logger.
 	 */
-	protected static final Logger LOG = Logger.getLogger(SpecialDirectoryInformationEntry.class);
+	protected static final NodeLogger LOG = NodeLogger.getNodeLogger(SpecialDirectoryInformationEntry.class);
 	/**
 	 * directory.
 	 */

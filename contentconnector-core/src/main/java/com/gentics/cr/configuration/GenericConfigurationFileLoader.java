@@ -3,12 +3,11 @@ package com.gentics.cr.configuration;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.Map.Entry;
-
-import org.apache.log4j.Logger;
+import java.util.Properties;
 
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Loads the contents of a file to a GenericConfiguration.
@@ -23,7 +22,7 @@ public final class GenericConfigurationFileLoader {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(GenericConfigurationFileLoader.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(GenericConfigurationFileLoader.class);
 
 	/**
 	 * Prevent instantiation.

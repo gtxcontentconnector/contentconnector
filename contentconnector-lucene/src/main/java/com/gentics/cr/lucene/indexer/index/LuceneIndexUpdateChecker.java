@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
@@ -23,6 +22,7 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Lucene Implementation of IndexUpdateChecker.
@@ -40,7 +40,7 @@ public class LuceneIndexUpdateChecker extends IndexUpdateChecker {
 	Iterator<String> docIT;
 	Vector<String> checkedDocuments;
 	String idField;
-	private static final Logger log = Logger.getLogger(LuceneIndexUpdateChecker.class);
+	private static final NodeLogger log = NodeLogger.getNodeLogger(LuceneIndexUpdateChecker.class);
 
 	/**
 	 * Initializes the Lucene Implementation of {@link IndexUpdateChecker}.

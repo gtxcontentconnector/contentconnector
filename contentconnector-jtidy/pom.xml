@@ -37,9 +37,12 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<!-- LICENSE: Apache 2.0 -->
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 		<dependency>
 			<!-- LICENSE: http://jtidy.sourceforge.net/license.html -->

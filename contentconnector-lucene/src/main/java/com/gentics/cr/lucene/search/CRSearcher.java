@@ -8,18 +8,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.facet.FacetsCollector;
-import org.apache.lucene.facet.taxonomy.TaxonomyReader;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.SlowCompositeReaderWrapper;
@@ -59,6 +56,7 @@ import com.gentics.cr.lucene.search.query.BooleanQueryRewriter;
 import com.gentics.cr.lucene.search.query.CRQueryParserFactory;
 import com.gentics.cr.util.StringUtils;
 import com.gentics.cr.util.generics.Instanciator;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * CRSearcher.
@@ -68,8 +66,8 @@ import com.gentics.cr.util.generics.Instanciator;
  */
 public class CRSearcher {
 
-	private static Logger log = Logger.getLogger(CRSearcher.class);
-	private static Logger log_explain = Logger.getLogger(CRSearcher.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(CRSearcher.class);
+	private static NodeLogger log_explain = NodeLogger.getNodeLogger(CRSearcher.class);
 
 	protected static final String INDEX_LOCATION_KEY = "indexLocation";
 	protected static final String COMPUTE_SCORES_KEY = "computescores";

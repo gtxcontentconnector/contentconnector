@@ -1,9 +1,8 @@
 package com.gentics.cr.lucene.indexer.transformer;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Merge one or more attributes into another attribute.
@@ -33,7 +32,7 @@ public class MergeTransformer extends ContentTransformer {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private static Logger logger = Logger.getLogger(MergeTransformer.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(MergeTransformer.class);
 
 	/**
 	 * Creates instance of MergeTransformer.

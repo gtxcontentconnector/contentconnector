@@ -28,7 +28,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
@@ -38,9 +37,9 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
 
 import com.gentics.cr.lucene.LuceneVersion;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Provides a default implementation for {@link IndexAccessor}.
@@ -89,7 +88,7 @@ class DefaultIndexAccessor implements IndexAccessor {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(DefaultIndexAccessor.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(DefaultIndexAccessor.class);
 
 	/**
 	 * Pool size for handling threads

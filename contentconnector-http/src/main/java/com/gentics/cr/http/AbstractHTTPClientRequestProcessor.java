@@ -14,7 +14,6 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.ProtocolException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRError;
@@ -22,6 +21,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * based on com.gentics.cr.http.HTTPClientRequestProcessor.
@@ -56,7 +56,7 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
             }
         }
        
-	private static Logger log = Logger.getLogger(AbstractHTTPClientRequestProcessor.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(AbstractHTTPClientRequestProcessor.class);
 	protected String name = null;
 
 	private static final String URL_KEY = "URL";

@@ -3,9 +3,8 @@ package com.gentics.cr.rendering.image;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Class to map mimetypes to image types.
@@ -20,7 +19,7 @@ public final class ImageMimetypeMapper {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(ImageMimetypeMapper.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(ImageMimetypeMapper.class);
 	/**
 	 * Mimetypeattribute.
 	 */

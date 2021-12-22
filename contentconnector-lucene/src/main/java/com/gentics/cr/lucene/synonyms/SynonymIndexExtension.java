@@ -2,8 +2,6 @@ package com.gentics.cr.lucene.synonyms;
 
 import java.lang.reflect.Constructor;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -18,6 +16,7 @@ import com.gentics.cr.util.indexing.IReIndexStrategy;
 import com.gentics.cr.util.indexing.IndexExtension;
 import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This {@link IndexExtension} creates and maintains an synonyms-index. 
@@ -30,7 +29,7 @@ public class SynonymIndexExtension extends AbstractIndexExtension implements IEv
 	/**
 	 * Logger.
 	 */
-	protected static final Logger log = Logger.getLogger(SynonymIndexExtension.class);
+	protected static final NodeLogger log = NodeLogger.getNodeLogger(SynonymIndexExtension.class);
 
 	/**
 	 * Name for Reindex_job.

@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spell.CustomSpellChecker;
@@ -29,6 +28,7 @@ import com.gentics.cr.util.indexing.IReIndexStrategy;
 import com.gentics.cr.util.indexing.IndexExtension;
 import com.gentics.cr.util.indexing.IndexLocation;
 import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This {@link IndexExtension} creates and maintains an autocomplete-index. The
@@ -37,7 +37,7 @@ import com.gentics.cr.util.indexing.ReIndexNoSkipStrategy;
  * 
  */
 public class DidyoumeanIndexExtension extends AbstractIndexExtension implements IEventReceiver {
-	protected static final Logger log = Logger.getLogger(DidyoumeanIndexExtension.class);
+	protected static final NodeLogger log = NodeLogger.getNodeLogger(DidyoumeanIndexExtension.class);
 
 	private static final String REINDEX_JOB = "reIndex";
 	private static final String CLEAR_JOB = "clearDidyoumeanIndex";

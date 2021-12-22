@@ -17,19 +17,18 @@ package com.gentics.cr.lucene.indexaccessor;
  * limitations under the License.
  */
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
+
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Default MultiIndexAccessor implementation.
@@ -43,7 +42,7 @@ public class DefaultMultiIndexAccessor implements IndexAccessor {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(DefaultMultiIndexAccessor.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(DefaultMultiIndexAccessor.class);
 	private final Map<IndexSearcher, IndexAccessor> multiSearcherAccessors = new ConcurrentHashMap<IndexSearcher, IndexAccessor>();
 	private final Map<IndexReader, IndexAccessor> multiReaderAccessors = new ConcurrentHashMap<IndexReader, IndexAccessor>();
 	private final Map<MultiReader, IndexReader[]> subReaderList = new ConcurrentHashMap<MultiReader, IndexReader[]>();

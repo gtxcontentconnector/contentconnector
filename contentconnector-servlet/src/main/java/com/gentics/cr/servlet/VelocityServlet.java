@@ -12,14 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.FileTemplate;
 import com.gentics.cr.template.ITemplate;
 import com.gentics.cr.template.ITemplateManager;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Generic Servlet to render the output with velocity.
@@ -30,7 +29,7 @@ public abstract class VelocityServlet extends HttpServlet {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static Logger log = Logger.getLogger(VelocityServlet.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(VelocityServlet.class);
 
 	/**
 	 * CRConfiguration of the servlet to detect the velocity template if

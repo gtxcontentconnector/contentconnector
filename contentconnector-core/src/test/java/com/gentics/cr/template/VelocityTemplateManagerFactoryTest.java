@@ -1,13 +1,18 @@
 package com.gentics.cr.template;
 
-import com.gentics.api.lib.cache.PortalCache;
-import com.gentics.cr.conf.gentics.ConfigDirectory;
-import com.gentics.cr.exceptions.CRException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.apache.commons.lang.CharEncoding;
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.stats.behavior.IStatElement;
-import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,14 +23,10 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import com.gentics.api.lib.cache.PortalCache;
+import com.gentics.cr.conf.gentics.ConfigDirectory;
+import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  *
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class VelocityTemplateManagerFactoryTest {
 
     private static final String NEW_LINE = System.getProperty("line.separator");
-    private static final Logger LOGGER = Logger.getLogger(VelocityTemplateManagerFactoryTest.class);
+    private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(VelocityTemplateManagerFactoryTest.class);
 
     private final String encoding = CharEncoding.UTF_8;
     private final String name = "myTestTemplate";

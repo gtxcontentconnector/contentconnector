@@ -1,10 +1,8 @@
 package com.gentics.cr.lucene.search.highlight;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.Query;
 
 import com.gentics.api.lib.exception.ParserException;
@@ -14,6 +12,7 @@ import com.gentics.api.lib.expressionparser.ExpressionParser;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Content highlighter.
@@ -27,7 +26,7 @@ public abstract class ContentHighlighter {
 	/**
 	 * logger.
 	 */
-	private static Logger log = Logger.getLogger(ContentHighlighter.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(ContentHighlighter.class);
 	/**
 	 * evaluator.
 	 */

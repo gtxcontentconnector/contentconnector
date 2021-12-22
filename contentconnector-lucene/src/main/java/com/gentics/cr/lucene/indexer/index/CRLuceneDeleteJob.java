@@ -3,11 +3,7 @@ package com.gentics.cr.lucene.indexer.index;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.facet.taxonomy.TaxonomyReader;
-import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
-import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
@@ -16,6 +12,7 @@ import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This job is used to clear a lucene index.
@@ -33,7 +30,7 @@ public class CRLuceneDeleteJob extends AbstractUpdateCheckerJob {
 	public CRLuceneDeleteJob(final CRConfig config, final IndexLocation indexLoc,
 		final ConcurrentHashMap<String, CRConfigUtil> configmap) {
 		super(config, indexLoc, configmap);
-		log = Logger.getLogger(CRLuceneDeleteJob.class);
+		log = NodeLogger.getNodeLogger(CRLuceneDeleteJob.class);
 		// TODO Auto-generated constructor stub
 	}
 

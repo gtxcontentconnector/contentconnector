@@ -2,9 +2,9 @@ package com.gentics.cr.lucene;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -12,13 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexController;
 import com.gentics.cr.util.indexing.IndexJobQueue;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Nagios Servlet for IndexJobServlet. 
@@ -33,7 +32,7 @@ public class IndexJobNagiosServlet extends HttpServlet {
 	/**
 	 * Log4J logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(IndexJobNagiosServlet.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(IndexJobNagiosServlet.class);
 
 	/**
 	 * IndexController to access the indixes for fetching the needed information.

@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.exception.ParserException;
@@ -14,6 +12,7 @@ import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * The CMSPageLanguageFallbackRequestProcessor will return CMS Pages (obj_type
@@ -31,7 +30,7 @@ public class CMSPageLanguageFallbackRequestProcessor extends RequestProcessor {
 	/**
 	 * Logger instance.
 	 */
-	private static Logger logger = Logger.getLogger(CRRequestProcessor.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(CRRequestProcessor.class);
 
 	/**
 	 * Create new Instance.

@@ -10,8 +10,6 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.etc.ObjectTransformer;
 import com.gentics.api.lib.exception.NodeException;
@@ -26,6 +24,7 @@ import com.gentics.cr.sql.ConnectionProvider;
 import com.gentics.cr.template.ITemplateManager;
 import com.gentics.cr.template.VelocityTemplateManagerFactory;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * CRConfigUtil extends CRConfig with all sorts of getters and setters for
@@ -61,7 +60,7 @@ public class CRConfigUtil extends CRConfig {
 	public static final String DEFAULT_TEMPLATE_PATH = CRUtil
 			.resolveSystemProperties("${com.gentics.portalnode.confpath}/templates/");
 
-	private static Logger log = Logger.getLogger(CRConfigUtil.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(CRConfigUtil.class);
 
 	private static final String DATASOURCE_HANDLE_KEY = "DS-HANDLE";
 	private static final String FOLDER_TYPE_KEY = "FOLDERTYPE";

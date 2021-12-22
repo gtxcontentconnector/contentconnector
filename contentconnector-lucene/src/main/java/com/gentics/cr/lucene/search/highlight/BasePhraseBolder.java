@@ -3,7 +3,6 @@ package com.gentics.cr.lucene.search.highlight;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.search.Query;
@@ -19,6 +18,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.index.LuceneAnalyzerFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Base class for PhraseBolders.
@@ -28,7 +28,7 @@ public abstract class BasePhraseBolder extends ContentHighlighter implements For
 	/**
 	  * Logger.
 	  */
-	private static final Logger LOGGER = Logger.getLogger(BasePhraseBolder.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(BasePhraseBolder.class);
 
 	/**
 	 * Default max fragments.

@@ -4,8 +4,6 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
@@ -15,6 +13,7 @@ import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.CRNavigationRequestBuilder;
 import com.gentics.cr.util.ContentRepositoryConfig;
 import com.gentics.cr.util.response.IResponseTypeSetter;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * TODO javadoc.
@@ -41,7 +40,7 @@ public class RESTNavigationContainer {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static Logger log = Logger.getLogger(RESTNavigationContainer.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(RESTNavigationContainer.class);
 	/**
 	 * TODO javadoc.
 	 */

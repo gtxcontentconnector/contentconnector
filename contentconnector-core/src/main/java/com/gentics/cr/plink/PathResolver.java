@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.datasource.DatasourceNotAvailableException;
@@ -22,6 +20,7 @@ import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This class is used to resolve URLs to objects an vice versa.
@@ -39,7 +38,7 @@ public class PathResolver {
 
 	private Expression expression = null;
 
-	private static Logger log = Logger.getLogger(PathResolver.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(PathResolver.class);
 
 	private static final String rule = "object.filename == data.filename && (object.folder_id.pub_dir == data.path || object.folder_id.pub_dir == concat(data.path, '/'))";
 	private static final String fast_rule = "object.filename == data.filename && (object.pub_dir == data.path || object.pub_dir == concat(data.path, '/'))";

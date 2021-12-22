@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
@@ -20,6 +19,7 @@ import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.filter.Filter;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * A common interface for content repositories.
@@ -150,7 +150,7 @@ public abstract class ContentRepository implements Serializable {
 	/**
 	 * Log4J logger.
 	 */
-	protected static Logger log = Logger.getLogger(ContentRepository.class);
+	protected static NodeLogger log = NodeLogger.getNodeLogger(ContentRepository.class);
 
 	/**
 	 * Create instance.

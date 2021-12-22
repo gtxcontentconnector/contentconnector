@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRRequest;
@@ -27,6 +25,7 @@ import com.gentics.cr.rendering.ContentRendererFactory;
 import com.gentics.cr.rendering.IContentRenderer;
 import com.gentics.cr.util.CRBinaryRequestBuilder;
 import com.gentics.cr.util.response.IResponseTypeSetter;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Container for Binary responses.
@@ -56,7 +55,7 @@ public class RESTBinaryStreamingContainer {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(RESTBinaryStreamingContainer.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(RESTBinaryStreamingContainer.class);
 
 	/**
 	 * Contentrenderer.

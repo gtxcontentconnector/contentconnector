@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.autocomplete;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 
 import com.gentics.cr.CRConfig;
@@ -12,6 +11,7 @@ import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.util.indexing.AbstractUpdateCheckerJob;
 import com.gentics.cr.util.indexing.IndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This job is used to clear a lucene autocomplete index.
@@ -36,7 +36,7 @@ public class AutocompleteIndexDeleteJob extends AbstractUpdateCheckerJob {
 	public AutocompleteIndexDeleteJob(final CRConfig config, final IndexLocation indexLoc,
 		AutocompleteIndexExtension autocompleter) {
 		super(config, indexLoc, null);
-		log = Logger.getLogger(AutocompleteIndexDeleteJob.class);
+		log = NodeLogger.getNodeLogger(AutocompleteIndexDeleteJob.class);
 
 		this.identifyer = identifyer.concat(":clear");
 		this.autocompleter = autocompleter;

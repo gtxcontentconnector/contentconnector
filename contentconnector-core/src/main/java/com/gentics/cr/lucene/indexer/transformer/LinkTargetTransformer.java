@@ -4,11 +4,10 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -18,7 +17,7 @@ import com.gentics.cr.exceptions.CRException;
  *
  */
 public class LinkTargetTransformer extends ContentTransformer {
-	private static Logger log = Logger.getLogger(LinkTargetTransformer.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(LinkTargetTransformer.class);
 	private static final String ATTRIBUTE_KEY = "attribute";
 
 	private static final String EXTERNALTARGET_KEY = "externaltarget";

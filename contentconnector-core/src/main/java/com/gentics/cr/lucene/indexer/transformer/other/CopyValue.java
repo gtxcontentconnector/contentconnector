@@ -1,10 +1,9 @@
 package com.gentics.cr.lucene.indexer.transformer.other;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Sets a configured value
@@ -18,7 +17,7 @@ public class CopyValue extends ContentTransformer {
 	private String source_attribute;
 	private String target_attribute;
 
-	private static Logger logger = Logger.getLogger(CopyValue.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(CopyValue.class);
 
 	/**
 	 * Creates instance of SetValueTransformer

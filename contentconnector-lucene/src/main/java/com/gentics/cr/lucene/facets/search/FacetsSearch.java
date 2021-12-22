@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;
 import org.apache.lucene.facet.FacetsCollector;
@@ -19,6 +18,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.facets.taxonomy.TaxonomyMapping;
 import com.gentics.cr.lucene.facets.taxonomy.taxonomyaccessor.TaxonomyAccessor;
 import com.gentics.cr.lucene.search.CRMetaResolvableBean;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This class contains all the methods needed to perform a faceted query request
@@ -28,7 +28,7 @@ import com.gentics.cr.lucene.search.CRMetaResolvableBean;
  */
 public class FacetsSearch implements FacetsSearchConfigKeys {
 
-	private static Logger log = Logger.getLogger(FacetsSearch.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(FacetsSearch.class);
 	
 	private boolean facetdisplayordinal = false;
 	private boolean usefacets = false;

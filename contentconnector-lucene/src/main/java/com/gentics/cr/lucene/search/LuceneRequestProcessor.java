@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -38,6 +37,7 @@ import com.gentics.cr.lucene.search.query.CRQueryParserFactory;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
 import com.gentics.cr.util.generics.Lists;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -50,7 +50,7 @@ public class LuceneRequestProcessor extends RequestProcessor {
 	/**
 	 * Log4j logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(LuceneRequestProcessor.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(LuceneRequestProcessor.class);
 
 	/**
 	 * Initialized in the constructor with the provided CRConfig.

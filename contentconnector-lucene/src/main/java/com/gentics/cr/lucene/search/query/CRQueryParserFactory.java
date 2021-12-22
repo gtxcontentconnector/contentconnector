@@ -1,6 +1,5 @@
 package com.gentics.cr.lucene.search.query;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
@@ -11,6 +10,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.LuceneVersion;
 import com.gentics.cr.util.generics.Instanciator;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Parser factory.
@@ -22,7 +22,7 @@ public final class CRQueryParserFactory {
 	/**
 	 * Log4j logger.
 	 */
-	private static Logger logger = Logger.getLogger(CRQueryParserFactory.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(CRQueryParserFactory.class);
 
 	/**
 	 * Default constructor to prevent instantiation of utility class.

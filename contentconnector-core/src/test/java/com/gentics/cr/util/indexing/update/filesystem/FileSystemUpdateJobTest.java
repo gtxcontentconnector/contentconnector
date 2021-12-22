@@ -12,10 +12,7 @@ import java.util.Date;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.gentics.cr.CRConfigUtil;
@@ -30,10 +27,11 @@ import com.gentics.cr.util.file.DirectoryScanner;
 import com.gentics.cr.util.file.FileTypeDetector;
 import com.gentics.cr.util.indexing.DummyIndexLocation;
 import com.gentics.cr.util.indexing.DummyIndexLocationFactory;
+import com.gentics.lib.log.NodeLogger;
 
 public class FileSystemUpdateJobTest {
 
-	private static final Logger LOGGER = Logger.getLogger(FileSystemUpdateCheckerTest.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(FileSystemUpdateCheckerTest.class);
 	
 	static CRConfigUtil config = new CRConfigUtil();
 	static ConcurrentHashMap<String, CRConfigUtil> configMap = new ConcurrentHashMap<String, CRConfigUtil>();

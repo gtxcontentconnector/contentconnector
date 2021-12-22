@@ -6,12 +6,11 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexer.transformer.ContentTransformer;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Get content out of an attribute with a regular expression and copy it to
@@ -33,7 +32,7 @@ public class RegexCopy extends ContentTransformer {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger logger = Logger.getLogger(RegexCopy.class);
+	private static final NodeLogger logger = NodeLogger.getNodeLogger(RegexCopy.class);
 
 	/**
 	 * Create Instance of CommentSectionStripper

@@ -6,9 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.portlet.PortletRequest;
 import javax.servlet.ServletRequest;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -19,7 +18,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
  */
 public abstract class ContentPostProcesser {
 	protected GenericConfiguration conf = null;
-	protected static Logger logger = Logger.getLogger("com.gentics.cr.rendering");
+	protected static NodeLogger logger = NodeLogger.getNodeLogger("com.gentics.cr.rendering");
 
 	/**
 	 * 

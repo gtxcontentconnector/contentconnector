@@ -8,13 +8,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.Constants;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -27,7 +26,7 @@ import com.gentics.cr.util.Constants;
 
 public abstract class IndexLocation {
 
-	protected static final Logger log = Logger.getLogger(IndexLocation.class);
+	protected static final NodeLogger log = NodeLogger.getNodeLogger(IndexLocation.class);
 
 	/**
 	 * Configuration key for reopen check.

@@ -21,7 +21,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Request wrapper for accessing a {@link ServletRequest} or a
@@ -34,7 +34,7 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 	/**
 	 * Log4j logger for debug and error messages.
 	 */
-	private final static Logger logger = Logger.getLogger(RequestWrapper.class);
+	private final static NodeLogger logger = NodeLogger.getNodeLogger(RequestWrapper.class);
 
 	/**
 	 * Internal variable for ServletRequest.

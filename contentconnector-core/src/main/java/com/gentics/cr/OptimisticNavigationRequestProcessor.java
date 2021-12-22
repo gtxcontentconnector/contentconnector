@@ -12,7 +12,6 @@ import java.util.Vector;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
@@ -27,6 +26,7 @@ import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.ArrayHelper;
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * <p>
@@ -66,7 +66,7 @@ import com.gentics.cr.util.CRUtil;
 public class OptimisticNavigationRequestProcessor extends RequestProcessor {
 
 	/** The logger. */
-	private static Logger logger = Logger.getLogger(OptimisticNavigationRequestProcessor.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(OptimisticNavigationRequestProcessor.class);
 
 	/**
 	 * Key for.

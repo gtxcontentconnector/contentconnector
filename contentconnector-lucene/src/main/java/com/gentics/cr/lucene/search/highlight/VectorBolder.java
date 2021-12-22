@@ -2,7 +2,6 @@ package com.gentics.cr.lucene.search.highlight;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.vectorhighlight.FastVectorHighlighter;
@@ -13,6 +12,7 @@ import org.apache.lucene.search.vectorhighlight.SimpleFragListBuilder;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * VectorBolder.
@@ -25,7 +25,7 @@ public class VectorBolder extends AdvancedContentHighlighter {
 	/**
 		 * Log4j logger for error and debug messages.
 		 */
-	private static final Logger LOGGER = Logger.getLogger(VectorBolder.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(VectorBolder.class);
 	/**
 	 * Default max fragments.
 	 */

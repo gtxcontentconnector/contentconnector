@@ -15,7 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Utility class with static methods for Strings.
@@ -35,7 +35,7 @@ public final class StringUtils {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static Logger logger = Logger.getLogger(StringUtils.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(StringUtils.class);
 
 	/**
 	 * private constructor as all methods of this class are static.

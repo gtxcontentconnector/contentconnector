@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -36,12 +34,12 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.suggest.InputIterator;
 import org.apache.lucene.store.AlreadyClosedException;
-import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.BytesRef;
 
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
 import com.gentics.cr.lucene.util.CRLuceneUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * <p>
@@ -72,7 +70,7 @@ public class CustomSpellChecker implements java.io.Closeable {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(CustomSpellChecker.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(CustomSpellChecker.class);
 	/**
 	 * Field name for each word in the ngram index.
 	 */

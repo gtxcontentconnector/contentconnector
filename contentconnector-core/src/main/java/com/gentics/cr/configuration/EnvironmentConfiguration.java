@@ -1,16 +1,15 @@
 package com.gentics.cr.configuration;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
-import org.apache.jcs.engine.control.CompositeCacheManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import com.gentics.cr.util.CRUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Environment Configuration manages the configuration of log4j and jcs.
@@ -26,6 +25,8 @@ public final class EnvironmentConfiguration {
 	 */
 	private static String configurationPath = "${" + CRUtil.PORTALNODE_CONFPATH + "}";
 
+	private final static String LOGCONFIG_FILENAME = "nodelog.yml";
+
 	/**
 	 * Path were the configuration files are found.
 	 * This variable is deprecated. Use {@link #getConfigPath()} instead.
@@ -36,17 +37,17 @@ public final class EnvironmentConfiguration {
 	/**
 	 * Path to the default log4j property file.
 	 */
-	private static String loggerFilePath = configurationPath + "/nodelog.properties";
+	private static String loggerFilePath = configurationPath + "/" + LOGCONFIG_FILENAME;
 	
 	/**
 	 * Path to the fallback log4j property file.
 	 */
-	private static String loggerFallbackPath = "defaultconfiguration/nodelog.properties";
+	private static String loggerFallbackPath = "defaultconfiguration/" + LOGCONFIG_FILENAME;
 
 	/**
 	 * Default log4j logger.
 	 */
-	private static Logger log;
+	private static NodeLogger log;
 
 	/**
 	 * Detect if log4j property loading already failed, so we put out the error
@@ -95,32 +96,42 @@ public final class EnvironmentConfiguration {
 	public static void loadLoggerProperties() {
 		loggerInitFailed = false;
 		String confpath = CRUtil.resolveSystemProperties(loggerFilePath);
-		StringBuilder errorMessage = new StringBuilder("Could not find nodelog.properties at: ").append(confpath);
-		try {
-			InputStream is = new FileInputStream(confpath);
-			loadLoggerProperties(is);
-		} catch (IOException e) {
-			if (!loggerInitFailed) {
-				System.out.println(errorMessage.toString());
-				loggerInitFailed = true;
+
+		File logConfigFile = new File(confpath);
+		if (logConfigFile.exists()) {
+			StringBuilder errorMessage = new StringBuilder("Could not find " + LOGCONFIG_FILENAME + " at: ").append(confpath);
+			try {
+				loadLoggerProperties(logConfigFile.toURI());
+			} catch (IOException e) {
+				if (!loggerInitFailed) {
+					System.out.println(errorMessage.toString());
+					loggerInitFailed = true;
+				}
+				loadLoggerFallbackProperties();
+			} catch (NullPointerException e) {
+				if (!loggerInitFailed) {
+					System.out.println(errorMessage.toString());
+					loggerInitFailed = true;
+				}
+				loadLoggerFallbackProperties();
 			}
-			loadLoggerFallbackProperties();
-		} catch (NullPointerException e) {
-			if (!loggerInitFailed) {
-				System.out.println(errorMessage.toString());
-				loggerInitFailed = true;
-			}
+		} else {
 			loadLoggerFallbackProperties();
 		}
 	}
-	
+
 	private static void loadLoggerFallbackProperties() {
-		InputStream stream = EnvironmentConfiguration.class.getResourceAsStream(loggerFallbackPath);
-		try {
-			loadLoggerProperties(stream);
-			loggerInitFallback = true;
-			log.debug("Loaded logger fallback configuration");
-		} catch (IOException e) {
+		URL loggerConfigUrl = EnvironmentConfiguration.class.getResource(loggerFallbackPath);
+		if (loggerConfigUrl != null) {
+			try {
+				loadLoggerProperties(loggerConfigUrl.toURI());
+				loggerInitFallback = true;
+				log.debug("Loaded logger fallback configuration");
+			} catch (IOException | URISyntaxException e) {
+				System.out.println("Could not load logger fallback configuration.");
+				e.printStackTrace();
+			}
+		} else {
 			System.out.println("Could not load logger fallback configuration.");
 		}
 	}
@@ -130,12 +141,10 @@ public final class EnvironmentConfiguration {
 	 * @param is
 	 * @throws IOException
 	 */
-	private static void loadLoggerProperties(InputStream is)
+	private static void loadLoggerProperties(URI loggerConf)
 			throws IOException {
-		Properties logprops = new Properties();
-		logprops.load(is);
-		PropertyConfigurator.configure(logprops);
-		log = Logger.getLogger(EnvironmentConfiguration.class);
+		Configurator.reconfigure(loggerConf);
+		log = NodeLogger.getNodeLogger(EnvironmentConfiguration.class);
 	}
 
 	/**
@@ -213,7 +222,7 @@ public final class EnvironmentConfiguration {
 	public static void setConfigPath(final String configLocation) {
 		configurationPath = configLocation;
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, configLocation);
-		loggerFilePath = configurationPath + "/nodelog.properties";
+		loggerFilePath = configurationPath + "/" + LOGCONFIG_FILENAME;
 	}
 
 	/**

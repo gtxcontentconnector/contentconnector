@@ -3,11 +3,10 @@ package com.gentics.cr;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.ServletRequest;
-
-import org.apache.log4j.Logger;
 
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
@@ -20,7 +19,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.api.portalnode.connector.PortalConnectorFactory;
 import com.gentics.cr.util.CRUtil;
 import com.gentics.cr.util.RequestWrapper;
-import java.util.Set;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -40,7 +39,7 @@ public class CRRequest implements Cloneable, Serializable {
 	/**
 	 * Log4j logger.
 	 */
-	private static Logger log = Logger.getLogger(CRRequest.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(CRRequest.class);
         
 	/**
 	 * key for storing the wordmatch parameter into.

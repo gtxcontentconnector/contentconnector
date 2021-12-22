@@ -9,13 +9,13 @@ import java.util.Vector;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.RequestProcessor;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Request Processor to create simple structures via CSV.<br>
@@ -26,7 +26,7 @@ import com.gentics.cr.exceptions.CRException;
  */
 public class CSVRequestProcessor extends RequestProcessor {
 
-	private static final Logger log = Logger.getLogger(CSVRequestProcessor.class);
+	private static final NodeLogger log = NodeLogger.getNodeLogger(CSVRequestProcessor.class);
 
 	/**
 	 * Configuration of the request processor.

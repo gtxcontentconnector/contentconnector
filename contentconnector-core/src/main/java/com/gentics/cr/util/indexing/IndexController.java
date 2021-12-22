@@ -3,13 +3,12 @@ package com.gentics.cr.util.indexing;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfigFileLoader;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.monitoring.MonitorFactory;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Operates as an Interface between the servlet and the Indexer Engine.
@@ -25,7 +24,7 @@ public class IndexController {
 	/**
 	 * Log4J Logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(IndexController.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(IndexController.class);
 
 	/**
 	 * Configuration key.

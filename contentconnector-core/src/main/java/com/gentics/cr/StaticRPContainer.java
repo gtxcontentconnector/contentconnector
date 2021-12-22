@@ -2,9 +2,8 @@ package com.gentics.cr;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Utility class to instanciate RequestProcessors from a {@link CRConfigUtil}.
@@ -17,7 +16,7 @@ public final class StaticRPContainer {
 	/**
 	 * Log4j Logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(StaticRPContainer.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(StaticRPContainer.class);
 
 	/**
 	 * Table with cached request processors.

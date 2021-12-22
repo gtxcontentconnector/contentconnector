@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -21,6 +20,7 @@ import com.gentics.cr.CRRequest;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.lucene.indexaccessor.IndexAccessor;
 import com.gentics.cr.lucene.indexer.index.LuceneIndexLocation;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * The SynonymQueryParser change the users Query,
@@ -47,9 +47,9 @@ public class SynonymQueryParser extends CRQueryParser {
 	private String[] searchedAttributes;
 
 	/**
-	 * static log4j {@link Logger} to log errors and debug.
+	 * static log4j {@link NodeLogger} to log errors and debug.
 	 */
-	private static Logger log = Logger.getLogger(SynonymQueryParser.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(SynonymQueryParser.class);
 
 	/**
 	 * sub Query Parser, which is used as "super QueryParser".

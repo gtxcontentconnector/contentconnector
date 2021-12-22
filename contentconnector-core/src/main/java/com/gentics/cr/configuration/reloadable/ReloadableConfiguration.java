@@ -1,10 +1,9 @@
 package com.gentics.cr.configuration.reloadable;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CachedCRRequestProcessor;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.util.Constants;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Operates as an Interface between the servlet and the Indexer Engine.
@@ -18,8 +17,8 @@ public abstract class ReloadableConfiguration {
 	/**
 	* Log4j logger for error and debug messages.
 	*/
-	private static Logger logger = 
-			Logger.getLogger(CachedCRRequestProcessor.class);
+	private static NodeLogger logger = 
+			NodeLogger.getNodeLogger(CachedCRRequestProcessor.class);
 
 	/**
 	 * Interval for checking for new jobs.

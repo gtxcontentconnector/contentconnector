@@ -2,9 +2,8 @@ package com.gentics.cr;
 
 import java.sql.Connection;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * PooledSQLRequestProcessor.
@@ -18,7 +17,7 @@ public class PooledSQLRequestProcessor extends AbstractSQLRequestProcessor {
 	/**
 	 * Logger.
 	 */
-	private static Logger log = Logger.getLogger(PooledSQLRequestProcessor.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(PooledSQLRequestProcessor.class);
 	
 	/**
 	 * Constructor. Create a new PooledSQLRequestProcessor.

@@ -4,10 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.configuration.GenericConfiguration;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * A Taxonomy Mapping maps an attribute of a ContentRepository-Object to a
@@ -29,8 +28,8 @@ public class TaxonomyMapping implements TaxonomyConfigKeys {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static final Logger LOGGER = Logger
-			.getLogger(TaxonomyMapping.class);
+	private static final NodeLogger LOGGER = NodeLogger
+			.getNodeLogger(TaxonomyMapping.class);
 
 	/**
 	 * Constructor

@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRResolvableBean;
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.file.DirectoryScanner;
 import com.gentics.cr.util.indexing.IndexUpdateChecker;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * The FileSystemUpdateChecker checks if a given object is up to date in the filesystem.
@@ -24,7 +23,7 @@ public class FileSystemUpdateChecker extends IndexUpdateChecker {
 	/**
 	 * log4j logger for error and debug messages
 	 */
-	private static final Logger logger = Logger.getLogger(FileSystemUpdateChecker.class);
+	private static final NodeLogger logger = NodeLogger.getNodeLogger(FileSystemUpdateChecker.class);
 
 	/**
 	 * directory containing the files

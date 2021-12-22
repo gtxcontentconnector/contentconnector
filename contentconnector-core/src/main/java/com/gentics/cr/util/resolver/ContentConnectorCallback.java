@@ -5,12 +5,11 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.configuration.StaticConfigurationContainer;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.StringUtils;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Callback to resolve a content connector property.
@@ -21,7 +20,7 @@ public class ContentConnectorCallback implements Callback {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private Logger logger = Logger.getLogger(ContentConnectorCallback.class);
+	private NodeLogger logger = NodeLogger.getNodeLogger(ContentConnectorCallback.class);
 
 	/**
 	 * configuration cache.

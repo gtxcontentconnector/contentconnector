@@ -8,9 +8,18 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
-		<node.version>2.3.15</node.version>
+		<node.version>2.4.1</node.version>
 		<org.apache.tika.version>1.20</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
+		<log4j.version>2.17.0</log4j.version>
+		<mysql-connector.version>8.0.27</mysql-connector.version>
+		<commons-io.version>2.11.0</commons-io.version>
+		<quartz.version>1.7.2</quartz.version>
+		<jsoup.version>1.14.2</jsoup.version>
+		<org.apache.pdfbox.version>2.0.24</org.apache.pdfbox.version>
+		<commons-compress.version>1.21</commons-compress.version>
+		<junit.version>4.13.1</junit.version>
+		<httpclient.version>4.5.13</httpclient.version>
 		<surefire.forkcount>8</surefire.forkcount>
 	</properties>
 	<scm>
@@ -96,7 +105,7 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.5.9</version>
+				<version>${httpclient.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
@@ -115,9 +124,30 @@
 				<version>2.7.2</version>
 			</dependency>
 			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.16</version>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz</artifactId>
+				<version>${quartz.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>${jsoup.version}</version>
+			</dependency>
+			<dependency>
+			<!-- PDF Parsing -->
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>${org.apache.pdfbox.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.jcs</groupId>
@@ -133,7 +163,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.12</version>
+				<version>${mysql-connector.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>
@@ -144,18 +174,18 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.11</version>
+				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.19</version>
+				<version>${commons-compress.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.4</version>
+				<version>${commons-io.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet.jsp</groupId>

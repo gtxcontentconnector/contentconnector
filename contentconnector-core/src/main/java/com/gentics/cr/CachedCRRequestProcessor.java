@@ -7,11 +7,9 @@ import java.util.Vector;
 
 import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheException;
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
-import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.datasource.Datasource.Sorting;
+import com.gentics.api.lib.datasource.DatasourceException;
 import com.gentics.api.lib.exception.ParserException;
 import com.gentics.api.lib.expressionparser.ExpressionParserException;
 import com.gentics.api.lib.expressionparser.filtergenerator.DatasourceFilter;
@@ -19,6 +17,7 @@ import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.monitoring.MonitorFactory;
 import com.gentics.cr.monitoring.UseCase;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * CachedCRRequestProcessor fixes a bug in Gentics PortalConnector which
@@ -33,7 +32,7 @@ public class CachedCRRequestProcessor extends RequestProcessor {
 	/**
 	 * Log4j logger for error and debug messages.
 	 */
-	private static Logger logger = Logger.getLogger(CachedCRRequestProcessor.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(CachedCRRequestProcessor.class);
 
 	/**
 	 * JCS cache for our results.

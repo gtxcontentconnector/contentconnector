@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -20,6 +19,7 @@ import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.cr.configuration.GenericConfigurationFileLoader;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.util.indexing.update.filesystem.FileSystemUpdateCheckerTest;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Check if createAllCRIndexJobs() creates the CRIndexJobs in correct order (alphabetically)
@@ -28,7 +28,7 @@ import com.gentics.cr.util.indexing.update.filesystem.FileSystemUpdateCheckerTes
  */
 public class CreateAllCRIndexJobsOrderTest {
 
-	private static final Logger LOGGER = Logger.getLogger(FileSystemUpdateCheckerTest.class);
+	private static final NodeLogger LOGGER = NodeLogger.getNodeLogger(FileSystemUpdateCheckerTest.class);
 
 	static CRConfigUtil config = new CRConfigUtil();
 

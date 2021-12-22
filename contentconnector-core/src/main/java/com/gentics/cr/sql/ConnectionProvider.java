@@ -11,10 +11,10 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.log4j.Logger;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRConfigUtil;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * 
@@ -24,7 +24,7 @@ import com.gentics.cr.CRConfigUtil;
  *
  */
 public class ConnectionProvider {
-	private static Logger log = Logger.getLogger(ConnectionProvider.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(ConnectionProvider.class);
 	private static HashMap<String, Boolean> connectionpools;
 
 	/**

@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheException;
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.api.lib.datasource.DatasourceNotAvailableException;
 import com.gentics.api.lib.resolving.Resolvable;
@@ -21,6 +19,7 @@ import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.exceptions.CRException;
 import com.gentics.cr.template.ITemplateManager;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * CRPlinkProcessor should be initialized once and passed to CRPlinkReplacer on
@@ -37,7 +36,7 @@ public class PlinkProcessor {
 
 	Map<String, Resolvable> contextObjects;
 
-	private static Logger log = Logger.getLogger(PlinkProcessor.class);
+	private static NodeLogger log = NodeLogger.getNodeLogger(PlinkProcessor.class);
 
 	private static PortalCache plinkCache;
 

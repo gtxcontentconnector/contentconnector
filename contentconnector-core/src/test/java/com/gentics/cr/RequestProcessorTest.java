@@ -7,18 +7,18 @@ import java.util.Collection;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.gentics.api.lib.datasource.Datasource.Sorting;
 import com.gentics.cr.exceptions.CRException;
+import com.gentics.lib.log.NodeLogger;
 
 public abstract class RequestProcessorTest {
 	/** The Constant attributes. */
 	protected static final String[] attributes = { "name", "folder_id", "node_id", "test1"};
 
 	/** The Constant LOGGER. */
-	protected final static Logger LOGGER = Logger.getLogger(CRRequestProcessorNavigationTest.class);
+	protected final static NodeLogger LOGGER = NodeLogger.getNodeLogger(CRRequestProcessorNavigationTest.class);
 
 	/** The Constant FOLDER_TYPE. */
 	protected static final String FOLDER_TYPE = CRResolvableBean.DEFAULT_DIR_TYPE;

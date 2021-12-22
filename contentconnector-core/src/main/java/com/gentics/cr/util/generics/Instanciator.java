@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.log4j.Logger;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * Helper class to instanciate generic classes.
@@ -17,7 +17,7 @@ public final class Instanciator {
 	/**
 	 * Log4j logger for debug output.
 	 */
-	private static Logger logger = Logger.getLogger(Instanciator.class);
+	private static NodeLogger logger = NodeLogger.getNodeLogger(Instanciator.class);
 
 	/**
 	 * private constructor so the utility class couldn't be instantiated.

@@ -8,12 +8,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.gentics.api.lib.datasource.Datasource;
 import com.gentics.cr.CRConfigUtil;
 import com.gentics.cr.CRDatabaseFactory;
 import com.gentics.cr.CRServletConfig;
+import com.gentics.lib.log.NodeLogger;
 
 /**
  * This servlet can be used to clear the cache for one, several, or all items of
@@ -37,8 +36,8 @@ public class ClearCacheServlet extends HttpServlet {
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOGGER = Logger
-			.getLogger(ClearCacheServlet.class);
+	private static final NodeLogger LOGGER = NodeLogger
+			.getNodeLogger(ClearCacheServlet.class);
 
 	/**
 	 * Config.
