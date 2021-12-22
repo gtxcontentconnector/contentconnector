@@ -17,9 +17,6 @@ import java.util.logging.Logger;
  * Adds all parameters which are not in the list of default parameters in the
  * {@link CRRequest} ({@link DEFAULT_ATTRIBUTES}) or in the list of default
  * URL parameters in the {@link AbstractHTTPClientRequestProcessor} ({@link DEFAULT_URL_PARAMETERS})
- * 
- * @author Sebastian Vogel <s.vogel at gentics.com>
- * @date Oct 30, 2014
  */
 public class HTTPClientAllParamsRequestProcessor  extends AbstractHTTPClientRequestProcessor {
     

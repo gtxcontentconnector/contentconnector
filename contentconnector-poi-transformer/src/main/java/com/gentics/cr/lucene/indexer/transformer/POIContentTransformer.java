@@ -3,8 +3,8 @@ package com.gentics.cr.lucene.indexer.transformer;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.poi.POITextExtractor;
-import org.apache.poi.extractor.ExtractorFactory;
+import org.apache.poi.extractor.POITextExtractor;
+import org.apache.poi.ooxml.extractor.ExtractorFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.xmlbeans.XmlException;
