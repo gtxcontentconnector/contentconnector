@@ -1,0 +1,13 @@
+Some dependencies have been updated:
+
+* log4j was updated to 2.17.0. This requires the log configuration file conf/gentics/nodelog.properties to be migrated
+  to the configuration file conf/gentics/nodelog.yml. See "Migrating from Log4j 1.x":https://logging.apache.org/log4j/2.x/manual/migration.html for details.
+* node-lib was updated to 2.4.2
+* mysql connector was updated to 8.0.27
+* commons-compress was updated to 1.21
+* commons-io was updated to 2.11.0
+* httpclient was updated to 4.5.13
+* jsoup was updated to 1.14.2
+* pdfbox was updated to 2.0.24
+* jackson was updated to 2.12.6
+* tika was updated to 1.27
