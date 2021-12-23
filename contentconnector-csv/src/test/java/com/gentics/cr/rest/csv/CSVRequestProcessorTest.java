@@ -27,7 +27,7 @@ public class CSVRequestProcessorTest {
 	@Before
 	public void setUp() throws MalformedURLException, URISyntaxException,
 			CRException {
-		String confpath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().getAbsolutePath();
+		String confpath = new File(this.getClass().getResource("nodelog.yml").toURI()).getParentFile().getAbsolutePath();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confpath);
 		config = new CRConfigFileLoader("csvfile", this.getClass().getResource(".").toString());
 

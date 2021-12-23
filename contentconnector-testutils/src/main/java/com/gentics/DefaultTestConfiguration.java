@@ -12,10 +12,10 @@ import java.util.List;
 public class DefaultTestConfiguration {
 	public static final String baseResourcePath = "conf/gentics/";
 	public static final List<String> configResourceDirectories = Arrays.asList("templates");
-	public static final List<String> configResourceFiles = Arrays.asList("cache.ccf", "nodelog.properties", "templates/velocitymacros.vm");
+	public static final List<String> configResourceFiles = Arrays.asList("cache.ccf", "nodelog.yml", "templates/velocitymacros.vm");
 	/**
 	 * Get a temporary config directory containing the basic files needed for a working content-connector
-	 * (cache.ccf, nodelog.properties, templats/velocitymacros.vm)
+	 * (cache.ccf, nodelog.yml, templats/velocitymacros.vm)
 	 *
 	 * @return the temporary directory which will be removed after shutdown
 	 */

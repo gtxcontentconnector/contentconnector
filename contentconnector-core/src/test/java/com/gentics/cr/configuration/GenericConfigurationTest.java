@@ -20,7 +20,7 @@ public class GenericConfigurationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		confPath = new File(this.getClass().getResource("nodelog.properties").toURI()).getParentFile().getAbsolutePath();
+		confPath = new File(this.getClass().getResource("nodelog.yml").toURI()).getParentFile().getAbsolutePath();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
 		EnvironmentConfiguration.loadLoggerProperties();
 	}

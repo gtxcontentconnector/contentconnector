@@ -21,7 +21,7 @@ public final class DefaultConfigDirectory {
 	
 	/**
 	 * Executing this method configures the {@link EnvironmentConfiguration} to use the directory of this class (that contains a cache.ccf
-	 * and the nodelog.properties).
+	 * and the nodelog.yml).
 	 */
 	public static void useThis() throws URISyntaxException {
 		EnvironmentConfiguration.loadEnvironmentProperties();

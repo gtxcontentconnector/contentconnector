@@ -43,7 +43,7 @@ public class CleanupTextTransformerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		String confPath = new File(this.getClass().getResource("/config/nodelog.properties").toURI()).getParentFile().getAbsolutePath();
+		String confPath = new File(this.getClass().getResource("/config/nodelog.yml").toURI()).getParentFile().getAbsolutePath();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
 		config = new CRConfigUtil();
 		config.set("attribute", CONTENT_ATTRIBUTE);

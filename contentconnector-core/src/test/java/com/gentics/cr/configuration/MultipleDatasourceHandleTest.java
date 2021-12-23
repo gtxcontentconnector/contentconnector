@@ -27,7 +27,7 @@ public class MultipleDatasourceHandleTest {
 
 	@Before
 	public void setUp() throws Exception {
-		confPath = new File(this.getClass().getResource("nodelog.properties")
+		confPath = new File(this.getClass().getResource("nodelog.yml")
 				.toURI()).getParentFile().getAbsolutePath();
 		System.setProperty(CRUtil.PORTALNODE_CONFPATH, confPath);
 		EnvironmentConfiguration.loadLoggerProperties();
