@@ -2,9 +2,11 @@ package com.gentics.cr.lucene.analysis;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.BaseTokenStreamTestCase;
 import org.apache.lucene.analysis.TokenStream;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -15,7 +17,12 @@ public class CustomPatternAnalyzerTest extends BaseTokenStreamTestCase{
         //static block gets inherited too
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
     }
-	
+
+	@AfterClass
+	public static void stopLog4j2() {
+		LogManager.shutdown();
+	}
+
 	@Test
 	public void testLowercaseFalse() throws IOException {
 		GenericConfiguration config = new GenericConfiguration();

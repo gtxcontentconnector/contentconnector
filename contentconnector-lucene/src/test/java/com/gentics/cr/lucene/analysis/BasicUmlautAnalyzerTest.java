@@ -2,9 +2,11 @@ package com.gentics.cr.lucene.analysis;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.BaseTokenStreamTestCase;
 import org.apache.lucene.analysis.TokenStream;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 public class BasicUmlautAnalyzerTest extends BaseTokenStreamTestCase{
@@ -13,8 +15,12 @@ public class BasicUmlautAnalyzerTest extends BaseTokenStreamTestCase{
         //static block gets inherited too
         ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
     }
-	
-	
+
+	@AfterClass
+	public static void stopLog4j2() {
+		LogManager.shutdown();
+	}
+
 	@Test
 	public void testSimpleSentence() throws IOException {
 		testToken("Große Nüsse nässen möglich", new String[]{"grosze","nuesse","naessen","moeglich"});
@@ -93,6 +99,4 @@ public class BasicUmlautAnalyzerTest extends BaseTokenStreamTestCase{
 		
 		a.close();
 	}
-	
-	
 }
