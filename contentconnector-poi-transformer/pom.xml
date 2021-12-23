@@ -83,6 +83,12 @@
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-batch</artifactId>
 			<version>${org.apache.tika.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<!-- Highlevel abstraction for text parsing (uses apache poi and many other dependencies for parsing) -->
