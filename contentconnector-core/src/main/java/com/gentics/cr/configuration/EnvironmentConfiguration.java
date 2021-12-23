@@ -98,8 +98,8 @@ public final class EnvironmentConfiguration {
 		String confpath = CRUtil.resolveSystemProperties(loggerFilePath);
 
 		File logConfigFile = new File(confpath);
+		StringBuilder errorMessage = new StringBuilder("Could not find " + LOGCONFIG_FILENAME + " at: ").append(confpath);
 		if (logConfigFile.exists()) {
-			StringBuilder errorMessage = new StringBuilder("Could not find " + LOGCONFIG_FILENAME + " at: ").append(confpath);
 			try {
 				loadLoggerProperties(logConfigFile.toURI());
 			} catch (IOException e) {
@@ -116,6 +116,10 @@ public final class EnvironmentConfiguration {
 				loadLoggerFallbackProperties();
 			}
 		} else {
+			if (!loggerInitFailed) {
+				System.out.println(errorMessage.toString());
+				loggerInitFailed = true;
+			}
 			loadLoggerFallbackProperties();
 		}
 	}

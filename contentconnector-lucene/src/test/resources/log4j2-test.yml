@@ -1,0 +1,16 @@
+Configuration:
+  status: error
+  name: Content.Connector Configuration
+  monitorInterval: 10
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%d [%t] %-5p %c - %m%n"
+  Loggers:
+    Root:
+      level: error
+      AppenderRef:
+        -
+          ref: STDOUT
