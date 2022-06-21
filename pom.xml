@@ -12,7 +12,7 @@
 		<org.apache.tika.version>1.27</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<log4j.version>2.17.0</log4j.version>
-		<mysql-connector.version>8.0.27</mysql-connector.version>
+		<mysql-connector.version>8.0.28</mysql-connector.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<quartz.version>1.7.2</quartz.version>
 		<jsoup.version>1.14.2</jsoup.version>
