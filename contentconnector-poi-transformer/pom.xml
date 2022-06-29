@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.apache.poi.version>4.0.1</org.apache.poi.version>
+		<org.apache.poi.version>4.1.1</org.apache.poi.version>
 		<org.apache.pdfbox.version>2.0.15</org.apache.pdfbox.version>
 		<org.bouncycastle.version>1.46</org.bouncycastle.version>
 	</properties>
