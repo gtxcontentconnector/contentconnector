@@ -15,7 +15,7 @@
 		<mysql-connector.version>8.0.27</mysql-connector.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<quartz.version>1.7.2</quartz.version>
-		<jsoup.version>1.14.2</jsoup.version>
+		<jsoup.version>1.15.3</jsoup.version>
 		<org.apache.pdfbox.version>2.0.24</org.apache.pdfbox.version>
 		<commons-compress.version>1.21</commons-compress.version>
 		<junit.version>4.13.1</junit.version>
