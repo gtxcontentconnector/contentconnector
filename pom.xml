@@ -20,7 +20,7 @@
 		<commons-compress.version>1.21</commons-compress.version>
 		<junit.version>4.13.1</junit.version>
 		<httpclient.version>4.5.13</httpclient.version>
-		<jackson.version>2.12.6</jackson.version>
+		<jackson.version>2.12.6.1</jackson.version>
 		<surefire.forkcount>8</surefire.forkcount>
 	</properties>
 	<scm>
