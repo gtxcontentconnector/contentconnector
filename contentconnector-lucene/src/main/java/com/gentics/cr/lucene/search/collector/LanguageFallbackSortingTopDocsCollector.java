@@ -65,7 +65,10 @@ public class LanguageFallbackSortingTopDocsCollector extends
 	 * @throws IOException
 	 */
 	public LanguageFallbackSortingTopDocsCollector(final CRRequest request, final Sort sort, final IndexSearcher searcher, final int numHits, final GenericConfiguration config) throws IOException {
-		super(new LanguageSortingHitQueue(numHits, sort, true));
+		// NOTE: we need to make the internal priority queue larger by one item, because
+		// during collection, we add documents to the priority queue before actually sorting them in
+		// therefore, the "top" of the priority queue always is an element, which actually does not get returned
+		super(new LanguageSortingHitQueue(numHits + 1, sort, true));
 		if (sort != null) {
 			SortField[] sortFields = sort.getSort();
 			sortfields = new ArrayList<String>(sortFields.length);

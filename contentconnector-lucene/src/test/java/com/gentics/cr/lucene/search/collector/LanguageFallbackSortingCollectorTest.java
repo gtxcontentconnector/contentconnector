@@ -1,5 +1,7 @@
 package com.gentics.cr.lucene.search.collector;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -66,12 +68,115 @@ public class LanguageFallbackSortingCollectorTest {
 		addDoc(accessor, "content:flower", "category:plants", "contentid:10007.8","languagesetit:10007.8","languagecode:en");
 		addDoc(accessor, "content:aflower", "category:plants", "contentid:10007.81","languagesetit:10007.8","languagecode:es");
 		addDoc(accessor, "content:tree", "category:plants", "contentid:10007.9");
-		
+
+		// create some "names" contents, with different score
+		// some documents have german translations.
+		addDoc(accessor, "content:norbert (en)", "category:names", "contentid:1.1", "languagesetit:1.1", "date:21", "languagecode:en");
+		addDoc(accessor, "content:norbert (de)", "category:names", "contentid:2.1", "languagesetit:1.1", "date:01", "languagecode:de");
+
+		addDoc(accessor, "content:norbert norbert norbert (en)", "category:names", "contentid:1.2", "languagesetit:1.2","date:02", "languagecode:en");
+
+		addDoc(accessor, "content:norbert norbert (en)", "category:names", "contentid:1.3", "languagesetit:1.3","date:03", "languagecode:en");
+
+		addDoc(accessor, "content:norbert (en)", "category:names", "contentid:1.4", "languagesetit:1.4", "date:04", "languagecode:en");
+
+		addDoc(accessor, "content:norbert norbert norbert (en)", "category:names", "contentid:1.5", "languagesetit:1.5","date:25", "languagecode:en");
+		addDoc(accessor, "content:norbert norbert norbert (de)", "category:names", "contentid:2.5", "languagesetit:1.5","date:05", "languagecode:de");
+
+		addDoc(accessor, "content:norbert norbert (en)", "category:names", "contentid:1.6", "languagesetit:1.6","date:06", "languagecode:en");
+
+		addDoc(accessor, "content:norbert (en)", "category:names", "contentid:1.7", "languagesetit:1.7", "date:07", "languagecode:en");
+
+		addDoc(accessor, "content:norbert norbert norbert (en)", "category:names", "contentid:1.8", "languagesetit:1.8","date:08", "languagecode:en");
+
+		addDoc(accessor, "content:norbert norbert (en)", "category:names", "contentid:1.9", "languagesetit:1.9","date:29", "languagecode:en");
+		addDoc(accessor, "content:norbert norbert (de)", "category:names", "contentid:2.9", "languagesetit:1.9","date:09", "languagecode:de");
+
+		addDoc(accessor, "content:norbert (en)", "category:names", "contentid:1.10", "languagesetit:1.10", "date:30", "languagecode:en");
+		addDoc(accessor, "content:norbert (de)", "category:names", "contentid:2.10", "languagesetit:1.10", "date:10", "languagecode:de");
+
+		addDoc(accessor, "content:norbert norbert norbert (en)", "category:names", "contentid:1.11", "languagesetit:1.11","date:11", "languagecode:en");
+
+		addDoc(accessor, "content:norbert norbert (en)", "category:names", "contentid:1.12", "languagesetit:1.12","date:32", "languagecode:en");
+		addDoc(accessor, "content:norbert norbert (de)", "category:names", "contentid:2.12", "languagesetit:1.12","date:12", "languagecode:de");
+
 		DidyoumeanIndexExtension dymProvider = ((LuceneRequestProcessor) rp).getCRSearcher().getDYMProvider();
 		AbstractUpdateCheckerJob dymIndexJob = dymProvider.createDYMIndexJob(location);
 		dymIndexJob.run();
 	}
-	
+
+	@Test
+	public void testSortedPagingDescending() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("norbert");
+		request.setCountString("3");
+		request.setSortArray(new String[] {"date:desc"});
+
+		request.setStartString("0");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		assertEquals("Objects 0 - 2", "[2.12, 1.11, 2.10]", objects.toString());
+
+		request.setStartString("3");
+		objects = rp.getObjects(request);
+		assertEquals("Objects 3 - 5", "[2.9, 1.8, 1.7]", objects.toString());
+
+		request.setStartString("6");
+		objects = rp.getObjects(request);
+		assertEquals("Objects 6 - 8", "[1.6, 2.5, 1.4]", objects.toString());
+
+		request.setStartString("9");
+		objects = rp.getObjects(request);
+		assertEquals("Objects 9 - 11", "[1.3, 1.2, 2.1]", objects.toString());
+	}
+
+	@Test
+	public void testSortedPagingAscending() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("norbert");
+		request.setCountString("3");
+		request.setSortArray(new String[] {"date:asc"});
+
+		request.setStartString("0");
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		assertEquals("Objects 0 - 2", "[2.1, 1.2, 1.3]", objects.toString());
+
+		request.setStartString("3");
+		objects = rp.getObjects(request);
+		assertEquals("Objects 3 - 5", "[1.4, 2.5, 1.6]", objects.toString());
+
+		request.setStartString("6");
+		objects = rp.getObjects(request);
+		assertEquals("Objects 6 - 8", "[1.7, 1.8, 2.9]", objects.toString());
+
+		request.setStartString("9");
+		objects = rp.getObjects(request);
+		assertEquals("Objects 9 - 11", "[2.10, 1.11, 2.12]", objects.toString());
+	}
+
+	@Test
+	public void testGetAllSortedDescending() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("norbert");
+		request.setStartString("0");
+		request.setCountString("12");
+		request.setSortArray(new String[] {"date:desc"});
+
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		assertEquals("Objects 0 - 11", "[2.12, 1.11, 2.10, 2.9, 1.8, 1.7, 1.6, 2.5, 1.4, 1.3, 1.2, 2.1]", objects.toString());
+	}
+
+	@Test
+	public void testGetAllSortedAscending() throws CRException {
+		CRRequest request = new CRRequest();
+		request.setRequestFilter("norbert");
+		request.setStartString("0");
+		request.setCountString("12");
+		request.setSortArray(new String[] {"date:asc"});
+
+		Collection<CRResolvableBean> objects = rp.getObjects(request);
+		assertEquals("Objects 0 - 11", "[2.1, 1.2, 1.3, 1.4, 2.5, 1.6, 1.7, 1.8, 2.9, 2.10, 1.11, 2.12]", objects.toString());
+	}
+
 	@Test
 	public void testConfig() {
 		Assert.assertNotNull(rp);
