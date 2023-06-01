@@ -1,0 +1,5 @@
+Some dependencies have been updated:
+
+* node-lib was updated to 2.4.5
+* tika was updated to 1.28.5
+* velocity was updated to 1.6.4
