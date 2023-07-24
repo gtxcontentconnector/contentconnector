@@ -14,31 +14,12 @@ pipeline {
 		kubernetes {
 			label env.BUILD_TAG
 			defaultContainer 'build'
-			yaml """
+			yaml ocpWorker("""
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    jenkinsbuild: true
 spec:
-  volumes:
-  - name: cache
-    hostPath:
-      path: /opt/kubernetes/cache
   nodeSelector:
     jenkins_worker: true
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-            - key: jenkinsbuild
-              operator: In
-              values:
-              - true
-          topologyKey: kubernetes.io/hostname
   containers:
   - name: build
     image: """ + buildEnvironmentDockerImage("build/Dockerfile") + """
@@ -48,15 +29,14 @@ spec:
     tty: true
     resources:
       requests:
-        cpu: 3
-        memory: 4Gi
-    volumeMounts:
-    - mountPath: /home/jenkins/.m2/repository
-      name: cache
-      subPath: maven
+        cpu: '0'
+        memory: '0'
+      limits:
+        cpu: '0'
+        memory: '0'
   imagePullSecrets:
   - name: docker-jenkinsbuilds-apa-it
-"""
+""")
 		}
 	}
 

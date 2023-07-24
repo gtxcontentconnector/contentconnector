@@ -40,6 +40,11 @@
 					<groupId>jmimemagic</groupId>
 					<artifactId>jmimegic</artifactId>
 				</exclusion>
+				<!-- Exclude asm, because tika-parsers has a dependency on its own version of it -->
+				<exclusion>
+					<groupId>asm</groupId>
+					<artifactId>asm</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>

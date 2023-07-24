@@ -51,6 +51,10 @@
 			<artifactId>velocity</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>oro</groupId>
+			<artifactId>oro</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-tools</artifactId>
 			<exclusions>

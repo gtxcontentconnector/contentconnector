@@ -8,8 +8,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
-		<node.version>2.4.3</node.version>
-		<org.apache.tika.version>1.27</org.apache.tika.version>
+		<node.version>2.4.5</node.version>
+		<!-- Note: we cannot update to newer versions of tika, because poi-transformer needed to be refactored -->
+		<org.apache.tika.version>1.28.1</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<log4j.version>2.17.1</log4j.version>
 		<mysql-connector.version>8.0.27</mysql-connector.version>
@@ -22,6 +23,8 @@
 		<httpclient.version>4.5.13</httpclient.version>
 		<jackson.version>2.12.6</jackson.version>
 		<surefire.forkcount>8</surefire.forkcount>
+		<velocity.version>1.6.4</velocity.version>
+		<oro.version>2.0.8</oro.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</connection>
@@ -111,7 +114,12 @@
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity</artifactId>
-				<version>1.6.3</version>
+				<version>${velocity.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>oro</groupId>
+				<artifactId>oro</artifactId>
+				<version>${oro.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
@@ -264,7 +272,7 @@
 				<configuration>
 					<verbose>true</verbose>
 					<fork>true</fork>
-					<executable>${env.JAVA_1_8_HOME}/bin/javac</executable>
+					<executable>${env.JAVA_HOME}/bin/javac</executable>
 					<compilerVersion>1.8</compilerVersion>
 					<encoding>UTF-8</encoding>
 					<source>1.8</source>
