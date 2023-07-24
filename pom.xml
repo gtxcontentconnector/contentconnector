@@ -23,6 +23,7 @@
 		<jackson.version>2.12.6</jackson.version>
 		<surefire.forkcount>8</surefire.forkcount>
 		<velocity.version>1.6.4</velocity.version>
+		<oro.version>2.0.8</oro.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:gtxcontentconnector/contentconnector.git</connection>
@@ -113,6 +114,11 @@
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity</artifactId>
 				<version>${velocity.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>oro</groupId>
+				<artifactId>oro</artifactId>
+				<version>${oro.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
