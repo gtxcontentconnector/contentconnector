@@ -9,7 +9,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>2.4</maven.compiler.plugin.version>
 		<node.version>2.4.5</node.version>
-		<org.apache.tika.version>1.28.5</org.apache.tika.version>
+		<!-- Note: we cannot update to newer versions of tika, because poi-transformer needed to be refactored -->
+		<org.apache.tika.version>1.28.1</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<log4j.version>2.17.1</log4j.version>
 		<mysql-connector.version>8.0.27</mysql-connector.version>
