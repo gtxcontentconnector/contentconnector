@@ -216,6 +216,7 @@ public class AutocompleteIndexExtension extends AbstractIndexExtension implement
 
 	/**
 	 * get the field in the source index which should be used for autocomplete
+	 * if more than one field for autocomplete should be used, seperate it by comma
 	 * 
 	 * @return the name of field (default: content)
 	 */

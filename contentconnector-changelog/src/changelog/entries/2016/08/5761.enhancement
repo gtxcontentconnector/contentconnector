@@ -1,0 +1,1 @@
+Enhance Autocomplete IndexJob: Allows to analyze more than one src-index Field. Multiple Fields are seperated by comma in autocomplete config
