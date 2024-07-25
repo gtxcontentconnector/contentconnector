@@ -51,10 +51,10 @@ public class CleanupTextTransformerTest {
 
 	@Test
 	public void testStripWhitespace() throws IOException, CRException, URISyntaxException {
-		String testContent = readFile("whitespacefile.txt");
+		String testContent = replaceNewlines(readFile("whitespacefile.txt"));
 
-		testContent = transform(testContent);
-		assertEquals(readFile("cleanedwhitespacefile.txt"), testContent);
+		testContent = replaceNewlines(transform(testContent));
+		assertEquals(replaceNewlines(readFile("cleanedwhitespacefile.txt")), testContent);
 	}
 
 	@Test
@@ -142,5 +142,9 @@ public class CleanupTextTransformerTest {
 		ContentTransformer transformer = new CleanupTextTransformer(config);
 		transformer.processBean(bean);
 		return bean.getString(CONTENT_ATTRIBUTE);
+	}
+
+	private String replaceNewlines(String string) {
+		return string.replaceAll("\\r\\n", "\n");
 	}
 }

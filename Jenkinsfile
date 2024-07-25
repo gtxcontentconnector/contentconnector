@@ -52,7 +52,7 @@ spec:
     }
 
 	stages {
-		stage('Maven boild') {
+		stage('Maven build') {
 			steps {
 				sshagent(['git']) {
 					script {
