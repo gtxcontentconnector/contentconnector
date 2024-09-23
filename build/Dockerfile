@@ -1,4 +1,4 @@
-FROM docker.apa-it.at/maven:3.8.8-amazoncorretto-17-debian-bookworm
+FROM docker.gentics.com/maven:3.8.8-amazoncorretto-17-debian-bookworm
 MAINTAINER Bernhard Kaszt <b.kaszt@gentics.com>
 
 ARG GIT_USER_NAME="Maven Release Manager"
