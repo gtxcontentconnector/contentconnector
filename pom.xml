@@ -18,7 +18,7 @@
 		<quartz.version>1.7.2</quartz.version>
 		<jsoup.version>1.14.2</jsoup.version>
 		<org.apache.pdfbox.version>2.0.24</org.apache.pdfbox.version>
-		<commons-compress.version>1.21</commons-compress.version>
+		<commons-compress.version>1.26.0</commons-compress.version>
 		<junit.version>4.13.1</junit.version>
 		<httpclient.version>4.5.13</httpclient.version>
 		<jackson.version>2.12.6</jackson.version>
