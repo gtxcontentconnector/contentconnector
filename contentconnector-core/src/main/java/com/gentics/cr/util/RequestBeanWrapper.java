@@ -3,7 +3,7 @@ package com.gentics.cr.util;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 /**
  * Wrapper for requests.

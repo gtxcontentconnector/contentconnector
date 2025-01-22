@@ -15,6 +15,7 @@
 		<log4j.version>2.17.1</log4j.version>
 		<mysql-connector.version>8.0.27</mysql-connector.version>
 		<commons-io.version>2.11.0</commons-io.version>
+		<commons-logging.version>1.2</commons-logging.version>
 		<quartz.version>1.7.2</quartz.version>
 		<jsoup.version>1.14.2</jsoup.version>
 		<org.apache.pdfbox.version>2.0.24</org.apache.pdfbox.version>
@@ -23,7 +24,8 @@
 		<httpclient.version>4.5.13</httpclient.version>
 		<jackson.version>2.12.6</jackson.version>
 		<surefire.forkcount>8</surefire.forkcount>
-		<velocity.version>1.6.4</velocity.version>
+		<velocity.version>2.4.1</velocity.version>
+		<velocity-tools.version>3.1</velocity-tools.version>
 		<oro.version>2.0.8</oro.version>
 	</properties>
 	<scm>
@@ -113,7 +115,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
-				<artifactId>velocity</artifactId>
+				<artifactId>velocity-engine-core</artifactId>
 				<version>${velocity.version}</version>
 			</dependency>
 			<dependency>
@@ -122,9 +124,9 @@
 				<version>${oro.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.velocity</groupId>
-				<artifactId>velocity-tools</artifactId>
-				<version>1.4</version>
+				<groupId>org.apache.velocity.tools</groupId>
+				<artifactId>velocity-tools-generic</artifactId>
+				<version>${velocity-tools.version}</version>
 			</dependency>
 			<!-- Overwrite xalan dep coming from velocity-tools -->
 			<dependency>
@@ -197,20 +199,25 @@
 				<version>${commons-io.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet.jsp</groupId>
-				<artifactId>jsp-api</artifactId>
-				<version>2.1</version>
+				<groupId>commons-logging</groupId>
+  				<artifactId>commons-logging</artifactId>
+				<version>${commons-logging.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet.jsp</groupId>
+				<artifactId>jakarta.servlet.jsp-api</artifactId>
+				<version>3.1.0</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax.portlet</groupId>
 				<artifactId>portlet-api</artifactId>
-				<version>2.0</version>
+				<version>3.0.1</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>2.3</version>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>6.0.0</version>
 				<scope>provided</scope>
 			</dependency>
 

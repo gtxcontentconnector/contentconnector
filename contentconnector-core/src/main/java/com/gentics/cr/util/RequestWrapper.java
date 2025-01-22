@@ -14,12 +14,18 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.gentics.lib.log.NodeLogger;
 
@@ -29,7 +35,7 @@ import com.gentics.lib.log.NodeLogger;
  * @author perhab
  *
  */
-public class RequestWrapper implements ServletRequest, PortletRequest {
+public class RequestWrapper implements ServletRequest /*, PortletRequest */ {
 
 	/**
 	 * Log4j logger for debug and error messages.
@@ -395,4 +401,109 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 		return false;
 	}
 
+	@Override
+	public long getContentLengthLong() {
+		// TODO Auto-generated method stub
+		logger.error("Method getContentLengthLong() is not yet implemented.");
+		return 0;
+	}
+
+	@Override
+	public int getRemotePort() {
+		// TODO Auto-generated method stub
+		logger.error("Method getRemotePort() is not yet implemented.");
+		return 0;
+	}
+
+	@Override
+	public String getLocalName() {
+		// TODO Auto-generated method stub
+		logger.error("Method getLocalName() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public String getLocalAddr() {
+		// TODO Auto-generated method stub
+		logger.error("Method getLocalAddr() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public int getLocalPort() {
+		// TODO Auto-generated method stub
+		logger.error("Method getLocalPort() is not yet implemented.");
+		return 0;
+	}
+
+	@Override
+	public ServletContext getServletContext() {
+		// TODO Auto-generated method stub
+		logger.error("Method getServletContext() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public AsyncContext startAsync() throws IllegalStateException {
+		// TODO Auto-generated method stub
+		logger.error("Method startAsync() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
+			throws IllegalStateException {
+		// TODO Auto-generated method stub
+		logger.error("Method startAsync(ServletRequest, ServletResponse) is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public boolean isAsyncStarted() {
+		// TODO Auto-generated method stub
+		logger.error("Method isAsyncStarted() is not yet implemented.");
+		return false;
+	}
+
+	@Override
+	public boolean isAsyncSupported() {
+		// TODO Auto-generated method stub
+		logger.error("Method isAsyncSupported() is not yet implemented.");
+		return false;
+	}
+
+	@Override
+	public AsyncContext getAsyncContext() {
+		// TODO Auto-generated method stub
+		logger.error("Method getAsyncContext() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public DispatcherType getDispatcherType() {
+		// TODO Auto-generated method stub
+		logger.error("Method getDispatcherType() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public String getRequestId() {
+		// TODO Auto-generated method stub
+		logger.error("Method getRequestId() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public String getProtocolRequestId() {
+		// TODO Auto-generated method stub
+		logger.error("Method getProtocolRequestId() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public ServletConnection getServletConnection() {
+		// TODO Auto-generated method stub
+		logger.error("Method getServletConnection() is not yet implemented.");
+		return null;
+	}
 }

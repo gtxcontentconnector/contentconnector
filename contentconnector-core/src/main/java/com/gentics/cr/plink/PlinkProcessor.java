@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.gentics.api.lib.cache.PortalCache;
 import com.gentics.api.lib.cache.PortalCacheException;

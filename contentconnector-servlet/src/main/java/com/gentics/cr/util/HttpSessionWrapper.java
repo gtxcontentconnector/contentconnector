@@ -1,6 +1,6 @@
 package com.gentics.cr.util;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * 

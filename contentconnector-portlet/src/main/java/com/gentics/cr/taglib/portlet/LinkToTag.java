@@ -5,13 +5,13 @@ package com.gentics.cr.taglib.portlet;
 
 import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
-import javax.servlet.jsp.tagext.TagData;
-import javax.servlet.jsp.tagext.TagExtraInfo;
-import javax.servlet.jsp.tagext.TagSupport;
-import javax.servlet.jsp.tagext.VariableInfo;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.TagData;
+import jakarta.servlet.jsp.tagext.TagExtraInfo;
+import jakarta.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.tagext.VariableInfo;
 
 import com.gentics.cr.CRResolvableBean;
 
@@ -37,7 +37,7 @@ public class LinkToTag extends TagSupport {
 	 */
 	public static class TEI extends TagExtraInfo {
 		/**
-		 * @see javax.servlet.jsp.tagext.TagExtraInfo#getVariableInfo(javax.servlet.jsp.tagext.TagData)
+		 * @see jakarta.servlet.jsp.tagext.TagExtraInfo#getVariableInfo(jakarta.servlet.jsp.tagext.TagData)
 		 */
 		public VariableInfo[] getVariableInfo(TagData tagData) {
 			VariableInfo[] vi = null;
@@ -91,7 +91,7 @@ public class LinkToTag extends TagSupport {
 	/**
 	 *
 	 * 
-	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
+	 * @see jakarta.servlet.jsp.tagext.TagSupport#doStartTag()
 	 */
 	public int doStartTag() throws JspException {
 		Object renderResponseObject = pageContext.findAttribute("javax.portlet.response");
@@ -104,7 +104,7 @@ public class LinkToTag extends TagSupport {
 	}
 
 	/** 
-	 * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
+	 * @see jakarta.servlet.jsp.tagext.TagSupport#doEndTag()
 	 */
 	public int doEndTag() throws JspException {
 		try {

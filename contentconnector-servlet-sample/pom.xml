@@ -68,8 +68,8 @@
 			<version>${project.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.servlet.jsp</groupId>
-					<artifactId>jsp-api</artifactId>
+					<groupId>jakarta.servlet.jsp</groupId>
+					<artifactId>jakarta.servlet.jsp-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

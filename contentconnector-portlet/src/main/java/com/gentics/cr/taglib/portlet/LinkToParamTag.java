@@ -7,8 +7,8 @@ package com.gentics.cr.taglib.portlet;
 
 import java.io.IOException;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 
 /**
  * 
@@ -44,7 +44,7 @@ public class LinkToParamTag extends SimpleTagSupport {
 	}
 
 	/**
-	 * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
+	 * @see jakarta.servlet.jsp.tagext.SimpleTagSupport#doTag()
 	 */
 	public void doTag() throws JspException, IOException {
 		//      Get the parent MessageTag

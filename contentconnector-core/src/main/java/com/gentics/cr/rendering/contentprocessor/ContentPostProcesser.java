@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletRequest;
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 import com.gentics.cr.configuration.GenericConfiguration;
 import com.gentics.lib.log.NodeLogger;

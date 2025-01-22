@@ -48,25 +48,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
+			<artifactId>velocity-engine-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>oro</groupId>
 			<artifactId>oro</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-tools</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>javax.servlet</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>velocity</artifactId>
-					<groupId>velocity</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.apache.velocity.tools</groupId>
+			<artifactId>velocity-tools-generic</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jcs</groupId>
@@ -79,8 +69,8 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<artifactId>servlet-api</artifactId>
-			<groupId>javax.servlet</groupId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

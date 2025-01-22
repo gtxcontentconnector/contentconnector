@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.TagSupport;
 
 import com.gentics.api.portalnode.connector.PLinkReplacer;
 import com.gentics.cr.CRConfigUtil;
@@ -116,7 +116,7 @@ public class RenderContentTag extends TagSupport {
 
 	/**
 	 * @throws JspException 
-	 * @see javax.servlet.jsp.tagext.SimpleTagSupport#doTag()
+	 * @see jakarta.servlet.jsp.tagext.SimpleTagSupport#doTag()
 	 */
 	public int doEndTag() throws JspException {
 		// get the ContentRenderer

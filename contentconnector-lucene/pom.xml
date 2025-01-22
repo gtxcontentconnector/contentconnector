@@ -86,8 +86,8 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<artifactId>servlet-api</artifactId>
-			<groupId>javax.servlet</groupId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
