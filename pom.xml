@@ -2,13 +2,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gentics</groupId>
 	<artifactId>contentconnector</artifactId>
-	<version>2.5.1-SNAPSHOT</version>
+	<version>2.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>contentconnector</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-		<node.version>2.4.5</node.version>
+		<node.version>2.5.0-SNAPSHOT</node.version>
 		<!-- Note: we cannot update to newer versions of tika, because poi-transformer needed to be refactored -->
 		<org.apache.tika.version>1.28.1</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
