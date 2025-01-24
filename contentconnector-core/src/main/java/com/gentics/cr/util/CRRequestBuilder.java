@@ -2,8 +2,6 @@ package com.gentics.cr.util;
 
 import java.util.ArrayList;
 
-import javax.portlet.Portlet;
-import javax.portlet.PortletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.gentics.cr.CRRequest;
@@ -57,25 +55,6 @@ public class CRRequestBuilder {
 	 * rule. (This is to disable this feature because it breaks lucene)
 	 */
 	private static final String ADD_PERMISSIONS_TO_RULE_KEY = "addPermissionsToRule";
-
-	/**
-	 * Initializes the CRRequestBuilder from a {@link javax.portlet.Portlet}.
-	 * 
-	 * @param portletRequest request from the {@link javax.portlet.Portlet}
-	 */
-	public CRRequestBuilder(final PortletRequest portletRequest) {
-		this(portletRequest, null);
-	}
-
-	/**
-	 * Initializes the CRRequestBuilder from a {@link javax.portlet.Portlet}.
-	 * 
-	 * @param portletRequest request from the {@link javax.portlet.Portlet}
-	 * @param requestBuilderConfiguration configuration for the request builder
-	 */
-	public CRRequestBuilder(final PortletRequest portletRequest, final GenericConfiguration requestBuilderConfiguration) {
-		this(new RequestWrapper(portletRequest), requestBuilderConfiguration);
-	}
 
 	/**
 	 * Initializes the CRRequestBuilder from a {@link jakarta.servlet.http.HttpServletRequest}.

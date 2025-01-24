@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.portlet.PortletRequest;
 import jakarta.servlet.ServletRequest;
 
 import com.gentics.api.lib.datasource.Datasource;

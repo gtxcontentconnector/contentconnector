@@ -2,7 +2,6 @@ package com.gentics.cr.util;
 
 import java.util.Map;
 
-import javax.portlet.PortletRequest;
 import jakarta.servlet.ServletRequest;
 
 /**
@@ -32,9 +31,6 @@ public class RequestBeanWrapper extends ResolvableWrapper {
 	public Object get(String key) {
 		if (bean instanceof ServletRequest && "Parameters".equalsIgnoreCase(key)) {
 			return new SmartRequestParameterWrapper(((ServletRequest) bean).getParameterMap());
-		}
-		if (bean instanceof PortletRequest && "Parameters".equalsIgnoreCase(key)) {
-			return new SmartRequestParameterWrapper(((PortletRequest) bean).getParameterMap());
 		}
 		try {
 			Object value = invokeGetter(bean, key);

@@ -58,7 +58,6 @@
 		<module>contentconnector-lucene-autocomplete</module>
 		<module>contentconnector-navcache</module>
 		<module>contentconnector-poi-transformer</module>
-		<module>contentconnector-portlet</module>
 		<module>contentconnector-servlet</module>
 		<module>contentconnector-servlet-sample</module>
 		<module>contentconnector-social-networking</module>
@@ -208,11 +207,6 @@
 				<artifactId>jakarta.servlet.jsp-api</artifactId>
 				<version>3.1.0</version>
 				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>javax.portlet</groupId>
-				<artifactId>portlet-api</artifactId>
-				<version>3.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.servlet</groupId>

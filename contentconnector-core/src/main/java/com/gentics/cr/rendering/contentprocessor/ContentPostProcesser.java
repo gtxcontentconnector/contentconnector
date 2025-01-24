@@ -3,7 +3,6 @@ package com.gentics.cr.rendering.contentprocessor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.portlet.PortletRequest;
 import jakarta.servlet.ServletRequest;
 
 import com.gentics.cr.configuration.GenericConfiguration;
@@ -35,15 +34,6 @@ public abstract class ContentPostProcesser {
 	 * @param obj
 	 */
 	public abstract String processString(String obj);
-
-	/**
-	 * Returns the processed String (implement the way, you want the string to
-	 * be processed and changed, replaced, modified, etc).
-	 * 
-	 * @param obj
-	 * @param request 
-	 */
-	public abstract String processString(String obj, PortletRequest request);
 
 	/**
 	 * Returns the processed String (implement the way, you want the string to
