@@ -67,7 +67,7 @@
 		<!-- Mimetype detection -->
 		<dependency>
 			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-langdetect</artifactId>
+			<artifactId>tika-langdetect-optimaize</artifactId>
 			<version>${org.apache.tika.version}</version>
 		</dependency>
 		<dependency>
@@ -94,7 +94,7 @@
 		<dependency>
 			<!-- Highlevel abstraction for text parsing (uses apache poi and many other dependencies for parsing) -->
 			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-parsers</artifactId>
+			<artifactId>tika-parsers-standard-package</artifactId>
 			<version>${org.apache.tika.version}</version>
 			<exclusions>
 				<exclusion>
