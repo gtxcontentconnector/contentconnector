@@ -10,7 +10,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- Note: this is exactly the same version as tika-parsers 1.28.1 has as dependency -->
-		<org.apache.poi.version>4.1.2</org.apache.poi.version>
+		<org.apache.poi.version>5.3.0</org.apache.poi.version>
 		<org.apache.pdfbox.version>2.0.15</org.apache.pdfbox.version>
 		<org.bouncycastle.version>1.46</org.bouncycastle.version>
 	</properties>
@@ -54,12 +54,6 @@
 			<version>${org.apache.poi.version}</version>
 		</dependency>
 		<dependency>
-			<!-- OpenXML4J OOXML  -->
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml-schemas</artifactId>
-			<version>${org.apache.poi.version}</version>
-		</dependency>
-		<dependency>
 			<!-- PDF Parsing -->
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
@@ -96,12 +90,6 @@
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers-standard-package</artifactId>
 			<version>${org.apache.tika.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.gentics</groupId>
