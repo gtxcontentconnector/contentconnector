@@ -11,7 +11,7 @@
 		<node.version>2.5.0-SNAPSHOT</node.version>
 		<org.apache.tika.version>3.0.0</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
-		<log4j.version>2.17.1</log4j.version>
+		<log4j.version>2.24.3</log4j.version>
 		<mysql-connector.version>8.0.27</mysql-connector.version>
 		<commons-io.version>2.17.0</commons-io.version>
 		<commons-logging.version>1.2</commons-logging.version>
