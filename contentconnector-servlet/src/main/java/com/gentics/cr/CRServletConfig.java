@@ -1,6 +1,6 @@
 package com.gentics.cr;
 
-import javax.servlet.ServletConfig;
+import jakarta.servlet.ServletConfig;
 
 /**
  * 

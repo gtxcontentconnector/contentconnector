@@ -7,7 +7,8 @@ import java.util.List;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.language.LanguageIdentifier;
+import org.apache.tika.language.detect.LanguageDetector;
+import org.apache.tika.language.detect.LanguageResult;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.AutoDetectParser;
@@ -150,7 +151,7 @@ public class TikaParserTransformer extends ContentTransformer {
 						bean.set(editTimestampField, metadata.get(TikaCoreProperties.MODIFIED));
 					}
 					if (bean.get(keywordsField) == null) {
-						bean.set(keywordsField, metadata.get(TikaCoreProperties.KEYWORDS));
+						bean.set(keywordsField, metadata.get(TikaCoreProperties.SUBJECT));
 					}
 					if (bean.get(publishTimestampField) == null) {
 						bean.set(publishTimestampField, metadata.get(TikaCoreProperties.PRINT_DATE));
@@ -192,9 +193,11 @@ public class TikaParserTransformer extends ContentTransformer {
 		if (languageDetection) {
 			String languageCode = bean.getString("languagecode");
 			if (languageCode == null || languageCode.equals("")) {
-				LanguageIdentifier identifier = new LanguageIdentifier(content);
-				String lang = identifier.getLanguage();
-				if (identifier.isReasonablyCertain() && (allowedLanguages == null || allowedLanguages.contains(lang))) {
+				LanguageDetector detector = LanguageDetector.getDefaultLanguageDetector();
+				detector.addText(content);
+				LanguageResult result = detector.detect();
+				String lang = result.getLanguage();
+				if (result.isReasonablyCertain() && (allowedLanguages == null || allowedLanguages.contains(lang))) {
 					bean.set("languagecode", lang);
 				}
 			}

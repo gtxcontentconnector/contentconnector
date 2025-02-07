@@ -14,14 +14,16 @@ import com.gentics.cr.conf.gentics.ConfigDirectory;
 import com.gentics.cr.exceptions.CRException;
 
 public class DateTimestampTransformerTest {
-	public static long local = 946681200L;
+	public static long local = 0L;
 
 	public static String formatted = "";
 
 	@BeforeClass
 	public static void setupOnce() {
 		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(local * 1000L);
+		cal.clear();
+		cal.set(2000, 0, 1);
+		local = cal.getTimeInMillis() / 1000L;
 
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 		int month = cal.get(Calendar.MONTH) + 1;

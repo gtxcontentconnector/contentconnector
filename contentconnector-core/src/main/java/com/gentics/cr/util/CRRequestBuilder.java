@@ -2,9 +2,7 @@ package com.gentics.cr.util;
 
 import java.util.ArrayList;
 
-import javax.portlet.Portlet;
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.gentics.cr.CRRequest;
 import com.gentics.cr.RequestProcessor;
@@ -59,37 +57,18 @@ public class CRRequestBuilder {
 	private static final String ADD_PERMISSIONS_TO_RULE_KEY = "addPermissionsToRule";
 
 	/**
-	 * Initializes the CRRequestBuilder from a {@link javax.portlet.Portlet}.
+	 * Initializes the CRRequestBuilder from a {@link jakarta.servlet.http.HttpServletRequest}.
 	 * 
-	 * @param portletRequest request from the {@link javax.portlet.Portlet}
-	 */
-	public CRRequestBuilder(final PortletRequest portletRequest) {
-		this(portletRequest, null);
-	}
-
-	/**
-	 * Initializes the CRRequestBuilder from a {@link javax.portlet.Portlet}.
-	 * 
-	 * @param portletRequest request from the {@link javax.portlet.Portlet}
-	 * @param requestBuilderConfiguration configuration for the request builder
-	 */
-	public CRRequestBuilder(final PortletRequest portletRequest, final GenericConfiguration requestBuilderConfiguration) {
-		this(new RequestWrapper(portletRequest), requestBuilderConfiguration);
-	}
-
-	/**
-	 * Initializes the CRRequestBuilder from a {@link javax.servlet.http.HttpServletRequest}.
-	 * 
-	 * @param servletRequest request from the {@link javax.servlet.http.HttpServletRequest}
+	 * @param servletRequest request from the {@link jakarta.servlet.http.HttpServletRequest}
 	 */
 	public CRRequestBuilder(final HttpServletRequest servletRequest) {
 		this(servletRequest, null);
 	}
 
 	/**
-	 * Initializes the CRRequestBuilder from a {@link javax.servlet.http.HttpServletRequest}.
+	 * Initializes the CRRequestBuilder from a {@link jakarta.servlet.http.HttpServletRequest}.
 	 * 
-	 * @param servletRequest request from the {@link javax.servlet.http.HttpServletRequest}
+	 * @param servletRequest request from the {@link jakarta.servlet.http.HttpServletRequest}
 	 * @param conf configuration for the request builder where we get the default parameters from.
 	 */
 	public CRRequestBuilder(final HttpServletRequest servletRequest, final GenericConfiguration conf) {
@@ -98,9 +77,9 @@ public class CRRequestBuilder {
 
 	/**
 	 * Initializes the CRRequestBuilder in a general manner that is compatible
-	 * with {@link Portlet}s and {@link javax.servlet.http.HttpServletRequest}s.
+	 * with {@link Portlet}s and {@link jakarta.servlet.http.HttpServletRequest}s.
 	 * 
-	 * @param requestWrapper wrapped request from a {@link javax.servlet.http.HttpServletRequest} or a {@link Portlet}
+	 * @param requestWrapper wrapped request from a {@link jakarta.servlet.http.HttpServletRequest} or a {@link Portlet}
 	 * @param requestBuilderConfiguration configuration for the request builder
 	 */
 	public CRRequestBuilder(final RequestWrapper requestWrapper, final GenericConfiguration requestBuilderConfiguration) {
