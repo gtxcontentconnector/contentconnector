@@ -4,9 +4,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.velocity.tools.generic.AlternatorTool;
+import org.apache.velocity.tools.generic.CollectionTool;
 import org.apache.velocity.tools.generic.DateTool;
-import org.apache.velocity.tools.generic.IteratorTool;
-import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.tools.generic.LoopTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.tools.generic.RenderTool;
@@ -51,11 +51,11 @@ public class VelocityToolsTest {
 		assertNotNull("Fetched tool was null.", tools.getAlternator());
 		assertTrue("Fetched tool was not the correct instance.", tools.getAlternator() instanceof AlternatorTool);
 	}
-	
+
 	@Test
-	public void testGetList() {
-		assertNotNull("Fetched tool was null.", tools.getList());
-		assertTrue("Fetched tool was not the correct instance.", tools.getList() instanceof ListTool);
+	public void testGetCollection() {
+		assertNotNull("Fetched tool was null.", tools.getCollection());
+		assertTrue("Fetched tool was not the correct instance.", tools.getCollection() instanceof CollectionTool);
 	}
 	
 	@Test
@@ -65,8 +65,8 @@ public class VelocityToolsTest {
 	}
 	
 	@Test
-	public void testGetIterator() {
-		assertNotNull("Fetched tool was null.", tools.getIterator());
-		assertTrue("Fetched tool was not the correct instance.", tools.getIterator() instanceof IteratorTool);
+	public void testGetLoop() {
+		assertNotNull("Fetched tool was null.", tools.getLoop());
+		assertTrue("Fetched tool was not the correct instance.", tools.getLoop() instanceof LoopTool);
 	}
 }

@@ -3,8 +3,8 @@ package com.gentics.cr.util.velocity;
 import org.apache.velocity.tools.generic.AlternatorTool;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.EscapeTool;
-import org.apache.velocity.tools.generic.IteratorTool;
-import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.tools.generic.LoopTool;
+import org.apache.velocity.tools.generic.CollectionTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.tools.generic.RenderTool;
@@ -48,7 +48,7 @@ public class VelocityTools {
 	/**
 	 * Velocity date tool from velocity tools.
 	 */
-	private static ListTool list = new ListTool();
+	private static CollectionTool collection = new CollectionTool();
 	/**
 	 * Velocity date tool from velocity tools.
 	 */
@@ -56,7 +56,7 @@ public class VelocityTools {
 	/**
 	 * Velocity date tool from velocity tools.
 	 */
-	private static IteratorTool iterator = new IteratorTool();
+	private static LoopTool loop = new LoopTool();
 
 	//getters for the tools
 	/**
@@ -109,10 +109,10 @@ public class VelocityTools {
 	}
 
 	/**
-	 * @return the list tool.
+	 * @return the collection tool
 	 */
-	public ListTool getList() {
-		return list;
+	public CollectionTool getCollection() {
+		return collection;
 	}
 
 	/**
@@ -123,9 +123,9 @@ public class VelocityTools {
 	}
 
 	/**
-	 * @return the iterator tool.
+	 * @return the loop tool
 	 */
-	public IteratorTool getIterator() {
-		return iterator;
+	public LoopTool getLoop() {
+		return loop;
 	}
 }

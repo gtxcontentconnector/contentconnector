@@ -60,10 +60,6 @@
 			<artifactId>log4j-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.jcs</groupId>
 			<artifactId>jcs</artifactId>
 		</dependency>

@@ -8,20 +8,19 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-		<node.version>2.5.0</node.version>
+		<node.version>2.5.1</node.version>
 		<org.apache.tika.version>3.0.0</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<log4j.version>2.24.3</log4j.version>
-		<mysql-connector.version>8.0.27</mysql-connector.version>
+		<mysql-connector.version>9.2.0</mysql-connector.version>
 		<commons-io.version>2.17.0</commons-io.version>
 		<commons-logging.version>1.2</commons-logging.version>
-		<quartz.version>1.7.2</quartz.version>
 		<jsoup.version>1.14.2</jsoup.version>
 		<org.apache.pdfbox.version>2.0.24</org.apache.pdfbox.version>
 		<commons-compress.version>1.27.1</commons-compress.version>
 		<junit.version>4.13.1</junit.version>
 		<httpclient.version>4.5.13</httpclient.version>
-		<jackson.version>2.12.6</jackson.version>
+		<jackson.version>2.18.2</jackson.version>
 		<surefire.forkcount>8</surefire.forkcount>
 		<velocity.version>2.4.1</velocity.version>
 		<velocity-tools.version>3.1</velocity-tools.version>
@@ -143,11 +142,6 @@
 				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.quartz-scheduler</groupId>
-				<artifactId>quartz</artifactId>
-				<version>${quartz.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
 				<version>${jsoup.version}</version>
@@ -170,8 +164,8 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-j</artifactId>
 				<version>${mysql-connector.version}</version>
 			</dependency>
 			<dependency>
