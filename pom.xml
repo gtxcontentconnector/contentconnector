@@ -8,7 +8,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-		<node.version>2.5.0-SNAPSHOT</node.version>
+		<node.version>2.5.0</node.version>
 		<org.apache.tika.version>3.0.0</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<log4j.version>2.24.3</log4j.version>
