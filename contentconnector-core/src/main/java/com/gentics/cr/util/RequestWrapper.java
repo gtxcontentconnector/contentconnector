@@ -8,28 +8,26 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.portlet.PortalContext;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
-import javax.portlet.WindowState;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.gentics.lib.log.NodeLogger;
 
 /**
- * Request wrapper for accessing a {@link ServletRequest} or a
- * {@link PortletRequest} in a generic manner.
+ * Request wrapper for accessing a {@link ServletRequest} in a generic manner.
  * @author perhab
  *
  */
-public class RequestWrapper implements ServletRequest, PortletRequest {
+public class RequestWrapper implements ServletRequest {
 
 	/**
 	 * Log4j logger for debug and error messages.
@@ -40,10 +38,6 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 	 * Internal variable for ServletRequest.
 	 */
 	private ServletRequest servletRequest = null;
-	/**
-	 * Internal variable for PortletRequest.
-	 */
-	private PortletRequest portletRequest = null;
 
 	/**
 	 * Wraps a {@link Servlet} into the {@link RequestWrapper}.
@@ -59,22 +53,12 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 	}
 
 	/**
-	 * Wraps a {@link javax.portlet.Portlet} into the {@link RequestWrapper}.
-	 * @param request {@link PortletRequest} to wrap
-	 */
-	public RequestWrapper(final PortletRequest request) {
-		this.portletRequest = request;
-	}
-
-	/**
 	 * get the wrapped request.
 	 * @return wrapped request can be an instance {@link PortletRequest} or
 	 * {@link ServletRequest}
 	 */
 	public final Object getRequest() {
-		if (this.portletRequest != null) {
-			return this.portletRequest;
-		} else if (this.servletRequest != null) {
+		if (this.servletRequest != null) {
 			return this.servletRequest;
 		}
 		return null;
@@ -137,9 +121,7 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 	 * if the parameter doesn't exist.
 	 */
 	public final String getParameter(final String name) {
-		if (this.portletRequest != null) {
-			return portletRequest.getParameter(name);
-		} else if (this.servletRequest != null) {
+		if (this.servletRequest != null) {
 			return this.servletRequest.getParameter(name);
 		}
 		return null;
@@ -166,9 +148,7 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 	 * <code>null</code> if the parameter doesn't exist.
 	 */
 	public final String[] getParameterValues(final String parameterName) {
-		if (this.portletRequest != null) {
-			return this.portletRequest.getParameterValues(parameterName);
-		} else if (this.servletRequest != null) {
+		if (this.servletRequest != null) {
 			return this.servletRequest.getParameterValues(parameterName);
 		}
 		return null;
@@ -251,148 +231,109 @@ public class RequestWrapper implements ServletRequest, PortletRequest {
 
 	}
 
-	public String getAuthType() {
+	@Override
+	public long getContentLengthLong() {
 		// TODO Auto-generated method stub
-		logger.error("Method getAuthType() is not yet implemented.");
+		logger.error("Method getContentLengthLong() is not yet implemented.");
+		return 0;
+	}
+
+	@Override
+	public int getRemotePort() {
+		// TODO Auto-generated method stub
+		logger.error("Method getRemotePort() is not yet implemented.");
+		return 0;
+	}
+
+	@Override
+	public String getLocalName() {
+		// TODO Auto-generated method stub
+		logger.error("Method getLocalName() is not yet implemented.");
 		return null;
 	}
 
-	public String getContextPath() {
+	@Override
+	public String getLocalAddr() {
 		// TODO Auto-generated method stub
-		logger.error("Method getContextPath() is not yet implemented.");
+		logger.error("Method getLocalAddr() is not yet implemented.");
 		return null;
 	}
 
-	public Cookie[] getCookies() {
+	@Override
+	public int getLocalPort() {
 		// TODO Auto-generated method stub
-		logger.error("Method getCookies() is not yet implemented.");
+		logger.error("Method getLocalPort() is not yet implemented.");
+		return 0;
+	}
+
+	@Override
+	public ServletContext getServletContext() {
+		// TODO Auto-generated method stub
+		logger.error("Method getServletContext() is not yet implemented.");
 		return null;
 	}
 
-	public PortalContext getPortalContext() {
+	@Override
+	public AsyncContext startAsync() throws IllegalStateException {
 		// TODO Auto-generated method stub
-		logger.error("Method getPortalContext() is not yet implemented.");
+		logger.error("Method startAsync() is not yet implemented.");
 		return null;
 	}
 
-	public PortletMode getPortletMode() {
+	@Override
+	public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
+			throws IllegalStateException {
 		// TODO Auto-generated method stub
-		logger.error("Method getPortletMode() is not yet implemented.");
+		logger.error("Method startAsync(ServletRequest, ServletResponse) is not yet implemented.");
 		return null;
 	}
 
-	public PortletSession getPortletSession() {
+	@Override
+	public boolean isAsyncStarted() {
 		// TODO Auto-generated method stub
-		logger.error("Method getPortletSession() is not yet implemented.");
-		return null;
-	}
-
-	public PortletSession getPortletSession(boolean arg0) {
-		// TODO Auto-generated method stub
-		logger.error("Method getPortletSession(boolean) is not yet implemented.");
-		return null;
-	}
-
-	public PortletPreferences getPreferences() {
-		// TODO Auto-generated method stub
-		logger.error("Method getPreferences() is not yet implemented.");
-		return null;
-	}
-
-	public Map<String, String[]> getPrivateParameterMap() {
-		// TODO Auto-generated method stub
-		logger.error("Method getPrivateParameterMap() is not yet implemented.");
-		return null;
-	}
-
-	public Enumeration<String> getProperties(String arg0) {
-		// TODO Auto-generated method stub
-		logger.error("Method getProperties(String) is not yet implemented.");
-		return null;
-	}
-
-	public String getProperty(String arg0) {
-		// TODO Auto-generated method stub
-		logger.error("Method getProperty(String) is not yet implemented.");
-		return null;
-	}
-
-	public Enumeration<String> getPropertyNames() {
-		// TODO Auto-generated method stub
-		logger.error("Method getPropertyNames() is not yet implemented.");
-		return null;
-	}
-
-	public Map<String, String[]> getPublicParameterMap() {
-		// TODO Auto-generated method stub
-		logger.error("Method getPublicParameterMap() is not yet implemented.");
-		return null;
-	}
-
-	public String getRemoteUser() {
-		// TODO Auto-generated method stub
-		logger.error("Method getRemoteUser() is not yet implemented.");
-		return null;
-	}
-
-	public String getRequestedSessionId() {
-		// TODO Auto-generated method stub
-		logger.error("Method getRequestedSessionId() is not yet implemented.");
-		return null;
-	}
-
-	public String getResponseContentType() {
-		// TODO Auto-generated method stub
-		logger.error("Method getResponseContentType() is not yet implemented.");
-		return null;
-	}
-
-	public Enumeration<String> getResponseContentTypes() {
-		// TODO Auto-generated method stub
-		logger.error("Method getResponseContentTypes() is not yet implemented.");
-		return null;
-	}
-
-	public Principal getUserPrincipal() {
-		// TODO Auto-generated method stub
-		logger.error("Method getuserPrincipal() is not yet implemented.");
-		return null;
-	}
-
-	public String getWindowID() {
-		// TODO Auto-generated method stub
-		logger.error("Method getWindowID() is not yet implemented.");
-		return null;
-	}
-
-	public WindowState getWindowState() {
-		// TODO Auto-generated method stub
-		logger.error("Method getWindowState() is not yet implemented.");
-		return null;
-	}
-
-	public boolean isPortletModeAllowed(PortletMode arg0) {
-		// TODO Auto-generated method stub
-		logger.error("Method isPortletModeAllowed(PortletMode) is not yet implemented.");
+		logger.error("Method isAsyncStarted() is not yet implemented.");
 		return false;
 	}
 
-	public boolean isRequestedSessionIdValid() {
+	@Override
+	public boolean isAsyncSupported() {
 		// TODO Auto-generated method stub
-		logger.error("Method isRequestedSessionIdValid() is not yet implemented.");
+		logger.error("Method isAsyncSupported() is not yet implemented.");
 		return false;
 	}
 
-	public boolean isUserInRole(String arg0) {
+	@Override
+	public AsyncContext getAsyncContext() {
 		// TODO Auto-generated method stub
-		logger.error("Method isUserInRole(String) is not yet implemented.");
-		return false;
+		logger.error("Method getAsyncContext() is not yet implemented.");
+		return null;
 	}
 
-	public boolean isWindowStateAllowed(WindowState arg0) {
+	@Override
+	public DispatcherType getDispatcherType() {
 		// TODO Auto-generated method stub
-		logger.error("Method isWindowStateAllowed(WindowState) is not yet implemented.");
-		return false;
+		logger.error("Method getDispatcherType() is not yet implemented.");
+		return null;
 	}
 
+	@Override
+	public String getRequestId() {
+		// TODO Auto-generated method stub
+		logger.error("Method getRequestId() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public String getProtocolRequestId() {
+		// TODO Auto-generated method stub
+		logger.error("Method getProtocolRequestId() is not yet implemented.");
+		return null;
+	}
+
+	@Override
+	public ServletConnection getServletConnection() {
+		// TODO Auto-generated method stub
+		logger.error("Method getServletConnection() is not yet implemented.");
+		return null;
+	}
 }

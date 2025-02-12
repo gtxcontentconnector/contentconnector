@@ -35,7 +35,7 @@ spec:
         cpu: '0'
         memory: '0'
   imagePullSecrets:
-  - name: docker-jenkinsbuilds-apa-it
+  - name: jenkins-docker-pull-secret
 """)
 		}
 	}
@@ -45,7 +45,7 @@ spec:
 	}
 
 	options {
-		withCredentials([usernamePassword(credentialsId: 'repo.gentics.com', usernameVariable: 'repoUsername', passwordVariable: 'repoPassword')])
+		withCredentials([usernamePassword(credentialsId: 'docker.gentics.com', usernameVariable: 'repoUsername', passwordVariable: 'repoPassword')])
 		timestamps()
 		timeout(time: 4, unit: 'HOURS')
 		ansiColor('xterm')
