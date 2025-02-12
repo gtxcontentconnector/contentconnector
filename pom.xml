@@ -125,12 +125,6 @@
 				<artifactId>velocity-tools-generic</artifactId>
 				<version>${velocity-tools.version}</version>
 			</dependency>
-			<!-- Overwrite xalan dep coming from velocity-tools -->
-			<dependency>
-				<groupId>xalan</groupId>
-				<artifactId>xalan</artifactId>
-				<version>2.7.2</version>
-			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
