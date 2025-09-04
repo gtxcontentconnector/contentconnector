@@ -1,0 +1,7 @@
+Some dependencies have been updated:
+* Gentics .Node: 2.5.2
+* Apache POI: 5.4.1
+* Apache Tika: 3.2.2
+* Apache Commons BeanUtils: 1.11.0
+* Apache Commons Collections: 3.2.2
+* Jackson: 2.20.0

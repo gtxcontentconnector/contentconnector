@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 
 import com.gentics.api.lib.resolving.Resolvable;
 import com.gentics.cr.CRConfigUtil;

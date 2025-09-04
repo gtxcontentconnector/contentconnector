@@ -9,9 +9,8 @@
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Note: this is exactly the same version as tika-parsers 1.28.1 has as dependency -->
-		<org.apache.poi.version>5.3.0</org.apache.poi.version>
-		<org.apache.pdfbox.version>2.0.15</org.apache.pdfbox.version>
+		<!-- Note: this is exactly the same version as tika-parsers 3.2.2 has as dependency -->
+		<org.apache.poi.version>5.4.1</org.apache.poi.version>
 		<org.bouncycastle.version>1.46</org.bouncycastle.version>
 	</properties>
 	<build>

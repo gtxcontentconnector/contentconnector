@@ -8,19 +8,22 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-		<node.version>2.5.1</node.version>
-		<org.apache.tika.version>3.0.0</org.apache.tika.version>
+		<node.version>2.5.2</node.version>
+		<org.apache.tika.version>3.2.2</org.apache.tika.version>
 		<lucene.version>4.9.0</lucene.version>
 		<log4j.version>2.24.3</log4j.version>
 		<mysql-connector.version>9.2.0</mysql-connector.version>
 		<commons-io.version>2.17.0</commons-io.version>
 		<commons-logging.version>1.2</commons-logging.version>
+		<commons.beanutils.version>1.11.0</commons.beanutils.version>
+		<commons.collections.version>3.2.2</commons.collections.version>
 		<jsoup.version>1.14.2</jsoup.version>
 		<org.apache.pdfbox.version>2.0.24</org.apache.pdfbox.version>
 		<commons-compress.version>1.27.1</commons-compress.version>
 		<junit.version>4.13.1</junit.version>
 		<httpclient.version>4.5.13</httpclient.version>
-		<jackson.version>2.18.2</jackson.version>
+		<jackson.version>2.20.0</jackson.version>
+		<jackson-annotations.version>2.20</jackson-annotations.version>
 		<surefire.forkcount>8</surefire.forkcount>
 		<velocity.version>2.4.1</velocity.version>
 		<velocity-tools.version>3.1</velocity-tools.version>
@@ -190,6 +193,16 @@
 				<version>${commons-logging.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${commons.beanutils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>${commons.collections.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>jakarta.servlet.jsp</groupId>
 				<artifactId>jakarta.servlet.jsp-api</artifactId>
 				<version>3.1.0</version>
@@ -221,7 +234,7 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
+				<version>${jackson-annotations.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
