@@ -8,13 +8,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.HttpVersion;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRRequest;
@@ -60,7 +62,10 @@ public class TwitterJSONRequestProcessor extends RequestProcessor {
 
 	public TwitterJSONRequestProcessor(CRConfig config) throws CRException {
 		super(config);
-		client = new HttpClient();
+		client = HttpClientBuilder
+					.create()
+					.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false))
+					.build();
 		String searchUrl = config.getString(TWITTER_SEARCH_URL_KEY);
 		if (searchUrl != null) {
 			this.searchurl = searchUrl;
@@ -86,25 +91,24 @@ public class TwitterJSONRequestProcessor extends RequestProcessor {
 	public Collection<CRResolvableBean> getObjects(CRRequest req, boolean arg1) throws CRException {
 		ArrayList<CRResolvableBean> resultlist = new ArrayList<CRResolvableBean>();
 
-		GetMethod method = new GetMethod(constructSearchURL(req));
+		HttpGet method = new HttpGet(constructSearchURL(req));
 
 		// Provide custom retry handler is necessary
-		method.getParams().setVersion(HttpVersion.HTTP_1_0);
+		method.setProtocolVersion(HttpVersion.HTTP_1_0);
 
 		//Set request charset
-		method.setRequestHeader("Content-type", "text/xml; charset=UTF-8");
-
-		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+		method.addHeader("Content-type", "text/xml; charset=UTF-8");
 
 		try {
 			// Execute the method.
-			int statusCode = client.executeMethod(method);
+			HttpResponse response = client.execute(method);
+			int statusCode = response.getStatusLine().getStatusCode();
 
 			if (statusCode != HttpStatus.SC_OK) {
-				log.error("Request failed: " + method.getStatusLine());
+				log.error("Request failed: " + response.getStatusLine());
 			}
 
-			JSONObject json = (JSONObject) JSONSerializer.toJSON(method.getResponseBodyAsString());
+			JSONObject json = (JSONObject) JSONSerializer.toJSON(IOUtils.toString(response.getEntity().getContent(), "UTF8"));
 			JSONArray arr = json.getJSONArray("results");
 			for (Object o : arr) {
 				JSONObject item = (JSONObject) o;
@@ -112,7 +116,7 @@ public class TwitterJSONRequestProcessor extends RequestProcessor {
 				resultlist.add(bean);
 			}
 
-		} catch (HttpException e) {
+		} catch (ClientProtocolException e) {
 			System.err.println("Fatal protocol violation: " + e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {

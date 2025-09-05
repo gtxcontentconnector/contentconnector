@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -5,15 +5,17 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.HttpVersion;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.ProtocolException;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
+import org.apache.http.ParseException;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicLineParser;
 
 import com.gentics.cr.CRConfig;
 import com.gentics.cr.CRError;
@@ -67,7 +69,7 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
 	 */
 	private static final String HTTP_VERSION_KEY = "HTTPVERSION";
 	private String path = "";
-	private HttpVersion httpVersion = HttpVersion.HTTP_1_0;
+	private ProtocolVersion httpVersion = HttpVersion.HTTP_1_0;
 	protected HttpClient client;
 
 	/**
@@ -79,7 +81,10 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
 		super(config);
 		this.name = config.getName();
 		//LOAD ADDITIONAL CONFIG
-		client = new HttpClient(new MultiThreadedHttpConnectionManager());
+		client = HttpClientBuilder
+				.create()
+				.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false))
+				.build();
 		this.path = (String) config.get(URL_KEY);
 		if (this.path == null) {
 			log.error("COULD NOT GET URL FROM CONFIG (add RP.<rpnumber>.url=<url> to config). OVERTHINK YOUR CONFIG!");
@@ -87,8 +92,8 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
 		String httpVersionString = config.getString(HTTP_VERSION_KEY);
 		if (httpVersionString != null) {
 			try {
-				this.httpVersion = HttpVersion.parse(httpVersionString);
-			} catch (ProtocolException e) {
+				this.httpVersion = BasicLineParser.parseProtocolVersion(httpVersionString, null);
+			} catch (ParseException e) {
 				throw new CRException(e);
 			}
 		}
@@ -106,25 +111,24 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
 
 		String reqUrl = buildGetUrlString(request);
 
-		GetMethod method = new GetMethod(reqUrl);
+		HttpGet method = new HttpGet(reqUrl);
 
-		method.getParams().setVersion(httpVersion);
+		method.setProtocolVersion(httpVersion);
 
 		//Set request charset
-		method.setRequestHeader("Content-type", "text/xml; charset=UTF-8");
-		// Provide custom retry handler is necessary
-		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+		method.addHeader("Content-type", "text/xml; charset=UTF-8");
 
 		try {
 			// Execute the method.
-			int statusCode = client.executeMethod(method);
+			HttpResponse response = client.execute(method);
+			int statusCode = response.getStatusLine().getStatusCode();
 			log.info("Request: " + reqUrl + " Status: " + statusCode);
 			if (statusCode != HttpStatus.SC_OK) {
-				log.error("Request failed: " + method.getStatusLine());
+				log.error("Request failed: " + response.getStatusLine());
 			}
 
 			Collection<CRResolvableBean> result = new ArrayList<>();
-			ObjectInputStream objstream = new ObjectInputStream(method.getResponseBodyAsStream());
+			ObjectInputStream objstream = new ObjectInputStream(response.getEntity().getContent());
 			Object responseObject;
 			try {
 				responseObject = objstream.readObject();
@@ -151,7 +155,7 @@ public abstract class AbstractHTTPClientRequestProcessor extends RequestProcesso
 				}
 			}
 
-		} catch (HttpException e) {
+		} catch (ClientProtocolException e) {
 			log.error("Fatal protocol violation", e);
 			throw new CRException(e);
 		} catch (IOException e) {
